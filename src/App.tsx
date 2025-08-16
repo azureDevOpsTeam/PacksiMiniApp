@@ -40,6 +40,7 @@ const AppContent: React.FC = () => {
         display: 'flex', 
         flexDirection: 'column', 
         alignItems: 'center', 
+        marginTop: '20px',
         marginBottom: '30px' 
       }}>
         <img 
@@ -61,14 +62,19 @@ const AppContent: React.FC = () => {
           backgroundColor: '#212a33',
           borderRadius: '12px',
           padding: '8px 12px',
-          border: '1px solid #3a4a5c'
+          border: '1px solid #3a4a5c',
+          direction: language === 'fa' ? 'rtl' : 'ltr'
         }}>
           <svg 
             width="20" 
             height="20" 
             viewBox="0 0 24 24" 
             fill="none" 
-            style={{ marginRight: '12px', color: '#848d96' }}
+            style={{ 
+              marginRight: language === 'fa' ? '0' : '12px',
+              marginLeft: language === 'fa' ? '12px' : '0',
+              color: '#848d96' 
+            }}
           >
             <path 
               d="M21 21L16.514 16.506L21 21ZM19 10.5C19 15.194 15.194 19 10.5 19C5.806 19 2 15.194 2 10.5C2 5.806 5.806 2 10.5 2C15.194 2 19 5.806 19 10.5Z" 
@@ -88,7 +94,9 @@ const AppContent: React.FC = () => {
               outline: 'none',
               color: '#848d96',
               fontSize: '16px',
-              fontFamily: 'IRANSansX, sans-serif'
+              fontFamily: 'IRANSansX, sans-serif',
+              textAlign: language === 'fa' ? 'right' : 'left',
+              direction: language === 'fa' ? 'rtl' : 'ltr'
             }}
           />
         </div>
