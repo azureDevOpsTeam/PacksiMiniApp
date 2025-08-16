@@ -11,6 +11,7 @@ import logo from './assets/images/logo.png';
 const AppContent: React.FC = () => {
   const { isReady } = useTelegramContext();
   const { t, language } = useLanguage();
+  const [activeButton, setActiveButton] = React.useState<'user' | 'admin'>('admin');
 
   if (!isReady) {
     return (
@@ -36,11 +37,101 @@ const AppContent: React.FC = () => {
       padding: '20px',
       textAlign: 'center'
     }}>
+      {/* User/Admin Buttons */}
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        marginTop: '20px',
+        marginBottom: '20px'
+      }}>
+        <div style={{
+           position: 'relative',
+           display: 'flex',
+           minWidth: '100px',
+           height: '35px',
+           backgroundColor: '#000',
+           borderRadius: '7px',
+           padding: '2px'
+         }}>
+          <div 
+             onClick={() => setActiveButton('user')}
+             style={{
+               cursor: 'pointer',
+               flex: 1,
+               background: activeButton === 'user' 
+                 ? 'linear-gradient(to top, #151515 0%, #1d1d1d 100%)'
+                 : 'linear-gradient(to top, #242424 0%, #303030 100%)',
+               display: 'flex',
+               alignItems: 'center',
+               justifyContent: 'center',
+               margin: '1px',
+               transition: '0.2s',
+               fontSize: '0.8em',
+               boxShadow: activeButton === 'user'
+                 ? 'inset 0 16px 14px -21px transparent, 0 0px 13px 0 rgba(0,0,0,0.3), inset 0 0 7px 2px rgba(0,0,0,0.4)'
+                 : 'inset 0 8px 2px -8px rgba(255,255,255,0.4), 0 8px 5px 0 rgba(0,0,0,0.3)',
+               color: '#181818',
+               position: 'relative',
+               borderRadius: '4px 0 0 4px'
+             }}>
+            <svg style={{
+               height: '1.2em',
+               width: '1.2em',
+               position: 'relative',
+               display: 'block',
+               fill: activeButton === 'user' ? 'url(#active)' : '#181818'
+             }} viewBox="0 0 24 24">
+              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+            </svg>
+          </div>
+          <div 
+             onClick={() => setActiveButton('admin')}
+             style={{
+               cursor: 'pointer',
+               flex: 1,
+               background: activeButton === 'admin'
+                 ? 'linear-gradient(to top, #151515 0%, #1d1d1d 100%)'
+                 : 'linear-gradient(to top, #242424 0%, #303030 100%)',
+               display: 'flex',
+               alignItems: 'center',
+               justifyContent: 'center',
+               margin: '1px',
+               transition: '0.2s',
+               fontSize: '0.8em',
+               boxShadow: activeButton === 'admin'
+                 ? 'inset 0 16px 14px -21px transparent, 0 0px 13px 0 rgba(0,0,0,0.3), inset 0 0 7px 2px rgba(0,0,0,0.4)'
+                 : 'inset 0 8px 2px -8px rgba(255,255,255,0.4), 0 8px 5px 0 rgba(0,0,0,0.3)',
+               color: '#181818',
+               position: 'relative',
+               borderRadius: '0 4px 4px 0'
+             }}>
+            <svg style={{
+               height: '1.2em',
+               width: '1.2em',
+               position: 'relative',
+               display: 'block',
+               fill: activeButton === 'admin' ? 'url(#active)' : '#181818'
+             }} viewBox="0 0 24 24">
+              <path d="M12 1L3 5V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V5L12 1M12 7C13.66 7 15 8.34 15 10C15 11.66 13.66 13 12 13C10.34 13 9 11.66 9 10C9 8.34 10.34 7 12 7M6 17.25C6 15.18 8.41 14.5 12 14.5C15.59 14.5 18 15.18 18 17.25V18H6V17.25M19.43 12.57C19.79 12.21 20.39 12.21 20.75 12.57L21.54 13.36C21.9 13.72 21.9 14.32 21.54 14.68L20.75 15.47C20.39 15.83 19.79 15.83 19.43 15.47C19.07 15.11 19.07 14.51 19.43 14.15L19.43 12.57M22 13.5V14.5H20.5V13.5H22M19.43 16.85C19.79 16.49 20.39 16.49 20.75 16.85C21.11 17.21 21.11 17.81 20.75 18.17L19.96 18.96C19.6 19.32 19 19.32 18.64 18.96C18.28 18.6 18.28 18 18.64 17.64L19.43 16.85Z"/>
+            </svg>
+          </div>
+        </div>
+        
+        {/* SVG Filters for gradient */}
+        <svg style={{ height: 0, width: 0 }}>
+          <defs>
+            <radialGradient id="active" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" style={{ stopColor: '#ebf7ff', stopOpacity: 1 }} />
+              <stop offset="100%" style={{ stopColor: '#b3e1ff', stopOpacity: 1 }} />
+            </radialGradient>
+          </defs>
+        </svg>
+      </div>
+      
       <div style={{ 
         display: 'flex', 
         flexDirection: 'column', 
         alignItems: 'center', 
-        marginTop: '20px',
         marginBottom: '30px' 
       }}>
         <img 
@@ -128,7 +219,7 @@ const AppContent: React.FC = () => {
             alignItems: 'center',
             padding: '12px',
             backgroundColor: '#212a33',
-            borderRadius: '4px 4px 0 0',
+            borderRadius: '8px 8px 0 0',
             cursor: 'pointer',
             textDecoration: 'none',
             direction: language === 'fa' ? 'rtl' : 'ltr',
@@ -262,7 +353,7 @@ const AppContent: React.FC = () => {
             alignItems: 'center',
             padding: '12px',
             backgroundColor: '#212a33',
-            borderRadius: '0 0 4px 4px',
+            borderRadius: '0 0 8px 8px',
             cursor: 'pointer',
             textDecoration: 'none',
             direction: language === 'fa' ? 'rtl' : 'ltr'
