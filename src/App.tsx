@@ -27,7 +27,15 @@ const AppContent: React.FC = () => {
   }
 
   return (
-    <div style={{ padding: '20px', textAlign: 'center' }}>
+    <div style={{ 
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+      minHeight: '100vh',
+      padding: '20px',
+      textAlign: 'center'
+    }}>
       <div style={{ 
         display: 'flex', 
         flexDirection: 'column', 
@@ -39,14 +47,13 @@ const AppContent: React.FC = () => {
           alt="Packsi Logo" 
           style={{ 
             width: '150px', 
-            marginTop: '30px',
             borderRadius: '12px'
           }} 
         />
 
       </div>
-      <p>{t('app.welcome')}</p>
-      <div style={{ marginTop: '20px', width: '100%', maxWidth: '400px' }}>
+      <p style={{ marginBottom: '30px' }}>{t('app.welcome')}</p>
+      <div style={{ width: '100%', maxWidth: '400px' }}>
         <div style={{
           position: 'relative',
           display: 'flex',
