@@ -23,9 +23,12 @@
     "title": "Services",
     "createNew": "Create New Request"
   },
+  "unlimited": {
+    "title": "For Unlimited Access"
+  },
   "app": {
     "title": "Packsi",
-    "welcome": "Welcome to ",
+    "welcome": "Every journey is a golden opportunity",
     "description": "Your Telegram Mini App"
   },
   "user": {

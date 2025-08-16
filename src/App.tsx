@@ -193,9 +193,111 @@ const AppContent: React.FC = () => {
         </div>
       </div>
       
-      {/* Bot Links Section */}
+      {/* Unlimited Access Section */}
       <div style={{ 
         marginTop: '30px', 
+        width: '100%', 
+        maxWidth: '400px'
+      }}>
+        <h3 style={{
+          color: '#50b4ff',
+          fontSize: '12px',
+          fontFamily: 'IRANSansX, sans-serif',
+          margin: '0 0 20px 0',
+          fontWeight: '600',
+          textAlign: language === 'fa' ? 'right' : 'left',
+          direction: language === 'fa' ? 'rtl' : 'ltr'
+        }}>
+          {t('unlimited.title')}
+        </h3>
+        
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', marginBottom: '30px' }}>
+          <a href="#" style={{
+            display: 'flex',
+            alignItems: 'center',
+            padding: '8px 12px',
+            backgroundColor: '#212a33',
+            borderRadius: '8px 8px 0 0',
+            cursor: 'pointer',
+            textDecoration: 'none',
+            direction: language === 'fa' ? 'rtl' : 'ltr'
+          }}>
+            <div style={{
+              width: '32px',
+              height: '32px',
+              borderRadius: '8px',
+              backgroundColor: '#6366f1',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginRight: language === 'fa' ? '0' : '12px',
+              marginLeft: language === 'fa' ? '12px' : '0'
+            }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z" fill="white"/>
+              </svg>
+            </div>
+            <div style={{ flex: 1, textAlign: language === 'fa' ? 'right' : 'left' }}>
+              <div style={{
+                color: '#ffffff',
+                fontSize: '13px',
+                fontFamily: 'IRANSansX, sans-serif',
+                fontWeight: '500'
+              }}>
+                {language === 'fa' ? 'تکمیل پروفایل' : 'Complete Profile'}
+              </div>
+            </div>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ color: '#848d96', transform: language === 'fa' ? 'rotate(180deg)' : 'none' }}>
+              <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </a>
+          
+          <a href="#" style={{
+            display: 'flex',
+            alignItems: 'center',
+            padding: '8px 12px',
+            backgroundColor: '#212a33',
+            borderRadius: '0 0 8px 8px',
+            cursor: 'pointer',
+            textDecoration: 'none',
+            direction: language === 'fa' ? 'rtl' : 'ltr'
+          }}>
+            <div style={{
+              width: '32px',
+              height: '32px',
+              borderRadius: '8px',
+              backgroundColor: '#10b981',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginRight: language === 'fa' ? '0' : '12px',
+              marginLeft: language === 'fa' ? '12px' : '0'
+            }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M6.62 10.79C6.57 10.36 6.54 9.93 6.54 9.5C6.54 5.91 9.45 3 13.04 3C16.63 3 19.54 5.91 19.54 9.5C19.54 9.93 19.51 10.36 19.46 10.79L22 12V17H20V19H18V17H16V15H13.83C13.3 15.64 12.68 16.18 11.95 16.58C10.96 17.15 9.8 17.5 8.54 17.5C5.46 17.5 3 15.04 3 12C3 8.96 5.46 6.5 8.54 6.5C9.8 6.5 10.96 6.85 11.95 7.42C12.68 7.82 13.3 8.36 13.83 9H16V11H18V13H20V14L19.46 13.21C19.51 12.64 19.54 12.07 19.54 11.5V10.5C19.54 10.36 19.51 10.22 19.46 10.08L22 8.5V6L19.46 7.21C18.97 4.69 16.22 3 13.04 3C8.59 3 5.04 6.55 5.04 11C5.04 11.43 5.07 11.86 5.12 12.29L6.62 10.79Z" fill="white"/>
+                <circle cx="8.5" cy="12" r="1.5" fill="white"/>
+              </svg>
+            </div>
+            <div style={{ flex: 1, textAlign: language === 'fa' ? 'right' : 'left' }}>
+              <div style={{
+                color: '#ffffff',
+                fontSize: '13px',
+                fontFamily: 'IRANSansX, sans-serif',
+                fontWeight: '500'
+              }}>
+                {language === 'fa' ? 'تایید شماره موبایل' : 'Verify Phone Number'}
+              </div>
+            </div>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ color: '#848d96', transform: language === 'fa' ? 'rotate(180deg)' : 'none' }}>
+              <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+      
+      {/* Bot Links Section */}
+      <div style={{ 
+        marginTop: '0px', 
         width: '100%', 
         maxWidth: '400px'
       }}>
@@ -249,8 +351,8 @@ const AppContent: React.FC = () => {
               {t('bots.createNew')}
             </span>
           </a>
- 
-          <a href="https://t.me/Packsibot" style={{
+
+<a href="https://t.me/Packsibot" style={{
             display: 'flex',
             alignItems: 'center',
             padding: '12px',
@@ -353,7 +455,7 @@ const AppContent: React.FC = () => {
             alignItems: 'center',
             padding: '12px',
             backgroundColor: '#212a33',
-            borderRadius: '0 0 8px 8px',
+            borderRadius: ' 0 0 8px 8px',
             cursor: 'pointer',
             textDecoration: 'none',
             direction: language === 'fa' ? 'rtl' : 'ltr'
