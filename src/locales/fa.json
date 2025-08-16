@@ -16,6 +16,9 @@
     "retry": "تلاش مجدد",
     "refresh": "بروزرسانی"
   },
+  "search": {
+    "placeholder": "جستجو"
+  },
   "app": {
     "title": "پکسی",
     "welcome": "به پکسی خوش آمدید",

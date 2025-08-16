@@ -16,6 +16,9 @@
     "retry": "Retry",
     "refresh": "Refresh"
   },
+  "search": {
+    "placeholder": "Search"
+  },
   "app": {
     "title": "Packsi",
     "welcome": "Welcome to ",
