@@ -135,24 +135,69 @@ jobs:
           fi
           
     - name: Health check
-      run: |
-        sleep 10
-        echo "Testing health check URL: ${{ secrets.APP_URL || 'https://bot.draton.io' }}"
-        
-        # Try HTTPS first, then HTTP as fallback
-        if ! curl -f -s -o /dev/null ${{ secrets.APP_URL || 'https://bot.draton.io' }}; then
-          echo "HTTPS health check failed, trying HTTP..."
-          HTTP_URL=$(echo "${{ secrets.APP_URL || 'https://bot.draton.io' }}" | sed 's/https:/http:/')
-          if ! curl -f -s -o /dev/null "$HTTP_URL"; then
-            echo "Both HTTPS and HTTP health checks failed"
-            echo "Checking if files exist on server..."
-            exit 1
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USER }}
+        key: ${{ secrets.SERVER_SSH_KEY }}
+        port: ${{ secrets.SERVER_PORT || 22 }}
+        script: |
+          echo "🔍 Starting health check..."
+          APP_DIR="${{ secrets.APP_DIRECTORY || '/var/www/packsi-mini-app' }}"
+          APP_URL="${{ secrets.APP_URL || 'https://bot.draton.io' }}"
+          
+          # Check if files exist on server
+          echo "📁 Checking deployment files..."
+          if [ -f "$APP_DIR/dist/index.html" ]; then
+            echo "✅ index.html found on server"
+            echo "📊 File count: $(find $APP_DIR/dist -type f | wc -l) files"
+            echo "📏 Total size: $(du -sh $APP_DIR/dist | cut -f1)"
           else
-            echo "HTTP health check passed (SSL might need configuration)"
+            echo "❌ index.html not found on server at $APP_DIR/dist/"
+            echo "📂 Directory contents:"
+            ls -la "$APP_DIR/" || echo "Directory does not exist"
+            exit 1
           fi
-        else
-          echo "HTTPS health check passed"
-        fi
+          
+          # Check Nginx status
+          echo "🔧 Checking Nginx status..."
+          if systemctl is-active --quiet nginx; then
+            echo "✅ Nginx is running"
+          else
+            echo "❌ Nginx is not running"
+            sudo systemctl status nginx
+            exit 1
+          fi
+          
+          # Test local HTTP connection
+          echo "🌐 Testing local HTTP connection..."
+          if curl -f -s -o /dev/null http://localhost/; then
+            echo "✅ Local HTTP connection works"
+          else
+            echo "❌ Local HTTP connection failed"
+            echo "📋 Nginx error logs:"
+            sudo tail -n 10 /var/log/nginx/error.log || echo "Cannot read error logs"
+          fi
+          
+          # Test external connection
+          echo "🌍 Testing external connection: $APP_URL"
+          sleep 5  # Wait for any nginx reload
+          if curl -f -s -o /dev/null "$APP_URL"; then
+            echo "✅ External HTTPS connection successful"
+          else
+            echo "⚠️ HTTPS failed, trying HTTP..."
+            HTTP_URL=$(echo "$APP_URL" | sed 's/https:/http:/')
+            if curl -f -s -o /dev/null "$HTTP_URL"; then
+              echo "✅ HTTP connection works (consider SSL setup)"
+            else
+              echo "❌ Both HTTPS and HTTP failed"
+              echo "🔍 DNS resolution test:"
+              DOMAIN=$(echo "$APP_URL" | sed 's|https\?://||' | sed 's|/.*||')
+              nslookup "$DOMAIN" || echo "DNS resolution failed"
+              echo "⚠️ Deployment completed but external access has issues"
+              echo "💡 Check DNS, SSL certificates, and firewall settings"
+            fi
+          fi
         
     - name: Notify deployment status
       if: always()
