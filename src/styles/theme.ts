@@ -112,12 +112,12 @@ export const lightTheme: Theme = {
 export const darkTheme: Theme = {
   ...lightTheme,
   colors: {
-    primary: '#0A84FF',
+    primary: '#50b4ff',
     secondary: '#5E5CE6',
-    background: '#000000',
+    background: '#1b2026',
     surface: '#1C1C1E',
     text: {
-      primary: '#FFFFFF',
+      primary: '#848d96',
       secondary: '#8E8E93',
       disabled: '#48484A',
     },
