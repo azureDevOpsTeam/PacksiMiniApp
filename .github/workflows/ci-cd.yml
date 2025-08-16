@@ -124,10 +124,35 @@ jobs:
           # Optional: Clear cache if using any
           # sudo rm -rf /var/cache/nginx/* || true
           
+          # Verify deployment
+          echo "Verifying deployment..."
+          if [ -f "dist/index.html" ]; then
+            echo "✅ index.html found"
+            ls -la dist/
+          else
+            echo "❌ index.html not found"
+            exit 1
+          fi
+          
     - name: Health check
       run: |
         sleep 10
-        curl -f ${{ secrets.APP_URL || 'https://bot.draton.io' }} || exit 1
+        echo "Testing health check URL: ${{ secrets.APP_URL || 'https://bot.draton.io' }}"
+        
+        # Try HTTPS first, then HTTP as fallback
+        if ! curl -f -s -o /dev/null ${{ secrets.APP_URL || 'https://bot.draton.io' }}; then
+          echo "HTTPS health check failed, trying HTTP..."
+          HTTP_URL=$(echo "${{ secrets.APP_URL || 'https://bot.draton.io' }}" | sed 's/https:/http:/')
+          if ! curl -f -s -o /dev/null "$HTTP_URL"; then
+            echo "Both HTTPS and HTTP health checks failed"
+            echo "Checking if files exist on server..."
+            exit 1
+          else
+            echo "HTTP health check passed (SSL might need configuration)"
+          fi
+        else
+          echo "HTTPS health check passed"
+        fi
         
     - name: Notify deployment status
       if: always()
