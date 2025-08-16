@@ -21,8 +21,8 @@ export const useTelegram = (): TelegramContextType => {
       WebApp.enableClosingConfirmation();
 
       // Disable zoom functionality
-      WebApp.setHeaderColor('#1a1a1a');
-
+      WebApp.setHeaderColor('#212a33');
+      WebApp.setBottomBarColor('#212a33');
       // Add viewport meta tag to disable zoom
       const viewport = document.querySelector('meta[name="viewport"]');
       if (viewport) {
