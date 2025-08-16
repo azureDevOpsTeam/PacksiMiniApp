@@ -146,10 +146,9 @@ const CreateRequest: React.FC<CreateRequestProps> = ({ onBack }) => {
         
         <p style={{
           fontSize: '16px',
-          margin: '0',
+          margin: '0 auto',
           opacity: 0.8,
           maxWidth: '400px',
-          margin: '0 auto',
           textAlign: 'justify'
         }}>
           {t('createRequest.title')}
