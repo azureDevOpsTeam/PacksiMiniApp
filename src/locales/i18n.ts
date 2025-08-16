@@ -1,6 +1,7 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
+import WebApp from '@twa-dev/sdk';
 
 // Import translation files
 import enTranslations from './en.json';
@@ -15,11 +16,34 @@ const resources = {
   },
 };
 
+// Function to get Telegram user language
+const getTelegramLanguage = (): string => {
+  try {
+    const user = WebApp.initDataUnsafe?.user;
+    if (user?.language_code) {
+      // Map common language codes to our supported languages
+      const langCode = user.language_code.toLowerCase();
+      if (langCode.startsWith('fa') || langCode.startsWith('pe')) {
+        return 'fa';
+      }
+      // Default to English for other languages
+      return 'en';
+    }
+  } catch (error) {
+    console.log('Could not get Telegram language:', error);
+  }
+  return 'en'; // fallback
+};
+
+// Get initial language from Telegram
+const initialLanguage = getTelegramLanguage();
+
 i18n
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
     resources,
+    lng: initialLanguage, // Set initial language from Telegram
     fallbackLng: 'en',
     debug: import.meta.env.DEV,
     
