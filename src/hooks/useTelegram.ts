@@ -18,6 +18,20 @@ export const useTelegram = (): TelegramContextType => {
       WebApp.disableVerticalSwipes();
       WebApp.enableClosingConfirmation();
       
+      // Disable zoom functionality
+      WebApp.setHeaderColor('#1a1a1a');
+      
+      // Add viewport meta tag to disable zoom
+      const viewport = document.querySelector('meta[name="viewport"]');
+      if (viewport) {
+        viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+      } else {
+        const meta = document.createElement('meta');
+        meta.name = 'viewport';
+        meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
+        document.head.appendChild(meta);
+      }
+      
       // Get user data
       if (WebApp.initDataUnsafe?.user) {
         setUser(WebApp.initDataUnsafe.user as TelegramUser);
