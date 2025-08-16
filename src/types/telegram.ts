@@ -22,7 +22,7 @@ export interface TelegramUser extends WebAppUser {
 
 export interface TelegramInitData extends WebAppInitData {
   user?: TelegramUser;
-  chat_type?: string;
+  chat_type?: "group" | "supergroup" | "channel" | "sender" | "private";
   chat_instance?: string;
   start_param?: string;
   can_send_after?: number;

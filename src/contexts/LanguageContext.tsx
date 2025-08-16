@@ -1,6 +1,8 @@
-import React, { ReactNode, useCallback } from 'react';
+import React, { useCallback } from 'react';
+import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { LanguageContext, LanguageContextType } from './LanguageContextDefinition';
+import { LanguageContext } from './LanguageContextDefinition';
+import type { LanguageContextType, Language } from './LanguageContextDefinition';
 
 interface LanguageProviderProps {
   children: ReactNode;
