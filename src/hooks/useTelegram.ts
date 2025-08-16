@@ -14,9 +14,9 @@ export const useTelegram = (): TelegramContextType => {
       WebApp.ready();
 
       // Set up the app
-     WebApp.expand();
+      WebApp.expand();
       WebApp.disableVerticalSwipes();
-      // WebApp.enableClosingConfirmation();
+      WebApp.enableClosingConfirmation();
 
       // Disable zoom functionality
       WebApp.setHeaderColor('#212a33');

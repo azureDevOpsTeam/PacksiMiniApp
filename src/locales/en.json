@@ -63,7 +63,7 @@
     "userNotFound": "User information not available"
   },
   "createRequest": {
-    "title": "Create New Request",
+    "title": "If you are traveling as a passenger and intend to carry cargo, please fill out the form below carefully.",
     "originCity": "Origin City",
     "destinationCity": "Destination City",
     "departureDate": "Departure Date",

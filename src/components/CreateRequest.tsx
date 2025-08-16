@@ -126,44 +126,7 @@ const CreateRequest: React.FC<CreateRequestProps> = ({ onBack }) => {
         borderBottom: `1px solid ${theme.colors.border}`,
         position: 'relative'
       }}>
-        {/* Back Button */}
-        {onBack && (
-          <button
-            onClick={onBack}
-            style={{
-              position: 'absolute',
-              top: '20px',
-              left: isRTL ? 'auto' : '20px',
-              right: isRTL ? '20px' : 'auto',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: '8px',
-              borderRadius: '8px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: theme.colors.text.primary,
-              transition: 'background-color 0.2s ease'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = theme.colors.border;
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'transparent';
-            }}
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path
-                d={isRTL ? "M9 18L15 12L9 6" : "M15 18L9 12L15 6"}
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
-        )}
+
         <div style={{
           display: 'flex', 
           flexDirection: 'column', 
@@ -174,6 +137,7 @@ const CreateRequest: React.FC<CreateRequestProps> = ({ onBack }) => {
             src={logo} 
             alt="Packsi Logo" 
             style={{ 
+              marginTop: '30px',
               width: '150px', 
               borderRadius: '12px'
             }} 
@@ -183,23 +147,17 @@ const CreateRequest: React.FC<CreateRequestProps> = ({ onBack }) => {
         <p style={{
           fontSize: '16px',
           margin: '0',
-          opacity: 0.8
+          opacity: 0.8,
+          maxWidth: '400px',
+          margin: '0 auto',
+          textAlign: 'justify'
         }}>
-          {t('app.welcome')}
+          {t('createRequest.title')}
         </p>
       </div>
 
       {/* Form */}
       <div style={{ padding: '20px' }}>
-        <h2 style={{
-          fontSize: '20px',
-          fontWeight: 'bold',
-          margin: '0 0 24px 0',
-          textAlign: 'center'
-        }}>
-          {t('createRequest.title')}
-        </h2>
-
         <form onSubmit={handleSubmit} style={{ maxWidth: '400px', margin: '0 auto' }}>
           {/* City Fields */}
           <div style={{ 
@@ -551,34 +509,73 @@ const CreateRequest: React.FC<CreateRequestProps> = ({ onBack }) => {
           </div>
 
           {/* Submit Button */}
-          <button
-            type="submit"
-            style={{
-              width: '100%',
-              padding: '12px',
-              borderRadius: '12px',
-              border: 'none',
-              backgroundColor: '#50b4ff',
-              color: 'white',
-              fontSize: '16px',
-              fontWeight: '600',
-              fontFamily: 'IRANSansX, sans-serif',
-              cursor: 'pointer',
-              transition: 'transform 0.2s ease',
-              marginTop: '20px'
-            }}
-            onMouseDown={(e) => {
-              e.currentTarget.style.transform = 'scale(0.98)';
-            }}
-            onMouseUp={(e) => {
-              e.currentTarget.style.transform = 'scale(1)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'scale(1)';
-            }}
-          >
-            {t('common.submit')}
-          </button>
+          {/* Buttons Container */}
+          <div style={{
+            display: 'flex',
+            gap: '10px',
+            marginTop: '20px'
+          }}>
+            {/* Back Button */}
+            {onBack && (
+              <button
+                onClick={onBack}
+                type="button"
+                style={{
+                  flex: '0 0 auto',
+                  padding: '10px 16px',
+                  borderRadius: '12px',
+                  border: 'none',
+                  backgroundColor: '#dc3545',
+                  color: 'white',
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  fontFamily: 'IRANSansX, sans-serif',
+                  cursor: 'pointer',
+                  transition: 'transform 0.2s ease'
+                }}
+                onMouseDown={(e) => {
+                  e.currentTarget.style.transform = 'scale(0.98)';
+                }}
+                onMouseUp={(e) => {
+                  e.currentTarget.style.transform = 'scale(1)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'scale(1)';
+                }}
+              >
+                {t('common.back')}
+              </button>
+            )}
+            
+            {/* Submit Button */}
+            <button
+              type="submit"
+              style={{
+                flex: '1',
+                padding: '12px',
+                borderRadius: '12px',
+                border: 'none',
+                backgroundColor: '#50b4ff',
+                color: 'white',
+                fontSize: '16px',
+                fontWeight: '600',
+                fontFamily: 'IRANSansX, sans-serif',
+                cursor: 'pointer',
+                transition: 'transform 0.2s ease'
+              }}
+              onMouseDown={(e) => {
+                e.currentTarget.style.transform = 'scale(0.98)';
+              }}
+              onMouseUp={(e) => {
+                e.currentTarget.style.transform = 'scale(1)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'scale(1)';
+              }}
+            >
+              {t('common.submit')}
+            </button>
+          </div>
         </form>
       </div>
     </div>
