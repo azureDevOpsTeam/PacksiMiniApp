@@ -6,6 +6,7 @@ import { GlobalStyles } from './styles/GlobalStyles';
 import { useTelegramContext } from './hooks/useTelegramContext';
 import { useLanguage } from './hooks/useLanguage';
 import CreateRequest from './components/CreateRequest';
+import UpdateProfile from './components/UpdateProfile';
 import logo from './assets/images/logo.png';
 
 // Main App Content Component
@@ -13,7 +14,7 @@ const AppContent: React.FC = () => {
   const { isReady } = useTelegramContext();
   const { t, language } = useLanguage();
   const [activeButton, setActiveButton] = React.useState<'user' | 'admin'>('admin');
-  const [currentPage, setCurrentPage] = React.useState<'home' | 'createRequest'>('home');
+  const [currentPage, setCurrentPage] = React.useState<'home' | 'createRequest' | 'updateProfile'>('home');
 
   if (!isReady) {
     return (
@@ -32,6 +33,11 @@ const AppContent: React.FC = () => {
   // Render CreateRequest page
   if (currentPage === 'createRequest') {
     return <CreateRequest onBack={() => setCurrentPage('home')} />;
+  }
+
+  // Render UpdateProfile page
+  if (currentPage === 'updateProfile') {
+    return <UpdateProfile onBack={() => setCurrentPage('home')} />;
   }
 
   // Render Home page
@@ -220,14 +226,15 @@ const AppContent: React.FC = () => {
         </h3>
         
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', marginBottom: '30px' }}>
-          <a href="#" style={{
+          <button onClick={() => setCurrentPage('updateProfile')} style={{
             display: 'flex',
             alignItems: 'center',
             padding: '8px 12px',
             backgroundColor: '#212a33',
             borderRadius: '8px 8px 0 0',
             cursor: 'pointer',
-            textDecoration: 'none',
+            border: 'none',
+            width: '100%',
             direction: language === 'fa' ? 'rtl' : 'ltr'
           }}>
             <div style={{
@@ -258,7 +265,7 @@ const AppContent: React.FC = () => {
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ color: '#848d96', transform: language === 'fa' ? 'rotate(180deg)' : 'none' }}>
               <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-          </a>
+          </button>
           
           <a href="#" style={{
             display: 'flex',

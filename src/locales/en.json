@@ -81,5 +81,31 @@
     "selectCity": "Select City",
     "selectRequestType": "Select Request Type",
     "selectItemTypes": "Select Item Types"
+  },
+  "updateProfile": {
+    "title": "Please complete your profile information below.",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "displayName": "Display Name",
+    "countryOfResidence": "Country of Residence",
+    "address": "Address",
+    "company": "Company",
+    "postalCode": "Postal Code",
+    "gender": "Gender",
+    "maritalStatus": "Marital Status",
+    "firstNamePlaceholder": "Enter your first name",
+    "lastNamePlaceholder": "Enter your last name",
+    "displayNamePlaceholder": "Enter your display name",
+    "addressPlaceholder": "Enter your address",
+    "companyPlaceholder": "Enter your company",
+    "postalCodePlaceholder": "Enter postal code",
+    "selectCountry": "Select Country",
+    "selectGender": "Select Gender",
+    "selectMaritalStatus": "Select Marital Status",
+    "male": "Male",
+    "female": "Female",
+    "single": "Single",
+    "married": "Married",
+    "submit": "Update Profile"
   }
 }

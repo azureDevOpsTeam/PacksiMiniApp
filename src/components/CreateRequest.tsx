@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useLanguage } from '../hooks/useLanguage';
 import { useTheme } from '../hooks/useTheme';
 import logo from '../assets/images/logo.png';
@@ -43,6 +43,7 @@ const CreateRequest: React.FC<CreateRequestProps> = ({ onBack }) => {
 
   const [isAccordionOpen, setIsAccordionOpen] = useState(false);
   const [ticketFile, setTicketFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Mock data for dropdowns
   const cities = [
@@ -254,6 +255,7 @@ const CreateRequest: React.FC<CreateRequestProps> = ({ onBack }) => {
             <div style={{ marginBottom: '20px' }}>
               <label style={labelStyle}>{isRTL ? 'بارگذاری بلیط' : 'Upload Ticket'}</label>
               <input
+                ref={fileInputRef}
                 type="file"
                 accept="image/*,.pdf"
                 onChange={(e) => setTicketFile(e.target.files?.[0] || null)}
@@ -319,7 +321,12 @@ const CreateRequest: React.FC<CreateRequestProps> = ({ onBack }) => {
                   </div>
                   <button
                     type="button"
-                    onClick={() => setTicketFile(null)}
+                    onClick={() => {
+                      setTicketFile(null);
+                      if (fileInputRef.current) {
+                        fileInputRef.current.value = '';
+                      }
+                    }}
                     style={{
                       background: 'none',
                       border: 'none',
@@ -524,7 +531,7 @@ const CreateRequest: React.FC<CreateRequestProps> = ({ onBack }) => {
                   padding: '10px 16px',
                   borderRadius: '12px',
                   border: 'none',
-                  backgroundColor: '#dc3545',
+                  backgroundColor: 'rgb(119 119 119)',
                   color: 'white',
                   fontSize: '14px',
                   fontWeight: '600',

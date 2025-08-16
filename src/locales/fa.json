@@ -81,5 +81,31 @@
     "selectCity": "انتخاب شهر",
     "selectRequestType": "انتخاب نوع درخواست",
     "selectItemTypes": "انتخاب نوع اقلام"
+  },
+  "updateProfile": {
+    "title": "لطفاً اطلاعات پروفایل خود را در زیر تکمیل کنید.",
+    "firstName": "نام",
+    "lastName": "نام خانوادگی",
+    "displayName": "نام نمایشی",
+    "countryOfResidence": "کشور محل سکونت",
+    "address": "آدرس",
+    "company": "شرکت",
+    "postalCode": "کد پستی",
+    "gender": "جنسیت",
+    "maritalStatus": "وضعیت تأهل",
+    "firstNamePlaceholder": "نام خود را وارد کنید",
+    "lastNamePlaceholder": "نام خانوادگی خود را وارد کنید",
+    "displayNamePlaceholder": "نام نمایشی خود را وارد کنید",
+    "addressPlaceholder": "آدرس خود را وارد کنید",
+    "companyPlaceholder": "نام شرکت را وارد کنید",
+    "postalCodePlaceholder": "کد پستی را وارد کنید",
+    "selectCountry": "انتخاب کشور",
+    "selectGender": "انتخاب جنسیت",
+    "selectMaritalStatus": "انتخاب وضعیت تأهل",
+    "male": "مرد",
+    "female": "زن",
+    "single": "مجرد",
+    "married": "متأهل",
+    "submit": "بروزرسانی پروفایل"
   }
 }
