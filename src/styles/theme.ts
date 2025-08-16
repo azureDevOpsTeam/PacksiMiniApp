@@ -90,7 +90,7 @@ export const lightTheme: Theme = {
     lg: '0 10px 15px rgba(0, 0, 0, 0.1)',
   },
   typography: {
-    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+    fontFamily: '"IRANSansX", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Tahoma, Arial, sans-serif',
     fontSize: {
       xs: '12px',
       sm: '14px',

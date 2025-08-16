@@ -39,7 +39,7 @@ const AppContent: React.FC = () => {
           alt="Packsi Logo" 
           style={{ 
             width: '80px', 
-            height: '80px', 
+            marginTop: '10px',
             marginBottom: '15px',
             borderRadius: '12px'
           }} 
