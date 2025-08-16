@@ -30,7 +30,7 @@ const AppContent: React.FC = () => {
     <div style={{ 
       display: 'flex',
       flexDirection: 'column',
-      justifyContent: 'center',
+      justifyContent: 'flex-start',
       alignItems: 'center',
       minHeight: '100vh',
       padding: '20px',
@@ -60,7 +60,7 @@ const AppContent: React.FC = () => {
           alignItems: 'center',
           backgroundColor: '#212a33',
           borderRadius: '12px',
-          padding: '10px 14px',
+          padding: '8px 12px',
           border: '1px solid #3a4a5c'
         }}>
           <svg 
@@ -98,13 +98,10 @@ const AppContent: React.FC = () => {
       <div style={{ 
         marginTop: '30px', 
         width: '100%', 
-        maxWidth: '400px',
-        backgroundColor: '#1b2026',
-        borderRadius: '6px',
-        padding: '20px'
+        maxWidth: '400px'
       }}>
         <h3 style={{
-          color: '#848d96',
+          color: '#ffffff',
           fontSize: '18px',
           fontFamily: 'IRANSansX, sans-serif',
           margin: '0 0 20px 0',
@@ -119,11 +116,10 @@ const AppContent: React.FC = () => {
           <a href="https://t.me/Packsibot" style={{
             display: 'flex',
             alignItems: 'center',
-            padding: '10px 14px',
+            padding: '12px',
             backgroundColor: '#212a33',
             borderRadius: '4px',
             cursor: 'pointer',
-            transition: 'background-color 0.2s ease',
             textDecoration: 'none',
             direction: language === 'fa' ? 'rtl' : 'ltr'
           }}>
@@ -169,11 +165,10 @@ const AppContent: React.FC = () => {
           <a href="https://t.me/NexterraLiveBot" style={{
             display: 'flex',
             alignItems: 'center',
-            padding: '10px 14px',
+            padding: '12px',
             backgroundColor: '#212a33',
             borderRadius: '4px',
             cursor: 'pointer',
-            transition: 'background-color 0.2s ease',
             textDecoration: 'none',
             direction: language === 'fa' ? 'rtl' : 'ltr'
           }}>
@@ -219,11 +214,10 @@ const AppContent: React.FC = () => {
           <a href="https://t.me/Mobittehbot" style={{
             display: 'flex',
             alignItems: 'center',
-            padding: '10px 14px',
+            padding: '12px',
             backgroundColor: '#212a33',
             borderRadius: '4px',
             cursor: 'pointer',
-            transition: 'background-color 0.2s ease',
             textDecoration: 'none',
             direction: language === 'fa' ? 'rtl' : 'ltr'
           }}>

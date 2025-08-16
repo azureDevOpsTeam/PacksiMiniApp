@@ -2,7 +2,7 @@ import React from 'react';
 import type { ReactNode } from 'react';
 import { ThemeProvider as StyledThemeProvider } from 'styled-components';
 import { lightTheme, darkTheme } from '../styles/theme';
-import { useTelegramContext } from '../hooks/useTelegramContext';
+// import { useTelegramContext } from '../hooks/useTelegramContext';
 import { ThemeContext } from './ThemeContextDefinition';
 import type { ThemeContextType } from './ThemeContextDefinition';
 
@@ -11,9 +11,10 @@ interface ThemeProviderProps {
 }
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
-  const { theme: telegramTheme } = useTelegramContext();
+  // const { theme: telegramTheme } = useTelegramContext();
   
-  const isDark = telegramTheme === 'dark';
+  // Force dark theme (light theme temporarily disabled)
+  const isDark = true; // telegramTheme === 'dark';
   const currentTheme = isDark ? darkTheme : lightTheme;
 
   const toggleTheme = () => {
