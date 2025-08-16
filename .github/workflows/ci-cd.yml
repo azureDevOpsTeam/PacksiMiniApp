@@ -127,7 +127,7 @@ jobs:
     - name: Health check
       run: |
         sleep 10
-        curl -f ${{ secrets.APP_URL || 'https://your-domain.com' }} || exit 1
+        curl -f ${{ secrets.APP_URL || 'https://bot.draton.io' }} || exit 1
         
     - name: Notify deployment status
       if: always()
