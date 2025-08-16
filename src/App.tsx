@@ -38,19 +38,13 @@ const AppContent: React.FC = () => {
           src={logo} 
           alt="Packsi Logo" 
           style={{ 
-            width: '80px', 
-            marginTop: '10px',
+            width: '150px', 
+            marginTop: '30px',
             marginBottom: '15px',
             borderRadius: '12px'
           }} 
         />
-        <h1 style={{ 
-          margin: '0', 
-          fontSize: '28px', 
-          fontWeight: 'bold' 
-        }}>
-          {t('app.title')}
-        </h1>
+
       </div>
       <p>{t('app.welcome')}</p>
       {user && (
