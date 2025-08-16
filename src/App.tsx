@@ -1,10 +1,10 @@
 import React from 'react';
-import { TelegramProvider } from './contexts/TelegramContext';
-import { ThemeProvider } from './contexts/ThemeContext';
-import { LanguageProvider } from './contexts/LanguageContext';
+import TelegramProvider from './contexts/TelegramContext';
+import ThemeProvider from './contexts/ThemeContext';
+import LanguageProvider from './contexts/LanguageContext';
 import { GlobalStyles } from './styles/GlobalStyles';
-import { useTelegramContext } from './contexts/TelegramContext';
-import { useLanguage } from './contexts/LanguageContext';
+import { useTelegramContext } from './hooks/useTelegramContext';
+import { useLanguage } from './hooks/useLanguage';
 
 // Main App Content Component
 const AppContent: React.FC = () => {

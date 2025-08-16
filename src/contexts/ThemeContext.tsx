@@ -1,15 +1,8 @@
-import React, { createContext, useContext, ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import { ThemeProvider as StyledThemeProvider } from 'styled-components';
 import { lightTheme, darkTheme } from '../styles/theme';
-import type { Theme } from '../styles/theme';
-import { useTelegramContext } from './TelegramContext';
-
-interface ThemeContextType {
-  theme: Theme;
-  isDark: boolean;
-}
-
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+import { useTelegramContext } from '../hooks/useTelegramContext';
+import { ThemeContext, ThemeContextType } from './ThemeContextDefinition';
 
 interface ThemeProviderProps {
   children: ReactNode;
@@ -35,10 +28,4 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   );
 };
 
-export const useTheme = (): ThemeContextType => {
-  const context = useContext(ThemeContext);
-  if (context === undefined) {
-    throw new Error('useTheme must be used within a ThemeProvider');
-  }
-  return context;
-};
+export default ThemeProvider;

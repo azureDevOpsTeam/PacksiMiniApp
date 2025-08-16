@@ -1,16 +1,6 @@
-import React, { createContext, useContext, ReactNode, useCallback } from 'react';
+import React, { ReactNode, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-
-type Language = 'en' | 'fa';
-
-interface LanguageContextType {
-  language: Language;
-  changeLanguage: (lang: Language) => void;
-  t: (key: string, options?: any) => string;
-  isRTL: boolean;
-}
-
-const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
+import { LanguageContext, LanguageContextType } from './LanguageContextDefinition';
 
 interface LanguageProviderProps {
   children: ReactNode;
@@ -40,10 +30,4 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
   );
 };
 
-export const useLanguage = (): LanguageContextType => {
-  const context = useContext(LanguageContext);
-  if (context === undefined) {
-    throw new Error('useLanguage must be used within a LanguageProvider');
-  }
-  return context;
-};
+export default LanguageProvider;
