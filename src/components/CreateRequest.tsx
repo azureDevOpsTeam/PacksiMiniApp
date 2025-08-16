@@ -143,7 +143,7 @@ const CreateRequest: React.FC<CreateRequestProps> = ({ onBack }) => {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: theme.colors.text,
+              color: theme.colors.text.primary,
               transition: 'background-color 0.2s ease'
             }}
             onMouseEnter={(e) => {
