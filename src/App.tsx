@@ -10,7 +10,7 @@ import logo from './assets/images/logo.png';
 // Main App Content Component
 const AppContent: React.FC = () => {
   const { isReady } = useTelegramContext();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   if (!isReady) {
     return (
@@ -91,6 +91,181 @@ const AppContent: React.FC = () => {
               fontFamily: 'IRANSansX, sans-serif'
             }}
           />
+        </div>
+      </div>
+      
+      {/* Bot Links Section */}
+      <div style={{ 
+        marginTop: '30px', 
+        width: '100%', 
+        maxWidth: '400px',
+        backgroundColor: '#1b2026',
+        borderRadius: '12px',
+        padding: '20px',
+        border: '1px solid #3a4a5c'
+      }}>
+        <h3 style={{
+          color: '#848d96',
+          fontSize: '18px',
+          fontFamily: 'IRANSansX, sans-serif',
+          margin: '0 0 20px 0',
+          fontWeight: '600',
+          textAlign: language === 'fa' ? 'right' : 'left',
+          direction: language === 'fa' ? 'rtl' : 'ltr'
+        }}>
+          {t('bots.title')}
+        </h3>
+        
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <a href="https://t.me/Packsibot" style={{
+            display: 'flex',
+            alignItems: 'center',
+            padding: '12px 16px',
+            backgroundColor: '#212a33',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            transition: 'background-color 0.2s ease',
+            textDecoration: 'none',
+            direction: language === 'fa' ? 'rtl' : 'ltr'
+          }}>
+            <div style={{
+              width: '40px',
+              height: '40px',
+              borderRadius: '50%',
+              backgroundColor: '#6366f1',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginRight: language === 'fa' ? '0' : '12px',
+              marginLeft: language === 'fa' ? '12px' : '0',
+              fontSize: '18px',
+              fontWeight: 'bold',
+              color: 'white'
+            }}>
+              P
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{
+                color: '#ffffff',
+                fontSize: '16px',
+                fontFamily: 'IRANSansX, sans-serif',
+                fontWeight: '500',
+                marginBottom: '2px'
+              }}>
+                Packsi
+              </div>
+              <div style={{
+                color: '#848d96',
+                fontSize: '14px',
+                fontFamily: 'IRANSansX, sans-serif'
+              }}>
+                @Packsibot
+              </div>
+            </div>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style={{ color: '#848d96' }}>
+              <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </a>
+          
+          <a href="https://t.me/NexterraLiveBot" style={{
+            display: 'flex',
+            alignItems: 'center',
+            padding: '12px 16px',
+            backgroundColor: '#212a33',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            transition: 'background-color 0.2s ease',
+            textDecoration: 'none',
+            direction: language === 'fa' ? 'rtl' : 'ltr'
+          }}>
+            <div style={{
+              width: '40px',
+              height: '40px',
+              borderRadius: '50%',
+              backgroundColor: '#10b981',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginRight: language === 'fa' ? '0' : '12px',
+              marginLeft: language === 'fa' ? '12px' : '0',
+              fontSize: '18px',
+              fontWeight: 'bold',
+              color: 'white'
+            }}>
+              N
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{
+                color: '#ffffff',
+                fontSize: '16px',
+                fontFamily: 'IRANSansX, sans-serif',
+                fontWeight: '500',
+                marginBottom: '2px'
+              }}>
+                Nexterra
+              </div>
+              <div style={{
+                color: '#848d96',
+                fontSize: '14px',
+                fontFamily: 'IRANSansX, sans-serif'
+              }}>
+                @NexterraLiveBot
+              </div>
+            </div>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style={{ color: '#848d96' }}>
+              <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </a>
+          
+          <a href="https://t.me/Mobittehbot" style={{
+            display: 'flex',
+            alignItems: 'center',
+            padding: '12px 16px',
+            backgroundColor: '#212a33',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            transition: 'background-color 0.2s ease',
+            textDecoration: 'none',
+            direction: language === 'fa' ? 'rtl' : 'ltr'
+          }}>
+            <div style={{
+              width: '40px',
+              height: '40px',
+              borderRadius: '50%',
+              backgroundColor: '#3b82f6',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginRight: language === 'fa' ? '0' : '12px',
+              marginLeft: language === 'fa' ? '12px' : '0',
+              fontSize: '14px',
+              fontWeight: 'bold',
+              color: 'white'
+            }}>
+              MS
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{
+                color: '#ffffff',
+                fontSize: '16px',
+                fontFamily: 'IRANSansX, sans-serif',
+                fontWeight: '500',
+                marginBottom: '2px'
+              }}>
+                Mobitteh Shop
+              </div>
+              <div style={{
+                color: '#848d96',
+                fontSize: '14px',
+                fontFamily: 'IRANSansX, sans-serif'
+              }}>
+                @Mobittehbot
+              </div>
+            </div>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style={{ color: '#848d96' }}>
+              <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </a>
         </div>
       </div>
     </div>

@@ -19,6 +19,9 @@
   "search": {
     "placeholder": "جستجو"
   },
+  "bots": {
+    "title": "ربات‌های من"
+  },
   "app": {
     "title": "پکسی",
     "welcome": "به پکسی خوش آمدید",

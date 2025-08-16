@@ -19,6 +19,9 @@
   "search": {
     "placeholder": "Search"
   },
+  "bots": {
+    "title": "My bots"
+  },
   "app": {
     "title": "Packsi",
     "welcome": "Welcome to ",
