@@ -15,6 +15,7 @@ export const useTelegram = (): TelegramContextType => {
       
       // Set up the app
       WebApp.expand();
+      WebApp.disableVerticalSwipes();
       WebApp.enableClosingConfirmation();
       
       // Get user data
