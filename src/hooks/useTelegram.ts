@@ -12,7 +12,7 @@ export const useTelegram = (): TelegramContextType => {
     try {
       // Initialize Telegram WebApp
       WebApp.ready();
-
+      
       // Set up the app
       WebApp.expand();
       WebApp.disableVerticalSwipes();
