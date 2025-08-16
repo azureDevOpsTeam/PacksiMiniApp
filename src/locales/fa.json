@@ -1,0 +1,55 @@
+{
+  "common": {
+    "loading": "در حال بارگذاری...",
+    "error": "خطا",
+    "success": "موفقیت",
+    "cancel": "لغو",
+    "confirm": "تأیید",
+    "save": "ذخیره",
+    "delete": "حذف",
+    "edit": "ویرایش",
+    "close": "بستن",
+    "back": "بازگشت",
+    "next": "بعدی",
+    "previous": "قبلی",
+    "submit": "ارسال",
+    "retry": "تلاش مجدد",
+    "refresh": "بروزرسانی"
+  },
+  "app": {
+    "title": "مینی اپ پکسی",
+    "welcome": "به پکسی خوش آمدید",
+    "description": "مینی اپ تلگرام شما"
+  },
+  "user": {
+    "profile": "پروفایل",
+    "settings": "تنظیمات",
+    "logout": "خروج",
+    "login": "ورود",
+    "username": "نام کاربری",
+    "firstName": "نام",
+    "lastName": "نام خانوادگی"
+  },
+  "theme": {
+    "light": "تم روشن",
+    "dark": "تم تیره",
+    "auto": "تم خودکار"
+  },
+  "language": {
+    "english": "انگلیسی",
+    "persian": "فارسی",
+    "changeLanguage": "تغییر زبان"
+  },
+  "errors": {
+    "networkError": "خطای شبکه رخ داده است",
+    "unknownError": "خطای ناشناخته رخ داده است",
+    "authError": "خطای احراز هویت",
+    "permissionDenied": "دسترسی رد شد",
+    "notFound": "یافت نشد"
+  },
+  "telegram": {
+    "notSupported": "این اپ برای کار در تلگرام طراحی شده است",
+    "initializationFailed": "راه‌اندازی وب اپ تلگرام ناموفق بود",
+    "userNotFound": "اطلاعات کاربر در دسترس نیست"
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "submit": "Submit",
+    "retry": "Retry",
+    "refresh": "Refresh"
+  },
+  "app": {
+    "title": "Packsi Mini App",
+    "welcome": "Welcome to Packsi",
+    "description": "Your Telegram Mini App"
+  },
+  "user": {
+    "profile": "Profile",
+    "settings": "Settings",
+    "logout": "Logout",
+    "login": "Login",
+    "username": "Username",
+    "firstName": "First Name",
+    "lastName": "Last Name"
+  },
+  "theme": {
+    "light": "Light Theme",
+    "dark": "Dark Theme",
+    "auto": "Auto Theme"
+  },
+  "language": {
+    "english": "English",
+    "persian": "Persian",
+    "changeLanguage": "Change Language"
+  },
+  "errors": {
+    "networkError": "Network error occurred",
+    "unknownError": "An unknown error occurred",
+    "authError": "Authentication error",
+    "permissionDenied": "Permission denied",
+    "notFound": "Not found"
+  },
+  "telegram": {
+    "notSupported": "This app is designed to work within Telegram",
+    "initializationFailed": "Failed to initialize Telegram WebApp",
+    "userNotFound": "User information not available"
+  }
+}
