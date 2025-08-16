@@ -12,15 +12,17 @@ export const useTelegram = (): TelegramContextType => {
     try {
       // Initialize Telegram WebApp
       WebApp.ready();
-      
+
       // Set up the app
-      WebApp.expand();
+      if (!WebApp.isExpanded && (WebApp.platform === 'ios' || WebApp.platform === 'android')) {
+        WebApp.expand();
+      }
       WebApp.disableVerticalSwipes();
       WebApp.enableClosingConfirmation();
-      
+
       // Disable zoom functionality
       WebApp.setHeaderColor('#1a1a1a');
-      
+
       // Add viewport meta tag to disable zoom
       const viewport = document.querySelector('meta[name="viewport"]');
       if (viewport) {
@@ -31,25 +33,25 @@ export const useTelegram = (): TelegramContextType => {
         meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
         document.head.appendChild(meta);
       }
-      
+
       // Get user data
       if (WebApp.initDataUnsafe?.user) {
         setUser(WebApp.initDataUnsafe.user as TelegramUser);
       }
-      
+
       // Get init data
       if (WebApp.initDataUnsafe) {
         setInitData(WebApp.initDataUnsafe as TelegramInitData);
       }
-      
+
       // Set theme based on Telegram's color scheme
       setTheme(WebApp.colorScheme === 'dark' ? 'dark' : 'light');
-      
+
       // Listen for theme changes
       WebApp.onEvent('themeChanged', () => {
         setTheme(WebApp.colorScheme === 'dark' ? 'dark' : 'light');
       });
-      
+
       setIsReady(true);
     } catch (error) {
       console.error('Failed to initialize Telegram WebApp:', error);
@@ -60,10 +62,10 @@ export const useTelegram = (): TelegramContextType => {
 
   useEffect(() => {
     initializeTelegram();
-    
+
     return () => {
       // Cleanup
-      WebApp.offEvent('themeChanged', () => {});
+      WebApp.offEvent('themeChanged', () => { });
     };
   }, [initializeTelegram]);
 
