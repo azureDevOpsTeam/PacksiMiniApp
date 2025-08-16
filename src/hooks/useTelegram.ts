@@ -14,7 +14,11 @@ export const useTelegram = (): TelegramContextType => {
       WebApp.ready();
       
       // Set up the app
-      WebApp.expand();
+      // Only expand on mobile devices, not on desktop
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      if (isMobile) {
+        WebApp.expand();
+      }
       WebApp.disableVerticalSwipes();
       WebApp.enableClosingConfirmation();
 
