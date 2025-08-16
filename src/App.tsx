@@ -60,7 +60,7 @@ const AppContent: React.FC = () => {
           alignItems: 'center',
           backgroundColor: '#212a33',
           borderRadius: '12px',
-          padding: '12px 16px',
+          padding: '10px 14px',
           border: '1px solid #3a4a5c'
         }}>
           <svg 
@@ -100,9 +100,8 @@ const AppContent: React.FC = () => {
         width: '100%', 
         maxWidth: '400px',
         backgroundColor: '#1b2026',
-        borderRadius: '12px',
-        padding: '20px',
-        border: '1px solid #3a4a5c'
+        borderRadius: '6px',
+        padding: '20px'
       }}>
         <h3 style={{
           color: '#848d96',
@@ -116,13 +115,13 @@ const AppContent: React.FC = () => {
           {t('bots.title')}
         </h3>
         
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
           <a href="https://t.me/Packsibot" style={{
             display: 'flex',
             alignItems: 'center',
-            padding: '12px 16px',
+            padding: '10px 14px',
             backgroundColor: '#212a33',
-            borderRadius: '8px',
+            borderRadius: '4px',
             cursor: 'pointer',
             transition: 'background-color 0.2s ease',
             textDecoration: 'none',
@@ -144,10 +143,10 @@ const AppContent: React.FC = () => {
             }}>
               P
             </div>
-            <div style={{ flex: 1 }}>
+            <div style={{ flex: 1, textAlign: language === 'fa' ? 'right' : 'left' }}>
               <div style={{
                 color: '#ffffff',
-                fontSize: '16px',
+                fontSize: '14px',
                 fontFamily: 'IRANSansX, sans-serif',
                 fontWeight: '500',
                 marginBottom: '2px'
@@ -156,13 +155,13 @@ const AppContent: React.FC = () => {
               </div>
               <div style={{
                 color: '#848d96',
-                fontSize: '14px',
+                fontSize: '12px',
                 fontFamily: 'IRANSansX, sans-serif'
               }}>
                 @Packsibot
               </div>
             </div>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style={{ color: '#848d96' }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style={{ color: '#848d96', transform: language === 'fa' ? 'rotate(180deg)' : 'none' }}>
               <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </a>
@@ -170,9 +169,9 @@ const AppContent: React.FC = () => {
           <a href="https://t.me/NexterraLiveBot" style={{
             display: 'flex',
             alignItems: 'center',
-            padding: '12px 16px',
+            padding: '10px 14px',
             backgroundColor: '#212a33',
-            borderRadius: '8px',
+            borderRadius: '4px',
             cursor: 'pointer',
             transition: 'background-color 0.2s ease',
             textDecoration: 'none',
@@ -194,10 +193,10 @@ const AppContent: React.FC = () => {
             }}>
               N
             </div>
-            <div style={{ flex: 1 }}>
+            <div style={{ flex: 1, textAlign: language === 'fa' ? 'right' : 'left' }}>
               <div style={{
                 color: '#ffffff',
-                fontSize: '16px',
+                fontSize: '14px',
                 fontFamily: 'IRANSansX, sans-serif',
                 fontWeight: '500',
                 marginBottom: '2px'
@@ -206,13 +205,13 @@ const AppContent: React.FC = () => {
               </div>
               <div style={{
                 color: '#848d96',
-                fontSize: '14px',
+                fontSize: '12px',
                 fontFamily: 'IRANSansX, sans-serif'
               }}>
                 @NexterraLiveBot
               </div>
             </div>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style={{ color: '#848d96' }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style={{ color: '#848d96', transform: language === 'fa' ? 'rotate(180deg)' : 'none' }}>
               <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </a>
@@ -220,9 +219,9 @@ const AppContent: React.FC = () => {
           <a href="https://t.me/Mobittehbot" style={{
             display: 'flex',
             alignItems: 'center',
-            padding: '12px 16px',
+            padding: '10px 14px',
             backgroundColor: '#212a33',
-            borderRadius: '8px',
+            borderRadius: '4px',
             cursor: 'pointer',
             transition: 'background-color 0.2s ease',
             textDecoration: 'none',
@@ -244,10 +243,10 @@ const AppContent: React.FC = () => {
             }}>
               MS
             </div>
-            <div style={{ flex: 1 }}>
+            <div style={{ flex: 1, textAlign: language === 'fa' ? 'right' : 'left' }}>
               <div style={{
                 color: '#ffffff',
-                fontSize: '16px',
+                fontSize: '14px',
                 fontFamily: 'IRANSansX, sans-serif',
                 fontWeight: '500',
                 marginBottom: '2px'
@@ -256,13 +255,13 @@ const AppContent: React.FC = () => {
               </div>
               <div style={{
                 color: '#848d96',
-                fontSize: '14px',
+                fontSize: '12px',
                 fontFamily: 'IRANSansX, sans-serif'
               }}>
                 @Mobittehbot
               </div>
             </div>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style={{ color: '#848d96' }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style={{ color: '#848d96', transform: language === 'fa' ? 'rotate(180deg)' : 'none' }}>
               <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </a>
