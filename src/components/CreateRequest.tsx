@@ -115,7 +115,7 @@ const CreateRequest: React.FC<CreateRequestProps> = ({ onBack }) => {
     <div style={{
       minHeight: '100vh',
       backgroundColor: theme.colors.background,
-      color: theme.colors.text,
+      color: theme.colors.text.primary,
       direction: isRTL ? 'rtl' : 'ltr',
       fontFamily: 'IRANSansX, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
     }}>
@@ -201,38 +201,56 @@ const CreateRequest: React.FC<CreateRequestProps> = ({ onBack }) => {
         </h2>
 
         <form onSubmit={handleSubmit} style={{ maxWidth: '400px', margin: '0 auto' }}>
-          {/* Origin City */}
-          <div style={{ marginBottom: '20px' }}>
-            <label style={labelStyle}>{t('createRequest.originCity')}</label>
-            <select
-              value={formData.originCityId}
-              onChange={(e) => handleInputChange('originCityId', parseInt(e.target.value))}
-              style={inputStyle}
-            >
-              <option value={0}>{t('createRequest.selectCity')}</option>
-              {cities.map(city => (
-                <option key={city.id} value={city.id}>
-                  {isRTL ? city.name : city.nameEn}
-                </option>
-              ))}
-            </select>
-          </div>
+          {/* City Fields */}
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: '1fr 1fr', 
+            gap: '15px', 
+            marginBottom: '20px',
+            width: '100%',
+            maxWidth: '100%'
+          }}>
+            {/* Origin City */}
+            <div style={{ width: '100%' }}>
+              <label style={labelStyle}>{t('createRequest.originCity')}</label>
+              <select
+                value={formData.originCityId}
+                onChange={(e) => handleInputChange('originCityId', parseInt(e.target.value))}
+                style={{
+                  ...inputStyle,
+                  width: '100%',
+                  boxSizing: 'border-box'
+                }}
+              >
+                <option value={0}>{t('createRequest.selectCity')}</option>
+                {cities.map(city => (
+                  <option key={city.id} value={city.id}>
+                    {isRTL ? city.name : city.nameEn}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          {/* Destination City */}
-          <div style={{ marginBottom: '20px' }}>
-            <label style={labelStyle}>{t('createRequest.destinationCity')}</label>
-            <select
-              value={formData.destinationCityId}
-              onChange={(e) => handleInputChange('destinationCityId', parseInt(e.target.value))}
-              style={inputStyle}
-            >
-              <option value={0}>{t('createRequest.selectCity')}</option>
-              {cities.map(city => (
-                <option key={city.id} value={city.id}>
-                  {isRTL ? city.name : city.nameEn}
-                </option>
-              ))}
-            </select>
+            {/* Destination City */}
+            <div style={{ width: '100%' }}>
+              <label style={labelStyle}>{t('createRequest.destinationCity')}</label>
+              <select
+                value={formData.destinationCityId}
+                onChange={(e) => handleInputChange('destinationCityId', parseInt(e.target.value))}
+                style={{
+                  ...inputStyle,
+                  width: '100%',
+                  boxSizing: 'border-box'
+                }}
+              >
+                <option value={0}>{t('createRequest.selectCity')}</option>
+                {cities.map(city => (
+                  <option key={city.id} value={city.id}>
+                    {isRTL ? city.name : city.nameEn}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
           {/* Departure Date */}
@@ -290,12 +308,76 @@ const CreateRequest: React.FC<CreateRequestProps> = ({ onBack }) => {
               />
               {ticketFile && (
                 <div style={{
-                  marginTop: '8px',
-                  fontSize: '12px',
-                  color: '#50b4ff',
-                  fontFamily: 'IRANSansX, sans-serif'
+                  marginTop: '10px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  padding: '10px',
+                  backgroundColor: '#212a33',
+                  borderRadius: '8px',
+                  border: '1px solid #3a4a5c'
                 }}>
-                  {isRTL ? 'فایل انتخاب شده:' : 'Selected file:'} {ticketFile.name}
+                  {ticketFile.type.startsWith('image/') ? (
+                    <img
+                      src={URL.createObjectURL(ticketFile)}
+                      alt="Ticket preview"
+                      style={{
+                        width: '60px',
+                        height: '60px',
+                        objectFit: 'cover',
+                        borderRadius: '6px'
+                      }}
+                    />
+                  ) : (
+                    <div style={{
+                      width: '60px',
+                      height: '60px',
+                      backgroundColor: '#3a4a5c',
+                      borderRadius: '6px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '12px',
+                      color: '#848d96'
+                    }}>
+                      PDF
+                    </div>
+                  )}
+                  <div style={{ flex: 1 }}>
+                    <div style={{
+                      fontSize: '14px',
+                      color: '#ffffff',
+                      fontFamily: 'IRANSansX, sans-serif',
+                      marginBottom: '4px'
+                    }}>
+                      {ticketFile.name}
+                    </div>
+                    <div style={{
+                      fontSize: '12px',
+                      color: '#848d96',
+                      fontFamily: 'IRANSansX, sans-serif'
+                    }}>
+                      {(ticketFile.size / 1024 / 1024).toFixed(2)} MB
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setTicketFile(null)}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#ff4757',
+                      cursor: 'pointer',
+                      fontSize: '18px',
+                      padding: '5px',
+                      borderRadius: '4px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                  >
+                    ×
+                  </button>
                 </div>
               )}
             </div>
