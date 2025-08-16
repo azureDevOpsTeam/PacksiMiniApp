@@ -20,7 +20,8 @@
     "placeholder": "Search"
   },
   "bots": {
-    "title": "My bots"
+    "title": "My bots",
+    "createNew": "Create New Request"
   },
   "app": {
     "title": "Packsi",

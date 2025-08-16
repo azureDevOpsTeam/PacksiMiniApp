@@ -109,8 +109,8 @@ const AppContent: React.FC = () => {
         maxWidth: '400px'
       }}>
         <h3 style={{
-          color: '#ffffff',
-          fontSize: '18px',
+          color: '#50b4ff',
+          fontSize: '12px',
           fontFamily: 'IRANSansX, sans-serif',
           margin: '0 0 20px 0',
           fontWeight: '600',
@@ -121,12 +121,50 @@ const AppContent: React.FC = () => {
         </h3>
         
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
+          
+          {/* Create New Request Link */}
+          <a href="#" style={{
+            display: 'flex',
+            alignItems: 'center',
+            padding: '12px',
+            backgroundColor: '#212a33',
+            borderRadius: '4px 4px 0 0',
+            cursor: 'pointer',
+            textDecoration: 'none',
+            direction: language === 'fa' ? 'rtl' : 'ltr',
+            marginBottom: '1px'
+          }}>
+            <div style={{
+              width: '24px',
+              height: '24px',
+              borderRadius: '50%',
+              border: '1px solid #50b4ff',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginRight: language === 'fa' ? '0' : '12px',
+              marginLeft: language === 'fa' ? '12px' : '0'
+            }}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+                <path d="M12 5V19M5 12H19" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+            <span style={{
+              color: '#50b4ff',
+              fontSize: '12px',
+              fontFamily: 'IRANSansX, sans-serif',
+              fontWeight: '500'
+            }}>
+              {t('bots.createNew')}
+            </span>
+          </a>
+ 
           <a href="https://t.me/Packsibot" style={{
             display: 'flex',
             alignItems: 'center',
             padding: '12px',
             backgroundColor: '#212a33',
-            borderRadius: '4px',
+            borderRadius: '0',
             cursor: 'pointer',
             textDecoration: 'none',
             direction: language === 'fa' ? 'rtl' : 'ltr'
@@ -175,7 +213,7 @@ const AppContent: React.FC = () => {
             alignItems: 'center',
             padding: '12px',
             backgroundColor: '#212a33',
-            borderRadius: '4px',
+            borderRadius: '0',
             cursor: 'pointer',
             textDecoration: 'none',
             direction: language === 'fa' ? 'rtl' : 'ltr'
@@ -224,7 +262,7 @@ const AppContent: React.FC = () => {
             alignItems: 'center',
             padding: '12px',
             backgroundColor: '#212a33',
-            borderRadius: '4px',
+            borderRadius: '0 0 4px 4px',
             cursor: 'pointer',
             textDecoration: 'none',
             direction: language === 'fa' ? 'rtl' : 'ltr'
