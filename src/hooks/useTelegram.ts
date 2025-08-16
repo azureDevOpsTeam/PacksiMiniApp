@@ -14,9 +14,7 @@ export const useTelegram = (): TelegramContextType => {
       WebApp.ready();
 
       // Set up the app
-      if (!WebApp.isExpanded && (WebApp.platform === 'ios' || WebApp.platform === 'android')) {
-        WebApp.expand();
-      }
+     WebApp.expand();
       WebApp.disableVerticalSwipes();
       // WebApp.enableClosingConfirmation();
 
