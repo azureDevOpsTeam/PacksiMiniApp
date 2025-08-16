@@ -32,7 +32,8 @@
         "chooseTrustedPeople": "Choose trusted people with valuable services to get your tasks done"
     },
   "unlimited": {
-    "title": "For Unlimited Access"
+    "title": "For Unlimited Access",
+    "createAccount": "Create Account"
   },
   "app": {
     "title": "Packsi",

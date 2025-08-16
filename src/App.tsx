@@ -226,12 +226,53 @@ const AppContent: React.FC = () => {
         </h3>
         
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', marginBottom: '30px' }}>
-          <button onClick={() => setCurrentPage('updateProfile')} style={{
+          <button onClick={() => {}} style={{
             display: 'flex',
             alignItems: 'center',
             padding: '8px 12px',
             backgroundColor: '#212a33',
             borderRadius: '8px 8px 0 0',
+            cursor: 'pointer',
+            border: 'none',
+            width: '100%',
+            direction: language === 'fa' ? 'rtl' : 'ltr'
+          }}>
+            <div style={{
+              width: '32px',
+              height: '32px',
+              borderRadius: '8px',
+              backgroundColor: '#f59e0b',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginRight: language === 'fa' ? '0' : '12px',
+              marginLeft: language === 'fa' ? '12px' : '0'
+            }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M16 21V19C16 17.9391 15.5786 16.9217 14.8284 16.1716C14.0783 15.4214 13.0609 15 12 15H5C3.93913 15 2.92172 15.4214 2.17157 16.1716C1.42143 16.9217 1 17.9391 1 19V21M12.5 7C12.5 9.20914 10.7091 11 8.5 11C6.29086 11 4.5 9.20914 4.5 7C4.5 4.79086 6.29086 3 8.5 3C10.7091 3 12.5 4.79086 12.5 7ZM20 8V14M23 11H17" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+            <div style={{ flex: 1, textAlign: language === 'fa' ? 'right' : 'left' }}>
+              <div style={{
+                color: '#ffffff',
+                fontSize: '13px',
+                fontFamily: 'IRANSansX, sans-serif',
+                fontWeight: '500'
+              }}>
+                {t('unlimited.createAccount')}
+              </div>
+            </div>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ color: '#848d96', transform: language === 'fa' ? 'rotate(180deg)' : 'none' }}>
+              <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
+          
+          <button onClick={() => setCurrentPage('updateProfile')} style={{
+            display: 'flex',
+            alignItems: 'center',
+            padding: '8px 12px',
+            backgroundColor: '#212a33',
+            borderRadius: '0',
             cursor: 'pointer',
             border: 'none',
             width: '100%',
