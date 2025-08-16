@@ -20,9 +20,17 @@
     "placeholder": "جستجو"
   },
   "bots": {
-    "title": "سرویس ها",
-    "createNew": "ثبت درخواست جدید"
-  },
+        "title": "خدمات",
+        "createNew": "ثبت درخواست جدید",
+        "parcelList": "لیست مرسوله",
+        "selectFlightFromList": "پرواز مورد نظر خود را از لیست انتخاب کنید",
+        "temporaryRoomRental": "اجاره موقت اتاق",
+        "findBestRoom": "بصرفه ترین و بهترین اتاق که دوست دارید را پیدا کنید",
+        "carRental": "اجاره خودرو",
+        "findBestCar": "مناسب ترین و بصرفه ترین خودرو برای سفر خود را پیدا کنید",
+        "personalServices": "خدمات شخصی",
+        "chooseTrustedPeople": "اشخاص مطمئن با خدمات ارزنده را برای انجام کارها انتخاب کنید"
+    },
   "unlimited": {
     "title": "برای استفاده نامحدود"
   },

@@ -20,9 +20,17 @@
     "placeholder": "Search"
   },
   "bots": {
-    "title": "Services",
-    "createNew": "Create New Request"
-  },
+        "title": "Services",
+        "createNew": "Create New Request",
+        "parcelList": "Parcel List",
+        "selectFlightFromList": "Select your desired flight from the list",
+        "temporaryRoomRental": "Temporary Room Rental",
+        "findBestRoom": "Find the most affordable and best room you like",
+        "carRental": "Car Rental",
+        "findBestCar": "Find the most suitable and affordable car for your trip",
+        "personalServices": "Personal Services",
+        "chooseTrustedPeople": "Choose trusted people with valuable services to get your tasks done"
+    },
   "unlimited": {
     "title": "For Unlimited Access"
   },

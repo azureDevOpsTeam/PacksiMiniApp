@@ -13,7 +13,7 @@ import logo from './assets/images/logo.png';
 const AppContent: React.FC = () => {
   const { isReady } = useTelegramContext();
   const { t, language } = useLanguage();
-  const [activeButton, setActiveButton] = React.useState<'user' | 'admin'>('admin');
+  const [activeButton, setActiveButton] = React.useState<'user' | 'admin'>('user');
   const [currentPage, setCurrentPage] = React.useState<'home' | 'createRequest' | 'updateProfile'>('home');
 
   if (!isReady) {
@@ -379,20 +379,15 @@ const AppContent: React.FC = () => {
             direction: language === 'fa' ? 'rtl' : 'ltr'
           }}>
             <div style={{
-              width: '40px',
-              height: '40px',
-              borderRadius: '50%',
-              backgroundColor: '#6366f1',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               marginRight: language === 'fa' ? '0' : '12px',
-              marginLeft: language === 'fa' ? '12px' : '0',
-              fontSize: '18px',
-              fontWeight: 'bold',
-              color: 'white'
+              marginLeft: language === 'fa' ? '12px' : '0'
             }}>
-              P
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+                <path d="M20 7L12 3L4 7M20 7L12 11M20 7V17L12 21M12 11L4 7M12 11V21M4 7V17L12 21" stroke="#4f9eff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
             </div>
             <div style={{ flex: 1, textAlign: language === 'fa' ? 'right' : 'left' }}>
               <div style={{
@@ -402,14 +397,14 @@ const AppContent: React.FC = () => {
                 fontWeight: '500',
                 marginBottom: '2px'
               }}>
-                Packsi
+                {t('bots.parcelList')}
               </div>
               <div style={{
                 color: '#848d96',
                 fontSize: '12px',
                 fontFamily: 'IRANSansX, sans-serif'
               }}>
-                @Packsibot
+                {t('bots.selectFlightFromList')}
               </div>
             </div>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style={{ color: '#848d96', transform: language === 'fa' ? 'rotate(180deg)' : 'none' }}>
@@ -428,20 +423,15 @@ const AppContent: React.FC = () => {
             direction: language === 'fa' ? 'rtl' : 'ltr'
           }}>
             <div style={{
-              width: '40px',
-              height: '40px',
-              borderRadius: '50%',
-              backgroundColor: '#10b981',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               marginRight: language === 'fa' ? '0' : '12px',
-              marginLeft: language === 'fa' ? '12px' : '0',
-              fontSize: '18px',
-              fontWeight: 'bold',
-              color: 'white'
+              marginLeft: language === 'fa' ? '12px' : '0'
             }}>
-              N
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 12L5 10M5 10L12 3L19 10M5 10V20C5 20.5523 5.44772 21 6 21H9M19 10L21 12M19 10V20C19 20.5523 18.5523 21 18 21H15M9 21C9.55228 21 10 20.5523 10 20V16C10 15.4477 10.4477 15 11 15H13C13.5523 15 14 15.4477 14 16V20C14 20.5523 14.4477 21 15 21M9 21H15" stroke="#5bc5ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
             </div>
             <div style={{ flex: 1, textAlign: language === 'fa' ? 'right' : 'left' }}>
               <div style={{
@@ -451,14 +441,58 @@ const AppContent: React.FC = () => {
                 fontWeight: '500',
                 marginBottom: '2px'
               }}>
-                Nexterra
+                {t('bots.temporaryRoomRental')}
               </div>
               <div style={{
                 color: '#848d96',
                 fontSize: '12px',
                 fontFamily: 'IRANSansX, sans-serif'
               }}>
-                @NexterraLiveBot
+                {t('bots.findBestRoom')}
+              </div>
+            </div>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style={{ color: '#848d96', transform: language === 'fa' ? 'rotate(180deg)' : 'none' }}>
+              <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </a>
+          
+          <a href="https://t.me/CarRentalBot" style={{
+            display: 'flex',
+            alignItems: 'center',
+            padding: '12px',
+            backgroundColor: '#212a33',
+            borderRadius: '0',
+            cursor: 'pointer',
+            textDecoration: 'none',
+            direction: language === 'fa' ? 'rtl' : 'ltr'
+          }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginRight: language === 'fa' ? '0' : '12px',
+              marginLeft: language === 'fa' ? '12px' : '0'
+            }}>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5 17H4C3.44772 17 3 16.5523 3 16V10C3 9.44772 3.44772 9 4 9H20C20.5523 9 21 9.44772 21 10V16C21 16.5523 20.5523 17 20 17H19M5 17C5 18.1046 5.89543 19 7 19C8.10457 19 9 18.1046 9 17M5 17C5 15.8954 5.89543 15 7 15C8.10457 15 9 15.8954 9 17M19 17C19 18.1046 18.1046 19 17 19C15.8954 19 15 18.1046 15 17M19 17C19 15.8954 18.1046 15 17 15C18.1046 15 19 15.8954 19 17M9 17H15M7 13H17" stroke="#42a5ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+            <div style={{ flex: 1, textAlign: language === 'fa' ? 'right' : 'left' }}>
+              <div style={{
+                color: '#ffffff',
+                fontSize: '14px',
+                fontFamily: 'IRANSansX, sans-serif',
+                fontWeight: '500',
+                marginBottom: '2px'
+              }}>
+                {t('bots.carRental')}
+              </div>
+              <div style={{
+                color: '#848d96',
+                fontSize: '12px',
+                fontFamily: 'IRANSansX, sans-serif'
+              }}>
+                {t('bots.findBestCar')}
               </div>
             </div>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style={{ color: '#848d96', transform: language === 'fa' ? 'rotate(180deg)' : 'none' }}>
@@ -477,20 +511,16 @@ const AppContent: React.FC = () => {
             direction: language === 'fa' ? 'rtl' : 'ltr'
           }}>
             <div style={{
-              width: '40px',
-              height: '40px',
-              borderRadius: '50%',
-              backgroundColor: '#3b82f6',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               marginRight: language === 'fa' ? '0' : '12px',
-              marginLeft: language === 'fa' ? '12px' : '0',
-              fontSize: '14px',
-              fontWeight: 'bold',
-              color: 'white'
+              marginLeft: language === 'fa' ? '12px' : '0'
             }}>
-              MS
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z" stroke="#6dd5ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M12 14C8.13401 14 5 17.134 5 21H19C19 17.134 15.866 14 12 14Z" stroke="#6dd5ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
             </div>
             <div style={{ flex: 1, textAlign: language === 'fa' ? 'right' : 'left' }}>
               <div style={{
@@ -500,14 +530,14 @@ const AppContent: React.FC = () => {
                 fontWeight: '500',
                 marginBottom: '2px'
               }}>
-                Mobitteh Shop
+                {t('bots.personalServices')}
               </div>
               <div style={{
                 color: '#848d96',
                 fontSize: '12px',
                 fontFamily: 'IRANSansX, sans-serif'
               }}>
-                @Mobittehbot
+                {t('bots.chooseTrustedPeople')}
               </div>
             </div>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style={{ color: '#848d96', transform: language === 'fa' ? 'rotate(180deg)' : 'none' }}>
