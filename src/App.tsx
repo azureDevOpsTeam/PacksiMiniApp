@@ -5,6 +5,7 @@ import LanguageProvider from './contexts/LanguageContext';
 import { GlobalStyles } from './styles/GlobalStyles';
 import { useTelegramContext } from './hooks/useTelegramContext';
 import { useLanguage } from './hooks/useLanguage';
+import logo from './assets/images/logo.png';
 
 // Main App Content Component
 const AppContent: React.FC = () => {
@@ -27,7 +28,30 @@ const AppContent: React.FC = () => {
 
   return (
     <div style={{ padding: '20px', textAlign: 'center' }}>
-      <h1>{t('app.title')}</h1>
+      <div style={{ 
+        display: 'flex', 
+        flexDirection: 'column', 
+        alignItems: 'center', 
+        marginBottom: '30px' 
+      }}>
+        <img 
+          src={logo} 
+          alt="Packsi Logo" 
+          style={{ 
+            width: '80px', 
+            height: '80px', 
+            marginBottom: '15px',
+            borderRadius: '12px'
+          }} 
+        />
+        <h1 style={{ 
+          margin: '0', 
+          fontSize: '28px', 
+          fontWeight: 'bold' 
+        }}>
+          {t('app.title')}
+        </h1>
+      </div>
       <p>{t('app.welcome')}</p>
       {user && (
         <div style={{ marginTop: '20px' }}>
