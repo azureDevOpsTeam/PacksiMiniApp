@@ -5,6 +5,7 @@ import LanguageProvider from './contexts/LanguageContext';
 import { GlobalStyles } from './styles/GlobalStyles';
 import { useTelegramContext } from './hooks/useTelegramContext';
 import { useLanguage } from './hooks/useLanguage';
+import CreateRequest from './components/CreateRequest';
 import logo from './assets/images/logo.png';
 
 // Main App Content Component
@@ -12,6 +13,7 @@ const AppContent: React.FC = () => {
   const { isReady } = useTelegramContext();
   const { t, language } = useLanguage();
   const [activeButton, setActiveButton] = React.useState<'user' | 'admin'>('admin');
+  const [currentPage, setCurrentPage] = React.useState<'home' | 'createRequest'>('home');
 
   if (!isReady) {
     return (
@@ -27,6 +29,12 @@ const AppContent: React.FC = () => {
     );
   }
 
+  // Render CreateRequest page
+  if (currentPage === 'createRequest') {
+    return <CreateRequest onBack={() => setCurrentPage('home')} />;
+  }
+
+  // Render Home page
   return (
     <div style={{ 
       display: 'flex',
@@ -316,14 +324,15 @@ const AppContent: React.FC = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
           
           {/* Create New Request Link */}
-          <a href="#" style={{
+          <button onClick={() => setCurrentPage('createRequest')} style={{
             display: 'flex',
             alignItems: 'center',
             padding: '12px',
             backgroundColor: '#212a33',
             borderRadius: '8px 8px 0 0',
             cursor: 'pointer',
-            textDecoration: 'none',
+            border: 'none',
+            width: '100%',
             direction: language === 'fa' ? 'rtl' : 'ltr',
             marginBottom: '1px'
           }}>
@@ -350,7 +359,7 @@ const AppContent: React.FC = () => {
             }}>
               {t('bots.createNew')}
             </span>
-          </a>
+          </button>
 
 <a href="https://t.me/Packsibot" style={{
             display: 'flex',

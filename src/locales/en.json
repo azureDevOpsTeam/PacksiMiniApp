@@ -61,5 +61,25 @@
     "notSupported": "This app is designed to work within Telegram",
     "initializationFailed": "Failed to initialize Telegram WebApp",
     "userNotFound": "User information not available"
+  },
+  "createRequest": {
+    "title": "Create New Request",
+    "originCity": "Origin City",
+    "destinationCity": "Destination City",
+    "departureDate": "Departure Date",
+    "arrivalDate": "Arrival Date",
+    "requestType": "Request Type",
+    "passenger": "Passenger",
+    "sender": "Sender",
+    "description": "Description",
+    "maxWeight": "Max Weight (kg)",
+    "maxLength": "Max Length (cm)",
+    "maxWidth": "Max Width (cm)",
+    "maxHeight": "Max Height (cm)",
+    "itemTypes": "Item Types",
+    "files": "Files",
+    "selectCity": "Select City",
+    "selectRequestType": "Select Request Type",
+    "selectItemTypes": "Select Item Types"
   }
 }

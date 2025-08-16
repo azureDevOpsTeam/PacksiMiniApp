@@ -61,5 +61,25 @@
     "notSupported": "این اپ برای کار در تلگرام طراحی شده است",
     "initializationFailed": "راه‌اندازی وب اپ تلگرام ناموفق بود",
     "userNotFound": "اطلاعات کاربر در دسترس نیست"
+  },
+  "createRequest": {
+    "title": "ثبت درخواست جدید",
+    "originCity": "شهر مبدا",
+    "destinationCity": "شهر مقصد",
+    "departureDate": "تاریخ حرکت",
+    "arrivalDate": "تاریخ رسیدن",
+    "requestType": "نوع درخواست",
+    "passenger": "مسافر",
+    "sender": "ارسال کننده",
+    "description": "توضیحات",
+    "maxWeight": "حداکثر وزن (کیلوگرم)",
+    "maxLength": "حداکثر طول (سانتی‌متر)",
+    "maxWidth": "حداکثر عرض (سانتی‌متر)",
+    "maxHeight": "حداکثر ارتفاع (سانتی‌متر)",
+    "itemTypes": "نوع اقلام",
+    "files": "فایل‌ها",
+    "selectCity": "انتخاب شهر",
+    "selectRequestType": "انتخاب نوع درخواست",
+    "selectItemTypes": "انتخاب نوع اقلام"
   }
 }
