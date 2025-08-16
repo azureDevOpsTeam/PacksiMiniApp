@@ -66,7 +66,7 @@ const CreateRequest: React.FC<CreateRequestProps> = ({ onBack }) => {
     { id: 5, name: 'دارو', nameEn: 'Medicine' }
   ];
 
-  const handleInputChange = (field: keyof CreateRequestFormData, value: any) => {
+  const handleInputChange = (field: keyof CreateRequestFormData, value: string | number | number[]) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
