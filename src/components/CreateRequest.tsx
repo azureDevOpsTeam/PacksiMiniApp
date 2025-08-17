@@ -3,6 +3,8 @@ import { useLanguage } from '../hooks/useLanguage';
 import { useTheme } from '../hooks/useTheme';
 import Logo from './Logo';
 import Settings from './Settings';
+import { apiService } from '../services/apiService';
+import type { CreateRequestPayload } from '../types/api';
 
 interface CreateRequestFormData {
   originCityId: number;
@@ -46,6 +48,9 @@ const CreateRequest: React.FC<CreateRequestProps> = ({ onBack }) => {
   const [ticketFile, setTicketFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [activeButton, setActiveButton] = useState<'user' | 'admin'>('user');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
 
   // Mock data for dropdowns
   const cities = [
@@ -85,9 +90,84 @@ const CreateRequest: React.FC<CreateRequestProps> = ({ onBack }) => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted:', { model: formData });
+    setIsLoading(true);
+    setError(null);
+    setSuccess(false);
+
+    try {
+      // Validate required fields
+      if (formData.originCityId === 0 || formData.destinationCityId === 0) {
+        throw new Error(t('createRequest.validation.citiesRequired') || 'لطفاً شهر مبدا و مقصد را انتخاب کنید');
+      }
+
+      if (!formData.departureDate || !formData.arrivalDate) {
+        throw new Error(t('createRequest.validation.datesRequired') || 'لطفاً تاریخ حرکت و بازگشت را انتخاب کنید');
+      }
+
+      if (formData.requestType === -1) {
+        throw new Error(t('createRequest.validation.typeRequired') || 'لطفاً نوع درخواست را انتخاب کنید');
+      }
+
+      // Prepare files array
+      const files: File[] = [];
+      if (ticketFile) {
+        files.push(ticketFile);
+      }
+
+      // Prepare API payload (without files in model)
+      const payload: CreateRequestPayload = {
+        model: {
+          ...formData,
+          // Convert dates to ISO format if needed
+          departureDate: new Date(formData.departureDate).toISOString(),
+          arrivalDate: new Date(formData.arrivalDate).toISOString(),
+          files: [] // Empty array since files are sent separately
+        }
+      };
+
+      console.log('Sending request:', payload);
+      console.log('Sending files:', files);
+
+      // Call API with files
+      const response = await apiService.createRequest(payload, files);
+
+      if (response.success) {
+        setSuccess(true);
+        console.log('Request created successfully:', response.data);
+        
+        // Reset form after successful submission
+        setTimeout(() => {
+          setFormData({
+            originCityId: 0,
+            destinationCityId: 0,
+            departureDate: '',
+            arrivalDate: '',
+            requestType: -1,
+            description: '',
+            maxWeightKg: 0,
+            maxLengthCm: 0,
+            maxWidthCm: 0,
+            maxHeightCm: 0,
+            itemTypeIds: [],
+            files: []
+          });
+          setTicketFile(null);
+          if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+          }
+          setSuccess(false);
+        }, 3000);
+      } else {
+        throw new Error(response.message || t('createRequest.error.general') || 'خطا در ارسال درخواست');
+      }
+    } catch (err) {
+      console.error('Submit error:', err);
+      setError(err instanceof Error ? err.message : t('createRequest.error.unknown') || 'خطای نامشخص');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const inputStyle = {
@@ -553,32 +633,84 @@ const CreateRequest: React.FC<CreateRequestProps> = ({ onBack }) => {
             {/* Submit Button */}
             <button
               type="submit"
+              disabled={isLoading}
               style={{
                 flex: '1',
                 padding: '12px',
                 borderRadius: '5px',
                 border: 'none',
-                backgroundColor: '#50b4ff',
+                backgroundColor: isLoading ? '#888' : (success ? '#4CAF50' : '#50b4ff'),
                 color: 'white',
                 fontSize: '16px',
                 fontWeight: '600',
                 fontFamily: 'IRANSansX, sans-serif',
-                cursor: 'pointer',
-                transition: 'transform 0.2s ease'
+                cursor: isLoading ? 'not-allowed' : 'pointer',
+                transition: 'all 0.2s ease',
+                opacity: isLoading ? 0.7 : 1
               }}
               onMouseDown={(e) => {
-                e.currentTarget.style.transform = 'scale(0.98)';
+                if (!isLoading) e.currentTarget.style.transform = 'scale(0.98)';
               }}
               onMouseUp={(e) => {
-                e.currentTarget.style.transform = 'scale(1)';
+                if (!isLoading) e.currentTarget.style.transform = 'scale(1)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'scale(1)';
+                if (!isLoading) e.currentTarget.style.transform = 'scale(1)';
               }}
             >
-              {t('common.submit')}
+              {isLoading ? (
+                <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                  <span style={{
+                    width: '16px',
+                    height: '16px',
+                    border: '2px solid transparent',
+                    borderTop: '2px solid white',
+                    borderRadius: '50%',
+                    animation: 'spin 1s linear infinite'
+                  }}></span>
+                  {t('common.sending') || 'در حال ارسال...'}
+                </span>
+              ) : success ? (
+                t('common.sent') || 'ارسال شد ✓'
+              ) : (
+                t('common.submit')
+              )}
             </button>
           </div>
+
+          {/* Error Message */}
+          {error && (
+            <div style={{
+              marginTop: '15px',
+              padding: '12px',
+              backgroundColor: '#ff4444',
+              color: 'white',
+              borderRadius: '5px',
+              fontSize: '14px',
+              fontFamily: 'IRANSansX, sans-serif',
+              textAlign: 'center',
+              animation: 'fadeIn 0.3s ease'
+            }}>
+              {error}
+            </div>
+          )}
+
+          {/* Success Message */}
+          {success && (
+            <div style={{
+              marginTop: '15px',
+              padding: '12px',
+              backgroundColor: '#4CAF50',
+              color: 'white',
+              borderRadius: '5px',
+              fontSize: '14px',
+              fontFamily: 'IRANSansX, sans-serif',
+              textAlign: 'center',
+              animation: 'fadeIn 0.3s ease'
+            }}>
+              {t('createRequest.success') || 'درخواست شما با موفقیت ارسال شد!'}
+            </div>
+          )}
         </form>
       </div>
     </div>
