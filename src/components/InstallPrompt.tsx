@@ -72,7 +72,7 @@ const InstallPrompt: React.FC = () => {
     window.addEventListener('appinstalled', handleAppInstalled);
 
     // For iOS or mobile devices without beforeinstallprompt support
-    let timer: NodeJS.Timeout;
+    let timer: number;
     if ((ios || isMobile) && !standalone) {
       timer = setTimeout(() => {
         setShowInstallPrompt(true);
