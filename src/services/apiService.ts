@@ -41,7 +41,7 @@ class ApiService {
         success: true,
         data
       };
-    } catch (error) {
+    } catch {
       return {
         success: true,
         data: null as T
