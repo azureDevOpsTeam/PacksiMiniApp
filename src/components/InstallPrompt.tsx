@@ -26,16 +26,29 @@ const InstallPrompt: React.FC = () => {
         document.referrer.includes('android-app://');
       setIsStandalone(standalone);
       setIsInstalled(standalone);
+      return standalone;
     };
 
     // Check if device is iOS
     const checkIOS = () => {
       const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as { MSStream?: unknown }).MSStream;
       setIsIOS(ios);
+      return ios;
     };
 
-    checkStandalone();
-    checkIOS();
+    // Check if device is mobile (Android or iOS)
+    const checkMobile = () => {
+      return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    };
+
+    const standalone = checkStandalone();
+    const ios = checkIOS();
+    const isMobile = checkMobile();
+
+    // Don't show if already installed
+    if (standalone) {
+      return;
+    }
 
     // Listen for beforeinstallprompt event (Android/Chrome)
     const handleBeforeInstallPrompt = (e: Event) => {
@@ -44,7 +57,7 @@ const InstallPrompt: React.FC = () => {
       
       // Show install prompt after 3 seconds if not installed
       setTimeout(() => {
-        if (!isInstalled) {
+        if (!standalone) {
           setShowInstallPrompt(true);
         }
       }, 3000);
@@ -60,19 +73,22 @@ const InstallPrompt: React.FC = () => {
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     window.addEventListener('appinstalled', handleAppInstalled);
 
-    // For iOS, show install prompt after 5 seconds if not in standalone mode
-    if (isIOS && !isStandalone) {
-      const timer = setTimeout(() => {
+    // For iOS or mobile devices without beforeinstallprompt support
+    let timer: NodeJS.Timeout;
+    if ((ios || isMobile) && !standalone) {
+      timer = setTimeout(() => {
         setShowInstallPrompt(true);
-      }, 5000);
-      return () => clearTimeout(timer);
+      }, ios ? 5000 : 4000); // 5s for iOS, 4s for other mobile
     }
 
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
       window.removeEventListener('appinstalled', handleAppInstalled);
+      if (timer) {
+        clearTimeout(timer);
+      }
     };
-  }, [isInstalled, isIOS, isStandalone]);
+  }, []);
 
   const handleInstallClick = async () => {
     if (deferredPrompt) {
