@@ -116,5 +116,14 @@
     "single": "Single",
     "married": "Married",
     "submit": "Update Profile"
+  },
+  "installPrompt": {
+    "title": "Install App",
+    "message": "For a better experience, install this app on your device.",
+    "messageIOS": "For easier access, add this app to your home screen.",
+    "install": "Install",
+    "howToInstall": "How to Install",
+    "later": "Later",
+    "iosInstructions": "To install this app, tap the Share button in Safari and select 'Add to Home Screen'."
   }
 }

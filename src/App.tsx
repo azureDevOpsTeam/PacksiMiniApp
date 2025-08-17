@@ -9,6 +9,7 @@ import CreateRequest from './components/CreateRequest';
 import UpdateProfile from './components/UpdateProfile';
 import Logo from './components/Logo';
 import Settings from './components/Settings';
+import InstallPrompt from './components/InstallPrompt';
 
 // Main App Content Component
 const AppContent: React.FC = () => {
@@ -505,6 +506,7 @@ function App() {
         <LanguageProvider>
           <GlobalStyles />
           <AppContent />
+          <InstallPrompt />
         </LanguageProvider>
       </ThemeProvider>
     </TelegramProvider>
