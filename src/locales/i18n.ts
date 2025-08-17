@@ -35,15 +35,26 @@ const getTelegramLanguage = (): string => {
   return 'en'; // fallback
 };
 
-// Get initial language from Telegram
-const initialLanguage = getTelegramLanguage();
+// Get initial language from Telegram (used as fallback)
+const getTelegramLanguageAsFallback = (): string => {
+  // Check if there's a saved language preference first
+  const savedLanguage = localStorage.getItem('i18nextLng');
+  if (savedLanguage && (savedLanguage === 'en' || savedLanguage === 'fa')) {
+    return savedLanguage;
+  }
+  
+  // If no saved preference, use Telegram language
+  return getTelegramLanguage();
+};
+
+const initialLanguage = getTelegramLanguageAsFallback();
 
 i18n
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
     resources,
-    lng: initialLanguage, // Set initial language from Telegram
+    lng: initialLanguage, // Use saved preference or Telegram language
     fallbackLng: 'en',
     debug: import.meta.env.DEV,
     
