@@ -22,7 +22,7 @@ const InstallPrompt: React.FC = () => {
     // Check if app is already installed (standalone mode)
     const checkStandalone = () => {
       const standalone = window.matchMedia('(display-mode: standalone)').matches ||
-        (window.navigator as any).standalone ||
+        (window.navigator as { standalone?: boolean }).standalone ||
         document.referrer.includes('android-app://');
       setIsStandalone(standalone);
       setIsInstalled(standalone);
@@ -30,7 +30,7 @@ const InstallPrompt: React.FC = () => {
 
     // Check if device is iOS
     const checkIOS = () => {
-      const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+      const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as { MSStream?: unknown }).MSStream;
       setIsIOS(ios);
     };
 
