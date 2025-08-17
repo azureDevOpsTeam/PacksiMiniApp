@@ -124,6 +124,8 @@
     "install": "Install",
     "howToInstall": "How to Install",
     "later": "Later",
-    "iosInstructions": "To install this app, tap the Share button in Safari and select 'Add to Home Screen'."
+    "iosInstructions": "To install this app, tap the Share button in Safari and select 'Add to Home Screen'.",
+    "androidInstructions": "To install this app, tap the browser menu (⋮) and select 'Add to Home screen' or 'Install app'.",
+    "generalInstructions": "To install this app, select 'Add to Home screen' from your browser menu."
   }
 }

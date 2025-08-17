@@ -61,6 +61,9 @@ const InstallPrompt: React.FC = () => {
       }, 3000);
     };
 
+    // Check if device is Android specifically
+    const isAndroid = /Android/i.test(navigator.userAgent);
+
     // Listen for app installed event
     const handleAppInstalled = () => {
       setIsInstalled(true);
@@ -72,11 +75,12 @@ const InstallPrompt: React.FC = () => {
     window.addEventListener('appinstalled', handleAppInstalled);
 
     // For iOS or mobile devices without beforeinstallprompt support
+    // Also show for Android devices even if beforeinstallprompt doesn't fire
     let timer: number;
     if ((ios || isMobile) && !standalone) {
       timer = setTimeout(() => {
         setShowInstallPrompt(true);
-      }, ios ? 5000 : 4000); // 5s for iOS, 4s for other mobile
+      }, ios ? 5000 : (isAndroid ? 6000 : 4000)); // 5s for iOS, 6s for Android, 4s for other mobile
     }
 
     return () => {
@@ -90,7 +94,7 @@ const InstallPrompt: React.FC = () => {
 
   const handleInstallClick = async () => {
     if (deferredPrompt) {
-      // Android/Chrome installation
+      // Android/Chrome installation with beforeinstallprompt
       deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
       
@@ -103,6 +107,14 @@ const InstallPrompt: React.FC = () => {
     } else if (isIOS) {
       // iOS installation instructions
       alert(t('installPrompt.iosInstructions', 'برای نصب این اپلیکیشن، روی دکمه Share در Safari کلیک کرده و "Add to Home Screen" را انتخاب کنید.'));
+    } else {
+      // Android or other mobile browsers without beforeinstallprompt
+      const isAndroid = /Android/i.test(navigator.userAgent);
+      if (isAndroid) {
+        alert(t('installPrompt.androidInstructions', 'برای نصب این اپلیکیشن، روی منوی مرورگر (⋮) کلیک کرده و "Add to Home screen" یا "نصب اپلیکیشن" را انتخاب کنید.'));
+      } else {
+        alert(t('installPrompt.generalInstructions', 'برای نصب این اپلیکیشن، از منوی مرورگر گزینه "Add to Home screen" را انتخاب کنید.'));
+      }
     }
   };
 
@@ -127,44 +139,47 @@ const InstallPrompt: React.FC = () => {
       bottom: '20px',
       left: '20px',
       right: '20px',
-      backgroundColor: '#2196F3',
-      color: 'white',
-      padding: '16px',
+      backgroundColor: '#212a33',
+      color: '#848d96',
+      padding: '12px',
       borderRadius: '12px',
-      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+      border: '1px solid #3a4a5c',
+      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
       zIndex: 1000,
       fontFamily: 'IRANSansX, sans-serif',
-      direction: 'rtl'
+      direction: 'rtl',
+      opacity: '0.95'
     }}>
       <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        marginBottom: '12px'
-      }}>
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          marginBottom: '8px'
+        }}>
         <div style={{
           display: 'flex',
           alignItems: 'center',
           gap: '8px'
         }}>
           <div style={{
-            width: '24px',
-            height: '24px',
-            backgroundColor: 'white',
+            width: '20px',
+            height: '20px',
+            backgroundColor: '#3a4a5c',
             borderRadius: '4px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontSize: '14px',
+            fontSize: '12px',
             fontWeight: 'bold',
-            color: '#2196F3'
+            color: '#b3e1ff'
           }}>
             📱
           </div>
           <h4 style={{
             margin: 0,
-            fontSize: '16px',
-            fontWeight: 'bold'
+            fontSize: '14px',
+            fontWeight: 'bold',
+            color: '#ebf7ff'
           }}>
             {t('installPrompt.title', 'نصب اپلیکیشن')}
           </h4>
@@ -174,10 +189,10 @@ const InstallPrompt: React.FC = () => {
           style={{
             background: 'none',
             border: 'none',
-            color: 'white',
-            fontSize: '18px',
+            color: '#848d96',
+            fontSize: '16px',
             cursor: 'pointer',
-            padding: '4px'
+            padding: '2px'
           }}
         >
           ✕
@@ -185,10 +200,10 @@ const InstallPrompt: React.FC = () => {
       </div>
       
       <p style={{
-        margin: '0 0 12px 0',
-        fontSize: '14px',
-        lineHeight: '1.4',
-        opacity: 0.9
+        margin: '0 0 8px 0',
+        fontSize: '12px',
+        lineHeight: '1.3',
+        color: '#848d96'
       }}>
         {isIOS 
           ? t('installPrompt.messageIOS', 'برای دسترسی آسان‌تر، این اپلیکیشن را به صفحه اصلی خود اضافه کنید.')
@@ -204,14 +219,15 @@ const InstallPrompt: React.FC = () => {
         <button
           onClick={handleDismiss}
           style={{
-            backgroundColor: 'transparent',
-            border: '1px solid rgba(255, 255, 255, 0.3)',
-            color: 'white',
-            padding: '8px 16px',
-            borderRadius: '6px',
-            fontSize: '14px',
+            background: 'linear-gradient(to top, #242424 0%, #303030 100%)',
+            border: '1px solid #3a4a5c',
+            color: '#848d96',
+            padding: '6px 12px',
+            borderRadius: '4px',
+            fontSize: '12px',
             cursor: 'pointer',
-            fontFamily: 'IRANSansX, sans-serif'
+            fontFamily: 'IRANSansX, sans-serif',
+            boxShadow: 'inset 0 8px 2px -8px rgba(255,255,255,0.4), 0 8px 5px 0 rgba(0,0,0,0.3)'
           }}
         >
           {t('installPrompt.later', 'بعداً')}
@@ -219,15 +235,16 @@ const InstallPrompt: React.FC = () => {
         <button
           onClick={handleInstallClick}
           style={{
-            backgroundColor: 'white',
-            border: 'none',
-            color: '#2196F3',
-            padding: '8px 16px',
-            borderRadius: '6px',
-            fontSize: '14px',
+            background: 'linear-gradient(to top, #151515 0%, #1d1d1d 100%)',
+            border: '1px solid #3a4a5c',
+            color: '#b3e1ff',
+            padding: '6px 12px',
+            borderRadius: '4px',
+            fontSize: '12px',
             fontWeight: 'bold',
             cursor: 'pointer',
-            fontFamily: 'IRANSansX, sans-serif'
+            fontFamily: 'IRANSansX, sans-serif',
+            boxShadow: 'inset 0 16px 14px -21px transparent, 0 0px 13px 0 rgba(0,0,0,0.3), inset 0 0 7px 2px rgba(0,0,0,0.4)'
           }}
         >
           {isIOS 

@@ -124,6 +124,8 @@
     "install": "نصب",
     "howToInstall": "نحوه نصب",
     "later": "بعداً",
-    "iosInstructions": "برای نصب این اپلیکیشن، روی دکمه Share در Safari کلیک کرده و 'Add to Home Screen' را انتخاب کنید."
+    "iosInstructions": "برای نصب این اپلیکیشن، روی دکمه Share در Safari کلیک کرده و 'Add to Home Screen' را انتخاب کنید.",
+    "androidInstructions": "برای نصب این اپلیکیشن، روی منوی مرورگر (⋮) کلیک کرده و 'Add to Home screen' یا 'نصب اپلیکیشن' را انتخاب کنید.",
+    "generalInstructions": "برای نصب این اپلیکیشن، از منوی مرورگر گزینه 'Add to Home screen' را انتخاب کنید."
   }
 }
