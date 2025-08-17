@@ -16,7 +16,6 @@ const InstallPrompt: React.FC = () => {
   const [showInstallPrompt, setShowInstallPrompt] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
-  const [isStandalone, setIsStandalone] = useState(false);
 
   useEffect(() => {
     // Check if app is already installed (standalone mode)
@@ -24,7 +23,6 @@ const InstallPrompt: React.FC = () => {
       const standalone = window.matchMedia('(display-mode: standalone)').matches ||
         (window.navigator as { standalone?: boolean }).standalone ||
         document.referrer.includes('android-app://');
-      setIsStandalone(standalone);
       setIsInstalled(standalone);
       return standalone;
     };
