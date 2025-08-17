@@ -48,7 +48,7 @@ const Settings: React.FC<SettingsProps> = ({ activeButton, setActiveButton }) =>
           width: '40px',
           height: '40px',
           backgroundColor: '#212a33',
-          borderRadius: '20px 0 0 20px',
+          borderRadius: '10px 0 0 10px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -107,6 +107,7 @@ const Settings: React.FC<SettingsProps> = ({ activeButton, setActiveButton }) =>
               margin: '1px',
               transition: '0.2s',
               fontSize: '0.8em',
+              fontFamily: 'IRANSansX, sans-serif',
               boxShadow: activeButton === 'user'
                 ? 'inset 0 16px 14px -21px transparent, 0 0px 13px 0 rgba(0,0,0,0.3), inset 0 0 7px 2px rgba(0,0,0,0.4)'
                 : 'inset 0 8px 2px -8px rgba(255,255,255,0.4), 0 8px 5px 0 rgba(0,0,0,0.3)',
@@ -138,6 +139,7 @@ const Settings: React.FC<SettingsProps> = ({ activeButton, setActiveButton }) =>
               margin: '1px',
               transition: '0.2s',
               fontSize: '0.8em',
+              fontFamily: 'IRANSansX, sans-serif',
               boxShadow: activeButton === 'admin'
                 ? 'inset 0 16px 14px -21px transparent, 0 0px 13px 0 rgba(0,0,0,0.3), inset 0 0 7px 2px rgba(0,0,0,0.4)'
                 : 'inset 0 8px 2px -8px rgba(255,255,255,0.4), 0 8px 5px 0 rgba(0,0,0,0.3)',

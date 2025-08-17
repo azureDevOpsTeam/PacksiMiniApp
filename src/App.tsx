@@ -56,24 +56,22 @@ const AppContent: React.FC = () => {
     }}>
       {/* Settings Component */}
       <Settings activeButton={activeButton} setActiveButton={setActiveButton} />
-
-
       <div style={{
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        marginBottom: '30px'
+        marginBottom: '15px'
       }}>
         <Logo />
       </div>
-      <p style={{ marginBottom: '30px' }}>{t('app.welcome')}</p>
+      <p style={{ marginBottom: '30px', fontSize: '14px', fontFamily: 'IRANSansX, sans-serif' }}>{t('app.welcome')}</p>
       <div style={{ width: '100%', maxWidth: '400px' }}>
         <div style={{
           position: 'relative',
           display: 'flex',
           alignItems: 'center',
           backgroundColor: '#212a33',
-          borderRadius: '12px',
+          borderRadius: '5px',
           padding: '8px 12px',
           border: '1px solid #3a4a5c',
           direction: language === 'fa' ? 'rtl' : 'ltr'
@@ -106,7 +104,7 @@ const AppContent: React.FC = () => {
               border: 'none',
               outline: 'none',
               color: '#848d96',
-              fontSize: '16px',
+              fontSize: '13px',
               fontFamily: 'IRANSansX, sans-serif',
               textAlign: language === 'fa' ? 'right' : 'left',
               direction: language === 'fa' ? 'rtl' : 'ltr'

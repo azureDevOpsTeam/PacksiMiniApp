@@ -72,11 +72,11 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ onBack }) => {
   const inputStyle = {
     width: '100%',
     padding: '8px 12px',
-    borderRadius: '12px',
+    borderRadius: '5px',
     border: '1px solid #3a4a5c',
     backgroundColor: '#212a33',
     color: '#848d96',
-    fontSize: '16px',
+    fontSize: '13px',
     fontFamily: 'IRANSansX, sans-serif',
     direction: isRTL ? 'rtl' as const : 'ltr' as const,
     textAlign: isRTL ? 'right' as const : 'left' as const,
@@ -85,7 +85,7 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ onBack }) => {
 
   const labelStyle = {
     display: 'block',
-    marginBottom: '8px',
+    marginBottom: '5px',
     color: '#50b4ff',
     fontSize: '12px',
     fontWeight: '600',
@@ -119,14 +119,14 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ onBack }) => {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          marginBottom: '30px'
+          marginBottom: '15px'
         }}>
           <Logo />
         </div>
 
         <p style={{
-          fontSize: '16px',
-          margin: '0 auto',
+          fontSize: '14px',
+          margin: '0 auto 20px auto',
           opacity: 0.8,
           maxWidth: '400px',
           textAlign: 'justify'
@@ -135,250 +135,248 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ onBack }) => {
         </p>
 
         {/* Form */}
-        <div style={{ padding: '20px' }}>
-          <form onSubmit={handleSubmit} style={{ maxWidth: '400px', margin: '0 auto' }}>
-            {/* Name Fields */}
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: '15px',
-              marginBottom: '20px',
-              width: '100%',
-              maxWidth: '100%'
-            }}>
-              {/* First Name */}
-              <div style={{ width: '100%' }}>
-                <label style={labelStyle}>{t('updateProfile.firstName')}</label>
-                <input
-                  type="text"
-                  value={formData.firstName}
-                  onChange={(e) => handleInputChange('firstName', e.target.value)}
-                  style={{
-                    ...inputStyle,
-                    width: '100%',
-                    boxSizing: 'border-box'
-                  }}
-                  placeholder={t('updateProfile.firstNamePlaceholder')}
-                />
-              </div>
-
-              {/* Last Name */}
-              <div style={{ width: '100%' }}>
-                <label style={labelStyle}>{t('updateProfile.lastName')}</label>
-                <input
-                  type="text"
-                  value={formData.lastName}
-                  onChange={(e) => handleInputChange('lastName', e.target.value)}
-                  style={{
-                    ...inputStyle,
-                    width: '100%',
-                    boxSizing: 'border-box'
-                  }}
-                  placeholder={t('updateProfile.lastNamePlaceholder')}
-                />
-              </div>
-            </div>
-
-            {/* Display Name */}
-            <div style={{ marginBottom: '20px' }}>
-              <label style={labelStyle}>{t('updateProfile.displayName')}</label>
+        <form onSubmit={handleSubmit} style={{ maxWidth: '400px', margin: '0 auto' }}>
+          {/* Name Fields */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: '15px',
+            marginBottom: '20px',
+            width: '100%',
+            maxWidth: '100%'
+          }}>
+            {/* First Name */}
+            <div style={{ width: '100%' }}>
+              <label style={labelStyle}>{t('updateProfile.firstName')}</label>
               <input
                 type="text"
-                value={formData.displayName}
-                onChange={(e) => handleInputChange('displayName', e.target.value)}
-                style={inputStyle}
-                placeholder={t('updateProfile.displayNamePlaceholder')}
+                value={formData.firstName}
+                onChange={(e) => handleInputChange('firstName', e.target.value)}
+                style={{
+                  ...inputStyle,
+                  width: '100%',
+                  boxSizing: 'border-box'
+                }}
+                placeholder={t('updateProfile.firstNamePlaceholder')}
               />
             </div>
 
-            {/* Country of Residence */}
-            <div style={{ marginBottom: '20px' }}>
-              <label style={labelStyle}>{t('updateProfile.countryOfResidence')}</label>
+            {/* Last Name */}
+            <div style={{ width: '100%' }}>
+              <label style={labelStyle}>{t('updateProfile.lastName')}</label>
+              <input
+                type="text"
+                value={formData.lastName}
+                onChange={(e) => handleInputChange('lastName', e.target.value)}
+                style={{
+                  ...inputStyle,
+                  width: '100%',
+                  boxSizing: 'border-box'
+                }}
+                placeholder={t('updateProfile.lastNamePlaceholder')}
+              />
+            </div>
+          </div>
+
+          {/* Display Name */}
+          <div style={{ marginBottom: '20px' }}>
+            <label style={labelStyle}>{t('updateProfile.displayName')}</label>
+            <input
+              type="text"
+              value={formData.displayName}
+              onChange={(e) => handleInputChange('displayName', e.target.value)}
+              style={inputStyle}
+              placeholder={t('updateProfile.displayNamePlaceholder')}
+            />
+          </div>
+
+          {/* Country of Residence */}
+          <div style={{ marginBottom: '20px' }}>
+            <label style={labelStyle}>{t('updateProfile.countryOfResidence')}</label>
+            <select
+              value={formData.countryOfResidenceId}
+              onChange={(e) => handleInputChange('countryOfResidenceId', parseInt(e.target.value))}
+              style={inputStyle}
+            >
+              <option value={0}>{t('updateProfile.selectCountry')}</option>
+              {countries.map(country => (
+                <option key={country.id} value={country.id}>
+                  {isRTL ? country.name : country.nameEn}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Address */}
+          <div style={{ marginBottom: '20px' }}>
+            <label style={labelStyle}>{t('updateProfile.address')}</label>
+            <textarea
+              value={formData.address}
+              onChange={(e) => handleInputChange('address', e.target.value)}
+              style={{
+                ...inputStyle,
+                minHeight: '80px',
+                resize: 'vertical'
+              }}
+              placeholder={t('updateProfile.addressPlaceholder')}
+            />
+          </div>
+
+          {/* Company and Postal Code */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: '15px',
+            marginBottom: '20px',
+            width: '100%',
+            maxWidth: '100%'
+          }}>
+            {/* Company */}
+            <div style={{ width: '100%' }}>
+              <label style={labelStyle}>{t('updateProfile.company')}</label>
+              <input
+                type="text"
+                value={formData.company}
+                onChange={(e) => handleInputChange('company', e.target.value)}
+                style={{
+                  ...inputStyle,
+                  width: '100%',
+                  boxSizing: 'border-box'
+                }}
+                placeholder={t('updateProfile.companyPlaceholder')}
+              />
+            </div>
+
+            {/* Postal Code */}
+            <div style={{ width: '100%' }}>
+              <label style={labelStyle}>{t('updateProfile.postalCode')}</label>
+              <input
+                type="text"
+                value={formData.postalCode}
+                onChange={(e) => handleInputChange('postalCode', e.target.value)}
+                style={{
+                  ...inputStyle,
+                  width: '100%',
+                  boxSizing: 'border-box'
+                }}
+                placeholder={t('updateProfile.postalCodePlaceholder')}
+              />
+            </div>
+          </div>
+
+          {/* Gender and Marital Status */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: '15px',
+            marginBottom: '20px',
+            width: '100%',
+            maxWidth: '100%'
+          }}>
+            {/* Gender */}
+            <div style={{ width: '100%' }}>
+              <label style={labelStyle}>{t('updateProfile.gender')}</label>
               <select
-                value={formData.countryOfResidenceId}
-                onChange={(e) => handleInputChange('countryOfResidenceId', parseInt(e.target.value))}
-                style={inputStyle}
+                value={formData.gender}
+                onChange={(e) => handleInputChange('gender', parseInt(e.target.value))}
+                style={{
+                  ...inputStyle,
+                  width: '100%',
+                  boxSizing: 'border-box'
+                }}
               >
-                <option value={0}>{t('updateProfile.selectCountry')}</option>
-                {countries.map(country => (
-                  <option key={country.id} value={country.id}>
-                    {isRTL ? country.name : country.nameEn}
+                <option value={-1}>{t('updateProfile.selectGender')}</option>
+                {genderOptions.map(option => (
+                  <option key={option.id} value={option.id}>
+                    {isRTL ? option.name : option.nameEn}
                   </option>
                 ))}
               </select>
             </div>
 
-            {/* Address */}
-            <div style={{ marginBottom: '20px' }}>
-              <label style={labelStyle}>{t('updateProfile.address')}</label>
-              <textarea
-                value={formData.address}
-                onChange={(e) => handleInputChange('address', e.target.value)}
+            {/* Marital Status */}
+            <div style={{ width: '100%' }}>
+              <label style={labelStyle}>{t('updateProfile.maritalStatus')}</label>
+              <select
+                value={formData.maritalStatus}
+                onChange={(e) => handleInputChange('maritalStatus', parseInt(e.target.value))}
                 style={{
                   ...inputStyle,
-                  minHeight: '80px',
-                  resize: 'vertical'
+                  width: '100%',
+                  boxSizing: 'border-box'
                 }}
-                placeholder={t('updateProfile.addressPlaceholder')}
-              />
+              >
+                <option value={-1}>{t('updateProfile.selectMaritalStatus')}</option>
+                {maritalStatusOptions.map(option => (
+                  <option key={option.id} value={option.id}>
+                    {isRTL ? option.name : option.nameEn}
+                  </option>
+                ))}
+              </select>
             </div>
+          </div>
 
-            {/* Company and Postal Code */}
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: '15px',
-              marginBottom: '20px',
-              width: '100%',
-              maxWidth: '100%'
-            }}>
-              {/* Company */}
-              <div style={{ width: '100%' }}>
-                <label style={labelStyle}>{t('updateProfile.company')}</label>
-                <input
-                  type="text"
-                  value={formData.company}
-                  onChange={(e) => handleInputChange('company', e.target.value)}
-                  style={{
-                    ...inputStyle,
-                    width: '100%',
-                    boxSizing: 'border-box'
-                  }}
-                  placeholder={t('updateProfile.companyPlaceholder')}
-                />
-              </div>
-
-              {/* Postal Code */}
-              <div style={{ width: '100%' }}>
-                <label style={labelStyle}>{t('updateProfile.postalCode')}</label>
-                <input
-                  type="text"
-                  value={formData.postalCode}
-                  onChange={(e) => handleInputChange('postalCode', e.target.value)}
-                  style={{
-                    ...inputStyle,
-                    width: '100%',
-                    boxSizing: 'border-box'
-                  }}
-                  placeholder={t('updateProfile.postalCodePlaceholder')}
-                />
-              </div>
-            </div>
-
-            {/* Gender and Marital Status */}
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: '15px',
-              marginBottom: '20px',
-              width: '100%',
-              maxWidth: '100%'
-            }}>
-              {/* Gender */}
-              <div style={{ width: '100%' }}>
-                <label style={labelStyle}>{t('updateProfile.gender')}</label>
-                <select
-                  value={formData.gender}
-                  onChange={(e) => handleInputChange('gender', parseInt(e.target.value))}
-                  style={{
-                    ...inputStyle,
-                    width: '100%',
-                    boxSizing: 'border-box'
-                  }}
-                >
-                  <option value={-1}>{t('updateProfile.selectGender')}</option>
-                  {genderOptions.map(option => (
-                    <option key={option.id} value={option.id}>
-                      {isRTL ? option.name : option.nameEn}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Marital Status */}
-              <div style={{ width: '100%' }}>
-                <label style={labelStyle}>{t('updateProfile.maritalStatus')}</label>
-                <select
-                  value={formData.maritalStatus}
-                  onChange={(e) => handleInputChange('maritalStatus', parseInt(e.target.value))}
-                  style={{
-                    ...inputStyle,
-                    width: '100%',
-                    boxSizing: 'border-box'
-                  }}
-                >
-                  <option value={-1}>{t('updateProfile.selectMaritalStatus')}</option>
-                  {maritalStatusOptions.map(option => (
-                    <option key={option.id} value={option.id}>
-                      {isRTL ? option.name : option.nameEn}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            {/* Submit and Back Buttons */}
-            <div style={{
-              display: 'flex',
-              gap: '10px',
-              marginTop: '30px'
-            }}>
-              <button
-                type="button"
-                onClick={onBack}
-                style={{
-                  flex: '0 0 auto',
-                  padding: '10px 16px',
-                  borderRadius: '12px',
-                  border: 'none',
-                  backgroundColor: 'rgb(119 119 119)',
-                  color: 'white',
-                  fontSize: '14px',
-                  fontWeight: '600',
-                  fontFamily: 'IRANSansX, sans-serif',
-                  cursor: 'pointer',
-                  transition: 'transform 0.2s ease'
-                }}
-                onMouseDown={(e) => {
-                  e.currentTarget.style.transform = 'scale(0.98)';
-                }}
-                onMouseUp={(e) => {
-                  e.currentTarget.style.transform = 'scale(1)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'scale(1)';
-                }}>
-                {t('common.back')}
-              </button>
-              <button
-                type="submit"
-                style={{
-                  flex: '1',
-                  padding: '12px',
-                  borderRadius: '12px',
-                  border: 'none',
-                  backgroundColor: '#50b4ff',
-                  color: 'white',
-                  fontSize: '16px',
-                  fontWeight: '600',
-                  fontFamily: 'IRANSansX, sans-serif',
-                  cursor: 'pointer',
-                  transition: 'transform 0.2s ease'
-                }}
-                onMouseDown={(e) => {
-                  e.currentTarget.style.transform = 'scale(0.98)';
-                }}
-                onMouseUp={(e) => {
-                  e.currentTarget.style.transform = 'scale(1)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'scale(1)';
-                }}>
-                {t('updateProfile.submit')}
-              </button>
-            </div>
-          </form>
-        </div>
+          {/* Submit and Back Buttons */}
+          <div style={{
+            display: 'flex',
+            gap: '10px',
+            marginTop: '30px'
+          }}>
+            <button
+              type="button"
+              onClick={onBack}
+              style={{
+                flex: '0 0 auto',
+                padding: '10px 16px',
+                borderRadius: '5px',
+                border: 'none',
+                backgroundColor: 'rgb(119 119 119)',
+                color: 'white',
+                fontSize: '14px',
+                fontWeight: '600',
+                fontFamily: 'IRANSansX, sans-serif',
+                cursor: 'pointer',
+                transition: 'transform 0.2s ease'
+              }}
+              onMouseDown={(e) => {
+                e.currentTarget.style.transform = 'scale(0.98)';
+              }}
+              onMouseUp={(e) => {
+                e.currentTarget.style.transform = 'scale(1)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'scale(1)';
+              }}>
+              {t('common.back')}
+            </button>
+            <button
+              type="submit"
+              style={{
+                flex: '1',
+                padding: '12px',
+                borderRadius: '5px',
+                border: 'none',
+                backgroundColor: '#50b4ff',
+                color: 'white',
+                fontSize: '16px',
+                fontWeight: '600',
+                fontFamily: 'IRANSansX, sans-serif',
+                cursor: 'pointer',
+                transition: 'transform 0.2s ease'
+              }}
+              onMouseDown={(e) => {
+                e.currentTarget.style.transform = 'scale(0.98)';
+              }}
+              onMouseUp={(e) => {
+                e.currentTarget.style.transform = 'scale(1)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'scale(1)';
+              }}>
+              {t('updateProfile.submit')}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );

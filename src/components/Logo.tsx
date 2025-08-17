@@ -9,7 +9,7 @@ interface LogoProps {
 const Logo: React.FC<LogoProps> = ({ className, style }) => {
   const defaultStyle: React.CSSProperties = {
     width: '150px',
-    borderRadius: '12px',
+    borderRadius: '5px',
     display: 'block',
     ...style
   };

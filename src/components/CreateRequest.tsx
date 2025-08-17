@@ -93,11 +93,11 @@ const CreateRequest: React.FC<CreateRequestProps> = ({ onBack }) => {
   const inputStyle = {
     width: '100%',
     padding: '8px 12px',
-    borderRadius: '12px',
+    borderRadius: '5px',
     border: '1px solid #3a4a5c',
     backgroundColor: '#212a33',
     color: '#848d96',
-    fontSize: '16px',
+    fontSize: '13px',
     fontFamily: 'IRANSansX, sans-serif',
     direction: isRTL ? 'rtl' as const : 'ltr' as const,
     textAlign: isRTL ? 'right' as const : 'left' as const,
@@ -106,7 +106,7 @@ const CreateRequest: React.FC<CreateRequestProps> = ({ onBack }) => {
 
   const labelStyle = {
     display: 'block',
-    marginBottom: '8px',
+    marginBottom: '5px',
     color: '#50b4ff',
     fontSize: '12px',
     fontWeight: '600',
@@ -126,7 +126,6 @@ const CreateRequest: React.FC<CreateRequestProps> = ({ onBack }) => {
       position: 'relative'
     }}>
       <div style={{
-        minHeight: '100vh',
         backgroundColor: theme.colors.background,
         color: theme.colors.text.primary,
         direction: isRTL ? 'rtl' : 'ltr',
@@ -134,20 +133,20 @@ const CreateRequest: React.FC<CreateRequestProps> = ({ onBack }) => {
       }}>
         {/* Header with Logo */}
         {/* Settings Component */}
-      <Settings activeButton={activeButton} setActiveButton={setActiveButton} />
+        <Settings activeButton={activeButton} setActiveButton={setActiveButton} />
 
-      <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        marginBottom: '30px'
-      }}>
-        <Logo />
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          marginBottom: '15px'
+        }}>
+          <Logo />
         </div>
 
         <p style={{
-          fontSize: '16px',
-          margin: '0 auto',
+          fontSize: '14px',
+          margin: '0 auto 20px auto',
           opacity: 0.8,
           maxWidth: '400px',
           textAlign: 'justify'
@@ -156,413 +155,382 @@ const CreateRequest: React.FC<CreateRequestProps> = ({ onBack }) => {
         </p>
 
         {/* Form */}
-        <div style={{ padding: '20px' }}>
-          <form onSubmit={handleSubmit} style={{ maxWidth: '400px', margin: '0 auto' }}>
-            {/* City Fields */}
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: '15px',
-              marginBottom: '20px',
-              width: '100%',
-              maxWidth: '100%'
-            }}>
-              {/* Origin City */}
-              <div style={{ width: '100%' }}>
-                <label style={labelStyle}>{t('createRequest.originCity')}</label>
-                <select
-                  value={formData.originCityId}
-                  onChange={(e) => handleInputChange('originCityId', parseInt(e.target.value))}
-                  style={{
-                    ...inputStyle,
-                    width: '100%',
-                    boxSizing: 'border-box'
-                  }}
-                >
-                  <option value={0}>{t('createRequest.selectCity')}</option>
-                  {cities.map(city => (
-                    <option key={city.id} value={city.id}>
-                      {isRTL ? city.name : city.nameEn}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Destination City */}
-              <div style={{ width: '100%' }}>
-                <label style={labelStyle}>{t('createRequest.destinationCity')}</label>
-                <select
-                  value={formData.destinationCityId}
-                  onChange={(e) => handleInputChange('destinationCityId', parseInt(e.target.value))}
-                  style={{
-                    ...inputStyle,
-                    width: '100%',
-                    boxSizing: 'border-box'
-                  }}
-                >
-                  <option value={0}>{t('createRequest.selectCity')}</option>
-                  {cities.map(city => (
-                    <option key={city.id} value={city.id}>
-                      {isRTL ? city.name : city.nameEn}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            {/* Departure Date */}
-            <div style={{ marginBottom: '20px' }}>
-              <label style={labelStyle}>{t('createRequest.departureDate')}</label>
-              <input
-                type="datetime-local"
-                value={formData.departureDate}
-                onChange={(e) => handleInputChange('departureDate', e.target.value)}
-                style={inputStyle}
-              />
-            </div>
-
-            {/* Arrival Date */}
-            <div style={{ marginBottom: '20px' }}>
-              <label style={labelStyle}>{t('createRequest.arrivalDate')}</label>
-              <input
-                type="datetime-local"
-                value={formData.arrivalDate}
-                onChange={(e) => handleInputChange('arrivalDate', e.target.value)}
-                style={inputStyle}
-              />
-            </div>
-
-            {/* Request Type */}
-            <div style={{ marginBottom: '20px' }}>
-              <label style={labelStyle}>{t('createRequest.requestType')}</label>
+        <form onSubmit={handleSubmit} style={{ maxWidth: '400px', margin: '0 auto' }}>
+          {/* City Fields */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: '15px',
+            marginBottom: '20px',
+            width: '100%',
+            maxWidth: '100%'
+          }}>
+            {/* Origin City */}
+            <div style={{ width: '100%' }}>
+              <label style={labelStyle}>{t('createRequest.originCity')}</label>
               <select
-                value={formData.requestType}
-                onChange={(e) => handleInputChange('requestType', parseInt(e.target.value))}
-                style={inputStyle}
+                value={formData.originCityId}
+                onChange={(e) => handleInputChange('originCityId', parseInt(e.target.value))}
+                style={{
+                  ...inputStyle,
+                  width: '100%',
+                  boxSizing: 'border-box'
+                }}
               >
-                <option value={-1}>{t('createRequest.selectRequestType')}</option>
-                {requestTypes.map(type => (
-                  <option key={type.id} value={type.id}>
-                    {type.name}
+                <option value={0}>{t('createRequest.selectCity')}</option>
+                {cities.map(city => (
+                  <option key={city.id} value={city.id}>
+                    {isRTL ? city.name : city.nameEn}
                   </option>
                 ))}
               </select>
             </div>
 
-            {/* Ticket Upload for Passenger */}
-            {formData.requestType === 0 && (
-              <div style={{ marginBottom: '20px' }}>
-                <label style={labelStyle}>{isRTL ? 'بارگذاری بلیط' : 'Upload Ticket'}</label>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*,.pdf"
-                  onChange={(e) => setTicketFile(e.target.files?.[0] || null)}
-                  style={{
-                    ...inputStyle,
-                    padding: '12px',
-                    cursor: 'pointer'
-                  }}
-                />
-                {ticketFile && (
-                  <div style={{
-                    marginTop: '10px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    padding: '10px',
-                    backgroundColor: '#212a33',
-                    borderRadius: '8px',
-                    border: '1px solid #3a4a5c'
-                  }}>
-                    {ticketFile.type.startsWith('image/') ? (
-                      <img
-                        src={URL.createObjectURL(ticketFile)}
-                        alt="Ticket preview"
-                        style={{
-                          width: '60px',
-                          height: '60px',
-                          objectFit: 'cover',
-                          borderRadius: '6px'
-                        }}
-                      />
-                    ) : (
-                      <div style={{
-                        width: '60px',
-                        height: '60px',
-                        backgroundColor: '#3a4a5c',
-                        borderRadius: '6px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: '12px',
-                        color: '#848d96'
-                      }}>
-                        PDF
-                      </div>
-                    )}
-                    <div style={{ flex: 1 }}>
-                      <div style={{
-                        fontSize: '14px',
-                        color: '#ffffff',
-                        fontFamily: 'IRANSansX, sans-serif',
-                        marginBottom: '4px'
-                      }}>
-                        {ticketFile.name}
-                      </div>
-                      <div style={{
-                        fontSize: '12px',
-                        color: '#848d96',
-                        fontFamily: 'IRANSansX, sans-serif'
-                      }}>
-                        {(ticketFile.size / 1024 / 1024).toFixed(2)} MB
-                      </div>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setTicketFile(null);
-                        if (fileInputRef.current) {
-                          fileInputRef.current.value = '';
-                        }
-                      }}
-                      style={{
-                        background: 'none',
-                        border: 'none',
-                        color: '#ff4757',
-                        cursor: 'pointer',
-                        fontSize: '18px',
-                        padding: '5px',
-                        borderRadius: '4px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}
-                    >
-                      ×
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Description */}
-            <div style={{ marginBottom: '20px' }}>
-              <label style={labelStyle}>{t('createRequest.description')}</label>
-              <textarea
-                value={formData.description}
-                onChange={(e) => handleInputChange('description', e.target.value)}
-                rows={4}
+            {/* Destination City */}
+            <div style={{ width: '100%' }}>
+              <label style={labelStyle}>{t('createRequest.destinationCity')}</label>
+              <select
+                value={formData.destinationCityId}
+                onChange={(e) => handleInputChange('destinationCityId', parseInt(e.target.value))}
                 style={{
                   ...inputStyle,
-                  resize: 'vertical',
-                  minHeight: '100px'
-                }}
-                placeholder={t('createRequest.description')}
-              />
-            </div>
-
-            {/* Additional Details Accordion */}
-            <div style={{ marginBottom: '20px' }}>
-              <div
-                onClick={() => setIsAccordionOpen(!isAccordionOpen)}
-                style={{
-                  padding: '12px',
-                  borderRadius: '12px',
-                  border: '1px solid #3a4a5c',
-                  backgroundColor: '#212a33',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  marginBottom: '8px'
+                  width: '100%',
+                  boxSizing: 'border-box'
                 }}
               >
-                <span style={{
-                  color: '#50b4ff',
-                  fontSize: '14px',
-                  fontWeight: '600',
-                  fontFamily: 'IRANSansX, sans-serif'
-                }}>
-                  {isRTL ? 'توضیحات اضافی (اختیاری)' : 'Additional Details (Optional)'}
-                </span>
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  style={{
-                    transform: isAccordionOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                    transition: 'transform 0.2s ease'
-                  }}
-                >
-                  <path
-                    d="M6 9L12 15L18 9"
-                    stroke="#50b4ff"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </div>
-
-              {isAccordionOpen && (
-                <div style={{
-                  padding: '16px',
-                  borderRadius: '12px',
-                  border: '1px solid #3a4a5c',
-                  backgroundColor: '#1a2128'
-                }}>
-                  <div style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
-                    gap: '16px'
-                  }}>
-                    <div>
-                      <label style={labelStyle}>{t('createRequest.maxWeight')}</label>
-                      <input
-                        type="number"
-                        value={formData.maxWeightKg || ''}
-                        onChange={(e) => handleInputChange('maxWeightKg', parseFloat(e.target.value) || 0)}
-                        style={inputStyle}
-                        min="0"
-                        step="0.1"
-                      />
-                    </div>
-                    <div>
-                      <label style={labelStyle}>{t('createRequest.maxLength')}</label>
-                      <input
-                        type="number"
-                        value={formData.maxLengthCm || ''}
-                        onChange={(e) => handleInputChange('maxLengthCm', parseFloat(e.target.value) || 0)}
-                        style={inputStyle}
-                        min="0"
-                        step="0.1"
-                      />
-                    </div>
-                    <div>
-                      <label style={labelStyle}>{t('createRequest.maxWidth')}</label>
-                      <input
-                        type="number"
-                        value={formData.maxWidthCm || ''}
-                        onChange={(e) => handleInputChange('maxWidthCm', parseFloat(e.target.value) || 0)}
-                        style={inputStyle}
-                        min="0"
-                        step="0.1"
-                      />
-                    </div>
-                    <div>
-                      <label style={labelStyle}>{t('createRequest.maxHeight')}</label>
-                      <input
-                        type="number"
-                        value={formData.maxHeightCm || ''}
-                        onChange={(e) => handleInputChange('maxHeightCm', parseFloat(e.target.value) || 0)}
-                        style={inputStyle}
-                        min="0"
-                        step="0.1"
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
+                <option value={0}>{t('createRequest.selectCity')}</option>
+                {cities.map(city => (
+                  <option key={city.id} value={city.id}>
+                    {isRTL ? city.name : city.nameEn}
+                  </option>
+                ))}
+              </select>
             </div>
+          </div>
 
-            {/* Item Types */}
+          {/* Departure Date */}
+          <div style={{ marginBottom: '20px' }}>
+            <label style={labelStyle}>{t('createRequest.departureDate')}</label>
+            <input
+              type="datetime-local"
+              value={formData.departureDate}
+              onChange={(e) => handleInputChange('departureDate', e.target.value)}
+              style={inputStyle}
+            />
+          </div>
+
+          {/* Arrival Date */}
+          <div style={{ marginBottom: '20px' }}>
+            <label style={labelStyle}>{t('createRequest.arrivalDate')}</label>
+            <input
+              type="datetime-local"
+              value={formData.arrivalDate}
+              onChange={(e) => handleInputChange('arrivalDate', e.target.value)}
+              style={inputStyle}
+            />
+          </div>
+
+          {/* Request Type */}
+          <div style={{ marginBottom: '20px' }}>
+            <label style={labelStyle}>{t('createRequest.requestType')}</label>
+            <select
+              value={formData.requestType}
+              onChange={(e) => handleInputChange('requestType', parseInt(e.target.value))}
+              style={inputStyle}
+            >
+              <option value={-1}>{t('createRequest.selectRequestType')}</option>
+              {requestTypes.map(type => (
+                <option key={type.id} value={type.id}>
+                  {type.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Ticket Upload for Passenger */}
+          {formData.requestType === 0 && (
             <div style={{ marginBottom: '20px' }}>
-              <label style={labelStyle}>{t('createRequest.itemTypes')}</label>
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr 1fr',
-                gap: '8px',
-                marginTop: '8px'
-              }}>
-                {itemTypes.map(itemType => (
-                  <label
-                    key={itemType.id}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      padding: '8px 12px',
-                      borderRadius: '12px',
-                      border: '1px solid #3a4a5c',
-                      backgroundColor: formData.itemTypeIds.includes(itemType.id)
-                        ? '#50b4ff20'
-                        : '#212a33',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s ease'
-                    }}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={formData.itemTypeIds.includes(itemType.id)}
-                      onChange={() => handleItemTypeToggle(itemType.id)}
+              <label style={labelStyle}>{isRTL ? 'بارگذاری بلیط' : 'Upload Ticket'}</label>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*,.pdf"
+                onChange={(e) => setTicketFile(e.target.files?.[0] || null)}
+                style={{
+                  ...inputStyle,
+                  padding: '12px',
+                  cursor: 'pointer'
+                }}
+              />
+              {ticketFile && (
+                <div style={{
+                  marginTop: '10px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  padding: '10px',
+                  backgroundColor: '#212a33',
+                  borderRadius: '8px',
+                  border: '1px solid #3a4a5c'
+                }}>
+                  {ticketFile.type.startsWith('image/') ? (
+                    <img
+                      src={URL.createObjectURL(ticketFile)}
+                      alt="Ticket preview"
                       style={{
-                        marginRight: isRTL ? '0' : '8px',
-                        marginLeft: isRTL ? '8px' : '0'
+                        width: '60px',
+                        height: '60px',
+                        objectFit: 'cover',
+                        borderRadius: '6px'
                       }}
                     />
-                    <span style={{
+                  ) : (
+                    <div style={{
+                      width: '60px',
+                      height: '60px',
+                      backgroundColor: '#3a4a5c',
+                      borderRadius: '6px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '12px',
+                      color: '#848d96'
+                    }}>
+                      PDF
+                    </div>
+                  )}
+                  <div style={{ flex: 1 }}>
+                    <div style={{
                       fontSize: '14px',
+                      color: '#ffffff',
+                      fontFamily: 'IRANSansX, sans-serif',
+                      marginBottom: '4px'
+                    }}>
+                      {ticketFile.name}
+                    </div>
+                    <div style={{
+                      fontSize: '12px',
                       color: '#848d96',
                       fontFamily: 'IRANSansX, sans-serif'
                     }}>
-                      {isRTL ? itemType.name : itemType.nameEn}
-                    </span>
-                  </label>
-                ))}
-              </div>
+                      {(ticketFile.size / 1024 / 1024).toFixed(2)} MB
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setTicketFile(null);
+                      if (fileInputRef.current) {
+                        fileInputRef.current.value = '';
+                      }
+                    }}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#ff4757',
+                      cursor: 'pointer',
+                      fontSize: '18px',
+                      padding: '5px',
+                      borderRadius: '4px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                  >
+                    ×
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Description */}
+          <div style={{ marginBottom: '20px' }}>
+            <label style={labelStyle}>{t('createRequest.description')}</label>
+            <textarea
+              value={formData.description}
+              onChange={(e) => handleInputChange('description', e.target.value)}
+              rows={4}
+              style={{
+                ...inputStyle,
+                resize: 'vertical',
+                minHeight: '100px'
+              }}
+              placeholder={t('createRequest.description')}
+            />
+          </div>
+
+          {/* Additional Details Accordion */}
+          <div style={{ marginBottom: '20px' }}>
+            <div
+              onClick={() => setIsAccordionOpen(!isAccordionOpen)}
+              style={{
+                padding: '12px',
+                borderRadius: '5px',
+                border: '1px solid #3a4a5c',
+                backgroundColor: '#212a33',
+                cursor: 'pointer',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '8px'
+              }}
+            >
+              <span style={{
+                color: '#50b4ff',
+                fontSize: '14px',
+                fontWeight: '600',
+                fontFamily: 'IRANSansX, sans-serif'
+              }}>
+                {isRTL ? 'توضیحات اضافی (اختیاری)' : 'Additional Details (Optional)'}
+              </span>
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                style={{
+                  transform: isAccordionOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                  transition: 'transform 0.2s ease'
+                }}
+              >
+                <path
+                  d="M6 9L12 15L18 9"
+                  stroke="#50b4ff"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
             </div>
 
-            {/* Submit Button */}
-            {/* Buttons Container */}
+            {isAccordionOpen && (
+              <div style={{
+                padding: '16px',
+                borderRadius: '5px',
+                border: '1px solid #3a4a5c',
+                backgroundColor: '#1a2128'
+              }}>
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+                  gap: '16px'
+                }}>
+                  <div>
+                    <label style={labelStyle}>{t('createRequest.maxWeight')}</label>
+                    <input
+                      type="number"
+                      value={formData.maxWeightKg || ''}
+                      onChange={(e) => handleInputChange('maxWeightKg', parseFloat(e.target.value) || 0)}
+                      style={inputStyle}
+                      min="0"
+                      step="0.1"
+                    />
+                  </div>
+                  <div>
+                    <label style={labelStyle}>{t('createRequest.maxLength')}</label>
+                    <input
+                      type="number"
+                      value={formData.maxLengthCm || ''}
+                      onChange={(e) => handleInputChange('maxLengthCm', parseFloat(e.target.value) || 0)}
+                      style={inputStyle}
+                      min="0"
+                      step="0.1"
+                    />
+                  </div>
+                  <div>
+                    <label style={labelStyle}>{t('createRequest.maxWidth')}</label>
+                    <input
+                      type="number"
+                      value={formData.maxWidthCm || ''}
+                      onChange={(e) => handleInputChange('maxWidthCm', parseFloat(e.target.value) || 0)}
+                      style={inputStyle}
+                      min="0"
+                      step="0.1"
+                    />
+                  </div>
+                  <div>
+                    <label style={labelStyle}>{t('createRequest.maxHeight')}</label>
+                    <input
+                      type="number"
+                      value={formData.maxHeightCm || ''}
+                      onChange={(e) => handleInputChange('maxHeightCm', parseFloat(e.target.value) || 0)}
+                      style={inputStyle}
+                      min="0"
+                      step="0.1"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Item Types */}
+          <div style={{ marginBottom: '20px' }}>
+            <label style={labelStyle}>{t('createRequest.itemTypes')}</label>
             <div style={{
-              display: 'flex',
-              gap: '10px',
-              marginTop: '20px'
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gap: '8px',
+              marginTop: '8px'
             }}>
-              {/* Back Button */}
-              {onBack && (
-                <button
-                  onClick={onBack}
-                  type="button"
+              {itemTypes.map(itemType => (
+                <label
+                  key={itemType.id}
                   style={{
-                    flex: '0 0 auto',
-                    padding: '10px 16px',
-                    borderRadius: '12px',
-                    border: 'none',
-                    backgroundColor: 'rgb(119 119 119)',
-                    color: 'white',
-                    fontSize: '14px',
-                    fontWeight: '600',
-                    fontFamily: 'IRANSansX, sans-serif',
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: '8px 12px',
+                    borderRadius: '5px',
+                    border: '1px solid #3a4a5c',
+                    backgroundColor: formData.itemTypeIds.includes(itemType.id)
+                      ? '#50b4ff20'
+                      : '#212a33',
                     cursor: 'pointer',
-                    transition: 'transform 0.2s ease'
-                  }}
-                  onMouseDown={(e) => {
-                    e.currentTarget.style.transform = 'scale(0.98)';
-                  }}
-                  onMouseUp={(e) => {
-                    e.currentTarget.style.transform = 'scale(1)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'scale(1)';
+                    transition: 'all 0.2s ease'
                   }}
                 >
-                  {t('common.back')}
-                </button>
-              )}
+                  <input
+                    type="checkbox"
+                    checked={formData.itemTypeIds.includes(itemType.id)}
+                    onChange={() => handleItemTypeToggle(itemType.id)}
+                    style={{
+                      marginRight: isRTL ? '0' : '8px',
+                      marginLeft: isRTL ? '8px' : '0'
+                    }}
+                  />
+                  <span style={{
+                    fontSize: '14px',
+                    color: '#848d96',
+                    fontFamily: 'IRANSansX, sans-serif'
+                  }}>
+                    {isRTL ? itemType.name : itemType.nameEn}
+                  </span>
+                </label>
+              ))}
+            </div>
+          </div>
 
-              {/* Submit Button */}
+          {/* Submit Button */}
+          {/* Buttons Container */}
+          <div style={{
+            display: 'flex',
+            gap: '10px',
+            marginTop: '20px'
+          }}>
+            {/* Back Button */}
+            {onBack && (
               <button
-                type="submit"
+                onClick={onBack}
+                type="button"
                 style={{
-                  flex: '1',
-                  padding: '12px',
-                  borderRadius: '12px',
+                  flex: '0 0 auto',
+                  padding: '10px 16px',
+                  borderRadius: '5px',
                   border: 'none',
-                  backgroundColor: '#50b4ff',
+                  backgroundColor: 'rgb(119 119 119)',
                   color: 'white',
-                  fontSize: '16px',
+                  fontSize: '14px',
                   fontWeight: '600',
                   fontFamily: 'IRANSansX, sans-serif',
                   cursor: 'pointer',
@@ -578,11 +546,40 @@ const CreateRequest: React.FC<CreateRequestProps> = ({ onBack }) => {
                   e.currentTarget.style.transform = 'scale(1)';
                 }}
               >
-                {t('common.submit')}
+                {t('common.back')}
               </button>
-            </div>
-          </form>
-        </div>
+            )}
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              style={{
+                flex: '1',
+                padding: '12px',
+                borderRadius: '5px',
+                border: 'none',
+                backgroundColor: '#50b4ff',
+                color: 'white',
+                fontSize: '16px',
+                fontWeight: '600',
+                fontFamily: 'IRANSansX, sans-serif',
+                cursor: 'pointer',
+                transition: 'transform 0.2s ease'
+              }}
+              onMouseDown={(e) => {
+                e.currentTarget.style.transform = 'scale(0.98)';
+              }}
+              onMouseUp={(e) => {
+                e.currentTarget.style.transform = 'scale(1)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'scale(1)';
+              }}
+            >
+              {t('common.submit')}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );
