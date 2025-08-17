@@ -13,7 +13,7 @@ import Settings from './components/Settings';
 // Main App Content Component
 const AppContent: React.FC = () => {
   const { isReady } = useTelegramContext();
-  const { t, language, changeLanguage } = useLanguage();
+  const { t, language } = useLanguage();
   const [activeButton, setActiveButton] = React.useState<'user' | 'admin'>('user');
   const [currentPage, setCurrentPage] = React.useState<'home' | 'createRequest' | 'updateProfile'>('home');
 
