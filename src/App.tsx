@@ -10,6 +10,7 @@ import UpdateProfile from './components/UpdateProfile';
 import Logo from './components/Logo';
 import Settings from './components/Settings';
 import InstallPrompt from './components/InstallPrompt';
+import type { RequestContactResponse } from '@twa-dev/types';
 
 // Main App Content Component
 const AppContent: React.FC = () => {
@@ -31,8 +32,9 @@ const AppContent: React.FC = () => {
       (confirmed: boolean) => {
         if (confirmed) {
           // Request phone number from user
-          webApp.requestContact((contact: any) => {
-            if (contact && contact.phone_number) {
+          webApp.requestContact((access: boolean, response?: RequestContactResponse) => {
+            if (access && response?.status === 'sent' && response?.responseUnsafe?.contact) {
+              const contact = response.responseUnsafe.contact;
               // Send phone number to bot
               const phoneData = {
                 phone_number: contact.phone_number,
