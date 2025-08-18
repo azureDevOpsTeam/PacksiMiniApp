@@ -12,6 +12,7 @@ export default defineConfig({
     assetsDir: 'assets',
     sourcemap: false,
     minify: 'terser',
+    // اضافه کردن timestamp برای cache busting کامل
     rollupOptions: {
       output: {
         // اضافه کردن hash برای cache-busting
@@ -25,6 +26,9 @@ export default defineConfig({
         },
       },
     },
+    // تنظیمات اضافی برای cache busting
+    cssCodeSplit: true,
+    assetsInlineLimit: 0, // همه assets را به صورت جداگانه ذخیره کن
   },
   server: {
     port: 3000,
