@@ -1,4 +1,4 @@
-const CACHE_NAME = 'packsi-pwa-v2';
+const CACHE_NAME = 'packsi-pwa-v1';
 const urlsToCache = [
   '/',
   '/static/js/bundle.js',
@@ -48,12 +48,6 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   // Skip non-GET requests
   if (event.request.method !== 'GET') {
-    return;
-  }
-  
-  // For development: always fetch from network to prevent caching issues
-  if (event.request.url.includes('localhost') || event.request.url.includes('?t=')) {
-    event.respondWith(fetch(event.request));
     return;
   }
 
