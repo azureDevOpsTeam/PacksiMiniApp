@@ -14,6 +14,10 @@ export default defineConfig({
     minify: 'terser',
     rollupOptions: {
       output: {
+        // اضافه کردن hash برای cache-busting
+        entryFileNames: 'assets/[name].[hash].js',
+        chunkFileNames: 'assets/[name].[hash].js',
+        assetFileNames: 'assets/[name].[hash].[ext]',
         manualChunks: {
           vendor: ['react', 'react-dom'],
           telegram: ['@twa-dev/sdk'],
@@ -26,6 +30,9 @@ export default defineConfig({
     port: 3000,
     host: true,
     https: false, // Set to true if you need HTTPS for development
+    hmr: {
+      port: 3000,
+    },
   },
   preview: {
     port: 3000,
