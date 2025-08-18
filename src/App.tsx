@@ -166,7 +166,7 @@ const AppContent: React.FC = () => {
                 fontFamily: 'IRANSansX, sans-serif',
                 fontWeight: '500'
               }}>
-                {t('unlimited.createAccount')}
+                {t('unlimited.connectToBot')}
               </div>
             </div>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ color: '#848d96', transform: language === 'fa' ? 'rotate(180deg)' : 'none' }}>
