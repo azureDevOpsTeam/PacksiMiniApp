@@ -21,10 +21,45 @@ const AppContent: React.FC = () => {
 
   // Prevent caching by adding timestamp to URL
   React.useEffect(() => {
-    const timestamp = Date.now();
-    const currentUrl = new URL(window.location.href);
-    currentUrl.searchParams.set('t', timestamp.toString());
-    window.history.replaceState({}, '', currentUrl.toString());
+    const updateTimestamp = () => {
+      const timestamp = Date.now();
+      const currentUrl = new URL(window.location.href);
+      currentUrl.searchParams.set('t', timestamp.toString());
+      currentUrl.searchParams.set('v', '2'); // Version parameter
+      window.history.replaceState({}, '', currentUrl.toString());
+    };
+    
+    // Clear all caches and update timestamp
+    const clearCacheAndUpdate = async () => {
+      try {
+        // Clear browser cache
+        if ('caches' in window) {
+          const cacheNames = await caches.keys();
+          await Promise.all(cacheNames.map(name => caches.delete(name)));
+        }
+        
+        // Update service worker
+        if ('serviceWorker' in navigator) {
+          const registration = await navigator.serviceWorker.getRegistration();
+          if (registration) {
+            await registration.update();
+          }
+        }
+        
+        updateTimestamp();
+      } catch (error) {
+        console.log('Cache clear failed:', error);
+        updateTimestamp();
+      }
+    };
+    
+    // Clear cache and update timestamp immediately
+    clearCacheAndUpdate();
+    
+    // Update timestamp every 10 seconds to prevent caching
+    const interval = setInterval(updateTimestamp, 10000);
+    
+    return () => clearInterval(interval);
   }, []);
 
   // Handle phone number verification
