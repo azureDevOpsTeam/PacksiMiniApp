@@ -20,7 +20,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   const toggleTheme = () => {
     // Note: In Telegram Mini Apps, theme is controlled by Telegram
     // This function is provided for interface compatibility
-    console.warn('Theme switching is controlled by Telegram WebApp');
+    // Theme switching is controlled by Telegram WebApp
   };
 
   const contextValue: ThemeContextType = {

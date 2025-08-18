@@ -7,6 +7,7 @@ export const useTelegram = (): TelegramContextType => {
   const [user, setUser] = useState<TelegramUser | null>(null);
   const [initData, setInitData] = useState<TelegramInitData | null>(null);
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const [error, setError] = useState<string | null>(null);
 
   const initializeTelegram = useCallback(() => {
     try {
@@ -56,9 +57,18 @@ export const useTelegram = (): TelegramContextType => {
       });
 
       setIsReady(true);
+      setError(null);
     } catch (error) {
-      console.error('Failed to initialize Telegram WebApp:', error);
-      // Fallback for development
+      // Handle Telegram WebApp initialization errors
+      const errorMessage = error instanceof Error ? error.message : 'خطا در اتصال به Telegram';
+      setError(errorMessage);
+      
+      // Log error in development mode
+      if (import.meta.env.DEV) {
+        console.error('Telegram WebApp initialization error:', error);
+      }
+      
+      // Still set ready to true for fallback functionality
       setIsReady(true);
     }
   }, []);
@@ -78,5 +88,6 @@ export const useTelegram = (): TelegramContextType => {
     initData,
     isReady,
     theme,
+    error,
   };
 };

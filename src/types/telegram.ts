@@ -36,6 +36,7 @@ export interface TelegramContextType {
   initData: TelegramInitData | null;
   isReady: boolean;
   theme: 'light' | 'dark';
+  error: string | null;
 }
 
 export type ThemeParams = {

@@ -10,6 +10,7 @@ import UpdateProfile from './components/UpdateProfile';
 import Logo from './components/Logo';
 import Settings from './components/Settings';
 import InstallPrompt from './components/InstallPrompt';
+import ErrorBoundary from './components/ErrorBoundary';
 import type { RequestContactResponse } from '@twa-dev/types';
 
 // Main App Content Component
@@ -22,7 +23,7 @@ const AppContent: React.FC = () => {
   // Handle phone number verification
   const handleVerifyPhoneNumber = React.useCallback(() => {
     if (!webApp) {
-      console.error('Telegram WebApp is not available');
+      // Telegram WebApp is not available - fail silently in production
       return;
     }
 
@@ -168,7 +169,7 @@ const AppContent: React.FC = () => {
           fontSize: '12px',
           fontFamily: 'IRANSansX, sans-serif',
           margin: '0 0 20px 0',
-          fontWeight: '600',
+          fontWeight: '700',
           textAlign: language === 'fa' ? 'right' : 'left',
           direction: language === 'fa' ? 'rtl' : 'ltr'
         }}>
@@ -353,7 +354,7 @@ const AppContent: React.FC = () => {
           fontSize: '12px',
           fontFamily: 'IRANSansX, sans-serif',
           margin: '0 0 20px 0',
-          fontWeight: '600',
+          fontWeight: '700',
           textAlign: language === 'fa' ? 'right' : 'left',
           direction: language === 'fa' ? 'rtl' : 'ltr'
         }}>
@@ -426,7 +427,7 @@ const AppContent: React.FC = () => {
                 color: '#ffffff',
                 fontSize: '14px',
                 fontFamily: 'IRANSansX, sans-serif',
-                fontWeight: '500',
+                fontWeight: '400',
                 marginBottom: '2px'
               }}>
                 {t('bots.parcelList')}
@@ -470,7 +471,7 @@ const AppContent: React.FC = () => {
                 color: '#ffffff',
                 fontSize: '14px',
                 fontFamily: 'IRANSansX, sans-serif',
-                fontWeight: '500',
+                fontWeight: '400',
                 marginBottom: '2px'
               }}>
                 {t('bots.temporaryRoomRental')}
@@ -514,7 +515,7 @@ const AppContent: React.FC = () => {
                 color: '#ffffff',
                 fontSize: '14px',
                 fontFamily: 'IRANSansX, sans-serif',
-                fontWeight: '500',
+                fontWeight: '400',
                 marginBottom: '2px'
               }}>
                 {t('bots.carRental')}
@@ -559,7 +560,7 @@ const AppContent: React.FC = () => {
                 color: '#ffffff',
                 fontSize: '14px',
                 fontFamily: 'IRANSansX, sans-serif',
-                fontWeight: '500',
+                fontWeight: '400',
                 marginBottom: '2px'
               }}>
                 {t('bots.personalServices')}
@@ -585,15 +586,17 @@ const AppContent: React.FC = () => {
 // Main App Component with Providers
 function App() {
   return (
-    <TelegramProvider>
-      <ThemeProvider>
-        <LanguageProvider>
-          <GlobalStyles />
-          <AppContent />
-          <InstallPrompt />
-        </LanguageProvider>
-      </ThemeProvider>
-    </TelegramProvider>
+    <ErrorBoundary>
+      <TelegramProvider>
+        <ThemeProvider>
+          <LanguageProvider>
+            <GlobalStyles />
+            <AppContent />
+            <InstallPrompt />
+          </LanguageProvider>
+        </ThemeProvider>
+      </TelegramProvider>
+    </ErrorBoundary>
   );
 }
 

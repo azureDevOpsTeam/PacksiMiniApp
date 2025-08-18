@@ -8,7 +8,7 @@ if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js')
       .then((registration) => {
-        console.log('SW registered: ', registration);
+        // Service Worker registered successfully
         
         // Check for updates
         registration.addEventListener('updatefound', () => {
@@ -26,8 +26,8 @@ if ('serviceWorker' in navigator) {
           }
         });
       })
-      .catch((registrationError) => {
-        console.log('SW registration failed: ', registrationError);
+      .catch(() => {
+        // Service Worker registration failed - continue without SW
       });
   });
 }

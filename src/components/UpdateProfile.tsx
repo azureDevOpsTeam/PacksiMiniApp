@@ -66,7 +66,7 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ onBack }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Profile update submitted:', { model: formData });
+    // Profile update submitted
   };
 
   const inputStyle = {
@@ -88,7 +88,7 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ onBack }) => {
     marginBottom: '5px',
     color: '#50b4ff',
     fontSize: '12px',
-    fontWeight: '600',
+    fontWeight: '700',
     fontFamily: 'IRANSansX, sans-serif',
     textAlign: isRTL ? 'right' as const : 'left' as const
   };
@@ -333,7 +333,7 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ onBack }) => {
                 backgroundColor: 'rgb(119 119 119)',
                 color: 'white',
                 fontSize: '14px',
-                fontWeight: '600',
+                fontWeight: '700',
                 fontFamily: 'IRANSansX, sans-serif',
                 cursor: 'pointer',
                 transition: 'transform 0.2s ease'
@@ -359,7 +359,7 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ onBack }) => {
                 backgroundColor: '#50b4ff',
                 color: 'white',
                 fontSize: '16px',
-                fontWeight: '600',
+                fontWeight: '700',
                 fontFamily: 'IRANSansX, sans-serif',
                 cursor: 'pointer',
                 transition: 'transform 0.2s ease'

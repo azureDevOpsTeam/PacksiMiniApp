@@ -127,15 +127,14 @@ const CreateRequest: React.FC<CreateRequestProps> = ({ onBack }) => {
         }
       };
 
-      console.log('Sending request:', payload);
-      console.log('Sending files:', files);
+      // Sending request to API
 
       // Call API with files
       const response = await apiService.createRequest(payload, files);
 
       if (response.success) {
         setSuccess(true);
-        console.log('Request created successfully:', response.data);
+        // Request created successfully
         
         // Reset form after successful submission
         setTimeout(() => {
@@ -163,8 +162,28 @@ const CreateRequest: React.FC<CreateRequestProps> = ({ onBack }) => {
         throw new Error(response.message || t('createRequest.error.general') || 'خطا در ارسال درخواست');
       }
     } catch (err) {
-      console.error('Submit error:', err);
-      setError(err instanceof Error ? err.message : t('createRequest.error.unknown') || 'خطای نامشخص');
+      // Handle different types of errors
+      let errorMessage = t('createRequest.error.unknown') || 'خطای نامشخص';
+      
+      if (err instanceof Error) {
+        // Check for specific error types
+        if (err.message.includes('اتصال به اینترنت')) {
+          errorMessage = t('createRequest.error.network') || 'خطا در اتصال به اینترنت. لطفاً اتصال خود را بررسی کنید.';
+        } else if (err.message.includes('احراز هویت')) {
+          errorMessage = t('createRequest.error.auth') || 'خطا در احراز هویت. لطفاً دوباره تلاش کنید.';
+        } else if (err.message.includes('سرور')) {
+          errorMessage = t('createRequest.error.server') || 'خطای سرور. لطفاً بعداً تلاش کنید.';
+        } else {
+          errorMessage = err.message;
+        }
+      }
+      
+      setError(errorMessage);
+      
+      // Log error in development mode
+      if (import.meta.env.DEV) {
+        console.error('CreateRequest submission error:', err);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -189,7 +208,7 @@ const CreateRequest: React.FC<CreateRequestProps> = ({ onBack }) => {
     marginBottom: '5px',
     color: '#50b4ff',
     fontSize: '12px',
-    fontWeight: '600',
+    fontWeight: '700',
     fontFamily: 'IRANSansX, sans-serif',
     textAlign: isRTL ? 'right' as const : 'left' as const
   };
@@ -459,7 +478,7 @@ const CreateRequest: React.FC<CreateRequestProps> = ({ onBack }) => {
               <span style={{
                 color: '#50b4ff',
                 fontSize: '14px',
-                fontWeight: '600',
+                fontWeight: '700',
                 fontFamily: 'IRANSansX, sans-serif'
               }}>
                 {isRTL ? 'توضیحات اضافی (اختیاری)' : 'Additional Details (Optional)'}
@@ -611,7 +630,7 @@ const CreateRequest: React.FC<CreateRequestProps> = ({ onBack }) => {
                   backgroundColor: 'rgb(119 119 119)',
                   color: 'white',
                   fontSize: '14px',
-                  fontWeight: '600',
+                  fontWeight: '700',
                   fontFamily: 'IRANSansX, sans-serif',
                   cursor: 'pointer',
                   transition: 'transform 0.2s ease'
@@ -642,7 +661,7 @@ const CreateRequest: React.FC<CreateRequestProps> = ({ onBack }) => {
                 backgroundColor: isLoading ? '#888' : (success ? '#4CAF50' : '#50b4ff'),
                 color: 'white',
                 fontSize: '16px',
-                fontWeight: '600',
+                fontWeight: '700',
                 fontFamily: 'IRANSansX, sans-serif',
                 cursor: isLoading ? 'not-allowed' : 'pointer',
                 transition: 'all 0.2s ease',

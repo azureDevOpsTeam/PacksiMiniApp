@@ -30,7 +30,7 @@ const getTelegramLanguage = (): string => {
       return 'en';
     }
   } catch (error) {
-    console.log('Could not get Telegram language:', error);
+    // Could not get Telegram language - fallback to default
   }
   return 'en'; // fallback
 };

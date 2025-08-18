@@ -45,9 +45,7 @@ export interface Theme {
       xxl: string;
     };
     fontWeight: {
-      light: number;
       normal: number;
-      medium: number;
       bold: number;
     };
   };
@@ -100,9 +98,7 @@ export const lightTheme: Theme = {
       xxl: '24px',
     },
     fontWeight: {
-      light: 300,
       normal: 400,
-      medium: 500,
       bold: 700,
     },
   },
