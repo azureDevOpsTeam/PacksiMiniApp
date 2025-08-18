@@ -19,6 +19,14 @@ const AppContent: React.FC = () => {
   const [activeButton, setActiveButton] = React.useState<'user' | 'admin'>('user');
   const [currentPage, setCurrentPage] = React.useState<'home' | 'createRequest' | 'updateProfile'>('home');
 
+  // Prevent caching by adding timestamp to URL
+  React.useEffect(() => {
+    const timestamp = Date.now();
+    const currentUrl = new URL(window.location.href);
+    currentUrl.searchParams.set('t', timestamp.toString());
+    window.history.replaceState({}, '', currentUrl.toString());
+  }, []);
+
   // Handle phone number verification
   const handleVerifyPhoneNumber = React.useCallback(() => {
     if (!webApp) {

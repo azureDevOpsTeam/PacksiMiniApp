@@ -26,9 +26,19 @@ export default defineConfig({
     port: 3000,
     host: true,
     https: false, // Set to true if you need HTTPS for development
+    headers: {
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0'
+    }
   },
   preview: {
     port: 3000,
     host: true,
+    headers: {
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0'
+    }
   },
 })
