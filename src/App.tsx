@@ -13,10 +13,51 @@ import InstallPrompt from './components/InstallPrompt';
 
 // Main App Content Component
 const AppContent: React.FC = () => {
-  const { isReady } = useTelegramContext();
+  const { isReady, webApp, user } = useTelegramContext();
   const { t, language } = useLanguage();
   const [activeButton, setActiveButton] = React.useState<'user' | 'admin'>('user');
   const [currentPage, setCurrentPage] = React.useState<'home' | 'createRequest' | 'updateProfile'>('home');
+
+  // Handle phone number verification
+  const handleVerifyPhoneNumber = React.useCallback(() => {
+    if (!webApp) {
+      console.error('Telegram WebApp is not available');
+      return;
+    }
+
+    // Show confirmation popup with theme styling
+    webApp.showConfirm(
+      t('unlimited.verifyPhoneConfirm'),
+      (confirmed: boolean) => {
+        if (confirmed) {
+          // Request phone number from user
+          webApp.requestContact((contact: any) => {
+            if (contact && contact.phone_number) {
+              // Send phone number to bot
+              const phoneData = {
+                phone_number: contact.phone_number,
+                user_id: user?.id,
+                first_name: user?.first_name,
+                last_name: user?.last_name,
+                username: user?.username
+              };
+              
+              // Send data to bot via sendData method
+              webApp.sendData(JSON.stringify({
+                action: 'verify_phone',
+                data: phoneData
+              }));
+              
+              // Show success message
+              webApp.showAlert('شماره موبایل شما با موفقیت ارسال شد!');
+            } else {
+              webApp.showAlert('خطا در دریافت شماره موبایل');
+            }
+          });
+        }
+      }
+    );
+  }, [webApp, user, t]);
 
 
   if (!isReady) {
@@ -167,6 +208,47 @@ const AppContent: React.FC = () => {
                 fontWeight: '500'
               }}>
                 {t('unlimited.connectToBot')}
+              </div>
+            </div>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ color: '#848d96', transform: language === 'fa' ? 'rotate(180deg)' : 'none' }}>
+              <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+
+          <button onClick={handleVerifyPhoneNumber} style={{
+            display: 'flex',
+            alignItems: 'center',
+            padding: '8px 12px',
+            backgroundColor: '#212a33',
+            borderRadius: '0',
+            cursor: 'pointer',
+            border: 'none',
+            width: '100%',
+            direction: language === 'fa' ? 'rtl' : 'ltr'
+          }}>
+            <div style={{
+              width: '32px',
+              height: '32px',
+              borderRadius: '8px',
+              backgroundColor: '#10b981',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginRight: language === 'fa' ? '0' : '12px',
+              marginLeft: language === 'fa' ? '12px' : '0'
+            }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M3 5C3 3.89543 3.89543 3 5 3H8.27924C8.70967 3 9.09181 3.27543 9.22792 3.68377L10.7257 8.17721C10.8831 8.64932 10.6694 9.16531 10.2243 9.38787L7.96701 10.5165C9.06925 12.9612 11.0388 14.9308 13.4835 16.033L14.6121 13.7757C14.8347 13.3306 15.3507 13.1169 15.8228 13.2743L20.3162 14.7721C20.7246 14.9082 21 15.2903 21 15.7208V19C21 20.1046 20.1046 21 19 21H18C9.71573 21 3 14.2843 3 6V5Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+            <div style={{ flex: 1, textAlign: language === 'fa' ? 'right' : 'left' }}>
+              <div style={{
+                color: '#ffffff',
+                fontSize: '13px',
+                fontFamily: 'IRANSansX, sans-serif',
+                fontWeight: '500'
+              }}>
+                {t('unlimited.verifyPhone')}
               </div>
             </div>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ color: '#848d96', transform: language === 'fa' ? 'rotate(180deg)' : 'none' }}>

@@ -33,7 +33,9 @@
     },
   "unlimited": {
     "title": "For Unlimited Access",
-    "connectToBot": "Create Account"
+    "connectToBot": "Create Account",
+    "verifyPhone": "Verify Phone Number",
+    "verifyPhoneConfirm": "Would you like to send your phone number for verification?"
   },
   "app": {
     "title": "Packsi",

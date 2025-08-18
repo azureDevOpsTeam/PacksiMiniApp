@@ -33,7 +33,9 @@
     },
   "unlimited": {
     "title": "برای دسترسی نامحدود",
-    "connectToBot": "اتصال به ربات"
+    "connectToBot": "اتصال به ربات",
+    "verifyPhone": "تایید شماره موبایل",
+    "verifyPhoneConfirm": "آیا مایل به ارسال شماره موبایل خود برای تایید هستید؟"
   },
   "app": {
     "title": "پکسی",
