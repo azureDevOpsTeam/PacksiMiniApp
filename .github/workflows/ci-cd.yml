@@ -122,7 +122,7 @@ jobs:
           sudo systemctl reload nginx || sudo systemctl reload apache2 || true
           
           # Optional: Clear cache if using any
-          # sudo rm -rf /var/cache/nginx/* || true
+          sudo rm -rf /var/cache/nginx/* || true
           
           # Verify deployment
           echo "Verifying deployment..."
