@@ -1,11 +1,21 @@
-const CACHE_NAME = 'packsi-pwa-v1';
-const urlsToCache = [
+// استفاده از timestamp برای cache busting
+const CACHE_VERSION = Date.now();
+const CACHE_NAME = `packsi-pwa-v${CACHE_VERSION}`;
+
+// فایل‌های اصلی که باید cache شوند
+const STATIC_CACHE_URLS = [
   '/',
-  '/static/js/bundle.js',
-  '/static/css/main.css',
   '/manifest.json',
   '/icons/icon-192x192.svg',
   '/icons/icon-512x512.svg'
+];
+
+// الگوهای فایل‌هایی که نباید cache شوند
+const NO_CACHE_PATTERNS = [
+  /\/api\//,
+  /\.(hot-update|map)$/,
+  /\/@vite\//,
+  /\/node_modules\//
 ];
 
 // Install event - cache resources
@@ -14,8 +24,8 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        console.log('Service Worker: Caching files');
-        return cache.addAll(urlsToCache);
+        console.log('Service Worker: Caching static files');
+        return cache.addAll(STATIC_CACHE_URLS);
       })
       .catch((error) => {
         console.error('Service Worker: Cache failed', error);
@@ -44,7 +54,12 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Fetch event - serve cached content when offline
+// بررسی اینکه آیا URL نباید cache شود
+function shouldNotCache(url) {
+  return NO_CACHE_PATTERNS.some(pattern => pattern.test(url));
+}
+
+// Fetch event - استراتژی Network First برای فایل‌های JS/CSS
 self.addEventListener('fetch', (event) => {
   // Skip non-GET requests
   if (event.request.method !== 'GET') {
@@ -56,42 +71,60 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        // Return cached version or fetch from network
-        if (response) {
-          console.log('Service Worker: Serving from cache', event.request.url);
-          return response;
-        }
+  // Skip URLs that shouldn't be cached
+  if (shouldNotCache(event.request.url)) {
+    event.respondWith(fetch(event.request));
+    return;
+  }
 
-        console.log('Service Worker: Fetching from network', event.request.url);
-        return fetch(event.request)
-          .then((response) => {
-            // Check if we received a valid response
-            if (!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
-            }
+  const url = new URL(event.request.url);
+  const isAsset = /\.(js|css|woff2?|png|jpg|jpeg|svg|ico)$/.test(url.pathname);
+  const isDocument = event.request.destination === 'document';
 
-            // Clone the response as it can only be consumed once
+  if (isAsset) {
+    // برای assets: Network First strategy
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          // اگر response موفق بود، آن را cache کن
+          if (response && response.status === 200) {
             const responseToCache = response.clone();
-
             caches.open(CACHE_NAME)
               .then((cache) => {
                 cache.put(event.request, responseToCache);
               });
-
-            return response;
-          })
-          .catch((error) => {
-            console.error('Service Worker: Fetch failed', error);
-            // Return a custom offline page if available
-            if (event.request.destination === 'document') {
-              return caches.match('/');
-            }
+          }
+          return response;
+        })
+        .catch(() => {
+          // اگر network fail شد، از cache استفاده کن
+          return caches.match(event.request);
+        })
+    );
+  } else if (isDocument) {
+    // برای documents: Network First with cache fallback
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          if (response && response.status === 200) {
+            const responseToCache = response.clone();
+            caches.open(CACHE_NAME)
+              .then((cache) => {
+                cache.put(event.request, responseToCache);
+              });
+          }
+          return response;
+        })
+        .catch(() => {
+          return caches.match(event.request).then((cachedResponse) => {
+            return cachedResponse || caches.match('/');
           });
-      })
-  );
+        })
+    );
+  } else {
+    // برای سایر requests: فقط network
+    event.respondWith(fetch(event.request));
+  }
 });
 
 // Handle background sync

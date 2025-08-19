@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useTelegramContext } from '../hooks/useTelegramContext';
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[];
@@ -12,10 +13,27 @@ interface BeforeInstallPromptEvent extends Event {
 
 const InstallPrompt: React.FC = () => {
   const { t } = useTranslation();
+  const { user, initData } = useTelegramContext();
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showInstallPrompt, setShowInstallPrompt] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
+
+  // تشخیص اینکه آیا در Telegram MiniApp هستیم یا خیر
+  const isInTelegramMiniApp = () => {
+    // بررسی وجود Telegram WebApp API
+    const hasTelegramWebApp = typeof window !== 'undefined' && 
+      window.Telegram && 
+      window.Telegram.WebApp;
+    
+    // بررسی وجود داده‌های کاربر یا initData از Telegram
+    const hasTelegramData = user || initData;
+    
+    // بررسی user agent برای Telegram
+    const isTelegramUserAgent = /TelegramBot|Telegram/i.test(navigator.userAgent);
+    
+    return hasTelegramWebApp || hasTelegramData || isTelegramUserAgent;
+  };
 
   useEffect(() => {
     // Check if app is already installed (standalone mode)
@@ -45,6 +63,11 @@ const InstallPrompt: React.FC = () => {
 
     // Don't show if already installed
     if (standalone) {
+      return;
+    }
+
+    // Don't show if running in Telegram MiniApp
+    if (isInTelegramMiniApp()) {
       return;
     }
 
