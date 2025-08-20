@@ -49,7 +49,7 @@ if ('serviceWorker' in navigator) {
         registration.waiting.postMessage({ type: 'SKIP_WAITING' });
       }
 
-    } catch (error) {
+    } catch {
       // Service Worker registration failed
     }
   });
