@@ -20,7 +20,7 @@ const InstallPrompt: React.FC = () => {
   const [isIOS, setIsIOS] = useState(false);
 
   // تشخیص اینکه آیا در Telegram MiniApp هستیم یا خیر
-  const isInTelegramMiniApp = () => {
+  const isInTelegramMiniApp = useCallback(() => {
     // بررسی وجود Telegram WebApp API
     const hasTelegramWebApp = typeof window !== 'undefined' && 
       window.Telegram && 
@@ -33,7 +33,7 @@ const InstallPrompt: React.FC = () => {
     const isTelegramUserAgent = /TelegramBot|Telegram/i.test(navigator.userAgent);
     
     return hasTelegramWebApp || hasTelegramData || isTelegramUserAgent;
-  };
+  }, [user, initData]);
 
   useEffect(() => {
     // Check if app is already installed (standalone mode)
@@ -113,7 +113,7 @@ const InstallPrompt: React.FC = () => {
         clearTimeout(timer);
       }
     };
-  }, [user, initData]);
+  }, [isInTelegramMiniApp]);
 
   const handleInstallClick = async () => {
     if (deferredPrompt) {
