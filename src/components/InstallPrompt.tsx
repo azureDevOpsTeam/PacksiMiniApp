@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useTelegramContext } from '../hooks/useTelegramContext';
 
@@ -113,7 +113,7 @@ const InstallPrompt: React.FC = () => {
         clearTimeout(timer);
       }
     };
-  }, []);
+  }, [user, initData]);
 
   const handleInstallClick = async () => {
     if (deferredPrompt) {
