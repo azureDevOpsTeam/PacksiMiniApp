@@ -7,19 +7,22 @@ import './locales/i18n' // Initialize i18n
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', async () => {
     try {
-      // پاک کردن تمام cache های قدیمی
-      const cacheNames = await caches.keys();
-      await Promise.all(
-        cacheNames.map(cacheName => {
-          if (cacheName.startsWith('packsi-pwa-v')) {
-            console.log('Deleting old cache:', cacheName);
-            return caches.delete(cacheName);
-          }
-        })
-      );
+      // پاک کردن cache های قدیمی فقط در صورت وجود service worker جدید
+      const cleanOldCaches = async () => {
+        const cacheNames = await caches.keys();
+        const currentCacheName = 'packsi-pwa-v1.0.0';
+        await Promise.all(
+          cacheNames.map(cacheName => {
+            if (cacheName.startsWith('packsi-pwa-v') && cacheName !== currentCacheName) {
+              // Cache deleted silently
+              return caches.delete(cacheName);
+            }
+          })
+        );
+      };
 
       const registration = await navigator.serviceWorker.register('/sw.js');
-      console.log('Service Worker registered successfully');
+      // Service Worker registered
       
       // Check for updates
       registration.addEventListener('updatefound', () => {
@@ -28,12 +31,13 @@ if ('serviceWorker' in navigator) {
           newWorker.addEventListener('statechange', () => {
             if (newWorker.state === 'installed') {
               if (navigator.serviceWorker.controller) {
-                // New content is available, automatically update
-                console.log('New version available, updating...');
+                // New content is available, clean old caches and update
+                // New version available, updating
+                cleanOldCaches();
                 newWorker.postMessage({ type: 'SKIP_WAITING' });
               } else {
                 // First time installation
-                console.log('App is ready for offline use');
+                // App ready for offline use
               }
             }
           });
@@ -46,13 +50,13 @@ if ('serviceWorker' in navigator) {
       }
 
     } catch (error) {
-      console.log('Service Worker registration failed:', error);
+      // Service Worker registration failed
     }
   });
 
   // Handle service worker updates
   navigator.serviceWorker.addEventListener('controllerchange', () => {
-    console.log('Service Worker updated, reloading...');
+    // Service Worker updated, reloading
     window.location.reload();
   });
 }

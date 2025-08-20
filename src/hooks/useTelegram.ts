@@ -65,7 +65,7 @@ export const useTelegram = (): TelegramContextType => {
       
       // Log error in development mode
       if (import.meta.env.DEV) {
-        console.error('Telegram WebApp initialization error:', error);
+        // Telegram WebApp initialization error handled silently
       }
       
       // Still set ready to true for fallback functionality

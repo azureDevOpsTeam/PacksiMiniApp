@@ -1,5 +1,5 @@
-// استفاده از timestamp برای cache busting
-const CACHE_VERSION = Date.now();
+// استفاده از version ثابت برای cache busting - باید با هر deployment تغییر کند
+const CACHE_VERSION = '1.0.0';
 const CACHE_NAME = `packsi-pwa-v${CACHE_VERSION}`;
 
 // فایل‌های اصلی که باید cache شوند

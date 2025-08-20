@@ -182,7 +182,7 @@ const CreateRequest: React.FC<CreateRequestProps> = ({ onBack }) => {
       
       // Log error in development mode
       if (import.meta.env.DEV) {
-        console.error('CreateRequest submission error:', err);
+        // Error handled by user feedback
       }
     } finally {
       setIsLoading(false);
