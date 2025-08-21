@@ -4,7 +4,8 @@ import App from './App.tsx'
 import './locales/i18n' // Initialize i18n
 
 // Register Service Worker for PWA with improved cache management
-if ('serviceWorker' in navigator) {
+// Only register in production to avoid development reload issues
+if ('serviceWorker' in navigator && import.meta.env.PROD) {
   window.addEventListener('load', async () => {
     try {
       // پاک کردن cache های قدیمی فقط در صورت وجود service worker جدید

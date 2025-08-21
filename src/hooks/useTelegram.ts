@@ -23,7 +23,6 @@ export const useTelegram = (): TelegramContextType => {
       //}
       WebApp.disableVerticalSwipes();
       WebApp.enableClosingConfirmation();
-      WebApp.setBottomBarColor('#212a33');
 
       // Disable zoom functionality
       WebApp.setHeaderColor('#212a33');
