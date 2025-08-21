@@ -15,18 +15,23 @@ export const useTelegram = (): TelegramContextType => {
       WebApp.ready();
       
       // Set up the app
-      // Only expand on mobile devices, not on desktop
-      //const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-      //if (isMobile) {
+      // Expand to full screen to hide header
       WebApp.expand();
-
-      //}
+      
+      // Hide header by setting it to transparent/secondary background
+      WebApp.setHeaderColor('secondary_bg_color');
+      
+      // Set bottom bar color
+      WebApp.setBottomBarColor('secondary_bg_color');
+      
+      // Disable vertical swipes and enable closing confirmation
       WebApp.disableVerticalSwipes();
       WebApp.enableClosingConfirmation();
-
-      // Disable zoom functionality
-      WebApp.setHeaderColor('#212a33');
-      WebApp.setBottomBarColor('#212a33');
+      
+      // Force full screen mode
+      if (!WebApp.isExpanded) {
+        WebApp.expand();
+      }
       // Add viewport meta tag to disable zoom
       const viewport = document.querySelector('meta[name="viewport"]');
       if (viewport) {

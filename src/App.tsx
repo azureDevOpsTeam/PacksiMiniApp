@@ -20,6 +20,28 @@ const AppContent: React.FC = () => {
   const [activeButton, setActiveButton] = React.useState<'user' | 'admin'>('user');
   const [currentPage, setCurrentPage] = React.useState<'home' | 'createRequest' | 'updateProfile'>('home');
 
+  // Handle Telegram BackButton
+  React.useEffect(() => {
+    if (!webApp) return;
+
+    const handleBackButton = () => {
+      setCurrentPage('home');
+    };
+
+    if (currentPage !== 'home') {
+      // Show BackButton when not on home page
+      webApp.BackButton.show();
+      webApp.BackButton.onClick(handleBackButton);
+    } else {
+      // Hide BackButton on home page
+      webApp.BackButton.hide();
+    }
+
+    return () => {
+      webApp.BackButton.offClick(handleBackButton);
+    };
+  }, [currentPage, webApp]);
+
   // Handle phone number verification
   const handleVerifyPhoneNumber = React.useCallback(() => {
     if (!webApp) {
@@ -79,12 +101,12 @@ const AppContent: React.FC = () => {
 
   // Render CreateRequest page
   if (currentPage === 'createRequest') {
-    return <CreateRequest onBack={() => setCurrentPage('home')} />;
+    return <CreateRequest />;
   }
 
   // Render UpdateProfile page
   if (currentPage === 'updateProfile') {
-    return <UpdateProfile onBack={() => setCurrentPage('home')} />;
+    return <UpdateProfile />;
   }
 
   // Render Home page

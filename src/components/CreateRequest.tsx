@@ -21,11 +21,11 @@ interface CreateRequestFormData {
   files: string[];
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface CreateRequestProps {
-  onBack?: () => void;
 }
 
-const CreateRequest: React.FC<CreateRequestProps> = ({ onBack }) => {
+const CreateRequest: React.FC<CreateRequestProps> = () => {
   const { t, isRTL } = useLanguage();
   const { theme } = useTheme();
 
@@ -611,50 +611,14 @@ const CreateRequest: React.FC<CreateRequestProps> = ({ onBack }) => {
           </div>
 
           {/* Submit Button */}
-          {/* Buttons Container */}
           <div style={{
-            display: 'flex',
-            gap: '10px',
             marginTop: '20px'
           }}>
-            {/* Back Button */}
-            {onBack && (
-              <button
-                onClick={onBack}
-                type="button"
-                style={{
-                  flex: '0 0 auto',
-                  padding: '10px 16px',
-                  borderRadius: '5px',
-                  border: 'none',
-                  backgroundColor: 'rgb(119 119 119)',
-                  color: 'white',
-                  fontSize: '14px',
-                  fontWeight: '700',
-                  fontFamily: 'IRANSansX, sans-serif',
-                  cursor: 'pointer',
-                  transition: 'transform 0.2s ease'
-                }}
-                onMouseDown={(e) => {
-                  e.currentTarget.style.transform = 'scale(0.98)';
-                }}
-                onMouseUp={(e) => {
-                  e.currentTarget.style.transform = 'scale(1)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'scale(1)';
-                }}
-              >
-                {t('common.back')}
-              </button>
-            )}
-
-            {/* Submit Button */}
             <button
               type="submit"
               disabled={isLoading}
               style={{
-                flex: '1',
+                width: '100%',
                 padding: '12px',
                 borderRadius: '5px',
                 border: 'none',
