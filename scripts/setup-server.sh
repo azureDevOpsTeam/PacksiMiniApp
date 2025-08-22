@@ -96,6 +96,24 @@ else
     print_success "Docker Compose is already installed"
 fi
 
+# Install Node.js and npm
+print_status "Installing Node.js and npm..."
+if ! command -v node &> /dev/null; then
+    # Install Node.js using NodeSource repository
+    curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+    sudo apt-get install -y nodejs
+    
+    # Verify installation
+    NODE_VERSION=$(node --version)
+    NPM_VERSION=$(npm --version)
+    
+    print_success "Node.js ${NODE_VERSION} and npm ${NPM_VERSION} installed successfully"
+else
+    NODE_VERSION=$(node --version)
+    NPM_VERSION=$(npm --version)
+    print_success "Node.js ${NODE_VERSION} and npm ${NPM_VERSION} are already installed"
+fi
+
 # Install Nginx
 print_status "Installing Nginx..."
 if ! command -v nginx &> /dev/null; then
