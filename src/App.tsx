@@ -199,53 +199,12 @@ const AppContent: React.FC = () => {
         </h3>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', marginBottom: '30px' }}>
-          <button onClick={() => { }} style={{
-            display: 'flex',
-            alignItems: 'center',
-            padding: '8px 12px',
-            backgroundColor: '#212a33',
-            borderRadius: '8px 8px 0 0',
-            cursor: 'pointer',
-            border: 'none',
-            width: '100%',
-            direction: language === 'fa' ? 'rtl' : 'ltr'
-          }}>
-            <div style={{
-              width: '32px',
-              height: '32px',
-              borderRadius: '8px',
-              backgroundColor: '#f59e0b',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginRight: language === 'fa' ? '0' : '12px',
-              marginLeft: language === 'fa' ? '12px' : '0'
-            }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                <path d="M16 21V19C16 17.9391 15.5786 16.9217 14.8284 16.1716C14.0783 15.4214 13.0609 15 12 15H5C3.93913 15 2.92172 15.4214 2.17157 16.1716C1.42143 16.9217 1 17.9391 1 19V21M12.5 7C12.5 9.20914 10.7091 11 8.5 11C6.29086 11 4.5 9.20914 4.5 7C4.5 4.79086 6.29086 3 8.5 3C10.7091 3 12.5 4.79086 12.5 7ZM20 8V14M23 11H17" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
-            <div style={{ flex: 1, textAlign: language === 'fa' ? 'right' : 'left' }}>
-              <div style={{
-                color: '#ffffff',
-                fontSize: '13px',
-                fontFamily: 'IRANSansX, sans-serif',
-                fontWeight: '500'
-              }}>
-                {t('unlimited.connectToBot')}
-              </div>
-            </div>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ color: '#848d96', transform: language === 'fa' ? 'rotate(180deg)' : 'none' }}>
-              <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
-
           <button onClick={handleVerifyPhoneNumber} style={{
             display: 'flex',
             alignItems: 'center',
             padding: '8px 12px',
             backgroundColor: '#212a33',
-            borderRadius: '0',
+            borderRadius: '8px 8px 0 0',
             cursor: 'pointer',
             border: 'none',
             width: '100%',
@@ -286,7 +245,7 @@ const AppContent: React.FC = () => {
             alignItems: 'center',
             padding: '8px 12px',
             backgroundColor: '#212a33',
-            borderRadius: '0',
+            borderRadius: '0 0 8px 8px',
             cursor: 'pointer',
             border: 'none',
             width: '100%',
@@ -322,46 +281,7 @@ const AppContent: React.FC = () => {
             </svg>
           </button>
 
-          <a href="#" style={{
-            display: 'flex',
-            alignItems: 'center',
-            padding: '8px 12px',
-            backgroundColor: '#212a33',
-            borderRadius: '0 0 8px 8px',
-            cursor: 'pointer',
-            textDecoration: 'none',
-            direction: language === 'fa' ? 'rtl' : 'ltr'
-          }}>
-            <div style={{
-              width: '32px',
-              height: '32px',
-              borderRadius: '8px',
-              backgroundColor: '#10b981',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginRight: language === 'fa' ? '0' : '12px',
-              marginLeft: language === 'fa' ? '12px' : '0'
-            }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                <path d="M6.62 10.79C6.57 10.36 6.54 9.93 6.54 9.5C6.54 5.91 9.45 3 13.04 3C16.63 3 19.54 5.91 19.54 9.5C19.54 9.93 19.51 10.36 19.46 10.79L22 12V17H20V19H18V17H16V15H13.83C13.3 15.64 12.68 16.18 11.95 16.58C10.96 17.15 9.8 17.5 8.54 17.5C5.46 17.5 3 15.04 3 12C3 8.96 5.46 6.5 8.54 6.5C9.8 6.5 10.96 6.85 11.95 7.42C12.68 7.82 13.3 8.36 13.83 9H16V11H18V13H20V14L19.46 13.21C19.51 12.64 19.54 12.07 19.54 11.5V10.5C19.54 10.36 19.51 10.22 19.46 10.08L22 8.5V6L19.46 7.21C18.97 4.69 16.22 3 13.04 3C8.59 3 5.04 6.55 5.04 11C5.04 11.43 5.07 11.86 5.12 12.29L6.62 10.79Z" fill="white" />
-                <circle cx="8.5" cy="12" r="1.5" fill="white" />
-              </svg>
-            </div>
-            <div style={{ flex: 1, textAlign: language === 'fa' ? 'right' : 'left' }}>
-              <div style={{
-                color: '#ffffff',
-                fontSize: '13px',
-                fontFamily: 'IRANSansX, sans-serif',
-                fontWeight: '500'
-              }}>
-                {language === 'fa' ? 'تایید شماره موبایل' : 'Verify Phone Number'}
-              </div>
-            </div>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ color: '#848d96', transform: language === 'fa' ? 'rotate(180deg)' : 'none' }}>
-              <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </a>
+          
         </div>
       </div>
 
