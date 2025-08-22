@@ -1,11 +1,42 @@
 #!/bin/bash
 
+set -e  # Exit on any error
 # Packsi Mini App Server Setup Script
 # This script sets up a fresh VPS for the Telegram Mini App
 
-set -e  # Exit on any error
-
 echo "🚀 Starting Packsi Mini App server setup..."
+
+echo "generate rsa ssh key..."
+ssh-keygen -t rsa -b 4096 -C "deployment@tg-app"
+cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+chmod 600 ~/.ssh/authorized_keys
+chmod 700 ~/.ssh
+
+echo "Updating system and installing git..."
+sudo apt update
+sudo apt install -y git
+
+echo "Installing .NET SDK 9.0..."
+wget https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+sudo dpkg -i packages-microsoft-prod.deb
+sudo apt update
+sudo apt install -y dotnet-sdk-9.0
+
+echo "Installing SQL Server 2022..."
+echo "deb [arch=amd64,arm64,armhf] https://packages.microsoft.com/ubuntu/22.04/mssql-server-2022 jammy main" | sudo tee /etc/apt/sources.list.d/mssql-server-2022.list
+curl -sSL https://packages.microsoft.com/keys/microsoft.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/microsoft.gpg
+sudo apt update
+sudo apt install -y mssql-server
+sudo /opt/mssql/bin/mssql-conf setup
+sudo systemctl status mssql-server
+
+echo "Installing SQL Server tools..."
+sudo apt install -y mssql-tools unixodbc-dev
+echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bashrc
+source ~/.bashrc
+
+echo "Upgrading system..."
+sudo apt upgrade -y
 
 # Colors for output
 RED='\033[0;31m'
@@ -132,6 +163,18 @@ if ! command -v certbot &> /dev/null; then
     print_success "Certbot installed successfully"
 else
     print_success "Certbot is already installed"
+fi
+
+# Configure SSL certificates
+print_status "Setting up SSL certificates..."
+if [ ! -z "$DOMAIN" ]; then
+    sudo certbot --nginx -d tg.packsi.net
+    sudo certbot --nginx -d packsi.net
+    sudo certbot --nginx -d api.packsi.net
+    sudo certbot --nginx -d panel.packsi.net
+    print_success "SSL certificates configured"
+else
+    print_warning "No domain specified, skipping SSL certificate setup"
 fi
 
 # Configure firewall

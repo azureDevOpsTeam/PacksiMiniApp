@@ -20,7 +20,7 @@ Error: Process completed with exit code 1.
 - `SERVER_SSH_KEY`: کلید خصوصی SSH
 - `SERVER_PORT`: پورت SSH (معمولاً `22`)
 - `APP_DIRECTORY`: مسیر اپلیکیشن (مثال: `/var/www/tg-app`)
-- `APP_URL`: آدرس نهایی اپلیکیشن (مثال: `https://bot.draton.io`)
+- `APP_URL`: آدرس نهایی اپلیکیشن (مثال: `https://tg.packsi.net`)
 
 ### 2. بررسی دسترسی به سرور
 
@@ -74,10 +74,10 @@ sudo tail -f /var/log/nginx/access.log
 curl -I http://localhost/
 
 # تست با domain
-curl -I https://bot.draton.io/
+curl -I https://tg.packsi.net/
 
 # بررسی DNS
-nslookup bot.draton.io
+nslookup tg.packsi.net
 ```
 
 ## راه‌حل‌های احتمالی
@@ -125,7 +125,7 @@ sudo certbot renew --dry-run
 - name: Health check
   run: |
     sleep 10
-    curl -f http://bot.draton.io || curl -f ${{ secrets.APP_URL }} || exit 1
+    curl -f http://tg.packsi.net || curl -f ${{ secrets.APP_URL }} || exit 1
 ```
 
 ## اقدامات پیشگیرانه

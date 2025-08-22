@@ -1,8 +1,8 @@
-# حل مشکل 404 Not Found - bot.draton.io
+# حل مشکل 404 Not Found - tg.packsi.net
 
 ## وضعیت فعلی
 ✅ CI/CD Pipeline موفقیت‌آمیز  
-❌ سایت https://bot.draton.io/ خطای 404 می‌دهد  
+❌ سایت https://tg.packsi.net/ خطای 404 می‌دهد  
 ✅ Nginx نصب و فعال است (nginx/1.18.0)
 
 ## علل احتمالی مشکل 404
@@ -25,14 +25,14 @@ sudo ls -la /etc/nginx/sites-enabled/
 
 # بررسی محتوای فایل تنظیمات (اگر وجود دارد)
 sudo cat /etc/nginx/sites-available/tg-app
-sudo cat /etc/nginx/sites-available/bot.draton.io
+sudo cat /etc/nginx/sites-available/tg.packsi.net
 ```
 
 **اگر فایل تنظیمات وجود ندارد:**
 
 ```bash
 # ایجاد فایل تنظیمات
-sudo nano /etc/nginx/sites-available/bot.draton.io
+sudo nano /etc/nginx/sites-available/tg.packsi.net
 ```
 
 **محتوای فایل:**
@@ -40,7 +40,7 @@ sudo nano /etc/nginx/sites-available/bot.draton.io
 server {
     listen 80;
     listen [::]:80;
-    server_name bot.draton.io;
+    server_name tg.packsi.net;
     
     root /var/www/tg-app/dist;
     index index.html;
@@ -57,15 +57,15 @@ server {
     }
     
     # لاگ‌ها
-    access_log /var/log/nginx/bot.draton.io.access.log;
-    error_log /var/log/nginx/bot.draton.io.error.log;
+    access_log /var/log/nginx/tg.packsi.net.access.log;
+    error_log /var/log/nginx/tg.packsi.net.error.log;
 }
 ```
 
 **فعال‌سازی Virtual Host:**
 ```bash
 # ایجاد symlink
-sudo ln -s /etc/nginx/sites-available/bot.draton.io /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/tg.packsi.net /etc/nginx/sites-enabled/
 
 # حذف default site (اختیاری)
 sudo rm /etc/nginx/sites-enabled/default
@@ -98,12 +98,12 @@ sudo chmod -R 755 /var/www/tg-app/
 
 ```bash
 # بررسی DNS resolution
-nslookup bot.draton.io
-dig bot.draton.io
+nslookup tg.packsi.net
+dig tg.packsi.net
 
 # تست اتصال محلی
 curl -I http://localhost
-curl -I http://bot.draton.io
+curl -I http://tg.packsi.net
 ```
 
 ### مرحله 4: بررسی لاگ‌های Nginx
@@ -116,14 +116,14 @@ sudo tail -f /var/log/nginx/error.log
 sudo tail -f /var/log/nginx/access.log
 
 # لاگ‌های مخصوص سایت (اگر تنظیم شده)
-sudo tail -f /var/log/nginx/bot.draton.io.error.log
+sudo tail -f /var/log/nginx/tg.packsi.net.error.log
 ```
 
 ### مرحله 5: تست و عیب‌یابی
 
 ```bash
 # تست از داخل سرور
-curl -H "Host: bot.draton.io" http://localhost/
+curl -H "Host: tg.packsi.net" http://localhost/
 
 # بررسی وضعیت Nginx
 sudo systemctl status nginx
@@ -150,7 +150,7 @@ echo "\n3. تست تنظیمات Nginx:"
 sudo nginx -t
 
 echo "\n4. بررسی DNS:"
-nslookup bot.draton.io
+nslookup tg.packsi.net
 
 echo "\n5. تست اتصال محلی:"
 curl -I http://localhost 2>/dev/null || echo "❌ اتصال محلی ناموفق"
@@ -166,8 +166,8 @@ sudo tail -5 /var/log/nginx/error.log
 ### اگر Virtual Host وجود ندارد:
 ```bash
 # کپی کردن تنظیمات از فایل موجود در پروژه
-sudo cp /var/www/tg-app/nginx.conf /etc/nginx/sites-available/bot.draton.io
-sudo ln -s /etc/nginx/sites-available/bot.draton.io /etc/nginx/sites-enabled/
+sudo cp /var/www/tg-app/nginx.conf /etc/nginx/sites-available/tg.packsi.net
+sudo ln -s /etc/nginx/sites-available/tg.packsi.net /etc/nginx/sites-enabled/
 sudo nginx -t && sudo systemctl reload nginx
 ```
 
@@ -184,7 +184,7 @@ sudo chown -R www-data:www-data dist/
 ### اگر DNS مشکل دارد:
 ```bash
 # تست با IP مستقیم
-curl -H "Host: bot.draton.io" http://[SERVER_IP]/
+curl -H "Host: tg.packsi.net" http://[SERVER_IP]/
 ```
 
 ---
@@ -195,8 +195,8 @@ curl -H "Host: bot.draton.io" http://[SERVER_IP]/
 
 1. ✅ `sudo nginx -t` (بدون خطا)
 2. ✅ `sudo systemctl reload nginx`
-3. ✅ `curl -I http://bot.draton.io` (کد 200)
-4. ✅ بازدید از https://bot.draton.io در مرورگر
+3. ✅ `curl -I http://tg.packsi.net` (کد 200)
+4. ✅ بازدید از https://tg.packsi.net در مرورگر
 
 ## کمک اضافی
 

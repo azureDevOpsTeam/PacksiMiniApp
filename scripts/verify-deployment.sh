@@ -16,7 +16,7 @@ NC='\033[0m' # No Color
 
 # Configuration
 APP_DIR="${APP_DIRECTORY:-/var/www/tg-app}"
-APP_URL="${APP_URL:-https://bot.draton.io}"
+APP_URL="${APP_URL:-https://tg.packsi.net}"
 
 echo -e "${YELLOW}Checking application directory: $APP_DIR${NC}"
 

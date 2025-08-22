@@ -1,6 +1,6 @@
 import type { CreateRequestPayload, ApiResponse, CreateRequestResponse } from '../types/api';
 
-const API_BASE_URL = 'https://web.draton.io/api';
+const API_BASE_URL = 'https://web.packsi.net/api';
 
 class ApiService {
   private getHeaders(isFormData: boolean = false): HeadersInit {

@@ -2,7 +2,7 @@
 # This script helps verify that the deployment is working correctly from Windows
 
 param(
-    [string]$AppUrl = "https://bot.draton.io",
+    [string]$AppUrl = "https://tg.packsi.net",
     [string]$ServerHost = "",
     [string]$ServerUser = "deployment",
     [int]$ServerPort = 22

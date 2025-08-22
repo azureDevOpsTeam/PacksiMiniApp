@@ -48,7 +48,7 @@ Error: Process completed with exit code 1.
 #### `APP_URL` (ضروری)
 - **Name**: `APP_URL`
 - **Secret**: آدرس نهایی اپلیکیشن
-- **مثال**: `https://bot.draton.io`
+- **مثال**: `https://tg.packsi.net`
 
 ## تولید کلید SSH (اگر ندارید)
 
@@ -98,7 +98,7 @@ sudo systemctl enable nginx
 ```nginx
 server {
     listen 80;
-    server_name bot.draton.io;  # دامنه شما
+    server_name tg.packsi.net;  # دامنه شما
     
     root /var/www/tg-app/dist;
     index index.html;

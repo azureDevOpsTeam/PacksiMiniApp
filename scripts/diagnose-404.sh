@@ -1,16 +1,16 @@
 #!/bin/bash
 
-# اسکریپت تشخیص مشکل 404 برای bot.draton.io
+# اسکریپت تشخیص مشکل 404 برای tg.packsi.net
 # استفاده: ./diagnose-404.sh
 
 set -e
 
-echo "🔍 تشخیص مشکل 404 برای bot.draton.io"
+echo "🔍 تشخیص مشکل 404 برای tg.packsi.net"
 echo "==========================================="
 
 # متغیرها
 APP_DIR="/var/www/tg-app"
-DOMAIN="bot.draton.io"
+DOMAIN="tg.packsi.net"
 NGINX_SITES_AVAILABLE="/etc/nginx/sites-available"
 NGINX_SITES_ENABLED="/etc/nginx/sites-enabled"
 

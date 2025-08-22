@@ -1,10 +1,10 @@
-# 404 Diagnosis Script for bot.draton.io
+# 404 Diagnosis Script for tg.packsi.net
 # Usage: .\diagnose-404.ps1
 
-Write-Host "Diagnosing 404 issue for bot.draton.io" -ForegroundColor Cyan
+Write-Host "Diagnosing 404 issue for tg.packsi.net" -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
 
-$Domain = "bot.draton.io"
+$Domain = "tg.packsi.net"
 $AppUrl = "https://$Domain"
 $HttpUrl = "http://$Domain"
 
