@@ -43,7 +43,7 @@ Error: Process completed with exit code 1.
 #### `APP_DIRECTORY` (اختیاری)
 - **Name**: `APP_DIRECTORY`
 - **Secret**: مسیر نصب اپلیکیشن در سرور
-- **پیش‌فرض**: `/var/www/packsi-mini-app`
+- **پیش‌فرض**: `/var/www/tg-app`
 
 #### `APP_URL` (ضروری)
 - **Name**: `APP_URL`
@@ -55,7 +55,7 @@ Error: Process completed with exit code 1.
 ### در سرور:
 ```bash
 # تولید کلید SSH
-ssh-keygen -t rsa -b 4096 -C "deployment@packsi-mini-app"
+ssh-keygen -t rsa -b 4096 -C "deployment@tg-app"
 
 # کپی کلید عمومی
 cat ~/.ssh/id_rsa.pub
@@ -78,9 +78,9 @@ ssh -i ~/.ssh/id_rsa username@server-ip
 
 ### 1. بررسی دایرکتوری اپلیکیشن
 ```bash
-sudo mkdir -p /var/www/packsi-mini-app
-sudo chown deployment:www-data /var/www/packsi-mini-app
-sudo chmod 755 /var/www/packsi-mini-app
+sudo mkdir -p /var/www/tg-app
+sudo chown deployment:www-data /var/www/tg-app
+sudo chmod 755 /var/www/tg-app
 ```
 
 ### 2. بررسی Nginx
@@ -94,13 +94,13 @@ sudo systemctl enable nginx
 ```
 
 ### 3. تنظیم Virtual Host
-فایل `/etc/nginx/sites-available/packsi-mini-app`:
+فایل `/etc/nginx/sites-available/tg-app`:
 ```nginx
 server {
     listen 80;
     server_name bot.draton.io;  # دامنه شما
     
-    root /var/www/packsi-mini-app/dist;
+    root /var/www/tg-app/dist;
     index index.html;
     
     location / {
@@ -111,7 +111,7 @@ server {
 
 ```bash
 # فعال‌سازی
-sudo ln -s /etc/nginx/sites-available/packsi-mini-app /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/tg-app /etc/nginx/sites-enabled/
 sudo nginx -t
 sudo systemctl reload nginx
 ```

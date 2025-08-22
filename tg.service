@@ -1,0 +1,35 @@
+[Unit]
+Description=Packsi Mini App Telegram Bot
+Requires=docker.service
+After=docker.service
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/var/www/tg-app
+ExecStartPre=/usr/bin/docker-compose down
+ExecStart=/usr/bin/docker-compose up -d --build app-prod
+ExecStop=/usr/bin/docker-compose down
+ExecReload=/usr/bin/docker-compose restart app-prod
+TimeoutStartSec=300
+TimeoutStopSec=30
+Restart=on-failure
+RestartSec=10
+User=root
+Group=root
+
+# Environment variables
+Environment="COMPOSE_PROJECT_NAME=tg-app"
+Environment="DOCKER_BUILDKIT=1"
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/www/tg-app
+
+[Install]
+WantedBy=multi-user.target

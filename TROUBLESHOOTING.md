@@ -19,7 +19,7 @@ Error: Process completed with exit code 1.
 - `SERVER_USER`: کاربر deployment (مثال: `deployment`)
 - `SERVER_SSH_KEY`: کلید خصوصی SSH
 - `SERVER_PORT`: پورت SSH (معمولاً `22`)
-- `APP_DIRECTORY`: مسیر اپلیکیشن (مثال: `/var/www/packsi-mini-app`)
+- `APP_DIRECTORY`: مسیر اپلیکیشن (مثال: `/var/www/tg-app`)
 - `APP_URL`: آدرس نهایی اپلیکیشن (مثال: `https://bot.draton.io`)
 
 ### 2. بررسی دسترسی به سرور
@@ -31,10 +31,10 @@ Error: Process completed with exit code 1.
 ssh deployment@your-server-ip
 
 # بررسی وجود دایرکتوری اپلیکیشن
-ls -la /var/www/packsi-mini-app/
+ls -la /var/www/tg-app/
 
 # بررسی محتویات dist
-ls -la /var/www/packsi-mini-app/dist/
+ls -la /var/www/tg-app/dist/
 
 # بررسی وضعیت Nginx
 sudo systemctl status nginx
@@ -49,7 +49,7 @@ sudo nginx -t
 
 ```bash
 # بررسی فایل تنظیمات
-sudo cat /etc/nginx/sites-available/packsi-mini-app
+sudo cat /etc/nginx/sites-available/tg-app
 
 # بررسی لینک symbolic
 ls -la /etc/nginx/sites-enabled/ | grep packsi
@@ -86,8 +86,8 @@ nslookup bot.draton.io
 
 ```bash
 # بررسی مجوزها
-sudo chown -R www-data:www-data /var/www/packsi-mini-app/dist/
-sudo chmod -R 755 /var/www/packsi-mini-app/dist/
+sudo chown -R www-data:www-data /var/www/tg-app/dist/
+sudo chmod -R 755 /var/www/tg-app/dist/
 ```
 
 ### اگر Nginx کار نمی‌کند:

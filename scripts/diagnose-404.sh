@@ -9,7 +9,7 @@ echo "🔍 تشخیص مشکل 404 برای bot.draton.io"
 echo "==========================================="
 
 # متغیرها
-APP_DIR="/var/www/packsi-mini-app"
+APP_DIR="/var/www/tg-app"
 DOMAIN="bot.draton.io"
 NGINX_SITES_AVAILABLE="/etc/nginx/sites-available"
 NGINX_SITES_ENABLED="/etc/nginx/sites-enabled"
@@ -81,7 +81,7 @@ echo "\nSites Enabled:"
 ls -la "$NGINX_SITES_ENABLED/" 2>/dev/null || echo "❌ دسترسی به sites-enabled ندارید"
 
 # بررسی فایل تنظیمات مخصوص دامنه
-CONFIG_FILES=("$DOMAIN" "packsi-mini-app" "default")
+CONFIG_FILES=("$DOMAIN" "tg-app" "default")
 CONFIG_FOUND=false
 
 for config in "${CONFIG_FILES[@]}"; do

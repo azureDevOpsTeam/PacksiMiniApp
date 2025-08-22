@@ -24,7 +24,7 @@ sudo ls -la /etc/nginx/sites-available/
 sudo ls -la /etc/nginx/sites-enabled/
 
 # بررسی محتوای فایل تنظیمات (اگر وجود دارد)
-sudo cat /etc/nginx/sites-available/packsi-mini-app
+sudo cat /etc/nginx/sites-available/tg-app
 sudo cat /etc/nginx/sites-available/bot.draton.io
 ```
 
@@ -42,7 +42,7 @@ server {
     listen [::]:80;
     server_name bot.draton.io;
     
-    root /var/www/packsi-mini-app/dist;
+    root /var/www/tg-app/dist;
     index index.html;
     
     # برای React SPA
@@ -81,17 +81,17 @@ sudo systemctl reload nginx
 
 ```bash
 # بررسی وجود دایرکتوری
-ls -la /var/www/packsi-mini-app/
+ls -la /var/www/tg-app/
 
 # بررسی فایل‌های dist
-ls -la /var/www/packsi-mini-app/dist/
+ls -la /var/www/tg-app/dist/
 
 # بررسی index.html
-cat /var/www/packsi-mini-app/dist/index.html
+cat /var/www/tg-app/dist/index.html
 
 # بررسی مالکیت و دسترسی‌ها
-sudo chown -R www-data:www-data /var/www/packsi-mini-app/
-sudo chmod -R 755 /var/www/packsi-mini-app/
+sudo chown -R www-data:www-data /var/www/tg-app/
+sudo chmod -R 755 /var/www/tg-app/
 ```
 
 ### مرحله 3: بررسی DNS و دامنه
@@ -144,7 +144,7 @@ echo "1. بررسی Virtual Hosts:"
 sudo ls -la /etc/nginx/sites-enabled/
 
 echo "\n2. بررسی فایل‌های اپلیکیشن:"
-ls -la /var/www/packsi-mini-app/dist/ 2>/dev/null || echo "❌ دایرکتوری dist وجود ندارد"
+ls -la /var/www/tg-app/dist/ 2>/dev/null || echo "❌ دایرکتوری dist وجود ندارد"
 
 echo "\n3. تست تنظیمات Nginx:"
 sudo nginx -t
@@ -166,7 +166,7 @@ sudo tail -5 /var/log/nginx/error.log
 ### اگر Virtual Host وجود ندارد:
 ```bash
 # کپی کردن تنظیمات از فایل موجود در پروژه
-sudo cp /var/www/packsi-mini-app/nginx.conf /etc/nginx/sites-available/bot.draton.io
+sudo cp /var/www/tg-app/nginx.conf /etc/nginx/sites-available/bot.draton.io
 sudo ln -s /etc/nginx/sites-available/bot.draton.io /etc/nginx/sites-enabled/
 sudo nginx -t && sudo systemctl reload nginx
 ```
@@ -174,7 +174,7 @@ sudo nginx -t && sudo systemctl reload nginx
 ### اگر فایل‌ها وجود ندارند:
 ```bash
 # اجرای مجدد deployment
-cd /var/www/packsi-mini-app
+cd /var/www/tg-app
 sudo git pull origin main
 sudo npm ci
 sudo npm run build

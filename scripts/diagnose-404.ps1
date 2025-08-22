@@ -152,7 +152,7 @@ Write-Host "`nServer-side troubleshooting steps:" -ForegroundColor Cyan
 Write-Host "1. SSH to server: ssh username@server-ip" -ForegroundColor White
 Write-Host "2. Run diagnosis script: ./scripts/diagnose-404.sh" -ForegroundColor White
 Write-Host "3. Check Virtual Host: sudo ls -la /etc/nginx/sites-enabled/" -ForegroundColor White
-Write-Host "4. Check app files: ls -la /var/www/packsi-mini-app/dist/" -ForegroundColor White
+Write-Host "4. Check app files: ls -la /var/www/tg-app/dist/" -ForegroundColor White
 Write-Host "5. Check Nginx logs: sudo tail -f /var/log/nginx/error.log" -ForegroundColor White
 
 Write-Host "`nUseful guides:" -ForegroundColor Cyan

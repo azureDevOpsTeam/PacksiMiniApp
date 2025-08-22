@@ -31,7 +31,7 @@ SERVER_HOST=your-server-ip-or-domain
 SERVER_USER=deployment-user
 SERVER_SSH_KEY=your-private-ssh-key
 SERVER_PORT=22
-APP_DIRECTORY=/var/www/packsi-mini-app
+APP_DIRECTORY=/var/www/tg-app
 APP_URL=https://your-domain.com
 ```
 
@@ -69,20 +69,20 @@ sudo chmod 600 /home/deployment/.ssh/authorized_keys
 
 ```bash
 # ایجاد دایرکتوری
-sudo mkdir -p /var/www/packsi-mini-app
-sudo chown deployment:www-data /var/www/packsi-mini-app
-sudo chmod 755 /var/www/packsi-mini-app
+sudo mkdir -p /var/www/tg-app
+sudo chown deployment:www-data /var/www/tg-app
+sudo chmod 755 /var/www/tg-app
 ```
 
 ### 3. تنظیم Nginx
 
 ```nginx
-# /etc/nginx/sites-available/packsi-mini-app
+# /etc/nginx/sites-available/tg-app
 server {
     listen 80;
     server_name your-domain.com;
     
-    root /var/www/packsi-mini-app/dist;
+    root /var/www/tg-app/dist;
     index index.html;
     
     location / {
@@ -103,7 +103,7 @@ server {
 
 ```bash
 # فعال کردن سایت
-sudo ln -s /etc/nginx/sites-available/packsi-mini-app /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/tg-app /etc/nginx/sites-enabled/
 sudo nginx -t
 sudo systemctl reload nginx
 ```
@@ -161,10 +161,10 @@ Pipeline به طور خودکار بک‌آپ از deployment قبلی ایجا�
 
 ```bash
 # مشاهده بک‌آپ‌ها
-ls -la /var/www/packsi-mini-app/backups/
+ls -la /var/www/tg-app/backups/
 
 # بازیابی از بک‌آپ
-cd /var/www/packsi-mini-app
+cd /var/www/tg-app
 sudo tar -xzf backups/backup-YYYYMMDD-HHMMSS.tar.gz
 ```
 
