@@ -1,14 +1,13 @@
-# راهنمای تنظیم GitHub Secrets
+# راهنمای تنظیم GitHub Secrets برای CI/CD
 
-## مشکل فعلی
-اگر deployment با خطای زیر مواجه شده:
-```
-Both HTTPS and HTTP health checks failed
-Checking if files exist on server...
-Error: Process completed with exit code 1.
-```
+## درباره این Workflow
+این پروژه دارای یک GitHub Actions workflow است که:
+- هنگام push به branch اصلی، پروژه را به صورت خودکار build می‌کند
+- فایل‌های build شده را در مسیر `/var/www/tg-app/build` در سرور قرار می‌دهد
+- فقط `npm install` و `npm run build` اجرا می‌کند
 
-این به معنای عدم تنظیم صحیح GitHub Secrets است.
+## پیش‌نیازها
+برای عملکرد صحیح CI/CD، باید GitHub Secrets زیر را تنظیم کنید:
 
 ## مراحل تنظیم GitHub Secrets
 
@@ -40,14 +39,23 @@ Error: Process completed with exit code 1.
 - **Name**: `SERVER_PORT`
 - **Secret**: پورت SSH (پیش‌فرض: `22`)
 
-#### `APP_DIRECTORY` (اختیاری)
-- **Name**: `APP_DIRECTORY`
-- **Secret**: مسیر نصب اپلیکیشن در سرور
-- **پیش‌فرض**: `/var/www/tg-app`
-
-#### `APP_URL` (ضروری)
+#### `APP_URL` (اختیاری)
 - **Name**: `APP_URL`
 - **Secret**: آدرس نهایی اپلیکیشن
+- **مثال**: `https://your-domain.com`
+
+## نکات مهم
+
+### تنظیم کلید SSH
+1. کلید SSH باید بدون رمز عبور (passphrase) باشد
+2. کلید باید دسترسی کامل به سرور داشته باشد
+3. کاربر مشخص شده باید دسترسی sudo داشته باشد
+
+### مسیر Build
+فایل‌های build شده در مسیر `/var/www/tg-app/build` قرار می‌گیرند و مالکیت آن‌ها به `www-data` تغییر می‌کند.
+
+### تست Workflow
+برای تست workflow، یک commit جدید به branch اصلی push کنید و در بخش **Actions** repository خود پیشرفت را مشاهده کنید.
 - **مثال**: `https://tg.packsi.net`
 
 ## تولید کلید SSH (اگر ندارید)
