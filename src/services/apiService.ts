@@ -291,16 +291,23 @@ class ApiService {
 
   async validate(): Promise<ValidateResponse> {
     try {
+      console.log('Making API call to validate endpoint...');
       const response = await fetch(`${API_BASE_URL}/MiniApp/validate`, {
         method: 'GET',
         headers: this.getHeaders()
       });
 
+      console.log('API Response status:', response.status);
+      console.log('API Response ok:', response.ok);
+
       if (!response.ok) {
+        const errorText = await response.text();
+        console.error('API Error response:', errorText);
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
 
       const data = await response.json();
+      console.log('API Response data:', JSON.stringify(data, null, 2));
       return data;
     } catch (error) {
       console.error('Error validating user:', error);
