@@ -35,8 +35,7 @@
   "unlimited": {
     "title": "برای دسترسی نامحدود",
     "connectToBot": "اتصال به ربات",
-    "verifyPhone": "تایید شماره موبایل",
-    "verifyPhoneConfirm": "آیا مایل به ارسال شماره موبایل خود برای تایید هستید؟"
+    "verifyPhone": "تایید شماره موبایل"
   },
   "app": {
     "title": "پکسی",
@@ -119,16 +118,5 @@
     "single": "مجرد",
     "married": "متأهل",
     "submit": "بروزرسانی پروفایل"
-  },
-  "installPrompt": {
-    "title": "نصب اپلیکیشن",
-    "message": "برای تجربه بهتر، این اپلیکیشن را روی دستگاه خود نصب کنید.",
-    "messageIOS": "برای دسترسی آسان‌تر، این اپلیکیشن را به صفحه اصلی خود اضافه کنید.",
-    "install": "نصب",
-    "howToInstall": "نحوه نصب",
-    "later": "بعداً",
-    "iosInstructions": "برای نصب این اپلیکیشن، روی دکمه Share در Safari کلیک کرده و 'Add to Home Screen' را انتخاب کنید.",
-    "androidInstructions": "برای نصب این اپلیکیشن، روی منوی مرورگر (⋮) کلیک کرده و 'Add to Home screen' یا 'نصب اپلیکیشن' را انتخاب کنید.",
-    "generalInstructions": "برای نصب این اپلیکیشن، از منوی مرورگر گزینه 'Add to Home screen' را انتخاب کنید."
   }
 }

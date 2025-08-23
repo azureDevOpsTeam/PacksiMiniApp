@@ -9,7 +9,7 @@ import CreateRequest from './components/CreateRequest';
 import UpdateProfile from './components/UpdateProfile';
 import Logo from './components/Logo';
 import Settings from './components/Settings';
-import InstallPrompt from './components/InstallPrompt';
+
 import ErrorBoundary from './components/ErrorBoundary';
 import SkeletonLoader from './components/SkeletonLoader';
 import apiService from './services/apiService';
@@ -81,42 +81,45 @@ const AppContent: React.FC = () => {
       return;
     }
 
-    // Show confirmation popup with theme styling
-    webApp.showConfirm(
-      t('unlimited.verifyPhoneConfirm'),
-      (confirmed: boolean) => {
-        if (confirmed) {
-          // Request phone number from user
-          webApp.requestContact(async (access: boolean, response?: RequestContactResponse) => {
-            if (access && response?.status === 'sent' && response?.responseUnsafe?.contact) {
-              const contact = response.responseUnsafe.contact;
-              
-              try {
-                // Send phone number to API
-                const apiResponse = await apiService.verifyPhoneNumber({
-                  model: {
-                    phoneNumber: contact.phone_number
-                  }
-                });
-                
-                if (apiResponse.requestStatus.name === 'Successful') {
-                  // Show success message
-                  webApp.showAlert('شماره موبایل شما با موفقیت تایید شد!');
-                } else {
-                  // Show error message from API
-                  webApp.showAlert(apiResponse.message || 'خطا در تایید شماره موبایل');
-                }
-              } catch (error) {
-                console.error('Error verifying phone number:', error);
-                webApp.showAlert('خطا در ارسال شماره موبایل به سرور');
-              }
-            } else {
-              webApp.showAlert('خطا در دریافت شماره موبایل');
+    // Request phone number directly without confirmation popup
+    // Telegram will show its own confirmation dialog
+    webApp.requestContact(async (access: boolean, response?: RequestContactResponse) => {
+      if (access && response?.status === 'sent' && response?.responseUnsafe?.contact) {
+        const contact = response.responseUnsafe.contact;
+        
+        try {
+          // Send phone number to API with better error handling for mobile
+          const apiResponse = await apiService.verifyPhoneNumber({
+            model: {
+              phoneNumber: contact.phone_number
             }
           });
+          
+          if (apiResponse.requestStatus.name === 'Successful') {
+            // Show success message and refresh validation
+            webApp.showAlert('شماره موبایل شما با موفقیت تایید شد!');
+            // Refresh user validation status
+            setTimeout(() => {
+              window.location.reload();
+            }, 1000);
+          } else {
+            // Show error message from API
+            webApp.showAlert(apiResponse.message || 'خطا در تایید شماره موبایل');
+          }
+        } catch (error) {
+          console.error('Error verifying phone number:', error);
+          // More specific error handling for mobile issues
+          const errorMessage = error instanceof Error ? error.message : 'خطا در ارسال شماره موبایل به سرور';
+          webApp.showAlert(errorMessage);
         }
+      } else if (access === false) {
+        // User denied access to contact
+        webApp.showAlert('برای تایید شماره موبایل، اجازه دسترسی به مخاطبین لازم است');
+      } else {
+        // Other errors in getting contact
+        webApp.showAlert('خطا در دریافت شماره موبایل. لطفاً دوباره تلاش کنید.');
       }
-    );
+    });
   }, [webApp, user, t]);
 
 
@@ -609,7 +612,7 @@ function App() {
           <ErrorBoundary>
             <GlobalStyles />
             <AppContent />
-            <InstallPrompt />
+
           </ErrorBoundary>
         </LanguageProvider>
       </ThemeProvider>
