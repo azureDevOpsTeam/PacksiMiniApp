@@ -70,8 +70,13 @@ const AppContent: React.FC = () => {
       // Handle successful response
       if (response.requestStatus.name === 'Successful' && response.objectResult) {
         const { confirmPhoneNumber, hasCompletedProfile } = response.objectResult;
+        console.log('API Response:', response);
+        console.log('confirmPhoneNumber:', confirmPhoneNumber);
+        console.log('hasCompletedProfile:', hasCompletedProfile);
         setShowVerifyPhone(confirmPhoneNumber === false);
         setShowUpdateProfile(hasCompletedProfile === false);
+        console.log('showVerifyPhone set to:', confirmPhoneNumber === false);
+        console.log('showUpdateProfile set to:', hasCompletedProfile === false);
       }
     } catch (error) {
       console.error('Error validating user:', error);
