@@ -313,7 +313,7 @@ const AppContent: React.FC = () => {
       </div>
 
       {/* Unlimited Access Section */}
-      {(showVerifyPhone || showUpdateProfile) && (
+      {(!showVerifyPhone || !showUpdateProfile) && (
         <div style={{
           marginTop: '30px',
           width: '100%',
