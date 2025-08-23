@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useLanguage } from '../hooks/useLanguage';
 import { useTheme } from '../hooks/useTheme';
+import { useTelegramButtons } from '../hooks/useTelegramButtons';
 import Logo from './Logo';
 import Settings from './Settings';
 
@@ -37,6 +38,13 @@ const UpdateProfile: React.FC<UpdateProfileProps> = () => {
   });
 
   const [activeButton, setActiveButton] = useState<'user' | 'admin'>('user');
+  const [isLoading, setIsLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+
+  // Check if form is valid for submission
+  const isFormValid = formData.firstName.trim() !== '' && 
+                     formData.lastName.trim() !== '' && 
+                     formData.countryOfResidenceId !== 0;
 
   // Mock data for dropdowns
   const countries = [
@@ -64,10 +72,41 @@ const UpdateProfile: React.FC<UpdateProfileProps> = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Profile update submitted
+  const handleSubmit = async () => {
+    setIsLoading(true);
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      setSuccess(true);
+      // Profile update submitted successfully
+    } catch (error) {
+      console.error('Profile update failed:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  // Setup Telegram buttons
+  const { updateMainButton } = useTelegramButtons({
+    mainButton: {
+      text: success ? (t('common.saved') || 'ذخیره شد ✓') : (t('common.save') || 'ذخیره تغییرات'),
+      onClick: handleSubmit,
+      isVisible: true,
+      isEnabled: isFormValid && !isLoading,
+      isLoading: isLoading,
+      color: success ? '#4CAF50' : '#50b4ff'
+    }
+  });
+
+  // Update button state when form validity or loading state changes
+  React.useEffect(() => {
+    updateMainButton({
+      text: success ? (t('common.saved') || 'ذخیره شد ✓') : (t('common.save') || 'ذخیره تغییرات'),
+      isEnabled: isFormValid && !isLoading,
+      isLoading: isLoading,
+      color: success ? '#4CAF50' : '#50b4ff'
+    });
+  }, [isFormValid, isLoading, success, t, updateMainButton]);
 
   const inputStyle = {
     width: '100%',
@@ -135,7 +174,7 @@ const UpdateProfile: React.FC<UpdateProfileProps> = () => {
         </p>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} style={{ maxWidth: '400px', margin: '0 auto' }}>
+        <div style={{ maxWidth: '400px', margin: '0 auto' }}>
           {/* Name Fields */}
           <div style={{
             display: 'grid',
@@ -316,38 +355,8 @@ const UpdateProfile: React.FC<UpdateProfileProps> = () => {
             </div>
           </div>
 
-          {/* Submit Button */}
-          <div style={{
-            marginTop: '30px'
-          }}>
-            <button
-              type="submit"
-              style={{
-                width: '100%',
-                padding: '12px',
-                borderRadius: '5px',
-                border: 'none',
-                backgroundColor: '#50b4ff',
-                color: 'white',
-                fontSize: '16px',
-                fontWeight: '700',
-                fontFamily: 'IRANSansX, sans-serif',
-                cursor: 'pointer',
-                transition: 'transform 0.2s ease'
-              }}
-              onMouseDown={(e) => {
-                e.currentTarget.style.transform = 'scale(0.98)';
-              }}
-              onMouseUp={(e) => {
-                e.currentTarget.style.transform = 'scale(1)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'scale(1)';
-              }}>
-              {t('updateProfile.submit')}
-            </button>
-          </div>
-        </form>
+          {/* Note: Submit button is now handled by Telegram's MainButton in the bottom bar */}
+        </div>
       </div>
     </div>
   );

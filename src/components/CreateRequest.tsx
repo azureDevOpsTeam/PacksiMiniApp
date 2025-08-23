@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useLanguage } from '../hooks/useLanguage';
 import { useTheme } from '../hooks/useTheme';
+import { useTelegramButtons } from '../hooks/useTelegramButtons';
 import Logo from './Logo';
 import Settings from './Settings';
 import { apiService } from '../services/apiService';
@@ -52,6 +53,13 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
+  // Check if form is valid for submission
+  const isFormValid = formData.originCityId !== 0 && 
+                     formData.destinationCityId !== 0 && 
+                     formData.departureDate && 
+                     formData.arrivalDate && 
+                     formData.requestType !== -1;
+
   // Mock data for dropdowns
   const cities = [
     { id: 1, name: 'تهران', nameEn: 'Tehran' },
@@ -90,8 +98,29 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Setup Telegram buttons
+  const { updateMainButton } = useTelegramButtons({
+    mainButton: {
+      text: success ? (t('common.sent') || 'ارسال شد ✓') : (t('common.submit') || 'ارسال درخواست'),
+      onClick: handleSubmit,
+      isVisible: true,
+      isEnabled: isFormValid && !isLoading,
+      isLoading: isLoading,
+      color: success ? '#4CAF50' : '#50b4ff'
+    }
+  });
+
+  // Update button state when form validity or loading state changes
+  React.useEffect(() => {
+    updateMainButton({
+      text: success ? (t('common.sent') || 'ارسال شد ✓') : (t('common.submit') || 'ارسال درخواست'),
+      isEnabled: isFormValid && !isLoading,
+      isLoading: isLoading,
+      color: success ? '#4CAF50' : '#50b4ff'
+    });
+  }, [isFormValid, isLoading, success, t, updateMainButton]);
+
+  const handleSubmit = async () => {
     setIsLoading(true);
     setError(null);
     setSuccess(false);
@@ -254,7 +283,7 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
         </p>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} style={{ maxWidth: '400px', margin: '0 auto' }}>
+        <div style={{ maxWidth: '400px', margin: '0 auto' }}>
           {/* City Fields */}
           <div style={{
             display: 'grid',
@@ -610,56 +639,7 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
             </div>
           </div>
 
-          {/* Submit Button */}
-          <div style={{
-            marginTop: '20px'
-          }}>
-            <button
-              type="submit"
-              disabled={isLoading}
-              style={{
-                width: '100%',
-                padding: '12px',
-                borderRadius: '5px',
-                border: 'none',
-                backgroundColor: isLoading ? '#888' : (success ? '#4CAF50' : '#50b4ff'),
-                color: 'white',
-                fontSize: '16px',
-                fontWeight: '700',
-                fontFamily: 'IRANSansX, sans-serif',
-                cursor: isLoading ? 'not-allowed' : 'pointer',
-                transition: 'all 0.2s ease',
-                opacity: isLoading ? 0.7 : 1
-              }}
-              onMouseDown={(e) => {
-                if (!isLoading) e.currentTarget.style.transform = 'scale(0.98)';
-              }}
-              onMouseUp={(e) => {
-                if (!isLoading) e.currentTarget.style.transform = 'scale(1)';
-              }}
-              onMouseLeave={(e) => {
-                if (!isLoading) e.currentTarget.style.transform = 'scale(1)';
-              }}
-            >
-              {isLoading ? (
-                <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                  <span style={{
-                    width: '16px',
-                    height: '16px',
-                    border: '2px solid transparent',
-                    borderTop: '2px solid white',
-                    borderRadius: '50%',
-                    animation: 'spin 1s linear infinite'
-                  }}></span>
-                  {t('common.sending') || 'در حال ارسال...'}
-                </span>
-              ) : success ? (
-                t('common.sent') || 'ارسال شد ✓'
-              ) : (
-                t('common.submit')
-              )}
-            </button>
-          </div>
+          {/* Note: Submit button is now handled by Telegram's MainButton in the bottom bar */}
 
           {/* Error Message */}
           {error && (
@@ -694,7 +674,7 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
               {t('createRequest.success') || 'درخواست شما با موفقیت ارسال شد!'}
             </div>
           )}
-        </form>
+        </div>
       </div>
     </div>
   );
