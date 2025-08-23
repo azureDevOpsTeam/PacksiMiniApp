@@ -29,14 +29,7 @@ const AppContent: React.FC = () => {
   const [isValidating, setIsValidating] = React.useState<boolean>(true);
   const [authenticationFailed, setAuthenticationFailed] = React.useState<boolean>(false);
 
-  // Debug log for initial state
-  console.log('Component render - Initial states:');
-  console.log('- isReady:', isReady);
-  console.log('- isValidating:', isValidating);
-  console.log('- showVerifyPhone:', showVerifyPhone);
-  console.log('- showUpdateProfile:', showUpdateProfile);
-  console.log('- currentPage:', currentPage);
-  console.log('- authenticationFailed:', authenticationFailed);
+
 
   // Handle Telegram BackButton
   React.useEffect(() => {
@@ -62,23 +55,15 @@ const AppContent: React.FC = () => {
 
   // Validate user function
   const validateUser = React.useCallback(async () => {
-    console.log('validateUser called, isReady:', isReady);
-    if (!isReady) {
-      console.log('Not ready yet, returning');
-      return;
-    }
+    if (!isReady) return;
     
     try {
-      console.log('Starting validation...');
       setIsValidating(true);
       setAuthenticationFailed(false);
       const response = await apiService.validate();
       
-      console.log('Full API Response:', JSON.stringify(response, null, 2));
-      
       // Check for authentication failure
       if (response.requestStatus.name === 'AuthenticationFailed') {
-        console.log('Authentication failed');
         setAuthenticationFailed(true);
         setCurrentPage('notFound');
         return;
@@ -87,45 +72,26 @@ const AppContent: React.FC = () => {
       // Handle successful response
       if (response && response.requestStatus && response.requestStatus.name === 'Successful' && response.objectResult) {
         const { confirmPhoneNumber, hasCompletedProfile } = response.objectResult;
-        console.log('API Response:', response);
-        console.log('confirmPhoneNumber:', confirmPhoneNumber);
-        console.log('hasCompletedProfile:', hasCompletedProfile);
         
         // Show Verify Phone button if phone is NOT confirmed
-        const shouldShowVerifyPhone = !confirmPhoneNumber;
-        // Show Complete Profile button if profile is NOT completed AND phone IS confirmed
-        const shouldShowUpdateProfile = !hasCompletedProfile && confirmPhoneNumber;
-        
-        console.log('shouldShowVerifyPhone:', shouldShowVerifyPhone);
-        console.log('shouldShowUpdateProfile:', shouldShowUpdateProfile);
+        const shouldShowVerifyPhone = confirmPhoneNumber === false;
+        // Show Complete Profile button if profile is NOT completed
+        const shouldShowUpdateProfile = hasCompletedProfile === false;
         
         setShowVerifyPhone(shouldShowVerifyPhone);
         setShowUpdateProfile(shouldShowUpdateProfile);
-        
-        console.log('showVerifyPhone set to:', shouldShowVerifyPhone);
-        console.log('showUpdateProfile set to:', shouldShowUpdateProfile);
       } else {
-        console.log('API response not successful or no objectResult:', response);
-        console.log('Response structure check:');
-        console.log('- response exists:', !!response);
-        console.log('- requestStatus exists:', !!(response && response.requestStatus));
-        console.log('- requestStatus.name:', response && response.requestStatus && response.requestStatus.name);
-        console.log('- objectResult exists:', !!(response && response.objectResult));
-        
         // If API doesn't return expected data, show verify phone button as fallback
         setShowVerifyPhone(true);
         setShowUpdateProfile(false);
-        console.log('Fallback: showVerifyPhone set to true, showUpdateProfile set to false');
       }
     } catch (error) {
       console.error('Error validating user:', error);
       // On error, show verify phone button as fallback
       setShowVerifyPhone(true);
       setShowUpdateProfile(false);
-      console.log('Error fallback: showVerifyPhone set to true, showUpdateProfile set to false');
     } finally {
       setIsValidating(false);
-      console.log('Validation finished');
     }
   }, [isReady]);
 
@@ -352,12 +318,7 @@ const AppContent: React.FC = () => {
       </div>
 
       {/* Unlimited Access Section */}
-      {(() => {
-        console.log('Render check - showVerifyPhone:', showVerifyPhone);
-        console.log('Render check - showUpdateProfile:', showUpdateProfile);
-        console.log('Render check - condition result:', (showVerifyPhone || showUpdateProfile));
-        return (showVerifyPhone || showUpdateProfile);
-      })() && (
+      {(showVerifyPhone || showUpdateProfile) && (
         <div style={{
           marginTop: '30px',
           width: '100%',
