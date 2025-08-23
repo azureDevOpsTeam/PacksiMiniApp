@@ -88,10 +88,32 @@ const AppContent: React.FC = () => {
         const contact = response.responseUnsafe.contact;
         
         try {
+          // Process and normalize phone number for mobile compatibility
+          let phoneNumber = contact.phone_number;
+          
+          console.log('Original phone number from Telegram:', phoneNumber);
+          
+          // Remove any non-digit characters except +
+          phoneNumber = phoneNumber.replace(/[^\d+]/g, '');
+          
+          // Ensure phone number starts with + if it doesn't already
+          if (!phoneNumber.startsWith('+')) {
+            phoneNumber = '+' + phoneNumber;
+          }
+          
+          // Validate phone number format (should be + followed by 7-15 digits)
+          const phoneRegex = /^\+\d{7,15}$/;
+          if (!phoneRegex.test(phoneNumber)) {
+            throw new Error('فرمت شماره موبایل نامعتبر است');
+          }
+          
+          console.log('Processed phone number:', phoneNumber);
+          console.log('Phone number length:', phoneNumber.length);
+          
           // Send phone number to API with better error handling for mobile
           const apiResponse = await apiService.verifyPhoneNumber({
             model: {
-              phoneNumber: contact.phone_number
+              phoneNumber: phoneNumber
             }
           });
           

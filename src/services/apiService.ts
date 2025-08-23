@@ -12,12 +12,19 @@ class ApiService {
     }
 
     // Add Telegram Init Data if available
-    if (window.Telegram?.WebApp?.initData) {
-      headers['X-Telegram-Init-Data'] = window.Telegram.WebApp.initData;
+    const initData = window.Telegram?.WebApp?.initData;
+    if (initData && initData.trim() !== '') {
+      console.log('Using Telegram initData:', initData.substring(0, 50) + '...');
+      headers['X-Telegram-Init-Data'] = initData;
     } else {
+      console.log('No Telegram initData available, using development token');
       // Use provided token for development
       headers['X-Telegram-Init-Data'] = 'query_id=AAEUWrBhAgAAABRasGE_HYpx&user=%7B%22id%22%3A5933914644%2C%22first_name%22%3A%22Shahram%22%2C%22last_name%22%3A%22%22%2C%22username%22%3A%22ShahramOweisy%22%2C%22language_code%22%3A%22en%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Ft.me%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2FQGwtYapyXkY4-jZJkczPeUb_XKfimJozOKy8lZzBhtQc4cO4xBQzwdPwcb_QSNih.svg%22%7D&auth_date=1755948305&signature=z_ox7tsfQmjtIANsyqVft3aMlF-2P6l5KEK7nivPnLHTvLnqP4Z2OsIPvn9uooDzxKfeScQOkAqZoZEtICyRDg&hash=1d5a19786e50f68519ad78ecf36b6dd52bac454b1afe0c18038d675256d79595';
     }
+
+    // Add additional headers for mobile compatibility
+    headers['Accept'] = 'application/json';
+    headers['Cache-Control'] = 'no-cache';
 
     return headers;
   }
@@ -214,20 +221,66 @@ class ApiService {
 
   async verifyPhoneNumber(payload: VerifyPhoneNumberPayload): Promise<VerifyPhoneNumberResponse> {
     try {
+      console.log('Sending phone verification request:', payload);
+      console.log('Headers:', this.getHeaders());
+      
       const response = await fetch(`${API_BASE_URL}/MiniApp/VerifyPhoneNumber`, {
         method: 'POST',
         headers: this.getHeaders(),
         body: JSON.stringify(payload)
       });
 
+      console.log('Response status:', response.status);
+      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        const errorText = await response.text();
+        console.error('Error response body:', errorText);
+        
+        let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+        
+        // Handle specific HTTP status codes for phone verification
+        switch (response.status) {
+          case 400:
+            try {
+              const errorData = JSON.parse(errorText);
+              errorMessage = errorData.message || 'فرمت شماره موبایل نامعتبر است';
+            } catch {
+              errorMessage = 'فرمت شماره موبایل نامعتبر است';
+            }
+            break;
+          case 401:
+            errorMessage = 'احراز هویت ناموفق - لطفاً دوباره وارد شوید';
+            break;
+          case 429:
+            errorMessage = 'تعداد درخواست‌ها بیش از حد مجاز - لطفاً کمی صبر کنید';
+            break;
+          case 500:
+            errorMessage = 'خطای سرور - لطفاً دوباره تلاش کنید';
+            break;
+          default:
+            try {
+              const errorData = JSON.parse(errorText);
+              errorMessage = errorData.message || errorMessage;
+            } catch {
+              errorMessage = errorText || errorMessage;
+            }
+        }
+        
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();
+      console.log('Phone verification response:', data);
       return data;
     } catch (error) {
       console.error('Error verifying phone number:', error);
+      
+      // Handle network errors specifically
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw new Error('خطا در اتصال به اینترنت. لطفاً اتصال خود را بررسی کنید.');
+      }
+      
       throw error;
     }
   }
