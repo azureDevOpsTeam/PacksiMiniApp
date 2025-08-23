@@ -6,6 +6,7 @@ import { apiService } from '../services/apiService';
 import type { CountryItem } from '../types/api';
 import Logo from './Logo';
 import Settings from './Settings';
+import SkeletonLoader from './SkeletonLoader';
 
 interface UpdateProfileFormData {
   countryOfResidenceId: number;
@@ -35,6 +36,7 @@ const UpdateProfile: React.FC<UpdateProfileProps> = () => {
 
   const [activeButton, setActiveButton] = useState<'user' | 'admin'>('user');
   const [isLoading, setIsLoading] = useState(false);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [success, setSuccess] = useState(false);
   const [countries, setCountries] = useState<CountryItem[]>([]);
 
@@ -47,6 +49,7 @@ const UpdateProfile: React.FC<UpdateProfileProps> = () => {
   useEffect(() => {
     const loadData = async () => {
       try {
+        setIsInitialLoading(true);
         // Load user info
         const userInfoResponse = await apiService.getUserInfo();
         if (userInfoResponse.requestStatus.name === 'Successful') {
@@ -68,6 +71,8 @@ const UpdateProfile: React.FC<UpdateProfileProps> = () => {
         }
       } catch (error) {
         console.error('Error loading data:', error);
+      } finally {
+        setIsInitialLoading(false);
       }
     };
 
@@ -147,6 +152,51 @@ const UpdateProfile: React.FC<UpdateProfileProps> = () => {
     fontFamily: 'IRANSansX, sans-serif',
     textAlign: isRTL ? 'right' as const : 'left' as const
   };
+
+  if (isInitialLoading) {
+    return (
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        minHeight: '100vh',
+        padding: '20px',
+        backgroundColor: '#17212b'
+      }}>
+        {/* Header Skeleton */}
+        <div style={{ marginBottom: '20px', width: '100%', maxWidth: '400px' }}>
+          <SkeletonLoader type="profile" height="60px" />
+        </div>
+        
+        {/* Logo Skeleton */}
+        <div style={{ marginBottom: '30px' }}>
+          <SkeletonLoader type="text" width="120px" height="40px" />
+        </div>
+        
+        {/* Form Fields Skeleton */}
+        <div style={{ width: '100%', maxWidth: '400px', gap: '20px', display: 'flex', flexDirection: 'column' }}>
+          <SkeletonLoader type="text" width="100px" height="16px" />
+          <SkeletonLoader type="search" height="40px" />
+          
+          <SkeletonLoader type="text" width="80px" height="16px" />
+          <SkeletonLoader type="search" height="40px" />
+          
+          <SkeletonLoader type="text" width="90px" height="16px" />
+          <SkeletonLoader type="search" height="40px" />
+          
+          <SkeletonLoader type="text" width="120px" height="16px" />
+          <SkeletonLoader type="search" height="40px" />
+          
+          <SkeletonLoader type="text" width="70px" height="16px" />
+          <SkeletonLoader type="search" height="40px" />
+          
+          <SkeletonLoader type="text" width="60px" height="16px" />
+          <SkeletonLoader type="search" height="40px" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{

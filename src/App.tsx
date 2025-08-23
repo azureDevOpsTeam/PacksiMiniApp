@@ -11,6 +11,7 @@ import Logo from './components/Logo';
 import Settings from './components/Settings';
 import InstallPrompt from './components/InstallPrompt';
 import ErrorBoundary from './components/ErrorBoundary';
+import SkeletonLoader from './components/SkeletonLoader';
 import apiService from './services/apiService';
 import type { RequestContactResponse } from '@twa-dev/types';
 
@@ -57,8 +58,8 @@ const AppContent: React.FC = () => {
         
         if (response.requestStatus.name === 'Successful') {
           const { confirmPhoneNumber, hasCompletedProfile } = response.objectResult;
-          setShowVerifyPhone(!confirmPhoneNumber);
-          setShowUpdateProfile(!hasCompletedProfile);
+          setShowVerifyPhone(confirmPhoneNumber === false);
+          setShowUpdateProfile(hasCompletedProfile === false);
         }
       } catch (error) {
         console.error('Error validating user:', error);
@@ -123,15 +124,48 @@ const AppContent: React.FC = () => {
     return (
       <div style={{
         display: 'flex',
-        justifyContent: 'center',
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
         alignItems: 'center',
-        height: '100vh',
-        backgroundColor: '#17212b',
-        color: '#ffffff',
-        fontFamily: 'IRANSansX, sans-serif',
-        fontSize: '18px'
+        minHeight: '100vh',
+        padding: '20px',
+        backgroundColor: '#17212b'
       }}>
-        {!isReady ? t('common.loading') : 'Validating...'}
+        {/* Header Skeleton */}
+        <div style={{ marginBottom: '20px', width: '100%', maxWidth: '400px' }}>
+          <SkeletonLoader type="profile" height="60px" />
+        </div>
+        
+        {/* Logo Skeleton */}
+        <div style={{ marginBottom: '30px' }}>
+          <SkeletonLoader type="text" width="120px" height="40px" />
+        </div>
+        
+        {/* Welcome Text Skeleton */}
+        <div style={{ marginBottom: '30px', width: '100%', maxWidth: '300px' }}>
+          <SkeletonLoader type="text" height="20px" />
+        </div>
+        
+        {/* Search Box Skeleton */}
+        <div style={{ marginBottom: '30px', width: '100%', maxWidth: '400px' }}>
+          <SkeletonLoader type="search" />
+        </div>
+        
+        {/* Buttons Skeleton */}
+        <div style={{ width: '100%', maxWidth: '400px', marginBottom: '30px' }}>
+          <div style={{ marginBottom: '20px' }}>
+            <SkeletonLoader type="text" width="100px" height="16px" />
+          </div>
+          <SkeletonLoader type="button" count={2} />
+        </div>
+        
+        {/* Services Skeleton */}
+        <div style={{ width: '100%', maxWidth: '400px' }}>
+          <div style={{ marginBottom: '20px' }}>
+            <SkeletonLoader type="text" width="80px" height="16px" />
+          </div>
+          <SkeletonLoader type="button" count={3} />
+        </div>
       </div>
     );
   }
@@ -328,7 +362,7 @@ const AppContent: React.FC = () => {
 
       {/* Bot Links Section */}
       <div style={{
-        marginTop: '0px',
+        marginTop: (showVerifyPhone || showUpdateProfile) ? '0px' : '30px',
         width: '100%',
         maxWidth: '400px'
       }}>

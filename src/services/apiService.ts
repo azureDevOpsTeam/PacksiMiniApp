@@ -232,7 +232,7 @@ class ApiService {
   async validate(): Promise<ValidateResponse> {
     try {
       const response = await fetch(`${API_BASE_URL}/MiniApp/validate`, {
-        method: 'POST',
+        method: 'GET',
         headers: this.getHeaders()
       });
 

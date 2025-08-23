@@ -5,6 +5,7 @@ import { useTelegramButtons } from '../hooks/useTelegramButtons';
 import Logo from './Logo';
 import Settings from './Settings';
 import TreeDropdown from './TreeDropdown';
+import SkeletonLoader from './SkeletonLoader';
 import { apiService } from '../services/apiService';
 import type { CreateRequestPayload, CityItem, ItemType } from '../types/api';
 
@@ -51,6 +52,7 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [activeButton, setActiveButton] = useState<'user' | 'admin'>('user');
   const [isLoading, setIsLoading] = useState(false);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [citiesTree, setCitiesTree] = useState<CityItem[]>([]);
@@ -110,6 +112,13 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
 
     loadItemTypes();
   }, []);
+
+  // Update initial loading state when both cities and item types are loaded
+  useEffect(() => {
+    if (!citiesLoading && !itemTypesLoading) {
+      setIsInitialLoading(false);
+    }
+  }, [citiesLoading, itemTypesLoading]);
 
   const requestTypes = [
     { id: 0, name: t('createRequest.passenger'), nameEn: 'Passenger' },
@@ -275,6 +284,56 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
     fontFamily: 'IRANSansX, sans-serif',
     textAlign: isRTL ? 'right' as const : 'left' as const
   };
+
+  if (isInitialLoading) {
+    return (
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        minHeight: '100vh',
+        padding: '20px',
+        backgroundColor: '#17212b'
+      }}>
+        {/* Header Skeleton */}
+        <div style={{ marginBottom: '20px', width: '100%', maxWidth: '400px' }}>
+          <SkeletonLoader type="profile" height="60px" />
+        </div>
+        
+        {/* Logo Skeleton */}
+        <div style={{ marginBottom: '30px' }}>
+          <SkeletonLoader type="text" width="120px" height="40px" />
+        </div>
+        
+        {/* Form Fields Skeleton */}
+        <div style={{ width: '100%', maxWidth: '400px', gap: '20px', display: 'flex', flexDirection: 'column' }}>
+          <SkeletonLoader type="text" width="80px" height="16px" />
+          <SkeletonLoader type="search" height="40px" />
+          
+          <SkeletonLoader type="text" width="100px" height="16px" />
+          <SkeletonLoader type="search" height="40px" />
+          
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <div style={{ flex: 1 }}>
+              <SkeletonLoader type="text" width="80px" height="16px" />
+              <SkeletonLoader type="search" height="40px" />
+            </div>
+            <div style={{ flex: 1 }}>
+              <SkeletonLoader type="text" width="80px" height="16px" />
+              <SkeletonLoader type="search" height="40px" />
+            </div>
+          </div>
+          
+          <SkeletonLoader type="text" width="90px" height="16px" />
+          <SkeletonLoader type="button" count={2} height="40px" />
+          
+          <SkeletonLoader type="text" width="70px" height="16px" />
+          <SkeletonLoader type="search" height="80px" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{
