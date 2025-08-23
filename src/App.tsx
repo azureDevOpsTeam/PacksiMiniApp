@@ -73,10 +73,12 @@ const AppContent: React.FC = () => {
         console.log('API Response:', response);
         console.log('confirmPhoneNumber:', confirmPhoneNumber);
         console.log('hasCompletedProfile:', hasCompletedProfile);
-        setShowVerifyPhone(confirmPhoneNumber === false);
-        setShowUpdateProfile(hasCompletedProfile === false);
-        console.log('showVerifyPhone set to:', confirmPhoneNumber === false);
-        console.log('showUpdateProfile set to:', hasCompletedProfile === false);
+        // Show Verify Phone button if phone is NOT confirmed
+        setShowVerifyPhone(!confirmPhoneNumber);
+        // Show Complete Profile button if profile is NOT completed AND phone IS confirmed
+        setShowUpdateProfile(!hasCompletedProfile && confirmPhoneNumber);
+        console.log('showVerifyPhone set to:', !confirmPhoneNumber);
+        console.log('showUpdateProfile set to:', !hasCompletedProfile && confirmPhoneNumber);
       }
     } catch (error) {
       console.error('Error validating user:', error);
