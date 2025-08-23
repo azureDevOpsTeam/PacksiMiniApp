@@ -603,17 +603,17 @@ const AppContent: React.FC = () => {
 // Main App Component with Providers
 function App() {
   return (
-    <ErrorBoundary>
-      <TelegramProvider>
-        <ThemeProvider>
-          <LanguageProvider>
+    <TelegramProvider>
+      <ThemeProvider>
+        <LanguageProvider>
+          <ErrorBoundary>
             <GlobalStyles />
             <AppContent />
             <InstallPrompt />
-          </LanguageProvider>
-        </ThemeProvider>
-      </TelegramProvider>
-    </ErrorBoundary>
+          </ErrorBoundary>
+        </LanguageProvider>
+      </ThemeProvider>
+    </TelegramProvider>
   );
 }
 

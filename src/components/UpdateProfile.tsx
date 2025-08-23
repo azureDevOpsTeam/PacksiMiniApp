@@ -41,8 +41,8 @@ const UpdateProfile: React.FC<UpdateProfileProps> = () => {
   const [countries, setCountries] = useState<CountryItem[]>([]);
 
   // Check if form is valid for submission
-  const isFormValid = !!(formData.firstName.trim() !== '' && 
-                     formData.lastName.trim() !== '' && 
+  const isFormValid = !!(formData.firstName && formData.firstName.trim() !== '' && 
+                     formData.lastName && formData.lastName.trim() !== '' && 
                      formData.countryOfResidenceId !== 0);
 
   // Load user info and countries on component mount
@@ -55,12 +55,12 @@ const UpdateProfile: React.FC<UpdateProfileProps> = () => {
         if (userInfoResponse.requestStatus.name === 'Successful') {
           const userInfo = userInfoResponse.objectResult;
           setFormData({
-            countryOfResidenceId: userInfo.countryOfResidenceId,
-            firstName: userInfo.firstName,
-            lastName: userInfo.lastName,
-            displayName: userInfo.displayName,
-            address: userInfo.address,
-            gender: userInfo.gender
+            countryOfResidenceId: userInfo.countryOfResidenceId || 0,
+            firstName: userInfo.firstName || '',
+            lastName: userInfo.lastName || '',
+            displayName: userInfo.displayName || '',
+            address: userInfo.address || '',
+            gender: userInfo.gender || -1
           });
         }
 
@@ -255,7 +255,7 @@ const UpdateProfile: React.FC<UpdateProfileProps> = () => {
               <label style={labelStyle}>{t('updateProfile.firstName')}</label>
               <input
                 type="text"
-                value={formData.firstName}
+                value={formData.firstName || ''}
                 onChange={(e) => handleInputChange('firstName', e.target.value)}
                 style={{
                   ...inputStyle,
@@ -271,7 +271,7 @@ const UpdateProfile: React.FC<UpdateProfileProps> = () => {
               <label style={labelStyle}>{t('updateProfile.lastName')}</label>
               <input
                 type="text"
-                value={formData.lastName}
+                value={formData.lastName || ''}
                 onChange={(e) => handleInputChange('lastName', e.target.value)}
                 style={{
                   ...inputStyle,
@@ -288,7 +288,7 @@ const UpdateProfile: React.FC<UpdateProfileProps> = () => {
             <label style={labelStyle}>{t('updateProfile.displayName')}</label>
             <input
               type="text"
-              value={formData.displayName}
+              value={formData.displayName || ''}
               onChange={(e) => handleInputChange('displayName', e.target.value)}
               style={inputStyle}
               placeholder={t('updateProfile.displayNamePlaceholder')}
@@ -299,7 +299,7 @@ const UpdateProfile: React.FC<UpdateProfileProps> = () => {
           <div style={{ marginBottom: '20px' }}>
             <label style={labelStyle}>{t('updateProfile.countryOfResidence')}</label>
             <select
-              value={formData.countryOfResidenceId}
+              value={formData.countryOfResidenceId || 0}
               onChange={(e) => handleInputChange('countryOfResidenceId', parseInt(e.target.value))}
               style={inputStyle}
             >
@@ -316,7 +316,7 @@ const UpdateProfile: React.FC<UpdateProfileProps> = () => {
           <div style={{ marginBottom: '20px' }}>
             <label style={labelStyle}>{t('updateProfile.address')}</label>
             <textarea
-              value={formData.address}
+              value={formData.address || ''}
               onChange={(e) => handleInputChange('address', e.target.value)}
               style={{
                 ...inputStyle,
@@ -333,7 +333,7 @@ const UpdateProfile: React.FC<UpdateProfileProps> = () => {
           <div style={{ marginBottom: '20px' }}>
             <label style={labelStyle}>{t('updateProfile.gender')}</label>
             <select
-              value={formData.gender}
+              value={formData.gender || -1}
               onChange={(e) => handleInputChange('gender', parseInt(e.target.value))}
               style={inputStyle}
             >

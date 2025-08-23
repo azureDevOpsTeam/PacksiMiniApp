@@ -14,6 +14,9 @@ class ApiService {
     // Add Telegram Init Data if available
     if (window.Telegram?.WebApp?.initData) {
       headers['X-Telegram-Init-Data'] = window.Telegram.WebApp.initData;
+    } else {
+      // Use provided token for development
+      headers['X-Telegram-Init-Data'] = 'query_id=AAEUWrBhAgAAABRasGE_HYpx&user=%7B%22id%22%3A5933914644%2C%22first_name%22%3A%22Shahram%22%2C%22last_name%22%3A%22%22%2C%22username%22%3A%22ShahramOweisy%22%2C%22language_code%22%3A%22en%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Ft.me%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2FQGwtYapyXkY4-jZJkczPeUb_XKfimJozOKy8lZzBhtQc4cO4xBQzwdPwcb_QSNih.svg%22%7D&auth_date=1755948305&signature=z_ox7tsfQmjtIANsyqVft3aMlF-2P6l5KEK7nivPnLHTvLnqP4Z2OsIPvn9uooDzxKfeScQOkAqZoZEtICyRDg&hash=1d5a19786e50f68519ad78ecf36b6dd52bac454b1afe0c18038d675256d79595';
     }
 
     return headers;
