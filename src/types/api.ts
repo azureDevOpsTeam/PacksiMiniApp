@@ -174,3 +174,31 @@ export interface AddUserPreferredLocationResponse {
   success: boolean;
   message?: string;
 }
+
+// Update Profile API Types
+export interface UpdateProfileModel {
+  countryOfResidenceId: number;
+  firstName: string;
+  lastName: string;
+  displayName: string;
+  address: string;
+  gender: number;
+}
+
+export interface UpdateProfileRequest {
+  model: UpdateProfileModel;
+}
+
+export interface UpdateProfileResponse {
+  validationResult: any;
+  requestStatus: {
+    name: string;
+    value: number;
+  };
+  message: string;
+  objectResult: any;
+  notificationType: {
+    name: string;
+    value: number;
+  };
+}

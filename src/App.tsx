@@ -23,8 +23,8 @@ const AppContent: React.FC = () => {
   const { t, language } = useLanguage();
   const [activeButton, setActiveButton] = React.useState<'user' | 'admin'>('user');
   const [currentPage, setCurrentPage] = React.useState<'home' | 'createRequest' | 'updateProfile' | 'addPreferredLocation' | 'parcelList'>('home');
-  const [showVerifyPhone, setShowVerifyPhone] = React.useState<boolean>(true);
-  const [showUpdateProfile, setShowUpdateProfile] = React.useState<boolean>(true);
+  const [showVerifyPhone, setShowVerifyPhone] = React.useState<boolean>(false);
+  const [showUpdateProfile, setShowUpdateProfile] = React.useState<boolean>(false);
   const [isValidating, setIsValidating] = React.useState<boolean>(true);
 
   // Handle Telegram BackButton
@@ -49,32 +49,33 @@ const AppContent: React.FC = () => {
     };
   }, [currentPage, webApp]);
 
+  // Validate user function
+  const validateUser = React.useCallback(async () => {
+    if (!isReady) return;
+    
+    try {
+      setIsValidating(true);
+      const response = await apiService.validate();
+      
+      if (response.result) {
+        const { confirmPhoneNumber, hasCompletedProfile } = response.result;
+        setShowVerifyPhone(confirmPhoneNumber === false);
+        setShowUpdateProfile(hasCompletedProfile === false);
+      }
+    } catch (error) {
+      console.error('Error validating user:', error);
+      // On error, show both buttons by default
+      setShowVerifyPhone(true);
+      setShowUpdateProfile(true);
+    } finally {
+      setIsValidating(false);
+    }
+  }, [isReady]);
+
   // Validate user on app load
   React.useEffect(() => {
-    const validateUser = async () => {
-      if (!isReady) return;
-      
-      try {
-        setIsValidating(true);
-        const response = await apiService.validate();
-        
-        if (response.result) {
-          const { confirmPhoneNumber, hasCompletedProfile } = response.result;
-          setShowVerifyPhone(confirmPhoneNumber === false);
-          setShowUpdateProfile(hasCompletedProfile === false);
-        }
-      } catch (error) {
-        console.error('Error validating user:', error);
-        // On error, show both buttons by default
-        setShowVerifyPhone(true);
-        setShowUpdateProfile(true);
-      } finally {
-        setIsValidating(false);
-      }
-    };
-
     validateUser();
-  }, [isReady]);
+  }, [validateUser]);
 
   // Handle phone number verification
   const handleVerifyPhoneNumber = React.useCallback(async () => {
@@ -123,8 +124,8 @@ const AppContent: React.FC = () => {
             // Show success message and refresh validation
             webApp.showAlert('شماره موبایل شما با موفقیت تایید شد!');
             // Refresh user validation status
-            setTimeout(() => {
-              window.location.reload();
+            setTimeout(async () => {
+              await validateUser();
             }, 1000);
           } else {
             // Show error message from API
@@ -204,7 +205,7 @@ const AppContent: React.FC = () => {
 
   // Render UpdateProfile page
   if (currentPage === 'updateProfile') {
-    return <UpdateProfile />;
+    return <UpdateProfile onProfileUpdated={validateUser} />;
   }
 
   // Render AddPreferredLocation page

@@ -3,7 +3,7 @@ import { useLanguage } from '../hooks/useLanguage';
 import { useTheme } from '../hooks/useTheme';
 import { useTelegramButtons } from '../hooks/useTelegramButtons';
 import { apiService } from '../services/apiService';
-import type { CountryItem, CityItem } from '../types/api';
+import type { CountryItem, CityItem, UpdateProfileRequest } from '../types/api';
 import Logo from './Logo';
 import Settings from './Settings';
 import SkeletonLoader from './SkeletonLoader';
@@ -19,11 +19,11 @@ interface UpdateProfileFormData {
   selectedCities: number[];
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface UpdateProfileProps {
+  onProfileUpdated?: () => void;
 }
 
-const UpdateProfile: React.FC<UpdateProfileProps> = () => {
+const UpdateProfile: React.FC<UpdateProfileProps> = ({ onProfileUpdated }) => {
   const { t, isRTL } = useLanguage();
   const { theme } = useTheme();
 
@@ -124,10 +124,30 @@ const UpdateProfile: React.FC<UpdateProfileProps> = () => {
   const handleSubmit = async () => {
     setIsLoading(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      setSuccess(true);
-      // Profile update submitted successfully
+      const request: UpdateProfileRequest = {
+        model: {
+          countryOfResidenceId: formData.countryOfResidenceId,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          displayName: formData.displayName,
+          address: formData.address,
+          gender: formData.gender
+        }
+      };
+
+      const response = await apiService.updateProfile(request);
+      
+      if (response.requestStatus.name === 'Successful') {
+        setSuccess(true);
+        // Call onProfileUpdated after successful update
+        if (onProfileUpdated) {
+          setTimeout(() => {
+            onProfileUpdated();
+          }, 1000); // Wait 1 second to show success message
+        }
+      } else {
+        throw new Error(response.message || 'Profile update failed');
+      }
     } catch (error) {
       console.error('Profile update failed:', error);
     } finally {
