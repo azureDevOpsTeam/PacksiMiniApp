@@ -70,13 +70,10 @@ const AppContent: React.FC = () => {
       // Handle successful response
       if (response.requestStatus.name === 'Successful' && response.objectResult) {
         const { confirmPhoneNumber, hasCompletedProfile } = response.objectResult;
-        console.log('API Response:', response);
-        console.log('confirmPhoneNumber:', confirmPhoneNumber);
-        console.log('hasCompletedProfile:', hasCompletedProfile);
         // Show Verify Phone button if phone is NOT confirmed
-        setShowVerifyPhone(!confirmPhoneNumber);
+        setShowVerifyPhone(confirmPhoneNumber);
         // Show Complete Profile button if profile is NOT completed AND phone IS confirmed
-        setShowUpdateProfile(!hasCompletedProfile && confirmPhoneNumber);
+        setShowUpdateProfile(hasCompletedProfile && confirmPhoneNumber);
         console.log('showVerifyPhone set to:', !confirmPhoneNumber);
         console.log('showUpdateProfile set to:', !hasCompletedProfile && confirmPhoneNumber);
       }
