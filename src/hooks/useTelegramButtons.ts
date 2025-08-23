@@ -115,8 +115,8 @@ export const useTelegramButtons = (config: TelegramButtonsConfig) => {
     };
   }, [setupMainButton, setupSecondaryButton]);
 
-  const updateMainButton = useCallback((updates: Partial<TelegramButtonsConfig['mainButton']>) => {
-    if (!isReady || !config.mainButton) return;
+  const updateMainButton = useCallback((updates?: Partial<TelegramButtonsConfig['mainButton']>) => {
+    if (!isReady || !config.mainButton || !updates) return;
 
     const updatedConfig = { ...config.mainButton, ...updates };
     
@@ -149,8 +149,8 @@ export const useTelegramButtons = (config: TelegramButtonsConfig) => {
     }
   }, [isReady, config.mainButton]);
 
-  const updateSecondaryButton = useCallback((updates: Partial<TelegramButtonsConfig['secondaryButton']>) => {
-    if (!isReady || !config.secondaryButton) return;
+  const updateSecondaryButton = useCallback((updates?: Partial<TelegramButtonsConfig['secondaryButton']>) => {
+    if (!isReady || !config.secondaryButton || !updates) return;
 
     if (updates.text) {
       WebApp.SecondaryButton.setText(updates.text);

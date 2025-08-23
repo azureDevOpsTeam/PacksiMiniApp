@@ -42,9 +42,9 @@ const UpdateProfile: React.FC<UpdateProfileProps> = () => {
   const [success, setSuccess] = useState(false);
 
   // Check if form is valid for submission
-  const isFormValid = formData.firstName.trim() !== '' && 
+  const isFormValid = !!(formData.firstName.trim() !== '' && 
                      formData.lastName.trim() !== '' && 
-                     formData.countryOfResidenceId !== 0;
+                     formData.countryOfResidenceId !== 0);
 
   // Mock data for dropdowns
   const countries = [

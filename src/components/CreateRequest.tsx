@@ -53,12 +53,14 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
+
+
   // Check if form is valid for submission
-  const isFormValid = formData.originCityId !== 0 && 
+  const isFormValid = !!(formData.originCityId !== 0 && 
                      formData.destinationCityId !== 0 && 
                      formData.departureDate && 
                      formData.arrivalDate && 
-                     formData.requestType !== -1;
+                     formData.requestType !== -1);
 
   // Mock data for dropdowns
   const cities = [
@@ -97,28 +99,6 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
         : [...prev.itemTypeIds, itemTypeId]
     }));
   };
-
-  // Setup Telegram buttons
-  const { updateMainButton } = useTelegramButtons({
-    mainButton: {
-      text: success ? (t('common.sent') || 'ارسال شد ✓') : (t('common.submit') || 'ارسال درخواست'),
-      onClick: handleSubmit,
-      isVisible: true,
-      isEnabled: isFormValid && !isLoading,
-      isLoading: isLoading,
-      color: success ? '#4CAF50' : '#50b4ff'
-    }
-  });
-
-  // Update button state when form validity or loading state changes
-  React.useEffect(() => {
-    updateMainButton({
-      text: success ? (t('common.sent') || 'ارسال شد ✓') : (t('common.submit') || 'ارسال درخواست'),
-      isEnabled: isFormValid && !isLoading,
-      isLoading: isLoading,
-      color: success ? '#4CAF50' : '#50b4ff'
-    });
-  }, [isFormValid, isLoading, success, t, updateMainButton]);
 
   const handleSubmit = async () => {
     setIsLoading(true);
@@ -217,6 +197,26 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
       setIsLoading(false);
     }
   };
+
+  const { updateMainButton } = useTelegramButtons({
+    mainButton: {
+      text: t('createRequest.submit'),
+      isVisible: true,
+      onClick: handleSubmit,
+      color: '#50b4ff',
+      isEnabled: isFormValid && !isLoading,
+    }
+  });
+
+  // Update MainButton based on form state
+  React.useEffect(() => {
+    updateMainButton({
+      text: isLoading ? t('createRequest.sending') : success ? t('createRequest.success') : t('createRequest.submit'),
+      isEnabled: isFormValid && !isLoading,
+      isLoading: isLoading,
+      color: success ? '#4CAF50' : '#50b4ff'
+    });
+  }, [isFormValid, isLoading, success, updateMainButton, t]);
 
   const inputStyle = {
     width: '100%',
