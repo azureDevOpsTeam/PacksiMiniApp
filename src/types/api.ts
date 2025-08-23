@@ -124,3 +124,26 @@ export interface UserInfoResponse {
     value: number;
   };
 }
+
+// Phone Number Verification API Types
+export interface VerifyPhoneNumberModel {
+  phoneNumber: string;
+}
+
+export interface VerifyPhoneNumberPayload {
+  model: VerifyPhoneNumberModel;
+}
+
+export interface VerifyPhoneNumberResponse {
+  validationResult: any;
+  requestStatus: {
+    name: string;
+    value: number;
+  };
+  message: string;
+  objectResult: any;
+  notificationType: {
+    name: string;
+    value: number;
+  };
+}

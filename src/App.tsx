@@ -11,6 +11,7 @@ import Logo from './components/Logo';
 import Settings from './components/Settings';
 import InstallPrompt from './components/InstallPrompt';
 import ErrorBoundary from './components/ErrorBoundary';
+import apiService from './services/apiService';
 import type { RequestContactResponse } from '@twa-dev/types';
 
 // Main App Content Component
@@ -43,7 +44,7 @@ const AppContent: React.FC = () => {
   }, [currentPage, webApp]);
 
   // Handle phone number verification
-  const handleVerifyPhoneNumber = React.useCallback(() => {
+  const handleVerifyPhoneNumber = React.useCallback(async () => {
     if (!webApp) {
       // Telegram WebApp is not available - fail silently in production
       return;
@@ -55,26 +56,29 @@ const AppContent: React.FC = () => {
       (confirmed: boolean) => {
         if (confirmed) {
           // Request phone number from user
-          webApp.requestContact((access: boolean, response?: RequestContactResponse) => {
+          webApp.requestContact(async (access: boolean, response?: RequestContactResponse) => {
             if (access && response?.status === 'sent' && response?.responseUnsafe?.contact) {
               const contact = response.responseUnsafe.contact;
-              // Send phone number to bot
-              const phoneData = {
-                phone_number: contact.phone_number,
-                user_id: user?.id,
-                first_name: user?.first_name,
-                last_name: user?.last_name,
-                username: user?.username
-              };
               
-              // Send data to bot via sendData method
-              webApp.sendData(JSON.stringify({
-                action: 'verify_phone',
-                data: phoneData
-              }));
-              
-              // Show success message
-              webApp.showAlert('شماره موبایل شما با موفقیت ارسال شد!');
+              try {
+                // Send phone number to API
+                const apiResponse = await apiService.verifyPhoneNumber({
+                  model: {
+                    phoneNumber: contact.phone_number
+                  }
+                });
+                
+                if (apiResponse.requestStatus.name === 'Successful') {
+                  // Show success message
+                  webApp.showAlert('شماره موبایل شما با موفقیت تایید شد!');
+                } else {
+                  // Show error message from API
+                  webApp.showAlert(apiResponse.message || 'خطا در تایید شماره موبایل');
+                }
+              } catch (error) {
+                console.error('Error verifying phone number:', error);
+                webApp.showAlert('خطا در ارسال شماره موبایل به سرور');
+              }
             } else {
               webApp.showAlert('خطا در دریافت شماره موبایل');
             }
