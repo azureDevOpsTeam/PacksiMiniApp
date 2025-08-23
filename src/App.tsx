@@ -24,9 +24,8 @@ const AppContent: React.FC = () => {
   const { t, language } = useLanguage();
   const [activeButton, setActiveButton] = React.useState<'user' | 'admin'>('user');
   const [currentPage, setCurrentPage] = React.useState<'home' | 'createRequest' | 'updateProfile' | 'addPreferredLocation' | 'parcelList' | 'notFound'>('home');
-  const [showVerifyPhone, setShowVerifyPhone] = React.useState(false);
-  const [showUpdateProfile, setShowUpdateProfile] = React.useState(false);
-  const [preferredLocationSet, setPreferredLocationSet] = React.useState<boolean | null>(null);
+  const [showVerifyPhone, setShowVerifyPhone] = React.useState<boolean>(false);
+  const [showUpdateProfile, setShowUpdateProfile] = React.useState<boolean>(false);
   const [isValidating, setIsValidating] = React.useState<boolean>(true);
   const [authenticationFailed, setAuthenticationFailed] = React.useState<boolean>(false);
 
@@ -55,28 +54,31 @@ const AppContent: React.FC = () => {
   // Validate user function
   const validateUser = React.useCallback(async () => {
     if (!isReady) return;
-
+    
     try {
       setIsValidating(true);
       setAuthenticationFailed(false);
       const response = await apiService.validate();
-
+      
       // Check for authentication failure
       if (response.requestStatus.name === 'AuthenticationFailed') {
         setAuthenticationFailed(true);
         setCurrentPage('notFound');
         return;
       }
-
+      
       // Handle successful response
       if (response.requestStatus.name === 'Successful' && response.objectResult) {
-        const { confirmPhoneNumber, hasCompletedProfile, setPreferredLocation } = response.objectResult;
-        // دکمه‌ها:
+        const { confirmPhoneNumber, hasCompletedProfile } = response.objectResult;
+        console.log('API Response:', response);
+        console.log('confirmPhoneNumber:', confirmPhoneNumber);
+        console.log('hasCompletedProfile:', hasCompletedProfile);
+        // Show Verify Phone button if phone is NOT confirmed
         setShowVerifyPhone(!confirmPhoneNumber);
+        // Show Complete Profile button if profile is NOT completed AND phone IS confirmed
         setShowUpdateProfile(!hasCompletedProfile && confirmPhoneNumber);
-        // وضعیت لوکیشن:
-        setPreferredLocationSet(!!setPreferredLocation);
-        return;
+        console.log('showVerifyPhone set to:', !confirmPhoneNumber);
+        console.log('showUpdateProfile set to:', !hasCompletedProfile && confirmPhoneNumber);
       }
     } catch (error) {
       console.error('Error validating user:', error);
@@ -105,37 +107,37 @@ const AppContent: React.FC = () => {
     webApp.requestContact(async (access: boolean, response?: RequestContactResponse) => {
       if (access && response?.status === 'sent' && response?.responseUnsafe?.contact) {
         const contact = response.responseUnsafe.contact;
-
+        
         try {
           // Process and normalize phone number for mobile compatibility
           let phoneNumber = contact.phone_number;
-
+          
           console.log('Original phone number from Telegram:', phoneNumber);
-
+          
           // Remove any non-digit characters except +
           phoneNumber = phoneNumber.replace(/[^\d+]/g, '');
-
+          
           // Ensure phone number starts with + if it doesn't already
           if (!phoneNumber.startsWith('+')) {
             phoneNumber = '+' + phoneNumber;
           }
-
+          
           // Validate phone number format (should be + followed by 7-15 digits)
           const phoneRegex = /^\+\d{7,15}$/;
           if (!phoneRegex.test(phoneNumber)) {
             throw new Error('فرمت شماره موبایل نامعتبر است');
           }
-
+          
           console.log('Processed phone number:', phoneNumber);
           console.log('Phone number length:', phoneNumber.length);
-
+          
           // Send phone number to API with better error handling for mobile
           const apiResponse = await apiService.verifyPhoneNumber({
             model: {
               phoneNumber: phoneNumber
             }
           });
-
+          
           if (apiResponse.requestStatus.name === 'Successful') {
             // Show success message and refresh validation
             webApp.showAlert('شماره موبایل شما با موفقیت تایید شد!');
@@ -179,22 +181,22 @@ const AppContent: React.FC = () => {
         <div style={{ marginBottom: '20px', width: '100%', maxWidth: '400px' }}>
           <SkeletonLoader type="profile" height="60px" />
         </div>
-
+        
         {/* Logo Skeleton */}
         <div style={{ marginBottom: '30px' }}>
           <SkeletonLoader type="text" width="120px" height="40px" />
         </div>
-
+        
         {/* Welcome Text Skeleton */}
         <div style={{ marginBottom: '30px', width: '100%', maxWidth: '300px' }}>
           <SkeletonLoader type="text" height="20px" />
         </div>
-
+        
         {/* Search Box Skeleton */}
         <div style={{ marginBottom: '30px', width: '100%', maxWidth: '400px' }}>
           <SkeletonLoader type="search" />
         </div>
-
+        
         {/* Buttons Skeleton */}
         <div style={{ width: '100%', maxWidth: '400px', marginBottom: '30px' }}>
           <div style={{ marginBottom: '20px' }}>
@@ -202,7 +204,7 @@ const AppContent: React.FC = () => {
           </div>
           <SkeletonLoader type="button" count={2} />
         </div>
-
+        
         {/* Services Skeleton */}
         <div style={{ width: '100%', maxWidth: '400px' }}>
           <div style={{ marginBottom: '20px' }}>
@@ -342,31 +344,31 @@ const AppContent: React.FC = () => {
                 width: '100%',
                 direction: language === 'fa' ? 'rtl' : 'ltr'
               }}>
-                <div style={{
-                  width: '32px',
-                  height: '32px',
-                  borderRadius: '8px',
-                  backgroundColor: '#10b981',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginRight: language === 'fa' ? '0' : '12px',
-                  marginLeft: language === 'fa' ? '12px' : '0'
-                }}>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                    <path d="M3 5C3 3.89543 3.89543 3 5 3H8.27924C8.70967 3 9.09181 3.27543 9.22792 3.68377L10.7257 8.17721C10.8831 8.64932 10.6694 9.16531 10.2243 9.38787L7.96701 10.5165C9.06925 12.9612 11.0388 14.9308 13.4835 16.033L14.6121 13.7757C14.8347 13.3306 15.3507 13.1169 15.8228 13.2743L20.3162 14.7721C20.7246 14.9082 21 15.2903 21 15.7208V19C21 20.1046 20.1046 21 19 21H18C9.71573 21 3 14.2843 3 6V5Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </div>
-                <div style={{ flex: 1, textAlign: language === 'fa' ? 'right' : 'left' }}>
-                  <div style={{
-                    color: '#ffffff',
-                    fontSize: '13px',
-                    fontFamily: 'IRANSansX, sans-serif',
-                    fontWeight: '500'
-                  }}>
-                    {t('unlimited.verifyPhone')}
-                  </div>
-                </div>
+            <div style={{
+              width: '32px',
+              height: '32px',
+              borderRadius: '8px',
+              backgroundColor: '#10b981',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginRight: language === 'fa' ? '0' : '12px',
+              marginLeft: language === 'fa' ? '12px' : '0'
+            }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M3 5C3 3.89543 3.89543 3 5 3H8.27924C8.70967 3 9.09181 3.27543 9.22792 3.68377L10.7257 8.17721C10.8831 8.64932 10.6694 9.16531 10.2243 9.38787L7.96701 10.5165C9.06925 12.9612 11.0388 14.9308 13.4835 16.033L14.6121 13.7757C14.8347 13.3306 15.3507 13.1169 15.8228 13.2743L20.3162 14.7721C20.7246 14.9082 21 15.2903 21 15.7208V19C21 20.1046 20.1046 21 19 21H18C9.71573 21 3 14.2843 3 6V5Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+            <div style={{ flex: 1, textAlign: language === 'fa' ? 'right' : 'left' }}>
+              <div style={{
+                color: '#ffffff',
+                fontSize: '13px',
+                fontFamily: 'IRANSansX, sans-serif',
+                fontWeight: '500'
+              }}>
+                {t('unlimited.verifyPhone')}
+              </div>
+            </div>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ color: '#848d96', transform: language === 'fa' ? 'rotate(180deg)' : 'none' }}>
                   <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
@@ -385,31 +387,31 @@ const AppContent: React.FC = () => {
                 width: '100%',
                 direction: language === 'fa' ? 'rtl' : 'ltr'
               }}>
-                <div style={{
-                  width: '32px',
-                  height: '32px',
-                  borderRadius: '8px',
-                  backgroundColor: '#6366f1',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginRight: language === 'fa' ? '0' : '12px',
-                  marginLeft: language === 'fa' ? '12px' : '0'
-                }}>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                    <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z" fill="white" />
-                  </svg>
-                </div>
-                <div style={{ flex: 1, textAlign: language === 'fa' ? 'right' : 'left' }}>
-                  <div style={{
-                    color: '#ffffff',
-                    fontSize: '13px',
-                    fontFamily: 'IRANSansX, sans-serif',
-                    fontWeight: '500'
-                  }}>
-                    {language === 'fa' ? 'تکمیل پروفایل' : 'Complete Profile'}
-                  </div>
-                </div>
+            <div style={{
+              width: '32px',
+              height: '32px',
+              borderRadius: '8px',
+              backgroundColor: '#6366f1',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginRight: language === 'fa' ? '0' : '12px',
+              marginLeft: language === 'fa' ? '12px' : '0'
+            }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z" fill="white" />
+              </svg>
+            </div>
+            <div style={{ flex: 1, textAlign: language === 'fa' ? 'right' : 'left' }}>
+              <div style={{
+                color: '#ffffff',
+                fontSize: '13px',
+                fontFamily: 'IRANSansX, sans-serif',
+                fontWeight: '500'
+              }}>
+                {language === 'fa' ? 'تکمیل پروفایل' : 'Complete Profile'}
+              </div>
+            </div>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ color: '#848d96', transform: language === 'fa' ? 'rotate(180deg)' : 'none' }}>
                   <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
@@ -626,18 +628,18 @@ const AppContent: React.FC = () => {
               </div>
             </div>
             <div style={{
-              position: 'absolute',
-              top: '8px',
-              right: language === 'fa' ? 'auto' : '8px',
-              left: language === 'fa' ? '8px' : 'auto',
-              backgroundColor: '#ff6b35',
-              color: '#ffffff',
-              fontSize: '10px',
-              fontFamily: 'IRANSansX, sans-serif',
-              padding: '2px 6px',
-              borderRadius: '8px',
-              fontWeight: 'bold'
-            }}>
+               position: 'absolute',
+               top: '8px',
+               right: language === 'fa' ? 'auto' : '8px',
+               left: language === 'fa' ? '8px' : 'auto',
+               backgroundColor: '#ff6b35',
+               color: '#ffffff',
+               fontSize: '10px',
+               fontFamily: 'IRANSansX, sans-serif',
+               padding: '2px 6px',
+               borderRadius: '8px',
+               fontWeight: 'bold'
+             }}>
               {t('bots.soon')}
             </div>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style={{ color: '#444444', transform: language === 'fa' ? 'rotate(180deg)' : 'none' }}>
@@ -688,18 +690,18 @@ const AppContent: React.FC = () => {
               </div>
             </div>
             <div style={{
-              position: 'absolute',
-              top: '8px',
-              right: language === 'fa' ? 'auto' : '8px',
-              left: language === 'fa' ? '8px' : 'auto',
-              backgroundColor: '#ff6b35',
-              color: '#ffffff',
-              fontSize: '10px',
-              fontFamily: 'IRANSansX, sans-serif',
-              padding: '2px 6px',
-              borderRadius: '8px',
-              fontWeight: 'bold'
-            }}>
+               position: 'absolute',
+               top: '8px',
+               right: language === 'fa' ? 'auto' : '8px',
+               left: language === 'fa' ? '8px' : 'auto',
+               backgroundColor: '#ff6b35',
+               color: '#ffffff',
+               fontSize: '10px',
+               fontFamily: 'IRANSansX, sans-serif',
+               padding: '2px 6px',
+               borderRadius: '8px',
+               fontWeight: 'bold'
+             }}>
               {t('bots.soon')}
             </div>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style={{ color: '#444444', transform: language === 'fa' ? 'rotate(180deg)' : 'none' }}>
