@@ -17,7 +17,8 @@
     "refresh": "Refresh"
   },
   "search": {
-    "placeholder": "Search"
+    "placeholder": "Search",
+    "loading": "Loading..."
   },
   "bots": {
         "title": "Services",

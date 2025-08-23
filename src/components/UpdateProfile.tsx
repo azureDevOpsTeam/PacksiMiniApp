@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../hooks/useLanguage';
 import { useTheme } from '../hooks/useTheme';
 import { useTelegramButtons } from '../hooks/useTelegramButtons';
+import { apiService } from '../services/apiService';
+import type { CountryItem } from '../types/api';
 import Logo from './Logo';
 import Settings from './Settings';
 
@@ -11,10 +13,7 @@ interface UpdateProfileFormData {
   lastName: string;
   displayName: string;
   address: string;
-  company: string;
-  postalCode: string;
   gender: number;
-  maritalStatus: number;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
@@ -31,39 +30,56 @@ const UpdateProfile: React.FC<UpdateProfileProps> = () => {
     lastName: '',
     displayName: '',
     address: '',
-    company: '',
-    postalCode: '',
-    gender: -1,
-    maritalStatus: -1
+    gender: -1
   });
 
   const [activeButton, setActiveButton] = useState<'user' | 'admin'>('user');
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [countries, setCountries] = useState<CountryItem[]>([]);
 
   // Check if form is valid for submission
   const isFormValid = !!(formData.firstName.trim() !== '' && 
                      formData.lastName.trim() !== '' && 
                      formData.countryOfResidenceId !== 0);
 
-  // Mock data for dropdowns
-  const countries = [
-    { id: 1, name: 'ایران', nameEn: 'Iran' },
-    { id: 2, name: 'آمریکا', nameEn: 'United States' },
-    { id: 3, name: 'کانادا', nameEn: 'Canada' },
-    { id: 4, name: 'آلمان', nameEn: 'Germany' },
-    { id: 5, name: 'فرانسه', nameEn: 'France' }
-  ];
+  // Load user info and countries on component mount
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        // Load user info
+        const userInfoResponse = await apiService.getUserInfo();
+        if (userInfoResponse.requestStatus.name === 'Successful') {
+          const userInfo = userInfoResponse.objectResult;
+          setFormData({
+            countryOfResidenceId: userInfo.countryOfResidenceId,
+            firstName: userInfo.firstName,
+            lastName: userInfo.lastName,
+            displayName: userInfo.displayName,
+            address: userInfo.address,
+            gender: userInfo.gender
+          });
+        }
+
+        // Load countries
+        const countriesResponse = await apiService.getCountries();
+        if (countriesResponse.requestStatus && countriesResponse.requestStatus.name === 'Successful') {
+          setCountries(countriesResponse.objectResult?.listItems || []);
+        }
+      } catch (error) {
+        console.error('Error loading data:', error);
+      }
+    };
+
+    loadData();
+  }, []);
 
   const genderOptions = [
     { id: 0, name: t('updateProfile.male'), nameEn: 'Male' },
     { id: 1, name: t('updateProfile.female'), nameEn: 'Female' }
   ];
 
-  const maritalStatusOptions = [
-    { id: 0, name: t('updateProfile.single'), nameEn: 'Single' },
-    { id: 1, name: t('updateProfile.married'), nameEn: 'Married' }
-  ];
+
 
   const handleInputChange = (field: keyof UpdateProfileFormData, value: string | number) => {
     setFormData(prev => ({
@@ -239,8 +255,8 @@ const UpdateProfile: React.FC<UpdateProfileProps> = () => {
             >
               <option value={0}>{t('updateProfile.selectCountry')}</option>
               {countries.map(country => (
-                <option key={country.id} value={country.id}>
-                  {isRTL ? country.name : country.nameEn}
+                <option key={country.value} value={country.value}>
+                  {isRTL ? country.text : country.label}
                 </option>
               ))}
             </select>
@@ -261,98 +277,23 @@ const UpdateProfile: React.FC<UpdateProfileProps> = () => {
             />
           </div>
 
-          {/* Company and Postal Code */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            gap: '15px',
-            marginBottom: '20px',
-            width: '100%',
-            maxWidth: '100%'
-          }}>
-            {/* Company */}
-            <div style={{ width: '100%' }}>
-              <label style={labelStyle}>{t('updateProfile.company')}</label>
-              <input
-                type="text"
-                value={formData.company}
-                onChange={(e) => handleInputChange('company', e.target.value)}
-                style={{
-                  ...inputStyle,
-                  width: '100%',
-                  boxSizing: 'border-box'
-                }}
-                placeholder={t('updateProfile.companyPlaceholder')}
-              />
-            </div>
 
-            {/* Postal Code */}
-            <div style={{ width: '100%' }}>
-              <label style={labelStyle}>{t('updateProfile.postalCode')}</label>
-              <input
-                type="text"
-                value={formData.postalCode}
-                onChange={(e) => handleInputChange('postalCode', e.target.value)}
-                style={{
-                  ...inputStyle,
-                  width: '100%',
-                  boxSizing: 'border-box'
-                }}
-                placeholder={t('updateProfile.postalCodePlaceholder')}
-              />
-            </div>
-          </div>
 
-          {/* Gender and Marital Status */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            gap: '15px',
-            marginBottom: '20px',
-            width: '100%',
-            maxWidth: '100%'
-          }}>
-            {/* Gender */}
-            <div style={{ width: '100%' }}>
-              <label style={labelStyle}>{t('updateProfile.gender')}</label>
-              <select
-                value={formData.gender}
-                onChange={(e) => handleInputChange('gender', parseInt(e.target.value))}
-                style={{
-                  ...inputStyle,
-                  width: '100%',
-                  boxSizing: 'border-box'
-                }}
-              >
-                <option value={-1}>{t('updateProfile.selectGender')}</option>
-                {genderOptions.map(option => (
-                  <option key={option.id} value={option.id}>
-                    {isRTL ? option.name : option.nameEn}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Marital Status */}
-            <div style={{ width: '100%' }}>
-              <label style={labelStyle}>{t('updateProfile.maritalStatus')}</label>
-              <select
-                value={formData.maritalStatus}
-                onChange={(e) => handleInputChange('maritalStatus', parseInt(e.target.value))}
-                style={{
-                  ...inputStyle,
-                  width: '100%',
-                  boxSizing: 'border-box'
-                }}
-              >
-                <option value={-1}>{t('updateProfile.selectMaritalStatus')}</option>
-                {maritalStatusOptions.map(option => (
-                  <option key={option.id} value={option.id}>
-                    {isRTL ? option.name : option.nameEn}
-                  </option>
-                ))}
-              </select>
-            </div>
+          {/* Gender */}
+          <div style={{ marginBottom: '20px' }}>
+            <label style={labelStyle}>{t('updateProfile.gender')}</label>
+            <select
+              value={formData.gender}
+              onChange={(e) => handleInputChange('gender', parseInt(e.target.value))}
+              style={inputStyle}
+            >
+              <option value={-1}>{t('updateProfile.selectGender')}</option>
+              {genderOptions.map(option => (
+                <option key={option.id} value={option.id}>
+                  {isRTL ? option.name : option.nameEn}
+                </option>
+              ))}
+            </select>
           </div>
 
           {/* Note: Submit button is now handled by Telegram's MainButton in the bottom bar */}

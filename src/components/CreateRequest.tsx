@@ -1,11 +1,12 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useLanguage } from '../hooks/useLanguage';
 import { useTheme } from '../hooks/useTheme';
 import { useTelegramButtons } from '../hooks/useTelegramButtons';
 import Logo from './Logo';
 import Settings from './Settings';
+import TreeDropdown from './TreeDropdown';
 import { apiService } from '../services/apiService';
-import type { CreateRequestPayload } from '../types/api';
+import type { CreateRequestPayload, CityItem, ItemType } from '../types/api';
 
 interface CreateRequestFormData {
   originCityId: number;
@@ -52,8 +53,12 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
-
-
+  const [citiesTree, setCitiesTree] = useState<CityItem[]>([]);
+  const [citiesLoading, setCitiesLoading] = useState(true);
+  const [originCityLabel, setOriginCityLabel] = useState('');
+  const [destinationCityLabel, setDestinationCityLabel] = useState('');
+  const [itemTypes, setItemTypes] = useState<ItemType[]>([]);
+  const [itemTypesLoading, setItemTypesLoading] = useState(true);
 
   // Check if form is valid for submission
   const isFormValid = !!(formData.originCityId !== 0 && 
@@ -62,27 +67,56 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
                      formData.arrivalDate && 
                      formData.requestType !== -1);
 
-  // Mock data for dropdowns
-  const cities = [
-    { id: 1, name: 'تهران', nameEn: 'Tehran' },
-    { id: 2, name: 'اصفهان', nameEn: 'Isfahan' },
-    { id: 3, name: 'شیراز', nameEn: 'Shiraz' },
-    { id: 4, name: 'مشهد', nameEn: 'Mashhad' },
-    { id: 5, name: 'تبریز', nameEn: 'Tabriz' }
-  ];
+  // Load cities tree on component mount
+  useEffect(() => {
+    const loadCitiesTree = async () => {
+      try {
+        setCitiesLoading(true);
+        const response = await apiService.getCitiesTree();
+        if (response.requestStatus.name === 'Successful') {
+          setCitiesTree(response.objectResult.listItems);
+        } else {
+          setError('خطا در بارگذاری لیست شهرها');
+        }
+      } catch (error) {
+        console.error('Error loading cities tree:', error);
+        setError('خطا در بارگذاری لیست شهرها');
+      } finally {
+        setCitiesLoading(false);
+      }
+    };
+
+    loadCitiesTree();
+  }, []);
+
+  // Load item types on component mount
+  useEffect(() => {
+    const loadItemTypes = async () => {
+      try {
+        setItemTypesLoading(true);
+        const response = await apiService.getItemTypes();
+        if (response.requestStatus.name === 'Successful') {
+          setItemTypes(response.objectResult);
+        } else {
+          setError('خطا در بارگذاری انواع اقلام');
+        }
+      } catch (error) {
+        console.error('Error loading item types:', error);
+        setError('خطا در بارگذاری انواع اقلام');
+      } finally {
+        setItemTypesLoading(false);
+      }
+    };
+
+    loadItemTypes();
+  }, []);
 
   const requestTypes = [
     { id: 0, name: t('createRequest.passenger'), nameEn: 'Passenger' },
     { id: 1, name: t('createRequest.sender'), nameEn: 'Sender' }
   ];
 
-  const itemTypes = [
-    { id: 1, name: 'لوازم الکترونیکی', nameEn: 'Electronics' },
-    { id: 2, name: 'پوشاک', nameEn: 'Clothing' },
-    { id: 3, name: 'کتاب', nameEn: 'Books' },
-    { id: 4, name: 'غذا', nameEn: 'Food' },
-    { id: 5, name: 'دارو', nameEn: 'Medicine' }
-  ];
+
 
   const handleInputChange = (field: keyof CreateRequestFormData, value: string | number | number[]) => {
     setFormData(prev => ({
@@ -296,43 +330,37 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
             {/* Origin City */}
             <div style={{ width: '100%' }}>
               <label style={labelStyle}>{t('createRequest.originCity')}</label>
-              <select
+              <TreeDropdown
+                data={citiesTree}
+                loading={citiesLoading}
+                placeholder={t('createRequest.selectCity')}
                 value={formData.originCityId}
-                onChange={(e) => handleInputChange('originCityId', parseInt(e.target.value))}
-                style={{
-                  ...inputStyle,
-                  width: '100%',
-                  boxSizing: 'border-box'
+                displayValue={originCityLabel}
+                onSelect={(value, label) => {
+                  handleInputChange('originCityId', value);
+                  setOriginCityLabel(label);
                 }}
-              >
-                <option value={0}>{t('createRequest.selectCity')}</option>
-                {cities.map(city => (
-                  <option key={city.id} value={city.id}>
-                    {isRTL ? city.name : city.nameEn}
-                  </option>
-                ))}
-              </select>
+                theme={theme}
+                isRTL={isRTL}
+              />
             </div>
 
             {/* Destination City */}
             <div style={{ width: '100%' }}>
               <label style={labelStyle}>{t('createRequest.destinationCity')}</label>
-              <select
+              <TreeDropdown
+                data={citiesTree}
+                loading={citiesLoading}
+                placeholder={t('createRequest.selectCity')}
                 value={formData.destinationCityId}
-                onChange={(e) => handleInputChange('destinationCityId', parseInt(e.target.value))}
-                style={{
-                  ...inputStyle,
-                  width: '100%',
-                  boxSizing: 'border-box'
+                displayValue={destinationCityLabel}
+                onSelect={(value, label) => {
+                  handleInputChange('destinationCityId', value);
+                  setDestinationCityLabel(label);
                 }}
-              >
-                <option value={0}>{t('createRequest.selectCity')}</option>
-                {cities.map(city => (
-                  <option key={city.id} value={city.id}>
-                    {isRTL ? city.name : city.nameEn}
-                  </option>
-                ))}
-              </select>
+                theme={theme}
+                isRTL={isRTL}
+              />
             </div>
           </div>
 
@@ -602,40 +630,52 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
               gap: '8px',
               marginTop: '8px'
             }}>
-              {itemTypes.map(itemType => (
-                <label
-                  key={itemType.id}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    padding: '8px 12px',
-                    borderRadius: '5px',
-                    border: '1px solid #3a4a5c',
-                    backgroundColor: formData.itemTypeIds.includes(itemType.id)
-                      ? '#50b4ff20'
-                      : '#212a33',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease'
-                  }}
-                >
-                  <input
-                    type="checkbox"
-                    checked={formData.itemTypeIds.includes(itemType.id)}
-                    onChange={() => handleItemTypeToggle(itemType.id)}
+              {itemTypesLoading ? (
+                <div style={{
+                  gridColumn: '1 / -1',
+                  textAlign: 'center',
+                  padding: '20px',
+                  color: '#848d96',
+                  fontSize: '14px'
+                }}>
+                  {t('loading')}
+                </div>
+              ) : (
+                itemTypes.map(itemType => (
+                  <label
+                    key={itemType.itemTypeId}
                     style={{
-                      marginRight: isRTL ? '0' : '8px',
-                      marginLeft: isRTL ? '8px' : '0'
+                      display: 'flex',
+                      alignItems: 'center',
+                      padding: '8px 12px',
+                      borderRadius: '5px',
+                      border: '1px solid #3a4a5c',
+                      backgroundColor: formData.itemTypeIds.includes(itemType.itemTypeId)
+                        ? '#50b4ff20'
+                        : '#212a33',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease'
                     }}
-                  />
-                  <span style={{
-                    fontSize: '14px',
-                    color: '#848d96',
-                    fontFamily: 'IRANSansX, sans-serif'
-                  }}>
-                    {isRTL ? itemType.name : itemType.nameEn}
-                  </span>
-                </label>
-              ))}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={formData.itemTypeIds.includes(itemType.itemTypeId)}
+                      onChange={() => handleItemTypeToggle(itemType.itemTypeId)}
+                      style={{
+                        marginRight: isRTL ? '0' : '8px',
+                        marginLeft: isRTL ? '8px' : '0'
+                      }}
+                    />
+                    <span style={{
+                      fontSize: '14px',
+                      color: '#848d96',
+                      fontFamily: 'IRANSansX, sans-serif'
+                    }}>
+                      {isRTL ? itemType.persianName : itemType.itemType}
+                    </span>
+                  </label>
+                ))
+              )}
             </div>
           </div>
 

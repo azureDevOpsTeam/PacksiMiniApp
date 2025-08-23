@@ -1,6 +1,6 @@
-import type { CreateRequestPayload, ApiResponse, CreateRequestResponse } from '../types/api';
+import type { CreateRequestPayload, ApiResponse, CreateRequestResponse, CitiesTreeResponse, ItemTypeResponse, CountriesResponse, UserInfoResponse } from '../types/api';
 
-const API_BASE_URL = 'https://web.packsi.net/api';
+const API_BASE_URL = 'https://api.packsi.net/api';
 
 class ApiService {
   private getHeaders(isFormData: boolean = false): HeadersInit {
@@ -130,6 +130,82 @@ class ApiService {
         success: false,
         message: error instanceof Error ? error.message : 'خطا در ارسال درخواست'
       };
+    }
+  }
+
+  async getCitiesTree(): Promise<CitiesTreeResponse> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/Region/GetCitiesTree`, {
+        method: 'GET',
+        headers: this.getHeaders()
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching cities tree:', error);
+      throw error;
+    }
+  }
+
+  async getItemTypes(): Promise<ItemTypeResponse> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/MiniApp/ItemType`, {
+        method: 'GET',
+        headers: this.getHeaders()
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching item types:', error);
+      throw error;
+    }
+  }
+
+  async getCountries(): Promise<CountriesResponse> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/Region/GetCountries`, {
+        method: 'GET',
+        headers: this.getHeaders()
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching countries:', error);
+      throw error;
+    }
+  }
+
+  async getUserInfo(): Promise<UserInfoResponse> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/MiniApp/UserInfo`, {
+        method: 'GET',
+        headers: this.getHeaders()
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching user info:', error);
+      throw error;
     }
   }
 }

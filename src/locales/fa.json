@@ -17,7 +17,8 @@
     "refresh": "بروزرسانی"
   },
   "search": {
-    "placeholder": "جستجو"
+    "placeholder": "جستجو",
+    "loading": "در حال بارگذاری..."
   },
   "bots": {
         "title": "خدمات",
