@@ -332,7 +332,7 @@ const AppContent: React.FC = () => {
           </h3>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', marginBottom: '30px' }}>
-            {showVerifyPhone && (
+            {!showVerifyPhone && (
               <button onClick={handleVerifyPhoneNumber} style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -375,7 +375,7 @@ const AppContent: React.FC = () => {
               </button>
             )}
 
-            {showUpdateProfile && (
+            {!showUpdateProfile && (
               <button onClick={() => setCurrentPage('updateProfile')} style={{
                 display: 'flex',
                 alignItems: 'center',
