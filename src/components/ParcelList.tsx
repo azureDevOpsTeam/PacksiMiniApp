@@ -54,8 +54,8 @@ const ParcelList: React.FC<ParcelListProps> = () => {
         setIsLoading(true);
         const response = await apiService.validate();
         
-        if (response.result) {
-          const { setPreferredLocation } = response.result;
+        if (response.objectResult) {
+          const { setPreferredLocation } = response.objectResult;
           setShowForm(!setPreferredLocation); // Show form if setPreferredLocation is false, show list if true
         }
       } catch (error) {

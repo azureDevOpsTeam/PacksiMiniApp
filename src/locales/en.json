@@ -131,5 +131,10 @@
     "selectCities": "Select Cities",
     "submit": "Save Preferences",
     "successMessage": "Your preferred location has been saved successfully!"
+  },
+  "notFound": {
+    "title": "Page Not Found",
+    "description": "Digital signature is invalid. Please try again.",
+    "retry": "Try Again"
   }
 }

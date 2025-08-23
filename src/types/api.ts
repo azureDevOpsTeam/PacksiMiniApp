@@ -152,13 +152,23 @@ export interface VerifyPhoneNumberResponse {
 
 // Validate API Types
 export interface ValidateResult {
+  setPreferredLocation: boolean;
   confirmPhoneNumber: boolean;
   hasCompletedProfile: boolean;
-  setPreferredLocation: boolean;
 }
 
 export interface ValidateResponse {
-  result: ValidateResult;
+  validationResult: any;
+  requestStatus: {
+    name: string;
+    value: number;
+  };
+  message: string;
+  objectResult: ValidateResult;
+  notificationType: {
+    name: string;
+    value: number;
+  };
 }
 
 export interface AddUserPreferredLocationModel {

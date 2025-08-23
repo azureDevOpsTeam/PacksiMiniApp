@@ -11,6 +11,7 @@ import AddPreferredLocation from './components/AddPreferredLocation';
 import ParcelList from './components/ParcelList';
 import Logo from './components/Logo';
 import Settings from './components/Settings';
+import NotFound from './components/NotFound';
 
 import ErrorBoundary from './components/ErrorBoundary';
 import SkeletonLoader from './components/SkeletonLoader';
@@ -22,10 +23,11 @@ const AppContent: React.FC = () => {
   const { isReady, webApp, user } = useTelegramContext();
   const { t, language } = useLanguage();
   const [activeButton, setActiveButton] = React.useState<'user' | 'admin'>('user');
-  const [currentPage, setCurrentPage] = React.useState<'home' | 'createRequest' | 'updateProfile' | 'addPreferredLocation' | 'parcelList'>('home');
+  const [currentPage, setCurrentPage] = React.useState<'home' | 'createRequest' | 'updateProfile' | 'addPreferredLocation' | 'parcelList' | 'notFound'>('home');
   const [showVerifyPhone, setShowVerifyPhone] = React.useState<boolean>(false);
   const [showUpdateProfile, setShowUpdateProfile] = React.useState<boolean>(false);
   const [isValidating, setIsValidating] = React.useState<boolean>(true);
+  const [authenticationFailed, setAuthenticationFailed] = React.useState<boolean>(false);
 
   // Handle Telegram BackButton
   React.useEffect(() => {
@@ -55,18 +57,27 @@ const AppContent: React.FC = () => {
     
     try {
       setIsValidating(true);
+      setAuthenticationFailed(false);
       const response = await apiService.validate();
       
-      if (response.result) {
-        const { confirmPhoneNumber, hasCompletedProfile } = response.result;
+      // Check for authentication failure
+      if (response.requestStatus.name === 'AuthenticationFailed') {
+        setAuthenticationFailed(true);
+        setCurrentPage('notFound');
+        return;
+      }
+      
+      // Handle successful response
+      if (response.requestStatus.name === 'Successful' && response.objectResult) {
+        const { confirmPhoneNumber, hasCompletedProfile } = response.objectResult;
         setShowVerifyPhone(confirmPhoneNumber === false);
         setShowUpdateProfile(hasCompletedProfile === false);
       }
     } catch (error) {
       console.error('Error validating user:', error);
-      // On error, show both buttons by default
-      setShowVerifyPhone(true);
-      setShowUpdateProfile(true);
+      // On error, show authentication failed page
+      setAuthenticationFailed(true);
+      setCurrentPage('notFound');
     } finally {
       setIsValidating(false);
     }
@@ -196,6 +207,11 @@ const AppContent: React.FC = () => {
         </div>
       </div>
     );
+  }
+
+  // Render NotFound page
+  if (currentPage === 'notFound' || authenticationFailed) {
+    return <NotFound onRetry={validateUser} />;
   }
 
   // Render CreateRequest page
