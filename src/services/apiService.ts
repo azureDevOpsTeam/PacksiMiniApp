@@ -1,4 +1,4 @@
-import type { CreateRequestPayload, ApiResponse, CreateRequestResponse, CitiesTreeResponse, ItemTypeResponse, CountriesResponse, UserInfoResponse, VerifyPhoneNumberPayload, VerifyPhoneNumberResponse, ValidateResponse } from '../types/api';
+import type { CreateRequestPayload, ApiResponse, CreateRequestResponse, CitiesTreeResponse, ItemTypeResponse, CountriesResponse, UserInfoResponse, VerifyPhoneNumberPayload, VerifyPhoneNumberResponse, ValidateResponse, AddUserPreferredLocationRequest, AddUserPreferredLocationResponse } from '../types/api';
 
 const API_BASE_URL = 'https://api.packsi.net/api';
 
@@ -162,6 +162,10 @@ class ApiService {
     }
   }
 
+  async getCities(): Promise<CitiesTreeResponse> {
+    return this.getCitiesTree();
+  }
+
   async getItemTypes(): Promise<ItemTypeResponse> {
     try {
       const response = await fetch(`${API_BASE_URL}/MiniApp/ItemType`, {
@@ -300,6 +304,26 @@ class ApiService {
       return data;
     } catch (error) {
       console.error('Error validating user:', error);
+      throw error;
+    }
+  }
+
+  async addUserPreferredLocation(request: AddUserPreferredLocationRequest): Promise<AddUserPreferredLocationResponse> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/MiniApp/AddUserPreferredLocation`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify(request)
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error adding user preferred location:', error);
       throw error;
     }
   }

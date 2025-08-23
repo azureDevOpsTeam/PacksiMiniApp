@@ -592,7 +592,7 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
               }}
             >
               <span style={{
-                color: '#50b4ff',
+                color: '#ff9800',
                 fontSize: '14px',
                 fontWeight: '700',
                 fontFamily: 'IRANSansX, sans-serif'
@@ -611,7 +611,7 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
               >
                 <path
                   d="M6 9L12 15L18 9"
-                  stroke="#50b4ff"
+                  stroke="#ff9800"
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"

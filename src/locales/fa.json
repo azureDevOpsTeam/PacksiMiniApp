@@ -30,7 +30,8 @@
         "carRental": "اجاره خودرو",
         "findBestCar": "مناسب ترین و بصرفه ترین خودرو برای سفر خود را پیدا کنید",
         "personalServices": "خدمات شخصی",
-        "chooseTrustedPeople": "اشخاص مطمئن با خدمات ارزنده را برای انجام کارها انتخاب کنید"
+        "chooseTrustedPeople": "اشخاص مطمئن با خدمات ارزنده را برای انجام کارها انتخاب کنید",
+        "soon": "بزودی"
     },
   "unlimited": {
     "title": "برای دسترسی نامحدود",
@@ -111,6 +112,8 @@
     "companyPlaceholder": "نام شرکت را وارد کنید",
     "postalCodePlaceholder": "کد پستی را وارد کنید",
     "selectCountry": "انتخاب کشور",
+    "cities": "شهرهای مورد علاقه",
+    "selectCities": "انتخاب شهرها",
     "selectGender": "انتخاب جنسیت",
     "selectMaritalStatus": "انتخاب وضعیت تأهل",
     "male": "مرد",
@@ -118,5 +121,15 @@
     "single": "مجرد",
     "married": "متأهل",
     "submit": "بروزرسانی پروفایل"
+  },
+  "preferredLocation": {
+    "title": "تنظیم مکان مورد علاقه",
+    "description": "لطفاً کشور محل سکونت و شهرهای مورد علاقه خود را انتخاب کنید تا خدمات بهتری دریافت کنید.",
+    "countryOfResidence": "کشور محل سکونت",
+    "preferredCities": "شهرهای مورد علاقه",
+    "selectCountry": "انتخاب کشور",
+    "selectCities": "انتخاب شهرها",
+    "submit": "ذخیره تنظیمات",
+    "successMessage": "مکان مورد علاقه شما با موفقیت ذخیره شد!"
   }
 }

@@ -109,6 +109,8 @@ export interface UserInfo {
   displayName: string;
   address: string;
   gender: number;
+  selectedCities?: number[];
+  selectedCityLabels?: string[];
 }
 
 export interface UserInfoResponse {
@@ -152,18 +154,23 @@ export interface VerifyPhoneNumberResponse {
 export interface ValidateResult {
   confirmPhoneNumber: boolean;
   hasCompletedProfile: boolean;
+  setPreferredLocation: boolean;
 }
 
 export interface ValidateResponse {
-  validationResult: any;
-  requestStatus: {
-    name: string;
-    value: number;
-  };
-  message: string;
-  objectResult: ValidateResult;
-  notificationType: {
-    name: string;
-    value: number;
-  };
+  result: ValidateResult;
+}
+
+export interface AddUserPreferredLocationModel {
+  countryOfResidenceId: number;
+  cityIds: number[];
+}
+
+export interface AddUserPreferredLocationRequest {
+  model: AddUserPreferredLocationModel;
+}
+
+export interface AddUserPreferredLocationResponse {
+  success: boolean;
+  message?: string;
 }

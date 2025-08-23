@@ -35,7 +35,7 @@ export default defineConfig({
     host: true,
     https: false, // Set to true if you need HTTPS for development
     hmr: {
-      port: 3001,
+      port: 24678, // Use a different port for HMR to avoid conflicts
     },
     // تنظیمات cache control برای development
     headers: {

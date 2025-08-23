@@ -30,7 +30,8 @@
         "carRental": "Car Rental",
         "findBestCar": "Find the most suitable and affordable car for your trip",
         "personalServices": "Personal Services",
-        "chooseTrustedPeople": "Choose trusted people with valuable services to get your tasks done"
+        "chooseTrustedPeople": "Choose trusted people with valuable services to get your tasks done",
+        "soon": "Soon"
     },
   "unlimited": {
     "title": "For Unlimited Access",
@@ -111,6 +112,8 @@
     "companyPlaceholder": "Enter your company",
     "postalCodePlaceholder": "Enter postal code",
     "selectCountry": "Select Country",
+    "cities": "Preferred Cities",
+    "selectCities": "Select Cities",
     "selectGender": "Select Gender",
     "selectMaritalStatus": "Select Marital Status",
     "male": "Male",
@@ -118,5 +121,15 @@
     "single": "Single",
     "married": "Married",
     "submit": "Update Profile"
+  },
+  "preferredLocation": {
+    "title": "Set Your Preferred Location",
+    "description": "Please select your country of residence and preferred cities to receive better service.",
+    "countryOfResidence": "Country of Residence",
+    "preferredCities": "Preferred Cities",
+    "selectCountry": "Select Country",
+    "selectCities": "Select Cities",
+    "submit": "Save Preferences",
+    "successMessage": "Your preferred location has been saved successfully!"
   }
 }

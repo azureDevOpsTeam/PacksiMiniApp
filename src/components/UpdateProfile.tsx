@@ -3,10 +3,11 @@ import { useLanguage } from '../hooks/useLanguage';
 import { useTheme } from '../hooks/useTheme';
 import { useTelegramButtons } from '../hooks/useTelegramButtons';
 import { apiService } from '../services/apiService';
-import type { CountryItem } from '../types/api';
+import type { CountryItem, CityItem } from '../types/api';
 import Logo from './Logo';
 import Settings from './Settings';
 import SkeletonLoader from './SkeletonLoader';
+import MultiSelectTreeDropdown from './MultiSelectTreeDropdown';
 
 interface UpdateProfileFormData {
   countryOfResidenceId: number;
@@ -15,6 +16,7 @@ interface UpdateProfileFormData {
   displayName: string;
   address: string;
   gender: number;
+  selectedCities: number[];
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
@@ -31,7 +33,8 @@ const UpdateProfile: React.FC<UpdateProfileProps> = () => {
     lastName: '',
     displayName: '',
     address: '',
-    gender: -1
+    gender: -1,
+    selectedCities: []
   });
 
   const [activeButton, setActiveButton] = useState<'user' | 'admin'>('user');
@@ -39,11 +42,14 @@ const UpdateProfile: React.FC<UpdateProfileProps> = () => {
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [success, setSuccess] = useState(false);
   const [countries, setCountries] = useState<CountryItem[]>([]);
+  const [cities, setCities] = useState<CityItem[]>([]);
+  const [citiesLoading, setCitiesLoading] = useState(false);
+
 
   // Check if form is valid for submission
-  const isFormValid = !!(formData.firstName && formData.firstName.trim() !== '' && 
-                     formData.lastName && formData.lastName.trim() !== '' && 
-                     formData.countryOfResidenceId !== 0);
+  const isFormValid = !!(formData.firstName && formData.firstName.trim() !== '' &&
+    formData.lastName && formData.lastName.trim() !== '' &&
+    formData.countryOfResidenceId !== 0);
 
   // Load user info and countries on component mount
   useEffect(() => {
@@ -60,14 +66,29 @@ const UpdateProfile: React.FC<UpdateProfileProps> = () => {
             lastName: userInfo.lastName || '',
             displayName: userInfo.displayName || '',
             address: userInfo.address || '',
-            gender: userInfo.gender || -1
+            gender: userInfo.gender || -1,
+            selectedCities: userInfo.selectedCities || []
           });
+
         }
 
         // Load countries
         const countriesResponse = await apiService.getCountries();
         if (countriesResponse.requestStatus && countriesResponse.requestStatus.name === 'Successful') {
           setCountries(countriesResponse.objectResult?.listItems || []);
+        }
+
+        // Load cities
+        setCitiesLoading(true);
+        try {
+          const citiesResponse = await apiService.getCities();
+          if (citiesResponse.requestStatus && citiesResponse.requestStatus.name === 'Successful') {
+            setCities(citiesResponse.objectResult?.listItems || []);
+          }
+        } catch (error) {
+          console.error('Error loading cities:', error);
+        } finally {
+          setCitiesLoading(false);
         }
       } catch (error) {
         console.error('Error loading data:', error);
@@ -90,6 +111,13 @@ const UpdateProfile: React.FC<UpdateProfileProps> = () => {
     setFormData(prev => ({
       ...prev,
       [field]: value
+    }));
+  };
+
+  const handleCitySelectionChange = (selectedValues: number[]) => {
+    setFormData(prev => ({
+      ...prev,
+      selectedCities: selectedValues
     }));
   };
 
@@ -168,29 +196,29 @@ const UpdateProfile: React.FC<UpdateProfileProps> = () => {
         <div style={{ marginBottom: '20px', width: '100%', maxWidth: '400px' }}>
           <SkeletonLoader type="profile" height="60px" />
         </div>
-        
+
         {/* Logo Skeleton */}
         <div style={{ marginBottom: '30px' }}>
           <SkeletonLoader type="text" width="120px" height="40px" />
         </div>
-        
+
         {/* Form Fields Skeleton */}
         <div style={{ width: '100%', maxWidth: '400px', gap: '20px', display: 'flex', flexDirection: 'column' }}>
           <SkeletonLoader type="text" width="100px" height="16px" />
           <SkeletonLoader type="search" height="40px" />
-          
+
           <SkeletonLoader type="text" width="80px" height="16px" />
           <SkeletonLoader type="search" height="40px" />
-          
+
           <SkeletonLoader type="text" width="90px" height="16px" />
           <SkeletonLoader type="search" height="40px" />
-          
+
           <SkeletonLoader type="text" width="120px" height="16px" />
           <SkeletonLoader type="search" height="40px" />
-          
+
           <SkeletonLoader type="text" width="70px" height="16px" />
           <SkeletonLoader type="search" height="40px" />
-          
+
           <SkeletonLoader type="text" width="60px" height="16px" />
           <SkeletonLoader type="search" height="40px" />
         </div>
@@ -312,6 +340,20 @@ const UpdateProfile: React.FC<UpdateProfileProps> = () => {
             </select>
           </div>
 
+          {/* Cities Selection */}
+          <div style={{ marginBottom: '20px' }}>
+            <label style={labelStyle}>{t('updateProfile.cities')}</label>
+            <MultiSelectTreeDropdown
+              data={cities}
+              loading={citiesLoading}
+              placeholder={t('updateProfile.selectCities')}
+              selectedValues={formData.selectedCities}
+              onSelectionChange={handleCitySelectionChange}
+              theme={theme}
+              isRTL={isRTL}
+            />
+          </div>
+          
           {/* Address */}
           <div style={{ marginBottom: '20px' }}>
             <label style={labelStyle}>{t('updateProfile.address')}</label>
@@ -326,8 +368,6 @@ const UpdateProfile: React.FC<UpdateProfileProps> = () => {
               placeholder={t('updateProfile.addressPlaceholder')}
             />
           </div>
-
-
 
           {/* Gender */}
           <div style={{ marginBottom: '20px' }}>
