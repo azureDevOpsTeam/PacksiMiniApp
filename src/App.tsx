@@ -20,6 +20,9 @@ const AppContent: React.FC = () => {
   const { t, language } = useLanguage();
   const [activeButton, setActiveButton] = React.useState<'user' | 'admin'>('user');
   const [currentPage, setCurrentPage] = React.useState<'home' | 'createRequest' | 'updateProfile'>('home');
+  const [showVerifyPhone, setShowVerifyPhone] = React.useState<boolean>(true);
+  const [showUpdateProfile, setShowUpdateProfile] = React.useState<boolean>(true);
+  const [isValidating, setIsValidating] = React.useState<boolean>(true);
 
   // Handle Telegram BackButton
   React.useEffect(() => {
@@ -42,6 +45,33 @@ const AppContent: React.FC = () => {
       webApp.BackButton.offClick(handleBackButton);
     };
   }, [currentPage, webApp]);
+
+  // Validate user on app load
+  React.useEffect(() => {
+    const validateUser = async () => {
+      if (!isReady) return;
+      
+      try {
+        setIsValidating(true);
+        const response = await apiService.validate();
+        
+        if (response.requestStatus.name === 'Successful') {
+          const { confirmPhoneNumber, hasCompletedProfile } = response.objectResult;
+          setShowVerifyPhone(!confirmPhoneNumber);
+          setShowUpdateProfile(!hasCompletedProfile);
+        }
+      } catch (error) {
+        console.error('Error validating user:', error);
+        // On error, show both buttons by default
+        setShowVerifyPhone(true);
+        setShowUpdateProfile(true);
+      } finally {
+        setIsValidating(false);
+      }
+    };
+
+    validateUser();
+  }, [isReady]);
 
   // Handle phone number verification
   const handleVerifyPhoneNumber = React.useCallback(async () => {
@@ -89,16 +119,19 @@ const AppContent: React.FC = () => {
   }, [webApp, user, t]);
 
 
-  if (!isReady) {
+  if (!isReady || isValidating) {
     return (
       <div style={{
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
         height: '100vh',
+        backgroundColor: '#17212b',
+        color: '#ffffff',
+        fontFamily: 'IRANSansX, sans-serif',
         fontSize: '18px'
       }}>
-        {t('common.loading')}
+        {!isReady ? t('common.loading') : 'Validating...'}
       </div>
     );
   }
@@ -185,35 +218,37 @@ const AppContent: React.FC = () => {
       </div>
 
       {/* Unlimited Access Section */}
-      <div style={{
-        marginTop: '30px',
-        width: '100%',
-        maxWidth: '400px'
-      }}>
-        <h3 style={{
-          color: '#50b4ff',
-          fontSize: '12px',
-          fontFamily: 'IRANSansX, sans-serif',
-          margin: '0 0 20px 0',
-          fontWeight: '700',
-          textAlign: language === 'fa' ? 'right' : 'left',
-          direction: language === 'fa' ? 'rtl' : 'ltr'
+      {(showVerifyPhone || showUpdateProfile) && (
+        <div style={{
+          marginTop: '30px',
+          width: '100%',
+          maxWidth: '400px'
         }}>
-          {t('unlimited.title')}
-        </h3>
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', marginBottom: '30px' }}>
-          <button onClick={handleVerifyPhoneNumber} style={{
-            display: 'flex',
-            alignItems: 'center',
-            padding: '8px 12px',
-            backgroundColor: '#212a33',
-            borderRadius: '8px 8px 0 0',
-            cursor: 'pointer',
-            border: 'none',
-            width: '100%',
+          <h3 style={{
+            color: '#50b4ff',
+            fontSize: '12px',
+            fontFamily: 'IRANSansX, sans-serif',
+            margin: '0 0 20px 0',
+            fontWeight: '700',
+            textAlign: language === 'fa' ? 'right' : 'left',
             direction: language === 'fa' ? 'rtl' : 'ltr'
           }}>
+            {t('unlimited.title')}
+          </h3>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', marginBottom: '30px' }}>
+            {showVerifyPhone && (
+              <button onClick={handleVerifyPhoneNumber} style={{
+                display: 'flex',
+                alignItems: 'center',
+                padding: '8px 12px',
+                backgroundColor: '#212a33',
+                borderRadius: showUpdateProfile ? '8px 8px 0 0' : '8px',
+                cursor: 'pointer',
+                border: 'none',
+                width: '100%',
+                direction: language === 'fa' ? 'rtl' : 'ltr'
+              }}>
             <div style={{
               width: '32px',
               height: '32px',
@@ -239,22 +274,24 @@ const AppContent: React.FC = () => {
                 {t('unlimited.verifyPhone')}
               </div>
             </div>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ color: '#848d96', transform: language === 'fa' ? 'rotate(180deg)' : 'none' }}>
-              <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ color: '#848d96', transform: language === 'fa' ? 'rotate(180deg)' : 'none' }}>
+                  <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+            )}
 
-          <button onClick={() => setCurrentPage('updateProfile')} style={{
-            display: 'flex',
-            alignItems: 'center',
-            padding: '8px 12px',
-            backgroundColor: '#212a33',
-            borderRadius: '0 0 8px 8px',
-            cursor: 'pointer',
-            border: 'none',
-            width: '100%',
-            direction: language === 'fa' ? 'rtl' : 'ltr'
-          }}>
+            {showUpdateProfile && (
+              <button onClick={() => setCurrentPage('updateProfile')} style={{
+                display: 'flex',
+                alignItems: 'center',
+                padding: '8px 12px',
+                backgroundColor: '#212a33',
+                borderRadius: showVerifyPhone ? '0 0 8px 8px' : '8px',
+                cursor: 'pointer',
+                border: 'none',
+                width: '100%',
+                direction: language === 'fa' ? 'rtl' : 'ltr'
+              }}>
             <div style={{
               width: '32px',
               height: '32px',
@@ -280,14 +317,14 @@ const AppContent: React.FC = () => {
                 {language === 'fa' ? 'تکمیل پروفایل' : 'Complete Profile'}
               </div>
             </div>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ color: '#848d96', transform: language === 'fa' ? 'rotate(180deg)' : 'none' }}>
-              <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
-
-          
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ color: '#848d96', transform: language === 'fa' ? 'rotate(180deg)' : 'none' }}>
+                  <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Bot Links Section */}
       <div style={{

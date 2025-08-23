@@ -1,4 +1,4 @@
-import type { CreateRequestPayload, ApiResponse, CreateRequestResponse, CitiesTreeResponse, ItemTypeResponse, CountriesResponse, UserInfoResponse, VerifyPhoneNumberPayload, VerifyPhoneNumberResponse } from '../types/api';
+import type { CreateRequestPayload, ApiResponse, CreateRequestResponse, CitiesTreeResponse, ItemTypeResponse, CountriesResponse, UserInfoResponse, VerifyPhoneNumberPayload, VerifyPhoneNumberResponse, ValidateResponse } from '../types/api';
 
 const API_BASE_URL = 'https://api.packsi.net/api';
 
@@ -225,6 +225,25 @@ class ApiService {
       return data;
     } catch (error) {
       console.error('Error verifying phone number:', error);
+      throw error;
+    }
+  }
+
+  async validate(): Promise<ValidateResponse> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/MiniApp/validate`, {
+        method: 'POST',
+        headers: this.getHeaders()
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error validating user:', error);
       throw error;
     }
   }

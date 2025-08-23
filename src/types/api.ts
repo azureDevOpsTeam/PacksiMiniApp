@@ -147,3 +147,23 @@ export interface VerifyPhoneNumberResponse {
     value: number;
   };
 }
+
+// Validate API Types
+export interface ValidateResult {
+  confirmPhoneNumber: boolean;
+  hasCompletedProfile: boolean;
+}
+
+export interface ValidateResponse {
+  validationResult: any;
+  requestStatus: {
+    name: string;
+    value: number;
+  };
+  message: string;
+  objectResult: ValidateResult;
+  notificationType: {
+    name: string;
+    value: number;
+  };
+}
