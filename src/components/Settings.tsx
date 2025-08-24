@@ -4,12 +4,20 @@ import { useLanguage } from '../hooks/useLanguage';
 interface SettingsProps {
   activeButton: 'user' | 'admin';
   setActiveButton: (button: 'user' | 'admin') => void;
+  forceExpanded?: boolean;
 }
 
-const Settings: React.FC<SettingsProps> = ({ activeButton, setActiveButton }) => {
+const Settings: React.FC<SettingsProps> = ({ activeButton, setActiveButton, forceExpanded }) => {
   const { language, changeLanguage } = useLanguage();
   const [settingsExpanded, setSettingsExpanded] = React.useState(false);
   const [selectedLanguage, setSelectedLanguage] = React.useState<'fa' | 'en'>(language as 'fa' | 'en');
+
+  // Handle forceExpanded prop
+  React.useEffect(() => {
+    if (forceExpanded !== undefined) {
+      setSettingsExpanded(forceExpanded);
+    }
+  }, [forceExpanded]);
 
   // Update selectedLanguage when language context changes
   React.useEffect(() => {

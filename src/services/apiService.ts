@@ -330,7 +330,7 @@ class ApiService {
 
   async updateProfile(request: UpdateProfileRequest): Promise<UpdateProfileResponse> {
     try {
-      const response = await fetch(`${API_BASE_URL}/MiniApp/UpdateProfile`, {
+      const response = await fetch(`${API_BASE_URL}/MiniApp/UpdateUserProfile`, {
         method: 'POST',
         headers: this.getHeaders(),
         body: JSON.stringify(request)

@@ -131,7 +131,8 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ onProfileUpdated }) => {
           lastName: formData.lastName,
           displayName: formData.displayName,
           address: formData.address,
-          gender: formData.gender
+          gender: formData.gender,
+          cityIds: formData.selectedCities
         }
       };
 
@@ -200,6 +201,52 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ onProfileUpdated }) => {
     fontFamily: 'IRANSansX, sans-serif',
     textAlign: isRTL ? 'right' as const : 'left' as const
   };
+
+  // Show success message
+  if (success) {
+    return (
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '100vh',
+        padding: '20px',
+        backgroundColor: theme.colors.background,
+        textAlign: 'center'
+      }}>
+        <div style={{
+          backgroundColor: '#4CAF50',
+          borderRadius: '50%',
+          width: '80px',
+          height: '80px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginBottom: '20px'
+        }}>
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+            <path d="M9 12L11 14L15 10" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </div>
+        <h2 style={{
+          color: theme.colors.text.primary,
+          marginBottom: '10px',
+          fontSize: '20px',
+          fontWeight: 'bold'
+        }}>
+          {t('common.success')}
+        </h2>
+        <p style={{
+          color: theme.colors.text.secondary,
+          fontSize: '16px',
+          lineHeight: '1.5'
+        }}>
+          {t('updateProfile.successMessage')}
+        </p>
+      </div>
+    );
+  }
 
   if (isInitialLoading) {
     return (

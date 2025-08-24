@@ -193,6 +193,7 @@ export interface UpdateProfileModel {
   displayName: string;
   address: string;
   gender: number;
+  cityIds: number[];
 }
 
 export interface UpdateProfileRequest {

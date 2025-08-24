@@ -28,6 +28,8 @@ const AppContent: React.FC = () => {
   const [showUpdateProfile, setShowUpdateProfile] = React.useState<boolean>(false);
   const [isValidating, setIsValidating] = React.useState<boolean>(true);
   const [authenticationFailed, setAuthenticationFailed] = React.useState<boolean>(false);
+  const [forceSettingsExpanded, setForceSettingsExpanded] = React.useState<boolean>(false);
+  const [hasShownAutoSettings, setHasShownAutoSettings] = React.useState<boolean>(false);
 
   // Handle Telegram BackButton
   React.useEffect(() => {
@@ -97,6 +99,33 @@ const AppContent: React.FC = () => {
   React.useEffect(() => {
     validateUser();
   }, [validateUser]);
+
+  // Auto-open settings for first-time users
+  React.useEffect(() => {
+    // Check if this is the first time opening the app
+    const hasOpenedBefore = localStorage.getItem('hasOpenedAppBefore');
+    
+    if (!hasOpenedBefore && !hasShownAutoSettings && !isValidating && isReady) {
+      // Mark that we've shown auto settings
+      setHasShownAutoSettings(true);
+      
+      // Open settings after 3 seconds
+      const openTimer = setTimeout(() => {
+        setForceSettingsExpanded(true);
+        
+        // Close settings after 5 seconds
+        const closeTimer = setTimeout(() => {
+          setForceSettingsExpanded(false);
+          // Mark that the app has been opened before
+          localStorage.setItem('hasOpenedAppBefore', 'true');
+        }, 5000);
+        
+        return () => clearTimeout(closeTimer);
+      }, 3000);
+      
+      return () => clearTimeout(openTimer);
+    }
+  }, [hasShownAutoSettings, isValidating, isReady]);
 
   // Handle phone number verification
   const handleVerifyPhoneNumber = React.useCallback(async () => {
@@ -257,7 +286,7 @@ const AppContent: React.FC = () => {
       position: 'relative'
     }}>
       {/* Settings Component */}
-      <Settings activeButton={activeButton} setActiveButton={setActiveButton} />
+      <Settings activeButton={activeButton} setActiveButton={setActiveButton} forceExpanded={forceSettingsExpanded} />
       <div style={{
         display: 'flex',
         flexDirection: 'column',
