@@ -33,7 +33,7 @@ const Settings: React.FC<SettingsProps> = ({ activeButton, setActiveButton, forc
   return (
     <div style={{
       position: 'fixed',
-      bottom: '10px',
+      bottom: '50px',
       right: settingsExpanded ? '0px' : '-100px',
       width: '100px',
       backgroundColor: '#212a33',
