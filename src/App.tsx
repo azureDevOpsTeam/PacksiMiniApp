@@ -277,12 +277,11 @@ const AppContent: React.FC = () => {
   return (
     <div style={{
       display: 'flex',
-      top:'30px',
       flexDirection: 'column',
       justifyContent: 'flex-start',
       alignItems: 'center',
       minHeight: '100vh',
-      padding: '20px',
+      padding: '50px 20px 0 20px',
       textAlign: 'center',
       position: 'relative'
     }}>
