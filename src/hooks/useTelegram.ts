@@ -17,7 +17,7 @@ export const useTelegram = (): TelegramContextType => {
       // Set up the app
       // Expand to full screen to hide header
       WebApp.expand();
-      
+      WebApp.requestFullscreen();
       // Hide header by setting it to transparent/secondary background
       WebApp.setHeaderColor('secondary_bg_color');
       
@@ -28,10 +28,6 @@ export const useTelegram = (): TelegramContextType => {
       WebApp.disableVerticalSwipes();
       WebApp.enableClosingConfirmation();
       
-      // Force full screen mode
-      if (!WebApp.isExpanded) {
-        WebApp.expand();
-      }
       // Add viewport meta tag to disable zoom
       const viewport = document.querySelector('meta[name="viewport"]');
       if (viewport) {
