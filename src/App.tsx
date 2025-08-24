@@ -29,8 +29,6 @@ const AppContent: React.FC = () => {
   const [isValidating, setIsValidating] = React.useState<boolean>(true);
   const [authenticationFailed, setAuthenticationFailed] = React.useState<boolean>(false);
 
-
-
   // Handle Telegram BackButton
   React.useEffect(() => {
     if (!webApp) return;
