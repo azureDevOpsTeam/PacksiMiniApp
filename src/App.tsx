@@ -277,6 +277,7 @@ const AppContent: React.FC = () => {
   return (
     <div style={{
       display: 'flex',
+      top:'30px',
       flexDirection: 'column',
       justifyContent: 'flex-start',
       alignItems: 'center',
