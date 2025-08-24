@@ -101,7 +101,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
         justifyContent: 'flex-start',
         alignItems: 'center',
         minHeight: '100vh',
-        padding: '20px',
+        padding: '80px 20px 0 20px',
         backgroundColor: '#17212b'
       }}>
         {/* Header Skeleton */}
@@ -142,7 +142,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
       justifyContent: 'flex-start',
       alignItems: 'center',
       minHeight: '100vh',
-      padding: '20px',
+      padding: '80px 20px 0 20px',
       textAlign: 'center',
       position: 'relative'
     }}>
@@ -180,7 +180,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
         <div style={{ maxWidth: '400px', margin: '0 auto' }}>
           {parcels.length === 0 ? (
             <div style={{
-              padding: '40px 20px',
+              padding: '80px 20px 0 20px',
               textAlign: 'center',
               color: '#848d96',
               fontSize: '14px',

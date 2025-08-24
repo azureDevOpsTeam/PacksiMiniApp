@@ -66,7 +66,7 @@ const ErrorFallback: React.FC<ErrorFallbackProps> = ({ error, resetError }) => {
       alignItems: 'center',
       justifyContent: 'center',
       minHeight: '200px',
-      padding: '20px',
+      padding: '80px 20px 0 20px',
       backgroundColor: '#1b2026',
       color: '#848d96',
       textAlign: 'center',

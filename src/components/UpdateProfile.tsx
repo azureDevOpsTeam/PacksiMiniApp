@@ -211,7 +211,7 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ onProfileUpdated }) => {
         justifyContent: 'center',
         alignItems: 'center',
         minHeight: '100vh',
-        padding: '20px',
+        padding: '80px 20px 0 20px',
         backgroundColor: theme.colors.background,
         textAlign: 'center'
       }}>
@@ -256,7 +256,7 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ onProfileUpdated }) => {
         justifyContent: 'flex-start',
         alignItems: 'center',
         minHeight: '100vh',
-        padding: '20px',
+        padding: '80px 20px 0 20px',
         backgroundColor: '#17212b'
       }}>
         {/* Header Skeleton */}
@@ -300,7 +300,7 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ onProfileUpdated }) => {
       justifyContent: 'flex-start',
       alignItems: 'center',
       minHeight: '100vh',
-      padding: '20px',
+      padding: '80px 20px 0 20px',
       textAlign: 'center',
       position: 'relative'
     }}>

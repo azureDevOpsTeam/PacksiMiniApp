@@ -1,5 +1,6 @@
 import React from 'react';
 import { useLanguage } from '../hooks/useLanguage';
+import ChatPanel from './ChatPanel';
 
 interface SettingsProps {
   activeButton: 'user' | 'admin';
@@ -10,6 +11,7 @@ interface SettingsProps {
 const Settings: React.FC<SettingsProps> = ({ activeButton, setActiveButton, forceExpanded }) => {
   const { language, changeLanguage } = useLanguage();
   const [settingsExpanded, setSettingsExpanded] = React.useState(false);
+
   const [selectedLanguage, setSelectedLanguage] = React.useState<'fa' | 'en'>(language as 'fa' | 'en');
 
   // Handle forceExpanded prop
@@ -30,10 +32,11 @@ const Settings: React.FC<SettingsProps> = ({ activeButton, setActiveButton, forc
     changeLanguage(lang);
   };
 
-  return (
+  return (<>
+    {/* Main Settings Panel */}
     <div style={{
-      position: 'fixed',
-      bottom: '50px',
+      position: 'absolute',   // 👈 به جای fixed
+      top: '70px',
       right: settingsExpanded ? '0px' : '-100px',
       width: '100px',
       backgroundColor: '#212a33',
@@ -52,7 +55,7 @@ const Settings: React.FC<SettingsProps> = ({ activeButton, setActiveButton, forc
         style={{
           position: 'absolute',
           left: '-40px',
-          bottom: '10px',
+          top: '10px',
           width: '40px',
           height: '40px',
           backgroundColor: '#212a33',
@@ -64,8 +67,7 @@ const Settings: React.FC<SettingsProps> = ({ activeButton, setActiveButton, forc
           border: '1px solid #3a4a5c',
           borderRight: 'none',
           boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)'
-        }}
-      >
+        }}>
         <svg
           width="18"
           height="18"
@@ -76,8 +78,7 @@ const Settings: React.FC<SettingsProps> = ({ activeButton, setActiveButton, forc
             transform: settingsExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
             transition: 'transform 0.3s ease-in-out',
             animation: 'settingsRotate 4s linear infinite'
-          }}
-        >
+          }}>
           <path
             d="M12 15.5A3.5 3.5 0 0 1 8.5 12A3.5 3.5 0 0 1 12 8.5a3.5 3.5 0 0 1 3.5 3.5a3.5 3.5 0 0 1-3.5 3.5m7.43-2.53c.04-.32.07-.64.07-.97c0-.33-.03-.66-.07-1l2.11-1.63c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.31-.61-.22l-2.49 1c-.52-.39-1.06-.73-1.69-.98l-.37-2.65A.506.506 0 0 0 14 2h-4c-.25 0-.46.18-.5.42l-.37 2.65c-.63.25-1.17.59-1.69.98l-2.49-1c-.22-.09-.49 0-.61.22l-2 3.46c-.12.22-.07.49.12.64L4.57 11c-.04.34-.07.67-.07 1c0 .33.03.65.07.97L2.46 14.6c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.31.61.22l2.49-1c.52.39 1.06.73 1.69.98l.37 2.65c.04.24.25.42.5.42h4c.25 0 .46-.18.5-.42l.37-2.65c.63-.25 1.17-.59 1.69-.98l2.49 1c.22.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64L19.43 12.57z"
             fill="currentColor"
@@ -261,6 +262,9 @@ const Settings: React.FC<SettingsProps> = ({ activeButton, setActiveButton, forc
         `}
       </style>
     </div>
+
+    <ChatPanel />
+  </>
   );
 };
 
