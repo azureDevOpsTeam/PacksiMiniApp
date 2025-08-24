@@ -11,6 +11,7 @@ import AddPreferredLocation from './components/AddPreferredLocation';
 import ParcelList from './components/ParcelList';
 import Logo from './components/Logo';
 import Settings from './components/Settings';
+import ChatPanel from './components/ChatPanel';
 import NotFound from './components/NotFound';
 
 import ErrorBoundary from './components/ErrorBoundary';
@@ -742,6 +743,9 @@ const AppContent: React.FC = () => {
           </div>
         </div>
       </div>
+      
+      {/* Chat Panel - Only on Home page */}
+      <ChatPanel />
     </div>
   );
 };

@@ -1,6 +1,5 @@
 import React from 'react';
 import { useLanguage } from '../hooks/useLanguage';
-import ChatPanel from './ChatPanel';
 
 interface SettingsProps {
   activeButton: 'user' | 'admin';
@@ -262,8 +261,6 @@ const Settings: React.FC<SettingsProps> = ({ activeButton, setActiveButton, forc
         `}
       </style>
     </div>
-
-    <ChatPanel />
   </>
   );
 };
