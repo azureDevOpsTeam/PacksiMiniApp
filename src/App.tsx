@@ -113,12 +113,12 @@ const AppContent: React.FC = () => {
       const openTimer = setTimeout(() => {
         setForceSettingsExpanded(true);
         
-        // Close settings after 5 seconds
+        // Close settings after 3 seconds
         const closeTimer = setTimeout(() => {
           setForceSettingsExpanded(false);
           // Mark that the app has been opened before
           localStorage.setItem('hasOpenedAppBefore', 'true');
-        }, 5000);
+        }, 3000);
         
         return () => clearTimeout(closeTimer);
       }, 3000);
