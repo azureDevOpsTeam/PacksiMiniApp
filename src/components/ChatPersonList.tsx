@@ -19,8 +19,8 @@ interface ChatPerson {
 type TabType = 'all' | 'online' | 'archive' | 'groups';
 
 const ChatPersonList: React.FC = () => {
-  const { t, language } = useLanguage();
-  const { webApp } = useTelegramContext();
+  const { language } = useLanguage();
+  const {webApp } = useTelegramContext();
   const [activeButton, setActiveButton] = React.useState<'user' | 'admin'>('user');
   const [selectedPersonId, setSelectedPersonId] = React.useState<string | null>(null);
   const [showMenu, setShowMenu] = React.useState<string | null>(null);
