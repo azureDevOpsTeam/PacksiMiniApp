@@ -251,14 +251,18 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
     }
   });
 
-  // Update MainButton based on form state
+  // Update MainButton based on form state with debounce for iOS
   React.useEffect(() => {
-    updateMainButton({
-      text: isLoading ? t('createRequest.sending') : success ? t('createRequest.success') : t('createRequest.submit'),
-      isEnabled: isFormValid && !isLoading,
-      isLoading: isLoading,
-      color: success ? '#4CAF50' : '#50b4ff'
-    });
+    const timeoutId = setTimeout(() => {
+      updateMainButton({
+        text: isLoading ? t('createRequest.sending') : success ? t('createRequest.success') : t('createRequest.submit'),
+        isEnabled: isFormValid && !isLoading,
+        isLoading: isLoading,
+        color: success ? '#4CAF50' : '#50b4ff'
+      });
+    }, 150); // Debounce for iOS
+
+    return () => clearTimeout(timeoutId);
   }, [isFormValid, isLoading, success, updateMainButton, t]);
 
   const inputStyle = {

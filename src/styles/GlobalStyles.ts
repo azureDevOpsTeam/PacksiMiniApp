@@ -24,11 +24,24 @@ export const GlobalStyles = createGlobalStyle`
     background-color: ${({ theme }) => theme.colors.background};
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
+    /* iOS specific fixes */
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-text-size-adjust: none;
   }
 
   #root {
     min-height: 100vh;
     width: 100%;
+    /* iOS specific fixes */
+    position: relative;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    height: 100%;
   }
 
   /* Telegram WebApp specific styles */
@@ -72,7 +85,7 @@ export const GlobalStyles = createGlobalStyle`
     font-family: inherit;
   }
 
-  /* Remove default input styles */
+  /* Remove default input styles and fix iOS issues */
   input,
   textarea,
   select {
@@ -80,6 +93,21 @@ export const GlobalStyles = createGlobalStyle`
     background: none;
     font-family: inherit;
     font-size: inherit;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border-radius: 0;
+    -webkit-text-size-adjust: 100%;
+    -webkit-user-select: text;
+    user-select: text;
+  }
+
+  /* Fix iOS input focus issues */
+  input:focus,
+  textarea:focus,
+  select:focus {
+    -webkit-tap-highlight-color: transparent;
+    transform: translateZ(0); /* Force hardware acceleration */
   }
 
   /* Links */
@@ -126,5 +154,55 @@ export const GlobalStyles = createGlobalStyle`
 
   .text-left {
     text-align: left;
+  }
+
+  /* iOS specific fixes */
+  * {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* Prevent horizontal scrolling on all elements */
+  * {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Fix for iOS input zoom */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="tel"],
+  input[type="url"],
+  input[type="search"],
+  input[type="date"],
+  input[type="datetime-local"],
+  input[type="time"],
+  textarea,
+  select {
+    font-size: 16px !important;
+    -webkit-appearance: none;
+    border-radius: 0;
+  }
+
+  /* Prevent iOS bounce effect */
+  html,
+  body {
+    overscroll-behavior: none;
+    -webkit-overscroll-behavior: none;
+  }
+
+  /* Fix for iOS Safari viewport */
+  @supports (-webkit-touch-callout: none) {
+    body {
+      height: -webkit-fill-available;
+    }
+    
+    #root {
+      height: -webkit-fill-available;
+    }
   }
 `;

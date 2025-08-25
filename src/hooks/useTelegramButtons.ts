@@ -120,33 +120,38 @@ export const useTelegramButtons = (config: TelegramButtonsConfig) => {
 
     const updatedConfig = { ...config.mainButton, ...updates };
     
-    if (updates.text) {
-      WebApp.MainButton.setText(updates.text);
-    }
-    
-    if (updates.isLoading !== undefined) {
-      if (updates.isLoading) {
-        WebApp.MainButton.showProgress();
-      } else {
-        WebApp.MainButton.hideProgress();
+    // Debounce updates to prevent rapid show/hide on iOS
+    const timeoutId = setTimeout(() => {
+      if (updates.text) {
+        WebApp.MainButton.setText(updates.text);
       }
-    }
-    
-    if (updates.isEnabled !== undefined) {
-      if (updates.isEnabled && !updatedConfig.isLoading) {
-        WebApp.MainButton.enable();
-      } else {
-        WebApp.MainButton.disable();
+      
+      if (updates.isLoading !== undefined) {
+        if (updates.isLoading) {
+          WebApp.MainButton.showProgress();
+        } else {
+          WebApp.MainButton.hideProgress();
+        }
       }
-    }
-    
-    if (updates.isVisible !== undefined) {
-      if (updates.isVisible) {
-        WebApp.MainButton.show();
-      } else {
-        WebApp.MainButton.hide();
+      
+      if (updates.isEnabled !== undefined) {
+        if (updates.isEnabled && !updatedConfig.isLoading) {
+          WebApp.MainButton.enable();
+        } else {
+          WebApp.MainButton.disable();
+        }
       }
-    }
+      
+      if (updates.isVisible !== undefined) {
+        if (updates.isVisible) {
+          WebApp.MainButton.show();
+        } else {
+          WebApp.MainButton.hide();
+        }
+      }
+    }, 100); // 100ms debounce for iOS
+
+    return () => clearTimeout(timeoutId);
   }, [isReady, config.mainButton]);
 
   const updateSecondaryButton = useCallback((updates?: Partial<TelegramButtonsConfig['secondaryButton']>) => {

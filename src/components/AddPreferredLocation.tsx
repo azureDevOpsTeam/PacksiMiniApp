@@ -113,14 +113,18 @@ const AddPreferredLocation: React.FC<AddPreferredLocationProps> = ({ onComplete 
     }
   });
 
-  // Update button state when form validity or loading state changes
+  // Update button state when form validity or loading state changes with debounce for iOS
   React.useEffect(() => {
-    updateMainButton({
-      text: success ? t('common.success') + ' ✓' : t('preferredLocation.submit'),
-      isEnabled: isFormValid && !isLoading,
-      isLoading: isLoading,
-      color: success ? '#4CAF50' : '#50b4ff'
-    });
+    const timeoutId = setTimeout(() => {
+      updateMainButton({
+        text: success ? t('common.success') + ' ✓' : t('preferredLocation.submit'),
+        isEnabled: isFormValid && !isLoading,
+        isLoading: isLoading,
+        color: success ? '#4CAF50' : '#50b4ff'
+      });
+    }, 150); // Debounce for iOS
+
+    return () => clearTimeout(timeoutId);
   }, [isFormValid, isLoading, success, updateMainButton, t]);
 
   const inputStyle = {

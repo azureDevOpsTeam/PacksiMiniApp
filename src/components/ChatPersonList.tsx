@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useLanguage } from '../hooks/useLanguage';
 import { useTelegramContext } from '../hooks/useTelegramContext';
 import Logo from './Logo';
@@ -25,6 +25,24 @@ const ChatPersonList: React.FC = () => {
   const [selectedPersonId, setSelectedPersonId] = React.useState<string | null>(null);
   const [showMenu, setShowMenu] = React.useState<string | null>(null);
   const [activeTab, setActiveTab] = React.useState<TabType>('all');
+
+  // Setup back button
+  useEffect(() => {
+    if (!webApp) return;
+
+    const handleBackButton = () => {
+      // Navigate back to home
+      window.history.back();
+    };
+
+    webApp.BackButton.show();
+    webApp.BackButton.onClick(handleBackButton);
+
+    return () => {
+      webApp.BackButton.offClick(handleBackButton);
+      webApp.BackButton.hide();
+    };
+  }, [webApp]);
  
   // Sample data
   const allChatPersons: ChatPerson[] = [
