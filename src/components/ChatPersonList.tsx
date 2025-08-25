@@ -25,7 +25,7 @@ const ChatPersonList: React.FC = () => {
   const [selectedPersonId, setSelectedPersonId] = React.useState<string | null>(null);
   const [showMenu, setShowMenu] = React.useState<string | null>(null);
   const [activeTab, setActiveTab] = React.useState<TabType>('all');
-
+ 
   // Sample data
   const allChatPersons: ChatPerson[] = [
     {
@@ -33,7 +33,7 @@ const ChatPersonList: React.FC = () => {
       name: 'Ahmad Mohammadi',
       lastMessage: 'Hello, how are you?',
       time: '10:30',
-      avatar: 'https://via.placeholder.com/40/4a9eff/ffffff?text=A',
+      avatar: 'src/assets/images/avatar/07.jpg',
       isOnline: true,
       unreadCount: 2,
       type: 'personal',
@@ -44,7 +44,7 @@ const ChatPersonList: React.FC = () => {
       name: 'Fateme Ahmadi',
       lastMessage: 'We have a meeting tomorrow',
       time: '09:15',
-      avatar: 'https://via.placeholder.com/40/50b4ff/ffffff?text=F',
+      avatar: 'src/assets/images/avatar/06.jpg',
       isOnline: true,
       unreadCount: 0,
       type: 'personal',
@@ -55,7 +55,7 @@ const ChatPersonList: React.FC = () => {
       name: 'Ali Rezaei', 
       lastMessage: 'Thanks for your help',
       time: 'Yesterday',
-      avatar: 'https://via.placeholder.com/40/ff6b6b/ffffff?text=A',
+      avatar: 'src/assets/images/avatar/05.jpg',
       isOnline: false,
       unreadCount: 1,
       type: 'personal',
@@ -66,10 +66,10 @@ const ChatPersonList: React.FC = () => {
       name: 'Development Team',
       lastMessage: 'New project started',
       time: '14:20',
-      avatar: 'https://via.placeholder.com/40/2ed573/ffffff?text=D',
-      isOnline: false,
+      avatar: 'src/assets/images/avatar/02.jpg',
+      isOnline: true,
       unreadCount: 5,
-      type: 'group',
+      type: 'personal',
       isArchived: false
     },
     {
@@ -77,10 +77,32 @@ const ChatPersonList: React.FC = () => {
       name: 'Design Team',
       lastMessage: 'New design is ready',
       time: '16:45',
-      avatar: 'https://via.placeholder.com/40/ff4757/ffffff?text=D',
+      avatar: 'src/assets/images/avatar/04.jpg',
       isOnline: false,
       unreadCount: 3,
-      type: 'group',
+      type: 'personal',
+      isArchived: false
+    },
+    {
+      id: '6',
+      name: 'Design Team',
+      lastMessage: 'New design is ready',
+      time: '16:45',
+      avatar: 'src/assets/images/avatar/03.jpg',
+      isOnline: false,
+      unreadCount: 3,
+      type: 'personal',
+      isArchived: false
+    },
+    {
+      id: '7',
+      name: 'Design Team',
+      lastMessage: 'New design is ready',
+      time: '16:45',
+      avatar: 'src/assets/images/avatar/01.jpg',
+      isOnline: true,
+      unreadCount: 3,
+      type: 'personal',
       isArchived: false
     }
   ];
@@ -293,94 +315,107 @@ const ChatPersonList: React.FC = () => {
           maxWidth: '400px',
           marginBottom: '20px',
           backgroundColor: '#1a2026',
-          borderRadius: '16px',
-          padding: '8px',
+          borderRadius: '12px',
+          padding: '4px',
           display: 'flex',
-          gap: '6px',
-          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.4)',
-          border: '1px solid rgba(134, 150, 160, 0.15)'
+          gap: '1px',
+          boxShadow: '0 2px 12px rgba(0, 0, 0, 0.3)',
+          border: '1px solid rgba(134, 150, 160, 0.15)',
+          height: '40px'
         }}>
           {[
             { key: 'all' as TabType, label: language === 'fa' ? 'همه' : 'All', icon: '💬', count: 3 },
             { key: 'online' as TabType, label: language === 'fa' ? 'آنلاین' : 'Online', icon: '🟢', count: 2 },
-            { key: 'archive' as TabType, label: language === 'fa' ? 'آرشیو' : 'Archive', icon: '📁', count: 0 },
-            { key: 'groups' as TabType, label: language === 'fa' ? 'گروه‌ها' : 'Groups', icon: '👥', count: 2 }
-          ].map((tab) => (
-            <button
-              key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
-              style={{
-                flex: 1,
-                padding: '12px 10px',
-                backgroundColor: activeTab === tab.key ? '#50b4ff' : 'transparent',
-                color: activeTab === tab.key ? '#ffffff' : '#848d96',
-                border: 'none',
-                borderRadius: '12px',
-                fontSize: '12px',
-                fontFamily: 'IRANSansX, sans-serif',
-                fontWeight: activeTab === tab.key ? '600' : '400',
-                cursor: 'pointer',
-                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                // gap: '8px',
-                position: 'relative',
-                overflow: 'hidden'
-              }}
-              onMouseEnter={(e) => {
-                if (activeTab !== tab.key) {
-                  e.currentTarget.style.backgroundColor = 'rgba(80, 180, 255, 0.15)';
-                  e.currentTarget.style.color = '#50b4ff';
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (activeTab !== tab.key) {
-                  e.currentTarget.style.backgroundColor = 'transparent';
-                  e.currentTarget.style.color = '#848d96';
-                }
-              }}
-            >
-              {/* Animated background for active tab */}
-              {activeTab === tab.key && (
-                <div style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  background: 'linear-gradient(135deg, #50b4ff 0%, #4a9eff 50%, #4488ff 100%)',
-                  borderRadius: '12px',
-                  zIndex: 0,
-                  animation: 'slideIn 0.3s ease-out'
-                }} />
-              )}
-              <span style={{ position: 'relative', zIndex: 1, fontSize: '16px' }}>{tab.icon}</span>
-              <span style={{ position: 'relative', zIndex: 1 }}>{tab.label}</span>
-              
-              {/* Badge for notifications */}
-              {tab.count > 0 && (
-                <span style={{
-                  position: 'absolute',
-                  top: '6px',
-                  right: '6px',
-                  backgroundColor: '#ff4757',
-                  color: 'white',
-                  fontSize: '10px',
-                  fontWeight: 'bold',
-                  borderRadius: '12px',
-                  padding: '2px 6px',
-                  minWidth: '18px',
-                  height: '18px',
+            { key: 'archive' as TabType, label: language === 'fa' ? 'آرشیو' : 'Archive', icon: '📁', count: 0 }
+          ].map((tab, index) => (
+            <>
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
+                style={{
+                  flex: 1,
+                  padding: '8px 10px',
+                  backgroundColor: activeTab === tab.key ? '#17212b' : 'transparent',
+                  color: activeTab === tab.key ? '#ffffff' : '#848d96',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontSize: '11px',
+                  fontFamily: 'IRANSansX, sans-serif',
+                  fontWeight: activeTab === tab.key ? '600' : '400',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  zIndex: 2
-                }}>
-                  {tab.count}
-                </span>
+                  gap: '6px',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  height: '32px'
+                }}
+                onMouseEnter={(e) => {
+                  if (activeTab !== tab.key) {
+                    e.currentTarget.style.backgroundColor = 'rgba(23, 33, 43, 0.5)';
+                    e.currentTarget.style.color = '#ffffff';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (activeTab !== tab.key) {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                    e.currentTarget.style.color = '#848d96';
+                  }
+                }}
+              >
+                {/* Animated background for active tab */}
+                {activeTab === tab.key && (
+                  <div style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    background: 'linear-gradient(135deg, #17212b 0%, #1a2026 50%, #17212b 100%)',
+                    borderRadius: '8px',
+                    zIndex: 0,
+                    animation: 'slideIn 0.3s ease-out',
+                    border: '1px solid rgba(255, 255, 255, 0.1)'
+                  }} />
+                )}
+                <span style={{ position: 'relative', zIndex: 1, fontSize: '14px' }}>{tab.icon}</span>
+                <span style={{ position: 'relative', zIndex: 1 }}>{tab.label}</span>
+                
+                {/* Badge for notifications */}
+                {tab.count > 0 && (
+                  <span style={{
+                    position: 'absolute',
+                    top: '1px',
+                    right: '4px',
+                    backgroundColor: '#ff4757',
+                    color: 'white',
+                    fontSize: '9px',
+                    fontWeight: 'bold',
+                    borderRadius: '10px',
+                    padding: '1px 4px',
+                    minWidth: '16px',
+                    height: '16px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    zIndex: 2
+                  }}>
+                    {tab.count}
+                  </span>
+                )}
+              </button>
+              {/* Vertical separator line */}
+              {index < 2 && (
+                <div style={{
+                  width: '1px',
+                  height: '20px',
+                  backgroundColor: 'rgba(134, 150, 160, 0.2)',
+                  alignSelf: 'center'
+                }} />
               )}
-            </button>
+            </>
           ))}
         </div>
 
@@ -563,13 +598,13 @@ const ChatPersonList: React.FC = () => {
                     border: 'none',
                     color: '#848d96',
                     cursor: 'pointer',
-                    padding: '10px',
+                    padding: '7px',
                     borderRadius: '12px',
                     marginLeft: '12px',
                     transition: 'all 0.3s ease',
                     fontSize: '18px',
-                    width: '36px',
-                    height: '36px',
+                    width: '15px',
+                    height: '30px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center'

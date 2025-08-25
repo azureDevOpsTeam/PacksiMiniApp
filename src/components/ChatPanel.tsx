@@ -8,7 +8,7 @@ const ChatPanel: React.FC = () => {
     <>
       {/* Chat Toggle Button */}
       <div
-        onClick={() => navigate('/chat')}
+        onClick={() => navigate('/chatlist')}
         style={{
           position: 'fixed',
           left: '10px',
