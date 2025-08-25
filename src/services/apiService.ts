@@ -5,7 +5,7 @@ const API_BASE_URL = 'https://api.packsi.net/api';
 class ApiService {
   private getHeaders(isFormData: boolean = false): HeadersInit {
     const headers: HeadersInit = {};
-    
+
     // Don't set Content-Type for FormData, let browser set it with boundary
     if (!isFormData) {
       headers['Content-Type'] = 'application/json';
@@ -33,7 +33,7 @@ class ApiService {
     if (!response.ok) {
       const errorText = await response.text();
       let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
-      
+
       // Handle specific HTTP status codes
       switch (response.status) {
         case 400:
@@ -94,15 +94,22 @@ class ApiService {
       if (files && files.length > 0) {
         // Use FormData when files are present
         const formData = new FormData();
-        
+
         // Add model data as JSON string
-        formData.append('model', JSON.stringify(payload.model));
-        
+        Object.entries(payload).forEach(([key, value]) => {
+          if (Array.isArray(value)) {
+            // برای آرایه مثل ItemTypeIds
+            value.forEach(v => formData.append(key, v.toString()));
+          } else if (value !== undefined && value !== null) {
+            formData.append(key, value.toString());
+          }
+        });
+
         // Add files
         files.forEach((file) => {
-          formData.append(`files`, file);
+          formData.append("Files", file);
         });
-        
+
         body = formData;
         isFormData = true;
       } else {
@@ -126,7 +133,7 @@ class ApiService {
           message: 'خطا در اتصال به اینترنت. لطفاً اتصال خود را بررسی کنید.'
         };
       }
-      
+
       if (error instanceof Error && error.name === 'AbortError') {
         // Request was aborted
         return {
@@ -134,7 +141,7 @@ class ApiService {
           message: 'درخواست لغو شد'
         };
       }
-      
+
       // Other errors (including our custom API errors)
       return {
         success: false,
@@ -227,7 +234,7 @@ class ApiService {
     try {
       console.log('Sending phone verification request:', payload);
       console.log('Headers:', this.getHeaders());
-      
+
       const response = await fetch(`${API_BASE_URL}/MiniApp/VerifyPhoneNumber`, {
         method: 'POST',
         headers: this.getHeaders(),
@@ -240,9 +247,9 @@ class ApiService {
       if (!response.ok) {
         const errorText = await response.text();
         console.error('Error response body:', errorText);
-        
+
         let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
-        
+
         // Handle specific HTTP status codes for phone verification
         switch (response.status) {
           case 400:
@@ -270,7 +277,7 @@ class ApiService {
               errorMessage = errorText || errorMessage;
             }
         }
-        
+
         throw new Error(errorMessage);
       }
 
@@ -279,12 +286,12 @@ class ApiService {
       return data;
     } catch (error) {
       console.error('Error verifying phone number:', error);
-      
+
       // Handle network errors specifically
       if (error instanceof TypeError && error.message.includes('fetch')) {
         throw new Error('خطا در اتصال به اینترنت. لطفاً اتصال خود را بررسی کنید.');
       }
-      
+
       throw error;
     }
   }
