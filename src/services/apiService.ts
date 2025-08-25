@@ -86,69 +86,129 @@ class ApiService {
     }
   }
 
-  async createRequest(payload: CreateRequestPayload, files?: File[]): Promise<ApiResponse<CreateRequestResponse>> {
+  async createRequest(
+    payload: CreateRequestPayload,
+    files?: File[]
+  ): Promise<ApiResponse<CreateRequestResponse>> {
     try {
-      let body: string | FormData;
-      let isFormData = false;
+      const formData = new FormData();
 
-      if (files && files.length > 0) {
-        // Use FormData when files are present
-        const formData = new FormData();
-
-        // Add model data as JSON string
-        Object.entries(payload).forEach(([key, value]) => {
-          if (Array.isArray(value)) {
-            // برای آرایه مثل ItemTypeIds
-            value.forEach(v => formData.append(key, v.toString()));
-          } else if (value !== undefined && value !== null) {
+      // اضافه کردن همه‌ی فیلدهای مدل
+      Object.entries(payload).forEach(([key, value]) => {
+        if (Array.isArray(value)) {
+          // برای آرایه مثل ItemTypeIds
+          value.forEach(v => formData.append(key, v.toString()));
+        } else if (value !== undefined && value !== null) {
+          if (value instanceof Date) {
+            // تاریخ‌ها به فرمت ISO
+            formData.append(key, value.toISOString());
+          } else {
             formData.append(key, value.toString());
           }
-        });
+        }
+      });
 
-        // Add files
-        files.forEach((file) => {
+      // فایل‌ها
+      if (files && files.length > 0) {
+        files.forEach(file => {
           formData.append("Files", file);
         });
-
-        body = formData;
-        isFormData = true;
-      } else {
-        // Use JSON when no files
-        body = JSON.stringify(payload);
       }
 
       const response = await fetch(`${API_BASE_URL}/MiniApp/Create`, {
-        method: 'POST',
-        headers: this.getHeaders(isFormData),
-        body
+        method: "POST",
+        headers: {},
+        body: formData
       });
 
       return await this.handleResponse<CreateRequestResponse>(response);
     } catch (error) {
-      // Handle different types of errors
-      if (error instanceof TypeError && error.message.includes('fetch')) {
-        // Network error
+      if (error instanceof TypeError && error.message.includes("fetch")) {
         return {
           success: false,
-          message: 'خطا در اتصال به اینترنت. لطفاً اتصال خود را بررسی کنید.'
+          message: "خطا در اتصال به اینترنت. لطفاً اتصال خود را بررسی کنید."
         };
       }
 
-      if (error instanceof Error && error.name === 'AbortError') {
-        // Request was aborted
+      if (error instanceof Error && error.name === "AbortError") {
         return {
           success: false,
-          message: 'درخواست لغو شد'
+          message: "درخواست لغو شد"
         };
       }
 
-      // Other errors (including our custom API errors)
       return {
         success: false,
-        message: error instanceof Error ? error.message : 'خطا در ارسال درخواست'
+        message:
+          error instanceof Error ? error.message : "خطا در ارسال درخواست"
       };
     }
   }
+
+
+  // async createRequest(payload: CreateRequestPayload, files?: File[]): Promise<ApiResponse<CreateRequestResponse>> {
+  //   try {
+  //     let body: string | FormData;
+  //     let isFormData = false;
+
+  //     if (files && files.length > 0) {
+  //       // Use FormData when files are present
+  //       const formData = new FormData();
+
+  //       // Add model data as JSON string
+  //       Object.entries(payload).forEach(([key, value]) => {
+  //         if (Array.isArray(value)) {
+  //           // برای آرایه مثل ItemTypeIds
+  //           value.forEach(v => formData.append(key, v.toString()));
+  //         } else if (value !== undefined && value !== null) {
+  //           formData.append(key, value.toString());
+  //         }
+  //       });
+
+  //       // Add files
+  //       files.forEach((file) => {
+  //         formData.append("Files", file);
+  //       });
+
+  //       body = formData;
+  //       isFormData = true;
+  //     } else {
+  //       // Use JSON when no files
+  //       body = JSON.stringify(payload);
+  //     }
+
+  //     const response = await fetch(`${API_BASE_URL}/MiniApp/Create`, {
+  //       method: 'POST',
+  //       headers: this.getHeaders(isFormData),
+  //       body
+  //     });
+
+  //     return await this.handleResponse<CreateRequestResponse>(response);
+  //   } catch (error) {
+  //     // Handle different types of errors
+  //     if (error instanceof TypeError && error.message.includes('fetch')) {
+  //       // Network error
+  //       return {
+  //         success: false,
+  //         message: 'خطا در اتصال به اینترنت. لطفاً اتصال خود را بررسی کنید.'
+  //       };
+  //     }
+
+  //     if (error instanceof Error && error.name === 'AbortError') {
+  //       // Request was aborted
+  //       return {
+  //         success: false,
+  //         message: 'درخواست لغو شد'
+  //       };
+  //     }
+
+  //     // Other errors (including our custom API errors)
+  //     return {
+  //       success: false,
+  //       message: error instanceof Error ? error.message : 'خطا در ارسال درخواست'
+  //     };
+  //   }
+  // }
 
   async getCitiesTree(): Promise<CitiesTreeResponse> {
     try {
