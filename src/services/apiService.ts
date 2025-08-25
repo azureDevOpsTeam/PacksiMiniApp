@@ -86,38 +86,38 @@ class ApiService {
     }
   }
 
-  async createRequest(
-    payload: CreateRequestPayload,
-    files?: File[]
-  ): Promise<ApiResponse<CreateRequestResponse>> {
+  async createRequest(payload: CreateRequestPayload, files?: File[]): Promise<ApiResponse<CreateRequestResponse>> {
     try {
       const formData = new FormData();
-
-      // اضافه کردن همه‌ی فیلدهای مدل
-      Object.entries(payload).forEach(([key, value]) => {
-        if (Array.isArray(value)) {
-          // برای آرایه مثل ItemTypeIds
-          value.forEach(v => formData.append(key, v.toString()));
-        } else if (value !== undefined && value !== null) {
-          if (value instanceof Date) {
-            // تاریخ‌ها به فرمت ISO
-            formData.append(key, value.toISOString());
-          } else {
-            formData.append(key, value.toString());
-          }
-        }
+      
+      // Add model fields directly to FormData (backend expects [FromForm])
+      const model = payload.model;
+      formData.append('OriginCityId', model.originCityId.toString());
+      formData.append('DestinationCityId', model.destinationCityId.toString());
+      formData.append('DepartureDate', model.departureDate);
+      formData.append('ArrivalDate', model.arrivalDate);
+      formData.append('RequestType', model.requestType.toString());
+      formData.append('Description', model.description);
+      formData.append('MaxWeightKg', model.maxWeightKg.toString());
+      formData.append('MaxLengthCm', model.maxLengthCm.toString());
+      formData.append('MaxWidthCm', model.maxWidthCm.toString());
+      formData.append('MaxHeightCm', model.maxHeightCm.toString());
+      
+      // Add ItemTypeIds array
+      model.itemTypeIds.forEach(id => {
+        formData.append('ItemTypeIds', id.toString());
       });
-
-      // فایل‌ها
+      
+      // Add files
       if (files && files.length > 0) {
         files.forEach(file => {
-          formData.append("Files", file);
+          formData.append('Files', file);
         });
       }
 
       const response = await fetch(`${API_BASE_URL}/MiniApp/Create`, {
-        method: "POST",
-        headers: {},
+        method: 'POST',
+        headers: this.getHeaders(true),
         body: formData
       });
 
