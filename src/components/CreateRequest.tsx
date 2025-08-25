@@ -21,7 +21,7 @@ interface CreateRequestFormData {
   maxWidthCm: number;
   maxHeightCm: number;
   itemTypeIds: number[];
-  files: File[];
+  files: string[];
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
@@ -168,14 +168,14 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
         files.push(ticketFile);
       }
 
-      // Prepare API payload with files in model
+      // Prepare API payload (files sent separately via FormData)
       const payload: CreateRequestPayload = {
         model: {
           ...formData,
           // Convert dates to ISO format if needed
           departureDate: new Date(formData.departureDate).toISOString(),
           arrivalDate: new Date(formData.arrivalDate).toISOString(),
-          files: files // Include files in the model as per API specification
+          files: [] // Empty array - files are sent separately via FormData
         }
       };
 

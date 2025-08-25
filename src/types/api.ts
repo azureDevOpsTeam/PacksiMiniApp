@@ -12,7 +12,7 @@ export interface CreateRequestModel {
   maxWidthCm: number;
   maxHeightCm: number;
   itemTypeIds: number[];
-  files: File[]; // Changed from string[] to File[] to match IFormFile
+  files: string[]; // Empty array in model - actual files sent via FormData
 }
 
 export interface CreateRequestPayload {
