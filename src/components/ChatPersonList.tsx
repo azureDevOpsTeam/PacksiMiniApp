@@ -290,7 +290,7 @@ const ChatPersonList: React.FC = () => {
         {/* Tab Bar */}
         <div style={{
           width: '100%',
-          maxWidth: '475px',
+          maxWidth: '400px',
           marginBottom: '20px',
           backgroundColor: '#1a2026',
           borderRadius: '16px',
@@ -324,7 +324,7 @@ const ChatPersonList: React.FC = () => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: '8px',
+                // gap: '8px',
                 position: 'relative',
                 overflow: 'hidden'
               }}
@@ -387,7 +387,7 @@ const ChatPersonList: React.FC = () => {
         {/* Chat List */}
         <div style={{
           width: '100%',
-          maxWidth: '475px',
+          maxWidth: '400px',
           display: 'flex',
           flexDirection: 'column',
           gap: '12px'
@@ -410,7 +410,7 @@ const ChatPersonList: React.FC = () => {
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  padding: '16px',
+                  padding: '8px 15px',
                   backgroundColor: selectedPersonId === person.id ? 'rgba(80, 180, 255, 0.15)' : 'rgba(26, 32, 38, 0.8)',
                   borderRadius: '20px',
                   cursor: 'pointer',
@@ -440,8 +440,8 @@ const ChatPersonList: React.FC = () => {
               >
                 {/* Avatar */}
                 <div style={{
-                  width: '56px',
-                  height: '56px',
+                  width: '48px',
+                  height: '48px',
                   borderRadius: '50%',
                   marginRight: '16px',
                   backgroundImage: `url(${person.avatar})`,
@@ -455,8 +455,8 @@ const ChatPersonList: React.FC = () => {
                   {person.isOnline && (
                     <div style={{
                       position: 'absolute',
-                      bottom: '2px',
-                      right: '2px',
+                      bottom: '-5px',
+                      right: '-5px',
                       width: '16px',
                       height: '16px',
                       backgroundColor: '#2ed573',
@@ -491,7 +491,7 @@ const ChatPersonList: React.FC = () => {
                   flex: 1,
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: '8px'
+                  // gap: '8px'
                 }}>
                   <div style={{
                     display: 'flex',
@@ -500,7 +500,7 @@ const ChatPersonList: React.FC = () => {
                   }}>
                     <h3 style={{
                       margin: 0,
-                      fontSize: '16px',
+                      fontSize: '13px',
                       fontWeight: '600',
                       color: selectedPersonId === person.id ? '#50b4ff' : '#ffffff',
                       fontFamily: 'IRANSansX, sans-serif',
@@ -523,7 +523,7 @@ const ChatPersonList: React.FC = () => {
                   }}>
                     <p style={{
                       margin: 0,
-                      fontSize: '13px',
+                      fontSize: '12px',
                       color: '#a0a8b0',
                       fontFamily: 'IRANSansX, sans-serif',
                       overflow: 'hidden',
@@ -535,7 +535,7 @@ const ChatPersonList: React.FC = () => {
                     </p>
                     {person.unreadCount > 0 && (
                       <span style={{
-                        background: 'linear-gradient(135deg, #50b4ff 0%, #4a9eff 100%)',
+                        background: 'linear-gradient(135deg,rgb(202, 92, 78) 0%, #4a9eff 100%)',
                         color: '#ffffff',
                         fontSize: '11px',
                         fontWeight: 'bold',
@@ -546,7 +546,7 @@ const ChatPersonList: React.FC = () => {
                         boxShadow: '0 2px 8px rgba(80, 180, 255, 0.3)',
                         animation: 'bounce 2s infinite'
                       }}>
-                        {person.unreadCount > 99 ? '99+' : person.unreadCount}
+                        {/* {person.unreadCount > 99 ? '99+' : person.unreadCount} */}
                       </span>
                     )}
                   </div>
