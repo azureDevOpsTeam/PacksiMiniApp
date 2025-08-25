@@ -15,6 +15,7 @@ import Settings from './components/Settings';
 import ChatPanel from './components/ChatPanel';
 import NotFound from './components/NotFound';
 import EmptyChatPage from './components/EmptyChatPage';
+import ChatPersonList from './components/ChatPersonList';
 
 import ErrorBoundary from './components/ErrorBoundary';
 import SkeletonLoader from './components/SkeletonLoader';
@@ -26,7 +27,7 @@ const AppContent: React.FC = () => {
   const { isReady, webApp, user } = useTelegramContext();
   const { t, language } = useLanguage();
   const [activeButton, setActiveButton] = React.useState<'user' | 'admin'>('user');
-  const [currentPage, setCurrentPage] = React.useState<'home' | 'createRequest' | 'updateProfile' | 'addPreferredLocation' | 'parcelList' | 'notFound'>('home');
+  const [currentPage, setCurrentPage] = React.useState<'home' | 'createRequest' | 'updateProfile' | 'addPreferredLocation' | 'parcelList' | 'chatPersonList' | 'notFound'>('home');
   const [showVerifyPhone, setShowVerifyPhone] = React.useState<boolean>(false);
   const [showUpdateProfile, setShowUpdateProfile] = React.useState<boolean>(false);
   const [isValidating, setIsValidating] = React.useState<boolean>(true);
@@ -274,6 +275,11 @@ const AppContent: React.FC = () => {
   // Render ParcelList page
   if (currentPage === 'parcelList') {
     return <ParcelList />;
+  }
+
+  // Render ChatPersonList page
+  if (currentPage === 'chatPersonList') {
+    return <ChatPersonList />;
   }
 
   // Render Home page
@@ -553,6 +559,51 @@ const AppContent: React.FC = () => {
                 fontFamily: 'IRANSansX, sans-serif'
               }}>
                 {t('bots.selectFlightFromList')}
+              </div>
+            </div>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style={{ color: '#848d96', transform: language === 'fa' ? 'rotate(180deg)' : 'none' }}>
+              <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+
+          <button onClick={() => setCurrentPage('chatPersonList')} style={{
+            display: 'flex',
+            alignItems: 'center',
+            padding: '12px',
+            backgroundColor: '#212a33',
+            borderRadius: '0',
+            cursor: 'pointer',
+            border: 'none',
+            width: '100%',
+            direction: language === 'fa' ? 'rtl' : 'ltr'
+          }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginRight: language === 'fa' ? '0' : '12px',
+              marginLeft: language === 'fa' ? '12px' : '0'
+            }}>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+                <path d="M21 15C21 15.5304 20.7893 16.0391 20.4142 16.4142C20.0391 16.7893 19.5304 17 19 17H7L3 21V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H19C19.5304 3 20.0391 3.21071 20.4142 3.58579C20.7893 3.96086 21 4.46957 21 5V15Z" stroke="#4f9eff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+            <div style={{ flex: 1, textAlign: language === 'fa' ? 'right' : 'left' }}>
+              <div style={{
+                color: '#ffffff',
+                fontSize: '14px',
+                fontFamily: 'IRANSansX, sans-serif',
+                fontWeight: '400',
+                marginBottom: '2px'
+              }}>
+                {language === 'fa' ? 'لیست چت‌ها' : 'Chat List'}
+              </div>
+              <div style={{
+                color: '#848d96',
+                fontSize: '12px',
+                fontFamily: 'IRANSansX, sans-serif'
+              }}>
+                {language === 'fa' ? 'مشاهده چت‌های شما' : 'View your chats'}
               </div>
             </div>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style={{ color: '#848d96', transform: language === 'fa' ? 'rotate(180deg)' : 'none' }}>

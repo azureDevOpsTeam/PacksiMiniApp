@@ -1,0 +1,279 @@
+<ul class="messages">
+	<li class="messages__item">
+		<div class="messages__image">
+			<img src="https://images.unsplash.com/photo-1679419931005-fa451be654f9?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1374&q=80" alt="">
+		</div>
+		<div class="messages__content">
+			<div class="messages__head">
+				<span class="messages__title">John Doe</span>
+				<span class="messages__time">09:10</span>
+			</div>
+			<div class="messages__body">
+				<p class="messages__p">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat</p>	
+				<div class="arrow">
+					<div class="arrow__inner"></div>
+					<ul class="arrow__menu">
+						<li class="arrow__menu-item"><a href="#"><i data-feather="star"></i> Pin Chat</a></li>
+						<li class="arrow__menu-item"><a href="#"><i data-feather="archive"></i> Archive Chat</a></li>
+						<li class="arrow__menu-item"><a href="#"><i data-feather="trash-2"></i> Delete Chat</a></li>
+						<li class="arrow__menu-item"><a href="#"><i data-feather="mail"></i> Mark as unread</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		
+	</li>
+	
+	<li class="messages__item">
+		<div class="messages__image">
+			<img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8cGVyc29ufGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60" alt="">
+		</div>
+		<div class="messages__content">
+			<div class="messages__head">
+				<span class="messages__title">Joanne Doe</span>
+				<span class="messages__time">08:35</span>
+			</div>
+			<div class="messages__body">
+				<p class="messages__p">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat</p>	
+				<div class="arrow">
+					<div class="arrow__inner"></div>
+					<ul class="arrow__menu">
+						<li class="arrow__menu-item"><a href="#"><i data-feather="star"></i> Pin Chat</a></li>
+						<li class="arrow__menu-item"><a href="#"><i data-feather="archive"></i> Archive Chat</a></li>
+						<li class="arrow__menu-item"><a href="#"><i data-feather="trash-2"></i> Delete Chat</a></li>
+						<li class="arrow__menu-item"><a href="#"><i data-feather="mail"></i> Mark as unread</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</li>
+	
+	<li class="messages__item">
+		<div class="messages__image">
+			<img src="https://images.unsplash.com/flagged/photo-1570612861542-284f4c12e75f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8cGVyc29ufGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60" alt="">
+		</div>
+		<div class="messages__content">
+			<div class="messages__head">
+				<span class="messages__title">Max Doe</span>
+				<span class="messages__time">Monday</span>
+			</div>
+			<div class="messages__body">
+				<p class="messages__p">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat</p>	
+				<div class="arrow">
+					<div class="arrow__inner"></div>
+					<ul class="arrow__menu">
+						<li class="arrow__menu-item"><a href="#"><i data-feather="star"></i> Pin Chat</a></li>
+						<li class="arrow__menu-item"><a href="#"><i data-feather="archive"></i> Archive Chat</a></li>
+						<li class="arrow__menu-item"><a href="#"><i data-feather="trash-2"></i> Delete Chat</a></li>
+						<li class="arrow__menu-item"><a href="#"><i data-feather="mail"></i> Mark as unread</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</li>
+</ul>
+
+#end Ui 
+
+#scss :
+@import url('https://fonts.googleapis.com/css2?family=Sofia+Sans+Semi+Condensed:wght@300;400;600&display=swap');
+
+$fnt-1: 'Sofia Sans Semi Condensed', sans-serif;
+
+$dark-blue: #111B25;
+$light-gray: #8696a0;
+$light-blue: #2a3942;
+
+*, *::before, *::after {
+		box-sizing: border-box;
+}
+
+body {
+	width: 100%;
+	height: 100vh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: darken(#111B25, 5%);
+	flex-direction: column;
+}
+
+.messages {
+	$bem-block: &;
+	
+	max-width: 475px;
+	border: 1px rgba(#8696a0, .15) solid;
+	border-radius: 4px;
+	
+	&__item {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		position: relative;
+		background: $dark-blue;
+		padding: 0 15px;
+		gap: 15px;
+		overflow: hidden;
+		cursor: pointer;
+		
+		&:hover {
+			background: $light-blue;
+		}
+		
+		&:first-of-type:hover {
+			border-radius: 4px 4px 0 0;
+		}
+		
+		&:last-of-type:hover {
+			border-radius: 0 0 4px 4px;
+		}
+		
+		&:hover .arrow {
+			transform: translateX(0);
+			opacity: 1;
+		}
+		
+		&:hover #{$bem-block}__p {
+			margin-right: 40px;
+		}
+	}
+	
+	&__image {
+		width: 50px;
+		height: 50px;
+		overflow: hidden;
+		flex-basis: 13%;
+		border-radius: 4px;
+		transition: .2s ease-in-out;
+		
+		img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+		}
+	}
+	
+	&__content {
+		display: flex;
+		justify-content: center;
+		flex-direction: column;
+		width: 100%;
+		overflow: hidden;
+		border-bottom: 1px rgba($light-gray, .15) solid;
+		padding: 15px 0;
+	}
+	
+	&__head {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		font-family: $fnt-1;
+	}
+	
+	&__body {
+		font-family: $fnt-1;
+		overflow-x: hidden;
+	}
+	
+	&__title {
+		flex-grow: 1;
+		color: #fff;
+		font-weight: 400;
+		font-size: 1rem;
+	}
+	
+	&__time {
+		color: $light-gray;
+		font-weight: 200;
+		font-size: .75rem;
+	}
+	
+	&__p {
+		color: $light-gray;
+		font-weight: 200;
+		font-size: 1rem;
+		margin-top: 5px;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		margin-right: 10px;
+		transition: .1s ease-in-out;
+	}
+}
+
+.arrow {
+	position: absolute;
+	right: 12px;
+	bottom: 10px;
+	width: 20px;
+	height: 20px;
+	z-index: 1;
+	padding: 5px;
+	background: #2a3942;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transform: translateX(120%);
+	transition: .1s ease-in-out;
+	opacity: 0;
+	border-radius: 4px;
+	
+	&__inner {
+		width: 10px;
+		height: 10px;
+		border: 1px $light-gray solid;
+		border-width: 0 1px 1px 0;
+		transform: rotate(45deg);
+		margin-top: -5px;
+	}
+	
+	&__menu {
+		background: $light-blue;
+		position: absolute;
+		display: none;
+		top: 14px;
+		left: 0;
+		padding: 10px 0;
+		border-radius: 4px;
+		
+		&--active {
+			display: block;
+			width: 180px;
+			height: auto;
+			z-index: 1;
+		}
+	}
+	
+	&__menu-item {
+		a {
+			color: #fff;
+			text-decoration: none;
+			padding: 12px 14px;
+			display: flex;
+			align-items: center;
+			font-weight: 300;
+
+			&:hover {
+				background: $dark-blue;
+			}
+		}
+		
+		svg {
+			width: 14px;
+			margin-right: 12px;
+			margin-top: -1px;
+		}
+	}
+}
+
+#end scss
+$('.arrow').on('click', function() {
+	$(this).children('.arrow__menu').addClass('arrow__menu--active');
+	$(this).closest('.messages__item').css('overflow', 'visible');
+});
+
+$('.messages__item').on('mouseleave', function() {
+	$('.arrow__menu').removeClass('arrow__menu--active');
+})
+
+feather.replace();
