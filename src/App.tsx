@@ -1,4 +1,5 @@
 import React from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import TelegramProvider from './contexts/TelegramContext';
 import ThemeProvider from './contexts/ThemeContext';
 import LanguageProvider from './contexts/LanguageContext';
@@ -13,6 +14,7 @@ import Logo from './components/Logo';
 import Settings from './components/Settings';
 import ChatPanel from './components/ChatPanel';
 import NotFound from './components/NotFound';
+import EmptyChatPage from './components/EmptyChatPage';
 
 import ErrorBoundary from './components/ErrorBoundary';
 import SkeletonLoader from './components/SkeletonLoader';
@@ -758,8 +760,12 @@ function App() {
         <LanguageProvider>
           <ErrorBoundary>
             <GlobalStyles />
-            <AppContent />
-
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={<AppContent />} />
+                <Route path="/chat" element={<EmptyChatPage />} />
+              </Routes>
+            </BrowserRouter>
           </ErrorBoundary>
         </LanguageProvider>
       </ThemeProvider>
