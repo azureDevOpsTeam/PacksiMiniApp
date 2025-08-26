@@ -49,8 +49,11 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
 
   const [isAccordionOpen, setIsAccordionOpen] = useState(false);
   const [ticketFile, setTicketFile] = useState<File | null>(null);
+  const [files, setFiles] = useState<File[]>([]); // برایل‌های عمومی
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const generalFileInputRef = useRef<HTMLInputElement>(null); // برایل‌های عمومی
+
   const [activeButton, setActiveButton] = useState<'user' | 'admin'>('user');
   const [isLoading, setIsLoading] = useState(false);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
@@ -146,8 +149,70 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
     }));
   };
 
+  // مدیریت آپلود فایل‌های عمومی
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFiles = event.target.files;
+    if (!selectedFiles) return;
 
-  
+    // بررسی حجم هر فایل (حداکثر 2 مگابایت)
+    const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
+    const MAX_TOTAL_SIZE = 8 * 1024 * 1024; // 8MB
+
+    // محاسبه حجم کل فایل‌های موجود
+    const currentTotalSize = files.reduce((sum, file) => sum + file.size, 0);
+    
+    // اضافه کردن فایل‌های جدید که از حد مجاز کمتر هستند
+    const newFiles: File[] = [];
+    let errorShown = false;
+
+    Array.from(selectedFiles).forEach(file => {
+      // بررسی نوع فایل (فقط تصویر و PDF)
+      if (!file.type.startsWith('image/') && file.type !== 'application/pdf') {
+        if (!errorShown) {
+          setError(t('createRequest.validation.fileTypeInvalid') || 'فقط فایل‌های تصویر و PDF مجاز هستند');
+          errorShown = true;
+        }
+        return;
+      }
+
+      // بررسی حجم هر فایل
+      if (file.size > MAX_FILE_SIZE) {
+        if (!errorShown) {
+          setError(t('createRequest.validation.fileTooLarge') || 'حجم هر فایل نباید بیشتر از 2 مگابایت باشد');
+          errorShown = true;
+        }
+        return;
+      }
+
+      // بررسی حجم کل
+      if (currentTotalSize + file.size > MAX_TOTAL_SIZE) {
+        if (!errorShown) {
+          setError(t('createRequest.validation.totalSizeTooLarge') || 'حجم کل فایل‌ها نباید بیشتر از 8 مگابایت باشد');
+          errorShown = true;
+        }
+        return;
+      }
+
+      newFiles.push(file);
+    });
+
+    if (newFiles.length > 0) {
+      setFiles(prevFiles => [...prevFiles, ...newFiles]);
+      setError(null);
+    }
+
+    // پاک کردن مقدار input برای امکان انتخاب مجدد همان فایل
+    if (generalFileInputRef.current) {
+      generalFileInputRef.current.value = '';
+    }
+  };
+
+  // حذف فایل از لیست فایل‌های عمومی
+  const handleRemoveFile = (index: number) => {
+    setFiles(prevFiles => prevFiles.filter((_, i) => i !== index));
+  };
+
+
   const handleSubmit = async () => {
     setIsLoading(true);
     setError(null);
@@ -171,6 +236,11 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
       const apiFiles: File[] = [];
       if (ticketFile) {
         apiFiles.push(ticketFile);
+      }
+      
+      // اضافه کردن فایل‌های عمومی
+      if (files.length > 0) {
+        apiFiles.push(...files);
       }
 
       // Prepare API payload (files sent separately via FormData)
@@ -218,7 +288,7 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
       }
     } catch (err) {
       // Handle different types of errors
-      let errorMessage = t('createRequest.error.unknown') || 'خطای نامشخص';
+      let errorMessage = t('createRequest.error.unknown') || 'خطای نامشخصص';
       
       if (err instanceof Error) {
         // Check for specific error types
@@ -588,6 +658,138 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
 
 
           
+          {/* فایل‌های عمومی */}
+          <div style={{ marginBottom: '20px' }}>
+            <label style={{
+              display: 'block',
+              marginBottom: '5px',
+              color: '#50b4ff',
+              fontSize: '12px',
+              fontWeight: '700',
+              fontFamily: 'IRANSansX, sans-serif',
+              textAlign: isRTL ? 'right' as const : 'left' as const
+            }}>{t('createRequest.generalFiles') || 'فایل‌های عمومی'}</label>
+            <div style={{
+              border: '1px dashed #3a4a5c',
+              borderRadius: '5px',
+              padding: '15px',
+              textAlign: 'center',
+              marginBottom: '10px',
+              cursor: 'pointer',
+              backgroundColor: '#212a33'
+            }} onClick={() => generalFileInputRef.current?.click()}>
+              <input
+                type="file"
+                ref={generalFileInputRef}
+                onChange={handleFileChange}
+                style={{ display: 'none' }}
+                accept="image/*,application/pdf"
+                multiple
+              />
+              <div style={{ color: '#50b4ff', marginBottom: '5px' }}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 16V8M12 8L9 11M12 8L15 11" stroke="#50b4ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M3 15V16C3 17.6569 4.34315 19 6 19H18C19.6569 19 21 17.6569 21 16V15" stroke="#50b4ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+              <div style={{ fontSize: '14px', color: '#848d96' }}>
+                {t('createRequest.uploadGeneralFiles') || 'آپلود تصاویر و فایل‌های PDF'}
+              </div>
+              <div style={{ fontSize: '12px', color: '#848d96', marginTop: '5px' }}>
+                (حداکثر 2 مگابایت برای هر فایل، مجموع 8 مگابایت)
+              </div>
+            </div>
+
+            {/* نمایش فایل‌های آپلود شده */}
+            {files.length > 0 && (
+              <div style={{ marginTop: '10px' }}>
+                {files.map((file, index) => (
+                  <div key={index} style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: '8px',
+                    backgroundColor: '#212a33',
+                    borderRadius: '5px',
+                    marginBottom: '8px'
+                  }}>
+                    {file.type.startsWith('image/') ? (
+                      <div style={{
+                        width: '60px',
+                        height: '60px',
+                        borderRadius: '6px',
+                        overflow: 'hidden'
+                      }}>
+                        <img
+                          src={URL.createObjectURL(file)}
+                          alt="Preview"
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover'
+                          }}
+                        />
+                      </div>
+                    ) : (
+                      <div style={{
+                        width: '60px',
+                        height: '60px',
+                        backgroundColor: '#3a4a5c',
+                        borderRadius: '6px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '12px',
+                        color: '#848d96'
+                      }}>
+                        PDF
+                      </div>
+                    )}
+                    <div style={{ flex: 1, marginLeft: '10px', marginRight: '10px' }}>
+                      <div style={{
+                        fontSize: '14px',
+                        color: '#ffffff',
+                        fontFamily: 'IRANSansX, sans-serif',
+                        marginBottom: '4px'
+                      }}>
+                        {file.name}
+                      </div>
+                      <div style={{
+                        fontSize: '12px',
+                        color: '#848d96',
+                        fontFamily: 'IRANSansX, sans-serif'
+                      }}>
+                        {(file.size / 1024 / 1024).toFixed(2)} MB
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveFile(index)}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        color: '#ff4757',
+                        cursor: 'pointer',
+                        fontSize: '18px',
+                        padding: '5px',
+                        borderRadius: '4px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                      }}
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+
+                {/* نمایش حجم کل فایل‌ها */}
+                <div style={{ fontSize: '12px', color: '#848d96', marginTop: '5px', textAlign: 'left' }}>
+                  حجم کل: {(files.reduce((sum, file) => sum + file.size, 0) / 1024 / 1024).toFixed(2)} / 8 MB
+                </div>
+              </div>
+            )}
+          </div>
+
           {/* Description */}
           <div style={{ marginBottom: '20px' }}>
             <label style={labelStyle}>{t('createRequest.description')}</label>

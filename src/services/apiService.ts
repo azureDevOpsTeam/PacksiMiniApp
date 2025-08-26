@@ -4,6 +4,75 @@ const API_BASE_URL = 'https://api.packsi.net/api';
 
 class ApiService {
 
+  // متد فشرده‌سازی تصاویر
+  private async compressAndAppendImage(formData: FormData, file: File, fieldName: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      // اگر فایل تصویر نیست، بدون فشرده‌سازی اضافه کن
+      if (!file.type.startsWith('image/')) {
+        formData.append(fieldName, file);
+        resolve();
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target?.result as string;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+
+          // حداکثر ابعاد تصویر را محدود کن
+          const MAX_SIZE = 1200;
+          if (width > height && width > MAX_SIZE) {
+            height = Math.round((height * MAX_SIZE) / width);
+            width = MAX_SIZE;
+          } else if (height > MAX_SIZE) {
+            width = Math.round((width * MAX_SIZE) / height);
+            height = MAX_SIZE;
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx?.drawImage(img, 0, 0, width, height);
+
+          // تبدیل به JPEG با کیفیت 70%
+          canvas.toBlob(
+            (blob) => {
+              if (blob) {
+                // ایجاد فایل جدید با نام اصلی
+                const compressedFile = new File([blob], file.name, {
+                  type: 'image/jpeg',
+                  lastModified: Date.now(),
+                });
+                formData.append(fieldName, compressedFile);
+                resolve();
+              } else {
+                // اگر فشرده‌سازی ناموفق بود، فایل اصلی را استفاده کن
+                formData.append(fieldName, file);
+                resolve();
+              }
+            },
+            'image/jpeg',
+            0.7 // کیفیت 70%
+          );
+        };
+        img.onerror = () => {
+          // در صورت خطا، فایل اصلی را استفاده کن
+          formData.append(fieldName, file);
+          resolve();
+        };
+      };
+      reader.onerror = () => {
+        // در صورت خطا، فایل اصلی را استفاده کن
+        formData.append(fieldName, file);
+        resolve();
+      };
+    });
+  }
   
   private getHeaders(isFormData: boolean = false): HeadersInit {
     const headers: HeadersInit = {};
@@ -97,20 +166,29 @@ class ApiService {
         // Use FormData when files are present
         const formData = new FormData();
 
-        // Add model data as JSON string
-        Object.entries(payload).forEach(([key, value]) => {
-          if (Array.isArray(value)) {
-            // برای آرایه مثل ItemTypeIds
-            value.forEach(v => formData.append(key, v.toString()));
-          } else if (value !== undefined && value !== null) {
-            formData.append(key, value.toString());
-          }
-        });
+        // بررسی حجم کل فایل‌ها (حداکثر 8 مگابایت)
+        const totalSize = files.reduce((sum, file) => sum + file.size, 0);
+        const MAX_TOTAL_SIZE = 8 * 1024 * 1024; // 8MB
+        
+        if (totalSize > MAX_TOTAL_SIZE) {
+          return {
+            success: false,
+            message: "حجم کل فایل‌ها نباید بیشتر از 8 مگابایت باشد"
+          };
+        }
 
-        // Add files
-        files.forEach((file) => {
-          formData.append("files", file);
-        });
+        // Add model data as JSON string
+        formData.append('model', JSON.stringify(payload.model));
+
+        // Add files with compression for images
+        for (const file of files) {
+          // اگر فایل تصویر است و بیشتر از 1MB حجم دارد، فشرده‌سازی کن
+          if (file.type.startsWith('image/') && file.size > 1024 * 1024) {
+            await this.compressAndAppendImage(formData, file, "files");
+          } else {
+            formData.append("files", file);
+          }
+        }
 
         body = formData;
         isFormData = true;
