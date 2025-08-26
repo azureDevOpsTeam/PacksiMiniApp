@@ -49,6 +49,7 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
 
   const [isAccordionOpen, setIsAccordionOpen] = useState(false);
   const [ticketFile, setTicketFile] = useState<File | null>(null);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [activeButton, setActiveButton] = useState<'user' | 'admin'>('user');
   const [isLoading, setIsLoading] = useState(false);
@@ -119,6 +120,8 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
       setIsInitialLoading(false);
     }
   }, [citiesLoading, itemTypesLoading]);
+  
+
 
   const requestTypes = [
     { id: 0, name: t('createRequest.passenger'), nameEn: 'Passenger' },
@@ -143,6 +146,8 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
     }));
   };
 
+
+  
   const handleSubmit = async () => {
     setIsLoading(true);
     setError(null);
@@ -162,10 +167,10 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
         throw new Error(t('createRequest.validation.typeRequired') || 'لطفاً نوع درخواست را انتخاب کنید');
       }
 
-      // Prepare files array
-      const files: File[] = [];
+      // Prepare files array for API
+      const apiFiles: File[] = [];
       if (ticketFile) {
-        files.push(ticketFile);
+        apiFiles.push(ticketFile);
       }
 
       // Prepare API payload (files sent separately via FormData)
@@ -180,7 +185,7 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
       };
 
       // Call API
-      const response = await apiService.createRequest(payload, files);
+      const response = await apiService.createRequest(payload, apiFiles);
 
       if (response.success) {
         setSuccess(true);
@@ -286,6 +291,8 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
     fontFamily: 'IRANSansX, sans-serif',
     textAlign: isRTL ? 'right' as const : 'left' as const
   };
+
+
 
   if (isInitialLoading) {
     return (
@@ -472,13 +479,31 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
                 ref={fileInputRef}
                 type="file"
                 accept="image/*,.pdf"
-                onChange={(e) => setTicketFile(e.target.files?.[0] || null)}
+                onChange={(e) => {
+                  const file = e.target.files?.[0] || null;
+                  if (file) {
+                    // Check file size (limit to 2MB)
+                    const maxSizeInBytes = 2 * 1024 * 1024; // 2MB
+                    if (file.size > maxSizeInBytes) {
+                      setError(t('createRequest.error.fileSize') || 'حجم فایل نباید بیشتر از 2 مگابایت باشد');
+                      if (fileInputRef.current) {
+                        fileInputRef.current.value = '';
+                      }
+                      return;
+                    }
+                    setError(null);
+                  }
+                  setTicketFile(file);
+                }}
                 style={{
                   ...inputStyle,
                   padding: '12px',
                   cursor: 'pointer'
                 }}
               />
+              <div style={{ fontSize: '11px', color: '#848d96', marginTop: '5px' }}>
+                {isRTL ? 'حداکثر حجم فایل: 2 مگابایت' : 'Maximum file size: 2MB'}
+              </div>
               {ticketFile && (
                 <div style={{
                   marginTop: '10px',
@@ -561,6 +586,8 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
             </div>
           )}
 
+
+          
           {/* Description */}
           <div style={{ marginBottom: '20px' }}>
             <label style={labelStyle}>{t('createRequest.description')}</label>
@@ -576,6 +603,8 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
               placeholder={t('createRequest.description')}
             />
           </div>
+
+
 
           {/* Additional Details Accordion */}
           <div style={{ marginBottom: '20px' }}>

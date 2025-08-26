@@ -3,6 +3,8 @@ import type { CreateRequestPayload, ApiResponse, CreateRequestResponse, CitiesTr
 const API_BASE_URL = 'https://api.packsi.net/api';
 
 class ApiService {
+
+  
   private getHeaders(isFormData: boolean = false): HeadersInit {
     const headers: HeadersInit = {};
 
@@ -19,7 +21,7 @@ class ApiService {
     } else {
       console.log('No Telegram initData available, using development token');
       // Use provided token for development
-      headers['X-Telegram-Init-Data'] = 'query_id=AAEUWrBhAgAAABRasGE_HYpx&user=%7B%22id%22%3A5933914644%2C%22first_name%22%3A%22Shahram%22%2C%22last_name%22%3A%22%22%2C%22username%22%3A%22ShahramOweisy%22%2C%22language_code%22%3A%22en%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Ft.me%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2FQGwtYapyXkY4-jZJkczPeUb_XKfimJozOKy8lZzBhtQc4cO4xBQzwdPwcb_QSNih.svg%22%7D&auth_date=1755948305&signature=z_ox7tsfQmjtIANsyqVft3aMlF-2P6l5KEK7nivPnLHTvLnqP4Z2OsIPvn9uooDzxKfeScQOkAqZoZEtICyRDg&hash=1d5a19786e50f68519ad78ecf36b6dd52bac454b1afe0c18038d675256d79595';
+      headers['X-Telegram-Init-Data'] = 'user=%7B%22id%22%3A1030212127%2C%22first_name%22%3A%22Shahram%22%2C%22last_name%22%3A%22%22%2C%22username%22%3A%22Shahram0weisy%22%2C%22language_code%22%3A%22en%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Ft.me%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2FEVbiVIJZP-ipzuxmiuKkh1k1-dJF0U16tjKJdfQM7M4.svg%22%7D&chat_instance=-2088651826057668234&chat_type=private&auth_date=1756212197&signature=iA6M2-lTMxnMONVbpKecVO85-1k5qRt-yY-YmRwWJhewyKj9uExboOzmDatXJCDN4utWeidKBtYez_lSlnH5AQ&hash=11b4fa4222cef74eca3955f6969b43f4e843d8deb9228983796365849a4adf1c';
     }
 
     // Add additional headers for mobile compatibility
@@ -88,49 +90,39 @@ class ApiService {
 
   async createRequest(payload: CreateRequestPayload, files?: File[]): Promise<ApiResponse<CreateRequestResponse>> {
     try {
-      const formData = new FormData();
-      
-      // Add model fields directly to FormData (backend expects [FromForm])
-      const model = payload.model;
-      formData.append('OriginCityId', model.originCityId.toString());
-      formData.append('DestinationCityId', model.destinationCityId.toString());
-      formData.append('DepartureDate', model.departureDate);
-      formData.append('ArrivalDate', model.arrivalDate);
-      formData.append('RequestType', model.requestType.toString());
-      formData.append('Description', model.description);
-      
-      // Add optional fields only if they have values
-      if (model.maxWeightKg) {
-        formData.append('MaxWeightKg', model.maxWeightKg.toString());
-      }
-      if (model.maxLengthCm) {
-        formData.append('MaxLengthCm', model.maxLengthCm.toString());
-      }
-      if (model.maxWidthCm) {
-        formData.append('MaxWidthCm', model.maxWidthCm.toString());
-      }
-      if (model.maxHeightCm) {
-        formData.append('MaxHeightCm', model.maxHeightCm.toString());
-      }
-      
-      // Add ItemTypeIds array
-      if (model.itemTypeIds && model.itemTypeIds.length > 0) {
-        model.itemTypeIds.forEach(id => {
-          formData.append('ItemTypeIds', id.toString());
-        });
-      }
-      
-      // Add files
+      let body: string | FormData;
+      let isFormData = false;
+
       if (files && files.length > 0) {
-        files.forEach(file => {
-          formData.append('files', file);
+        // Use FormData when files are present
+        const formData = new FormData();
+
+        // Add model data as JSON string
+        Object.entries(payload).forEach(([key, value]) => {
+          if (Array.isArray(value)) {
+            // برای آرایه مثل ItemTypeIds
+            value.forEach(v => formData.append(key, v.toString()));
+          } else if (value !== undefined && value !== null) {
+            formData.append(key, value.toString());
+          }
         });
+
+        // Add files
+        files.forEach((file) => {
+          formData.append("files", file);
+        });
+
+        body = formData;
+        isFormData = true;
+      } else {
+        // Use JSON when no files
+        body = JSON.stringify(payload);
       }
 
-      const response = await fetch(`${API_BASE_URL}/api/MiniApp/Create`, {
+      const response = await fetch(`${API_BASE_URL}/MiniApp/Create`, {
         method: 'POST',
-        headers: this.getHeaders(true),
-        body: formData
+        headers: this.getHeaders(isFormData),
+        body
       });
 
       return await this.handleResponse<CreateRequestResponse>(response);
