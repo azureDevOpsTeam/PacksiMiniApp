@@ -6,7 +6,7 @@ class ApiService {
 
   // متد فشرده‌سازی تصاویر
   private async compressAndAppendImage(formData: FormData, file: File, fieldName: string): Promise<void> {
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve) => {
       // اگر فایل تصویر نیست، بدون فشرده‌سازی اضافه کن
       if (!file.type.startsWith('image/')) {
         formData.append(fieldName, file);
