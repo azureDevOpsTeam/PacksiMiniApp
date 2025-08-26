@@ -98,24 +98,36 @@ class ApiService {
       formData.append('ArrivalDate', model.arrivalDate);
       formData.append('RequestType', model.requestType.toString());
       formData.append('Description', model.description);
-      formData.append('MaxWeightKg', model.maxWeightKg.toString());
-      formData.append('MaxLengthCm', model.maxLengthCm.toString());
-      formData.append('MaxWidthCm', model.maxWidthCm.toString());
-      formData.append('MaxHeightCm', model.maxHeightCm.toString());
+      
+      // Add optional fields only if they have values
+      if (model.maxWeightKg) {
+        formData.append('MaxWeightKg', model.maxWeightKg.toString());
+      }
+      if (model.maxLengthCm) {
+        formData.append('MaxLengthCm', model.maxLengthCm.toString());
+      }
+      if (model.maxWidthCm) {
+        formData.append('MaxWidthCm', model.maxWidthCm.toString());
+      }
+      if (model.maxHeightCm) {
+        formData.append('MaxHeightCm', model.maxHeightCm.toString());
+      }
       
       // Add ItemTypeIds array
-      model.itemTypeIds.forEach(id => {
-        formData.append('ItemTypeIds', id.toString());
-      });
+      if (model.itemTypeIds && model.itemTypeIds.length > 0) {
+        model.itemTypeIds.forEach(id => {
+          formData.append('ItemTypeIds', id.toString());
+        });
+      }
       
       // Add files
       if (files && files.length > 0) {
         files.forEach(file => {
-          formData.append('Files', file);
+          formData.append('files', file);
         });
       }
 
-      const response = await fetch(`${API_BASE_URL}/MiniApp/Create`, {
+      const response = await fetch(`${API_BASE_URL}/api/MiniApp/Create`, {
         method: 'POST',
         headers: this.getHeaders(true),
         body: formData
