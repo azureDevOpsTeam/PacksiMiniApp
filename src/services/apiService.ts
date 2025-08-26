@@ -159,14 +159,11 @@ class ApiService {
 
   async createRequest(payload: CreateRequestPayload, files?: File[]): Promise<ApiResponse<CreateRequestResponse>> {
     try {
-      let body: string | FormData;
-      let isFormData = false;
+      // Always use FormData to match backend [FromForm] expectation
+      const formData = new FormData();
 
+      // بررسی حجم کل فایل‌ها (حداکثر 8 مگابایت)
       if (files && files.length > 0) {
-        // Use FormData when files are present
-        const formData = new FormData();
-
-        // بررسی حجم کل فایل‌ها (حداکثر 8 مگابایت)
         const totalSize = files.reduce((sum, file) => sum + file.size, 0);
         const MAX_TOTAL_SIZE = 8 * 1024 * 1024; // 8MB
         
@@ -176,31 +173,44 @@ class ApiService {
             message: "حجم کل فایل‌ها نباید بیشتر از 8 مگابایت باشد"
           };
         }
+      }
 
-        // Add model data as JSON string
-        formData.append('model', JSON.stringify(payload.model));
+      // Add model fields directly to FormData (matching backend CreateRequestTMACommand)
+      const model = payload.model;
+      formData.append('OriginCityId', model.originCityId.toString());
+      formData.append('DestinationCityId', model.destinationCityId.toString());
+      formData.append('DepartureDate', model.departureDate);
+      formData.append('ArrivalDate', model.arrivalDate);
+      formData.append('RequestType', model.requestType.toString());
+      formData.append('Description', model.description || '');
+      formData.append('MaxWeightKg', (model.maxWeightKg || 0).toString());
+      formData.append('MaxLengthCm', (model.maxLengthCm || 0).toString());
+      formData.append('MaxWidthCm', (model.maxWidthCm || 0).toString());
+      formData.append('MaxHeightCm', (model.maxHeightCm || 0).toString());
+      
+      // Add ItemTypeIds array
+      if (model.itemTypeIds && model.itemTypeIds.length > 0) {
+        model.itemTypeIds.forEach(id => {
+          formData.append('ItemTypeIds', id.toString());
+        });
+      }
 
-        // Add files with compression for images
+      // Add files with compression for images
+      if (files && files.length > 0) {
         for (const file of files) {
           // اگر فایل تصویر است و بیشتر از 1MB حجم دارد، فشرده‌سازی کن
           if (file.type.startsWith('image/') && file.size > 1024 * 1024) {
-            await this.compressAndAppendImage(formData, file, "files");
+            await this.compressAndAppendImage(formData, file, "Files");
           } else {
-            formData.append("files", file);
+            formData.append("Files", file);
           }
         }
-
-        body = formData;
-        isFormData = true;
-      } else {
-        // Use JSON when no files
-        body = JSON.stringify(payload);
       }
 
       const response = await fetch(`${API_BASE_URL}/MiniApp/Create`, {
         method: 'POST',
-        headers: this.getHeaders(isFormData),
-        body
+        headers: this.getHeaders(true), // Always FormData
+        body: formData
       });
 
       return await this.handleResponse<CreateRequestResponse>(response);
@@ -226,71 +236,6 @@ class ApiService {
       };
     }
   }
-
-
-  // async createRequest(payload: CreateRequestPayload, files?: File[]): Promise<ApiResponse<CreateRequestResponse>> {
-  //   try {
-  //     let body: string | FormData;
-  //     let isFormData = false;
-
-  //     if (files && files.length > 0) {
-  //       // Use FormData when files are present
-  //       const formData = new FormData();
-
-  //       // Add model data as JSON string
-  //       Object.entries(payload).forEach(([key, value]) => {
-  //         if (Array.isArray(value)) {
-  //           // برای آرایه مثل ItemTypeIds
-  //           value.forEach(v => formData.append(key, v.toString()));
-  //         } else if (value !== undefined && value !== null) {
-  //           formData.append(key, value.toString());
-  //         }
-  //       });
-
-  //       // Add files
-  //       files.forEach((file) => {
-  //         formData.append("Files", file);
-  //       });
-
-  //       body = formData;
-  //       isFormData = true;
-  //     } else {
-  //       // Use JSON when no files
-  //       body = JSON.stringify(payload);
-  //     }
-
-  //     const response = await fetch(`${API_BASE_URL}/MiniApp/Create`, {
-  //       method: 'POST',
-  //       headers: this.getHeaders(isFormData),
-  //       body
-  //     });
-
-  //     return await this.handleResponse<CreateRequestResponse>(response);
-  //   } catch (error) {
-  //     // Handle different types of errors
-  //     if (error instanceof TypeError && error.message.includes('fetch')) {
-  //       // Network error
-  //       return {
-  //         success: false,
-  //         message: 'خطا در اتصال به اینترنت. لطفاً اتصال خود را بررسی کنید.'
-  //       };
-  //     }
-
-  //     if (error instanceof Error && error.name === 'AbortError') {
-  //       // Request was aborted
-  //       return {
-  //         success: false,
-  //         message: 'درخواست لغو شد'
-  //       };
-  //     }
-
-  //     // Other errors (including our custom API errors)
-  //     return {
-  //       success: false,
-  //       message: error instanceof Error ? error.message : 'خطا در ارسال درخواست'
-  //     };
-  //   }
-  // }
 
   async getCitiesTree(): Promise<CitiesTreeResponse> {
     try {

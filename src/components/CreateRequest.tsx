@@ -973,6 +973,51 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
 
           {/* Note: Submit button is now handled by Telegram's MainButton in the bottom bar */}
 
+          {/* Test Submit Button */}
+          <div style={{
+            marginTop: '20px',
+            display: 'flex',
+            justifyContent: 'center'
+          }}>
+            <button
+              type="button"
+              onClick={handleSubmit}
+              disabled={!isFormValid || isLoading}
+              style={{
+                padding: '12px 24px',
+                backgroundColor: isFormValid && !isLoading ? '#50b4ff' : '#3a4a5c',
+                color: isFormValid && !isLoading ? 'white' : '#848d96',
+                border: 'none',
+                borderRadius: '8px',
+                fontSize: '14px',
+                fontFamily: 'IRANSansX, sans-serif',
+                fontWeight: '600',
+                cursor: isFormValid && !isLoading ? 'pointer' : 'not-allowed',
+                transition: 'all 0.3s ease',
+                minWidth: '120px',
+                opacity: isLoading ? 0.7 : 1
+              }}
+            >
+              {isLoading ? (
+                <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <span style={{
+                    width: '16px',
+                    height: '16px',
+                    border: '2px solid transparent',
+                    borderTop: '2px solid currentColor',
+                    borderRadius: '50%',
+                    animation: 'spin 1s linear infinite',
+                    marginRight: isRTL ? '0' : '8px',
+                    marginLeft: isRTL ? '8px' : '0'
+                  }}></span>
+                  {t('createRequest.sending') || 'در حال ارسال...'}
+                </span>
+              ) : (
+                t('createRequest.testSubmit') || 'ثبت موقت (تست)'
+              )}
+            </button>
+          </div>
+
           {/* Error Message */}
           {error && (
             <div style={{

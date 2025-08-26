@@ -63,10 +63,19 @@ const AppContent: React.FC = () => {
     try {
       setIsValidating(true);
       setAuthenticationFailed(false);
-      const response = await apiService.validate();
+      
+      // Add timeout to prevent infinite loading
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Validation timeout')), 10000); // 10 seconds timeout
+      });
+      
+      const response = await Promise.race([
+        apiService.validate(),
+        timeoutPromise
+      ]) as any;
       
       // Check for authentication failure
-      if (response.requestStatus.name === 'AuthenticationFailed') {
+      if (response && response.requestStatus && response.requestStatus.name === 'AuthenticationFailed') {
         setAuthenticationFailed(true);
         setCurrentPage('notFound');
         return;
