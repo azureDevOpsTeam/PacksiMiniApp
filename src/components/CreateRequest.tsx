@@ -66,12 +66,25 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
   const [itemTypes, setItemTypes] = useState<ItemType[]>([]);
   const [itemTypesLoading, setItemTypesLoading] = useState(true);
 
+  // Validation states for visual feedback
+  const [validationErrors, setValidationErrors] = useState({
+    originCityId: false,
+    destinationCityId: false,
+    departureDate: false,
+    arrivalDate: false,
+    requestType: false,
+    itemTypeIds: false,
+    files: false
+  });
+
   // Check if form is valid for submission
   const isFormValid = !!(formData.originCityId !== 0 && 
                      formData.destinationCityId !== 0 && 
                      formData.departureDate && 
                      formData.arrivalDate && 
-                     formData.requestType !== -1);
+                     formData.requestType !== -1 &&
+                     formData.itemTypeIds.length > 0 &&
+                     (formData.requestType !== 0 || (ticketFile || files.length > 0)));
 
   // Load cities tree on component mount
   useEffect(() => {
@@ -213,24 +226,32 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
   };
 
 
+  const validateForm = () => {
+    const errors = {
+      originCityId: formData.originCityId === 0,
+      destinationCityId: formData.destinationCityId === 0,
+      departureDate: !formData.departureDate,
+      arrivalDate: !formData.arrivalDate,
+      requestType: formData.requestType === -1,
+      itemTypeIds: formData.itemTypeIds.length === 0,
+      files: formData.requestType === 0 && !ticketFile && files.length === 0
+    };
+    
+    setValidationErrors(errors);
+    return !Object.values(errors).some(error => error);
+  };
+
   const handleSubmit = async () => {
+    if (!validateForm()) {
+      setError(t('createRequest.validation.fillRequired') || 'لطفاً تمام فیلدهای الزامی را پر کنید');
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
     setSuccess(false);
 
     try {
-      // Validate required fields
-      if (formData.originCityId === 0 || formData.destinationCityId === 0) {
-        throw new Error(t('createRequest.validation.citiesRequired') || 'لطفاً شهر مبدا و مقصد را انتخاب کنید');
-      }
-
-      if (!formData.departureDate || !formData.arrivalDate) {
-        throw new Error(t('createRequest.validation.datesRequired') || 'لطفاً تاریخ حرکت و بازگشت را انتخاب کنید');
-      }
-
-      if (formData.requestType === -1) {
-        throw new Error(t('createRequest.validation.typeRequired') || 'لطفاً نوع درخواست را انتخاب کنید');
-      }
 
       // Prepare files array for API
       const apiFiles: File[] = [];
@@ -468,37 +489,51 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
             {/* Origin City */}
             <div style={{ width: '100%' }}>
               <label style={labelStyle}>{t('createRequest.originCity')}</label>
-              <TreeDropdown
-                data={citiesTree}
-                loading={citiesLoading}
-                placeholder={t('createRequest.selectCity')}
-                value={formData.originCityId}
-                displayValue={originCityLabel}
-                onSelect={(value, label) => {
-                  handleInputChange('originCityId', value);
-                  setOriginCityLabel(label);
-                }}
-                theme={theme}
-                isRTL={isRTL}
-              />
+              <div style={{
+                border: validationErrors.originCityId ? '2px solid #ff4757' : 'none',
+                borderRadius: validationErrors.originCityId ? '8px' : '0',
+                padding: validationErrors.originCityId ? '2px' : '0',
+                boxShadow: validationErrors.originCityId ? '0 0 0 1px #ff4757' : 'none'
+              }}>
+                <TreeDropdown
+                  data={citiesTree}
+                  loading={citiesLoading}
+                  placeholder={t('createRequest.selectCity')}
+                  value={formData.originCityId}
+                  displayValue={originCityLabel}
+                  onSelect={(value, label) => {
+                    handleInputChange('originCityId', value);
+                    setOriginCityLabel(label);
+                  }}
+                  theme={theme}
+                  isRTL={isRTL}
+                />
+              </div>
             </div>
 
             {/* Destination City */}
             <div style={{ width: '100%' }}>
               <label style={labelStyle}>{t('createRequest.destinationCity')}</label>
-              <TreeDropdown
-                data={citiesTree}
-                loading={citiesLoading}
-                placeholder={t('createRequest.selectCity')}
-                value={formData.destinationCityId}
-                displayValue={destinationCityLabel}
-                onSelect={(value, label) => {
-                  handleInputChange('destinationCityId', value);
-                  setDestinationCityLabel(label);
-                }}
-                theme={theme}
-                isRTL={isRTL}
-              />
+              <div style={{
+                border: validationErrors.destinationCityId ? '2px solid #ff4757' : 'none',
+                borderRadius: validationErrors.destinationCityId ? '8px' : '0',
+                padding: validationErrors.destinationCityId ? '2px' : '0',
+                boxShadow: validationErrors.destinationCityId ? '0 0 0 1px #ff4757' : 'none'
+              }}>
+                <TreeDropdown
+                  data={citiesTree}
+                  loading={citiesLoading}
+                  placeholder={t('createRequest.selectCity')}
+                  value={formData.destinationCityId}
+                  displayValue={destinationCityLabel}
+                  onSelect={(value, label) => {
+                    handleInputChange('destinationCityId', value);
+                    setDestinationCityLabel(label);
+                  }}
+                  theme={theme}
+                  isRTL={isRTL}
+                />
+              </div>
             </div>
           </div>
 
@@ -509,7 +544,11 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
               type="datetime-local"
               value={formData.departureDate}
               onChange={(e) => handleInputChange('departureDate', e.target.value)}
-              style={inputStyle}
+              style={{
+                ...inputStyle,
+                border: validationErrors.departureDate ? '2px solid #ff4757' : '1px solid #3a4a5c',
+                boxShadow: validationErrors.departureDate ? '0 0 0 1px #ff4757' : 'none'
+              }}
             />
           </div>
 
@@ -520,7 +559,11 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
               type="datetime-local"
               value={formData.arrivalDate}
               onChange={(e) => handleInputChange('arrivalDate', e.target.value)}
-              style={inputStyle}
+              style={{
+                ...inputStyle,
+                border: validationErrors.arrivalDate ? '2px solid #ff4757' : '1px solid #3a4a5c',
+                boxShadow: validationErrors.arrivalDate ? '0 0 0 1px #ff4757' : 'none'
+              }}
             />
           </div>
 
@@ -530,7 +573,11 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
             <select
               value={formData.requestType}
               onChange={(e) => handleInputChange('requestType', parseInt(e.target.value))}
-              style={inputStyle}
+              style={{
+                ...inputStyle,
+                border: validationErrors.requestType ? '2px solid #ff4757' : '1px solid #3a4a5c',
+                boxShadow: validationErrors.requestType ? '0 0 0 1px #ff4757' : 'none'
+              }}
             >
               <option value={-1}>{t('createRequest.selectRequestType')}</option>
               {requestTypes.map(type => (
@@ -568,7 +615,9 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
                 style={{
                   ...inputStyle,
                   padding: '12px',
-                  cursor: 'pointer'
+                  cursor: 'pointer',
+                  border: validationErrors.files ? '2px solid #ff4757' : '1px solid #3a4a5c',
+                  boxShadow: validationErrors.files ? '0 0 0 1px #ff4757' : 'none'
                 }}
               />
               <div style={{ fontSize: '11px', color: '#848d96', marginTop: '5px' }}>
@@ -920,7 +969,10 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
               display: 'grid',
               gridTemplateColumns: '1fr 1fr',
               gap: '8px',
-              marginTop: '8px'
+              marginTop: '8px',
+              border: validationErrors.itemTypeIds ? '2px solid #ff4757' : 'none',
+              borderRadius: validationErrors.itemTypeIds ? '5px' : '0',
+              padding: validationErrors.itemTypeIds ? '8px' : '0'
             }}>
               {itemTypesLoading ? (
                 <div style={{
@@ -973,50 +1025,7 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
 
           {/* Note: Submit button is now handled by Telegram's MainButton in the bottom bar */}
 
-          {/* Test Submit Button */}
-          <div style={{
-            marginTop: '20px',
-            display: 'flex',
-            justifyContent: 'center'
-          }}>
-            <button
-              type="button"
-              onClick={handleSubmit}
-              disabled={!isFormValid || isLoading}
-              style={{
-                padding: '12px 24px',
-                backgroundColor: isFormValid && !isLoading ? '#50b4ff' : '#3a4a5c',
-                color: isFormValid && !isLoading ? 'white' : '#848d96',
-                border: 'none',
-                borderRadius: '8px',
-                fontSize: '14px',
-                fontFamily: 'IRANSansX, sans-serif',
-                fontWeight: '600',
-                cursor: isFormValid && !isLoading ? 'pointer' : 'not-allowed',
-                transition: 'all 0.3s ease',
-                minWidth: '120px',
-                opacity: isLoading ? 0.7 : 1
-              }}
-            >
-              {isLoading ? (
-                <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <span style={{
-                    width: '16px',
-                    height: '16px',
-                    border: '2px solid transparent',
-                    borderTop: '2px solid currentColor',
-                    borderRadius: '50%',
-                    animation: 'spin 1s linear infinite',
-                    marginRight: isRTL ? '0' : '8px',
-                    marginLeft: isRTL ? '8px' : '0'
-                  }}></span>
-                  {t('createRequest.sending') || 'در حال ارسال...'}
-                </span>
-              ) : (
-                t('createRequest.testSubmit') || 'ثبت موقت (تست)'
-              )}
-            </button>
-          </div>
+
 
           {/* Error Message */}
           {error && (

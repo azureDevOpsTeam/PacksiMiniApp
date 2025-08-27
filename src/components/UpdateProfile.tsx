@@ -41,6 +41,10 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ onProfileUpdated }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [success, setSuccess] = useState(false);
+  const [validationErrors, setValidationErrors] = useState({
+    countryOfResidenceId: false,
+    cityIds: false
+  });
   const [countries, setCountries] = useState<CountryItem[]>([]);
   const [cities, setCities] = useState<CityItem[]>([]);
   const [citiesLoading, setCitiesLoading] = useState(false);
@@ -121,7 +125,21 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ onProfileUpdated }) => {
     }));
   };
 
+  const validateForm = () => {
+     const errors = {
+       countryOfResidenceId: !formData.countryOfResidenceId || formData.countryOfResidenceId === 0,
+       cityIds: !formData.selectedCities || formData.selectedCities.length === 0
+     };
+     
+     setValidationErrors(errors);
+     return !Object.values(errors).some(error => error);
+   };
+
   const handleSubmit = async () => {
+    if (!validateForm()) {
+      return;
+    }
+    
     setIsLoading(true);
     try {
       const request: UpdateProfileRequest = {
@@ -400,7 +418,11 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ onProfileUpdated }) => {
             <select
               value={formData.countryOfResidenceId || 0}
               onChange={(e) => handleInputChange('countryOfResidenceId', parseInt(e.target.value))}
-              style={inputStyle}
+              style={{
+                ...inputStyle,
+                border: validationErrors.countryOfResidenceId ? '2px solid #ff4757' : '1px solid #3a4a5c',
+                boxShadow: validationErrors.countryOfResidenceId ? '0 0 0 1px #ff4757' : 'none'
+              }}
             >
               <option value={0}>{t('updateProfile.selectCountry')}</option>
               {countries.map(country => (
@@ -414,15 +436,22 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ onProfileUpdated }) => {
           {/* Cities Selection */}
           <div style={{ marginBottom: '20px' }}>
             <label style={labelStyle}>{t('updateProfile.cities')}</label>
-            <MultiSelectTreeDropdown
-              data={cities}
-              loading={citiesLoading}
-              placeholder={t('updateProfile.selectCities')}
-              selectedValues={formData.selectedCities}
-              onSelectionChange={handleCitySelectionChange}
-              theme={theme}
-              isRTL={isRTL}
-            />
+            <div style={{
+              border: validationErrors.cityIds ? '2px solid #ff4757' : 'none',
+              borderRadius: validationErrors.cityIds ? '8px' : '0',
+              padding: validationErrors.cityIds ? '2px' : '0',
+              boxShadow: validationErrors.cityIds ? '0 0 0 1px #ff4757' : 'none'
+            }}>
+              <MultiSelectTreeDropdown
+                data={cities}
+                loading={citiesLoading}
+                placeholder={t('updateProfile.selectCities')}
+                selectedValues={formData.selectedCities}
+                onSelectionChange={handleCitySelectionChange}
+                theme={theme}
+                isRTL={isRTL}
+              />
+            </div>
           </div>
           
           {/* Address */}
