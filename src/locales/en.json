@@ -92,7 +92,8 @@
     "files": "Files",
     "selectCity": "Select City",
     "selectRequestType": "Select Request Type",
-    "selectItemTypes": "Select Item Types"
+    "selectItemTypes": "Select Item Types",
+    "submit": "Create Request"
   },
   "updateProfile": {
     "title": "Please complete your profile information below.",

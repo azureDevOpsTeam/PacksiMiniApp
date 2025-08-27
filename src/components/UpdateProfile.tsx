@@ -50,10 +50,7 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ onProfileUpdated }) => {
   const [citiesLoading, setCitiesLoading] = useState(false);
 
 
-  // Check if form is valid for submission
-  const isFormValid = !!(formData.firstName && formData.firstName.trim() !== '' &&
-    formData.lastName && formData.lastName.trim() !== '' &&
-    formData.countryOfResidenceId !== 0);
+  // Form validation is now handled in validateForm() function
 
   // Load user info and countries on component mount
   useEffect(() => {
@@ -180,7 +177,7 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ onProfileUpdated }) => {
       text: success ? (t('common.saved') || 'ذخیره شد ✓') : (t('common.save') || 'ذخیره تغییرات'),
       onClick: handleSubmit,
       isVisible: true,
-      isEnabled: isFormValid && !isLoading,
+      isEnabled: !isLoading,
       isLoading: isLoading,
       color: success ? '#4CAF50' : '#50b4ff'
     }
@@ -191,14 +188,14 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ onProfileUpdated }) => {
     const timeoutId = setTimeout(() => {
       updateMainButton({
         text: success ? (t('common.saved') || 'ذخیره شد ✓') : (t('common.save') || 'ذخیره تغییرات'),
-        isEnabled: isFormValid && !isLoading,
+        isEnabled: !isLoading,
         isLoading: isLoading,
         color: success ? '#4CAF50' : '#50b4ff'
       });
     }, 150); // Debounce for iOS
 
     return () => clearTimeout(timeoutId);
-  }, [isFormValid, isLoading, success, t, updateMainButton]);
+  }, [isLoading, success, t, updateMainButton]);
 
   const inputStyle = {
     width: '100%',

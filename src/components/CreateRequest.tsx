@@ -77,14 +77,7 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
     files: false
   });
 
-  // Check if form is valid for submission
-  const isFormValid = !!(formData.originCityId !== 0 && 
-                     formData.destinationCityId !== 0 && 
-                     formData.departureDate && 
-                     formData.arrivalDate && 
-                     formData.requestType !== -1 &&
-                     formData.itemTypeIds.length > 0 &&
-                     (formData.requestType !== 0 || (ticketFile || files.length > 0)));
+  // Form validation is now handled in validateForm() function
 
   // Load cities tree on component mount
   useEffect(() => {
@@ -341,7 +334,7 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
       isVisible: true,
       onClick: handleSubmit,
       color: '#50b4ff',
-      isEnabled: isFormValid && !isLoading,
+      isEnabled: !isLoading,
     }
   });
 
@@ -350,14 +343,14 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
     const timeoutId = setTimeout(() => {
       updateMainButton({
         text: isLoading ? t('createRequest.sending') : success ? t('createRequest.success') : t('createRequest.submit'),
-        isEnabled: isFormValid && !isLoading,
+        isEnabled: !isLoading,
         isLoading: isLoading,
         color: success ? '#4CAF50' : '#50b4ff'
       });
     }, 150); // Debounce for iOS
 
     return () => clearTimeout(timeoutId);
-  }, [isFormValid, isLoading, success, updateMainButton, t]);
+  }, [isLoading, success, updateMainButton, t]);
 
   const inputStyle = {
     width: '100%',
