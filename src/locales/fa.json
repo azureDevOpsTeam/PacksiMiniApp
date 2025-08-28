@@ -92,7 +92,8 @@
     "files": "فایل‌ها",
     "selectCity": "انتخاب شهر",
     "selectRequestType": "انتخاب نوع درخواست",
-    "selectItemTypes": "انتخاب نوع اقلام"
+    "selectItemTypes": "انتخاب نوع اقلام",
+    "submit": "ثبت درخواست"
   },
   "updateProfile": {
     "title": "لطفاً اطلاعات پروفایل خود را در زیر تکمیل کنید.",

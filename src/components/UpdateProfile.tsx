@@ -42,6 +42,7 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ onProfileUpdated }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [success, setSuccess] = useState(false);
+
   const [countries, setCountries] = useState<CountryItem[]>([]);
   const [cities, setCities] = useState<CityItem[]>([]);
   const [citiesLoading, setCitiesLoading] = useState(false);
@@ -50,16 +51,14 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ onProfileUpdated }) => {
   const validationRules = {
     firstName: { required: true },
     lastName: { required: true },
-    countryOfResidenceId: { required: true, custom: (value: number) => value !== 0 }
+    countryOfResidenceId: { required: true, custom: (value: number) => value !== 0 },
+    selectedCities: { required: true, custom: (value: number[]) => value && value.length > 0 }
   };
 
   // Initialize validation hook
   const { validateForm, hasFieldError, getFieldStyle, markFieldTouched } = useFormValidation(validationRules);
 
-  // Check if form is valid for submission
-  const isFormValid = !!(formData.firstName && formData.firstName.trim() !== '' &&
-    formData.lastName && formData.lastName.trim() !== '' &&
-    formData.countryOfResidenceId !== 0);
+  // Form validation is now handled in validateForm() function
 
   // Load user info and countries on component mount
   useEffect(() => {
@@ -129,14 +128,15 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ onProfileUpdated }) => {
       ...prev,
       selectedCities: selectedValues
     }));
+    markFieldTouched('selectedCities');
   };
 
+
+
   const handleSubmit = async () => {
-    // Validate form before submission
     if (!validateForm(formData)) {
       return;
     }
-
     setIsLoading(true);
     try {
       const request: UpdateProfileRequest = {
@@ -177,7 +177,7 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ onProfileUpdated }) => {
       text: success ? (t('common.saved') || 'ذخیره شد ✓') : (t('common.save') || 'ذخیره تغییرات'),
       onClick: handleSubmit,
       isVisible: true,
-      isEnabled: isFormValid && !isLoading,
+      isEnabled: !isLoading,
       isLoading: isLoading,
       color: success ? '#4CAF50' : '#50b4ff'
     }
@@ -188,14 +188,14 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ onProfileUpdated }) => {
     const timeoutId = setTimeout(() => {
       updateMainButton({
         text: success ? (t('common.saved') || 'ذخیره شد ✓') : (t('common.save') || 'ذخیره تغییرات'),
-        isEnabled: isFormValid && !isLoading,
+        isEnabled: !isLoading,
         isLoading: isLoading,
         color: success ? '#4CAF50' : '#50b4ff'
       });
     }, 150); // Debounce for iOS
 
     return () => clearTimeout(timeoutId);
-  }, [isFormValid, isLoading, success, t, updateMainButton]);
+  }, [isLoading, success, t, updateMainButton]);
 
   const inputStyle = {
     width: '100%',
@@ -441,15 +441,22 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ onProfileUpdated }) => {
           {/* Cities Selection */}
           <div style={{ marginBottom: '20px' }}>
             <label style={labelStyle}>{t('updateProfile.cities')}</label>
-            <MultiSelectTreeDropdown
-              data={cities}
-              loading={citiesLoading}
-              placeholder={t('updateProfile.selectCities')}
-              selectedValues={formData.selectedCities}
-              onSelectionChange={handleCitySelectionChange}
-              theme={theme}
-              isRTL={isRTL}
-            />
+            <div style={{
+              border: hasFieldError('selectedCities') ? '2px solid #ff4757' : 'none',
+              borderRadius: hasFieldError('selectedCities') ? '8px' : '0',
+              padding: hasFieldError('selectedCities') ? '2px' : '0',
+              boxShadow: hasFieldError('selectedCities') ? '0 0 0 1px #ff4757' : 'none'
+            }}>
+              <MultiSelectTreeDropdown
+                data={cities}
+                loading={citiesLoading}
+                placeholder={t('updateProfile.selectCities')}
+                selectedValues={formData.selectedCities}
+                onSelectionChange={handleCitySelectionChange}
+                theme={theme}
+                isRTL={isRTL}
+              />
+            </div>
           </div>
           
           {/* Address */}
