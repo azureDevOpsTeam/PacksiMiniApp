@@ -10,6 +10,8 @@ interface TreeDropdownProps {
   onSelect: (value: number, label: string) => void;
   theme: any;
   isRTL: boolean;
+  style?: React.CSSProperties;
+  onBlur?: () => void;
 }
 
 interface FlattenedItem {
@@ -27,7 +29,9 @@ const TreeDropdown: React.FC<TreeDropdownProps> = ({
   placeholder,
   displayValue,
   onSelect,
-  isRTL
+  isRTL,
+  style,
+  onBlur
 }) => {
   // CSS for hiding scrollbar in all browsers
   const hideScrollbarStyle = `
@@ -165,7 +169,8 @@ const TreeDropdown: React.FC<TreeDropdownProps> = ({
     textAlign: isRTL ? 'right' as const : 'left' as const,
     outline: 'none',
     cursor: 'pointer',
-    position: 'relative' as const
+    position: 'relative' as const,
+    ...style
   };
 
   const dropdownStyle = {
@@ -240,6 +245,8 @@ const TreeDropdown: React.FC<TreeDropdownProps> = ({
       <div
         style={inputStyle}
         onClick={() => !loading && setIsOpen(!isOpen)}
+        onBlur={onBlur}
+        tabIndex={0}
       >
         {loading ? (
           <span style={{ color: '#848d96' }}>در حال بارگذاری...</span>

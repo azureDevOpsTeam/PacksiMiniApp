@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useLanguage } from '../hooks/useLanguage';
 import { useTheme } from '../hooks/useTheme';
 import { useTelegramButtons } from '../hooks/useTelegramButtons';
+import { useFormValidation } from '../hooks/useFormValidation';
 import Logo from './Logo';
 import Settings from './Settings';
 import TreeDropdown from './TreeDropdown';
@@ -65,6 +66,22 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
   const [destinationCityLabel, setDestinationCityLabel] = useState('');
   const [itemTypes, setItemTypes] = useState<ItemType[]>([]);
   const [itemTypesLoading, setItemTypesLoading] = useState(true);
+
+  // Validation rules
+  const validationRules = {
+    originCityId: { required: true, custom: (value: number) => value !== 0 },
+    destinationCityId: { required: true, custom: (value: number) => value !== 0 },
+    departureDate: { required: true },
+    arrivalDate: { required: true },
+    requestType: { required: true, custom: (value: number) => value !== -1 }
+  };
+
+  const {
+    validateForm,
+    hasFieldError,
+    getFieldStyle,
+    markFieldTouched
+  } = useFormValidation(validationRules);
 
   // Check if form is valid for submission
   const isFormValid = !!(formData.originCityId !== 0 && 
@@ -214,23 +231,17 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
 
 
   const handleSubmit = async () => {
+    // Validate form before submission
+    if (!validateForm(formData)) {
+      setError(t('createRequest.validation.fillRequired') || 'لطفاً تمام فیلدهای الزامی را پر کنید');
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
     setSuccess(false);
 
     try {
-      // Validate required fields
-      if (formData.originCityId === 0 || formData.destinationCityId === 0) {
-        throw new Error(t('createRequest.validation.citiesRequired') || 'لطفاً شهر مبدا و مقصد را انتخاب کنید');
-      }
-
-      if (!formData.departureDate || !formData.arrivalDate) {
-        throw new Error(t('createRequest.validation.datesRequired') || 'لطفاً تاریخ حرکت و بازگشت را انتخاب کنید');
-      }
-
-      if (formData.requestType === -1) {
-        throw new Error(t('createRequest.validation.typeRequired') || 'لطفاً نوع درخواست را انتخاب کنید');
-      }
 
       // Prepare files array for API
       const apiFiles: File[] = [];
@@ -467,7 +478,10 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
           }}>
             {/* Origin City */}
             <div style={{ width: '100%' }}>
-              <label style={labelStyle}>{t('createRequest.originCity')}</label>
+              <label style={{
+                ...labelStyle,
+                color: hasFieldError('originCityId') ? '#ff4757' : labelStyle.color
+              }}>{t('createRequest.originCity')}</label>
               <TreeDropdown
                 data={citiesTree}
                 loading={citiesLoading}
@@ -478,6 +492,8 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
                   handleInputChange('originCityId', value);
                   setOriginCityLabel(label);
                 }}
+                onBlur={() => markFieldTouched('originCityId')}
+                style={getFieldStyle(inputStyle, 'originCityId')}
                 theme={theme}
                 isRTL={isRTL}
               />
@@ -485,7 +501,10 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
 
             {/* Destination City */}
             <div style={{ width: '100%' }}>
-              <label style={labelStyle}>{t('createRequest.destinationCity')}</label>
+              <label style={{
+                ...labelStyle,
+                color: hasFieldError('destinationCityId') ? '#ff4757' : labelStyle.color
+              }}>{t('createRequest.destinationCity')}</label>
               <TreeDropdown
                 data={citiesTree}
                 loading={citiesLoading}
@@ -496,6 +515,8 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
                   handleInputChange('destinationCityId', value);
                   setDestinationCityLabel(label);
                 }}
+                onBlur={() => markFieldTouched('destinationCityId')}
+                style={getFieldStyle(inputStyle, 'destinationCityId')}
                 theme={theme}
                 isRTL={isRTL}
               />
@@ -504,33 +525,45 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
 
           {/* Departure Date */}
           <div style={{ marginBottom: '20px' }}>
-            <label style={labelStyle}>{t('createRequest.departureDate')}</label>
+            <label style={{
+              ...labelStyle,
+              color: hasFieldError('departureDate') ? '#ff4757' : labelStyle.color
+            }}>{t('createRequest.departureDate')}</label>
             <input
               type="datetime-local"
               value={formData.departureDate}
               onChange={(e) => handleInputChange('departureDate', e.target.value)}
-              style={inputStyle}
+              onBlur={() => markFieldTouched('departureDate')}
+              style={getFieldStyle(inputStyle, 'departureDate')}
             />
           </div>
 
           {/* Arrival Date */}
           <div style={{ marginBottom: '20px' }}>
-            <label style={labelStyle}>{t('createRequest.arrivalDate')}</label>
+            <label style={{
+              ...labelStyle,
+              color: hasFieldError('arrivalDate') ? '#ff4757' : labelStyle.color
+            }}>{t('createRequest.arrivalDate')}</label>
             <input
               type="datetime-local"
               value={formData.arrivalDate}
               onChange={(e) => handleInputChange('arrivalDate', e.target.value)}
-              style={inputStyle}
+              onBlur={() => markFieldTouched('arrivalDate')}
+              style={getFieldStyle(inputStyle, 'arrivalDate')}
             />
           </div>
 
           {/* Request Type */}
           <div style={{ marginBottom: '20px' }}>
-            <label style={labelStyle}>{t('createRequest.requestType')}</label>
+            <label style={{
+              ...labelStyle,
+              color: hasFieldError('requestType') ? '#ff4757' : labelStyle.color
+            }}>{t('createRequest.requestType')}</label>
             <select
               value={formData.requestType}
               onChange={(e) => handleInputChange('requestType', parseInt(e.target.value))}
-              style={inputStyle}
+              onBlur={() => markFieldTouched('requestType')}
+              style={getFieldStyle(inputStyle, 'requestType')}
             >
               <option value={-1}>{t('createRequest.selectRequestType')}</option>
               {requestTypes.map(type => (

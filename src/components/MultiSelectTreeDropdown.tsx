@@ -9,6 +9,8 @@ interface MultiSelectTreeDropdownProps {
   onSelectionChange: (selectedValues: number[]) => void;
   theme: any;
   isRTL: boolean;
+  style?: React.CSSProperties;
+  onBlur?: () => void;
 }
 
 interface FlattenedItem {
@@ -27,7 +29,9 @@ const MultiSelectTreeDropdown: React.FC<MultiSelectTreeDropdownProps> = ({
   placeholder,
   selectedValues,
   onSelectionChange,
-  isRTL
+  isRTL,
+  style,
+  onBlur
 }) => {
   // CSS for hiding scrollbar in all browsers
   const hideScrollbarStyle = `
@@ -234,7 +238,8 @@ const MultiSelectTreeDropdown: React.FC<MultiSelectTreeDropdownProps> = ({
     textAlign: isRTL ? 'right' as const : 'left' as const,
     outline: 'none',
     cursor: 'pointer',
-    position: 'relative' as const
+    position: 'relative' as const,
+    ...style
   };
 
   const dropdownStyle = {
@@ -318,7 +323,7 @@ const MultiSelectTreeDropdown: React.FC<MultiSelectTreeDropdownProps> = ({
   };
 
   return (
-    <div ref={dropdownRef} style={{ position: 'relative', width: '100%' }}>
+    <div ref={dropdownRef} style={{ position: 'relative', width: '100%' }} onBlur={onBlur} tabIndex={0}>
       <div
         style={inputStyle}
         onClick={() => !loading && setIsOpen(!isOpen)}

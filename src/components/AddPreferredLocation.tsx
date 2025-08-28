@@ -2,6 +2,7 @@ import React from 'react';
 import { useLanguage } from '../hooks/useLanguage';
 import { useTheme } from '../hooks/useTheme';
 import { useTelegramButtons } from '../hooks/useTelegramButtons';
+import { useFormValidation } from '../hooks/useFormValidation';
 import MultiSelectTreeDropdown from './MultiSelectTreeDropdown';
 import apiService from '../services/apiService';
 import type { CountryItem, CityItem, AddUserPreferredLocationRequest } from '../types/api';
@@ -31,6 +32,26 @@ const AddPreferredLocation: React.FC<AddPreferredLocationProps> = ({ onComplete 
   const [isInitialLoading, setIsInitialLoading] = React.useState(true);
   const [success, setSuccess] = React.useState(false);
   const [activeButton, setActiveButton] = React.useState<'user' | 'admin'>('user');
+
+  // Validation rules
+  const validationRules = {
+    countryOfResidenceId: {
+      required: true,
+      custom: (value: number) => value > 0
+    },
+    cityIds: {
+      required: true,
+      custom: (value: number[]) => value.length > 0
+    }
+  };
+
+  // Initialize validation hook
+  const {
+    validateForm,
+    hasFieldError,
+    getFieldStyle,
+    markFieldTouched
+  } = useFormValidation(validationRules);
 
   // Load countries and cities on component mount
   React.useEffect(() => {
@@ -71,7 +92,7 @@ const AddPreferredLocation: React.FC<AddPreferredLocationProps> = ({ onComplete 
   const isFormValid = formData.countryOfResidenceId > 0 && formData.cityIds.length > 0;
 
   const handleSubmit = async () => {
-    if (!isFormValid) {
+    if (!validateForm(formData)) {
       return;
     }
 
@@ -287,14 +308,18 @@ const AddPreferredLocation: React.FC<AddPreferredLocationProps> = ({ onComplete 
           </h2>
 
         <div style={{ marginBottom: '20px' }}>
-          <label style={labelStyle}>
+          <label style={{
+            ...labelStyle,
+            color: hasFieldError('countryOfResidenceId') ? '#ff4757' : labelStyle.color
+          }}>
             {t('preferredLocation.countryOfResidence')}
           </label>
           <select
             value={formData.countryOfResidenceId}
             onChange={handleCountryChange}
+            onBlur={() => markFieldTouched('countryOfResidenceId')}
             style={{
-              ...inputStyle,
+              ...getFieldStyle(inputStyle, 'countryOfResidenceId'),
               cursor: 'pointer'
             }}
           >
@@ -308,7 +333,10 @@ const AddPreferredLocation: React.FC<AddPreferredLocationProps> = ({ onComplete 
         </div>
 
         <div style={{ marginBottom: '30px' }}>
-          <label style={labelStyle}>
+          <label style={{
+            ...labelStyle,
+            color: hasFieldError('cityIds') ? '#ff4757' : labelStyle.color
+          }}>
             {t('preferredLocation.preferredCities')}
           </label>
           <MultiSelectTreeDropdown
@@ -319,6 +347,8 @@ const AddPreferredLocation: React.FC<AddPreferredLocationProps> = ({ onComplete 
             placeholder={t('preferredLocation.selectCities')}
             theme={theme}
             isRTL={isRTL}
+            style={getFieldStyle({}, 'cityIds')}
+            onBlur={() => markFieldTouched('cityIds')}
           />
         </div>
         </div>

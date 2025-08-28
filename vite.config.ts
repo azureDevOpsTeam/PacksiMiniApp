@@ -31,11 +31,11 @@ export default defineConfig({
     assetsInlineLimit: 0, // همه assets را به صورت جداگانه ذخیره کن
   },
   server: {
-    port: 3001,
+    port: 3003,
     host: true,
     https: false, // Set to true if you need HTTPS for development
     hmr: {
-      port: 24678, // Use a different port for HMR to avoid conflicts
+      port: 46890, // Use a different port for HMR to avoid conflicts
     },
     // تنظیمات cache control برای development
     headers: {
@@ -45,7 +45,7 @@ export default defineConfig({
     },
   },
   preview: {
-    port: 3001,
+    port: 3003,
     host: true,
   },
 })

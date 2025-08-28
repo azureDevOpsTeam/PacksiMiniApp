@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../hooks/useLanguage';
 import { useTheme } from '../hooks/useTheme';
 import { useTelegramButtons } from '../hooks/useTelegramButtons';
+import { useFormValidation } from '../hooks/useFormValidation';
 import { apiService } from '../services/apiService';
 import type { CountryItem, CityItem, UpdateProfileRequest } from '../types/api';
 import Logo from './Logo';
@@ -45,6 +46,15 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ onProfileUpdated }) => {
   const [cities, setCities] = useState<CityItem[]>([]);
   const [citiesLoading, setCitiesLoading] = useState(false);
 
+  // Validation rules
+  const validationRules = {
+    firstName: { required: true },
+    lastName: { required: true },
+    countryOfResidenceId: { required: true, custom: (value: number) => value !== 0 }
+  };
+
+  // Initialize validation hook
+  const { validateForm, hasFieldError, getFieldStyle, markFieldTouched } = useFormValidation(validationRules);
 
   // Check if form is valid for submission
   const isFormValid = !!(formData.firstName && formData.firstName.trim() !== '' &&
@@ -122,6 +132,11 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ onProfileUpdated }) => {
   };
 
   const handleSubmit = async () => {
+    // Validate form before submission
+    if (!validateForm(formData)) {
+      return;
+    }
+
     setIsLoading(true);
     try {
       const request: UpdateProfileRequest = {
@@ -351,13 +366,17 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ onProfileUpdated }) => {
           }}>
             {/* First Name */}
             <div style={{ width: '100%' }}>
-              <label style={labelStyle}>{t('updateProfile.firstName')}</label>
+              <label style={{
+                ...labelStyle,
+                color: hasFieldError('firstName') ? '#ff4757' : labelStyle.color
+              }}>{t('updateProfile.firstName')}</label>
               <input
                 type="text"
                 value={formData.firstName || ''}
                 onChange={(e) => handleInputChange('firstName', e.target.value)}
+                onBlur={() => markFieldTouched('firstName')}
                 style={{
-                  ...inputStyle,
+                  ...getFieldStyle(inputStyle, 'firstName'),
                   width: '100%',
                   boxSizing: 'border-box'
                 }}
@@ -367,13 +386,17 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ onProfileUpdated }) => {
 
             {/* Last Name */}
             <div style={{ width: '100%' }}>
-              <label style={labelStyle}>{t('updateProfile.lastName')}</label>
+              <label style={{
+                ...labelStyle,
+                color: hasFieldError('lastName') ? '#ff4757' : labelStyle.color
+              }}>{t('updateProfile.lastName')}</label>
               <input
                 type="text"
                 value={formData.lastName || ''}
                 onChange={(e) => handleInputChange('lastName', e.target.value)}
+                onBlur={() => markFieldTouched('lastName')}
                 style={{
-                  ...inputStyle,
+                  ...getFieldStyle(inputStyle, 'lastName'),
                   width: '100%',
                   boxSizing: 'border-box'
                 }}
@@ -396,11 +419,15 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ onProfileUpdated }) => {
 
           {/* Country of Residence */}
           <div style={{ marginBottom: '20px' }}>
-            <label style={labelStyle}>{t('updateProfile.countryOfResidence')}</label>
+            <label style={{
+              ...labelStyle,
+              color: hasFieldError('countryOfResidenceId') ? '#ff4757' : labelStyle.color
+            }}>{t('updateProfile.countryOfResidence')}</label>
             <select
               value={formData.countryOfResidenceId || 0}
               onChange={(e) => handleInputChange('countryOfResidenceId', parseInt(e.target.value))}
-              style={inputStyle}
+              onBlur={() => markFieldTouched('countryOfResidenceId')}
+              style={getFieldStyle(inputStyle, 'countryOfResidenceId')}
             >
               <option value={0}>{t('updateProfile.selectCountry')}</option>
               {countries.map(country => (
