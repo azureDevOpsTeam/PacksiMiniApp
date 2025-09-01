@@ -13,21 +13,22 @@ export const useTelegram = (): TelegramContextType => {
     try {
       // Initialize Telegram WebApp
       WebApp.ready();
-      
+
       // Set up the app
       // Expand to full screen to hide header
       WebApp.expand();
-      WebApp.requestFullscreen();
+      if (WebApp.platform !== 'tdesktop')
+        WebApp.requestFullscreen();
       // Hide header by setting it to transparent/secondary background
       WebApp.setHeaderColor('secondary_bg_color');
-      
+
       // Set bottom bar color
       WebApp.setBottomBarColor('secondary_bg_color');
-      
+
       // Disable vertical swipes and enable closing confirmation
       WebApp.disableVerticalSwipes();
       WebApp.enableClosingConfirmation();
-      
+
       // Add viewport meta tag to disable zoom
       const viewport = document.querySelector('meta[name="viewport"]');
       if (viewport) {
@@ -63,12 +64,12 @@ export const useTelegram = (): TelegramContextType => {
       // Handle Telegram WebApp initialization errors
       const errorMessage = error instanceof Error ? error.message : 'خطا در اتصال به Telegram';
       setError(errorMessage);
-      
+
       // Log error in development mode
       if (import.meta.env.DEV) {
         // Telegram WebApp initialization error handled silently
       }
-      
+
       // Still set ready to true for fallback functionality
       setIsReady(true);
     }
