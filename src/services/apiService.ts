@@ -1,6 +1,6 @@
 import type { CreateRequestPayload, ApiResponse, CreateRequestResponse, CitiesTreeResponse, ItemTypeResponse, CountriesResponse, UserInfoResponse, VerifyPhoneNumberPayload, VerifyPhoneNumberResponse, ValidateResponse, AddUserPreferredLocationRequest, AddUserPreferredLocationResponse, UpdateProfileRequest, UpdateProfileResponse } from '../types/api';
 
-const API_BASE_URL = 'https://api.packsi.net/api/miniapp';
+const API_BASE_URL = 'https://api.packsi.net/api';
 //const API_BASE_URL = 'http://localhost:5005/api/miniapp';
 
 class ApiService {
