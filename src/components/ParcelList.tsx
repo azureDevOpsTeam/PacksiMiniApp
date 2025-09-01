@@ -107,7 +107,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
   const [flights, setFlights] = useState<OutboundTrip[]>([]);
   const [flightsLoading, setFlightsLoading] = useState(false);
   const [flightsError, setFlightsError] = useState<string | null>(null);
-  const [expandedFlights, setExpandedFlights] = useState<Set<number>>(new Set());
+
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [tripType, setTripType] = useState<'inbound' | 'outbound'>('outbound');
 
@@ -132,17 +132,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
   });
 
   // Toggle accordion for specific flight
-  const toggleFlightAccordion = (requestId: number) => {
-    setExpandedFlights(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(requestId)) {
-        newSet.delete(requestId);
-      } else {
-        newSet.add(requestId);
-      }
-      return newSet;
-    });
-  };
+
 
   // Fetch flights based on trip type
   const fetchFlights = async () => {
