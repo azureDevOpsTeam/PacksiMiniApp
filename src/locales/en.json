@@ -33,6 +33,26 @@
         "chooseTrustedPeople": "Choose trusted people with valuable services to get your tasks done",
         "soon": "Soon"
     },
+  "flights": {
+    "title": "Outbound Flights",
+    "noFlights": "No flights found",
+    "requestId": "Request ID",
+    "userAccountId": "User Account ID",
+    "originCity": "Origin City",
+    "destinationCity": "Destination City",
+    "departureDate": "Departure Date",
+    "arrivalDate": "Arrival Date",
+    "departureDatePersian": "Departure Date (Persian)",
+    "arrivalDatePersian": "Arrival Date (Persian)",
+    "maxWeightKg": "Max Weight (kg)",
+    "maxLengthCm": "Max Length (cm)",
+    "maxWidthCm": "Max Width (cm)",
+    "maxHeightCm": "Max Height (cm)",
+    "description": "Description",
+    "dimensions": "Dimensions",
+    "weight": "Weight",
+    "route": "Route"
+  },
   "unlimited": {
     "title": "For Unlimited Access",
     "connectToBot": "Create Account",

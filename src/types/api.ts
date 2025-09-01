@@ -213,3 +213,36 @@ export interface UpdateProfileResponse {
     value: number;
   };
 }
+
+// Outbound Trips API Types
+export interface OutboundTrip {
+  requestId: number;
+  userAccountId: number;
+  originCity: string;
+  destinationCity: string;
+  departureDate: string;
+  departureDatePersian: string | null;
+  arrivalDate: string;
+  arrivalDatePersian: string | null;
+  suggestedPrice: number | null;
+  itemTypes: string[];
+  description: string | null;
+  maxWeightKg: number | null;
+  maxLengthCm: number | null;
+  maxWidthCm: number | null;
+  maxHeightCm: number | null;
+}
+
+export interface OutboundTripsResponse {
+  validationResult: any;
+  requestStatus: {
+    name: string;
+    value: number;
+  };
+  message: string;
+  objectResult: OutboundTrip[];
+  notificationType: {
+    name: string;
+    value: number;
+  };
+}

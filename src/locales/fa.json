@@ -33,6 +33,26 @@
         "chooseTrustedPeople": "اشخاص مطمئن با خدمات ارزنده را برای انجام کارها انتخاب کنید",
         "soon": "بزودی"
     },
+  "flights": {
+    "title": "پرواز‌های خروجی",
+    "noFlights": "هیچ پروازی یافت نشد",
+    "requestId": "شناسه درخواست",
+    "userAccountId": "شناسه کاربر",
+    "originCity": "شهر مبدا",
+    "destinationCity": "شهر مقصد",
+    "departureDate": "تاریخ حرکت",
+    "arrivalDate": "تاریخ رسیدن",
+    "departureDatePersian": "تاریخ حرکت (شمسی)",
+    "arrivalDatePersian": "تاریخ رسیدن (شمسی)",
+    "maxWeightKg": "حداکثر وزن (کیلوگرم)",
+    "maxLengthCm": "حداکثر طول (سانتی‌متر)",
+    "maxWidthCm": "حداکثر عرض (سانتی‌متر)",
+    "maxHeightCm": "حداکثر ارتفاع (سانتی‌متر)",
+    "description": "توضیحات",
+    "dimensions": "ابعاد",
+    "weight": "وزن",
+    "route": "مسیر"
+  },
   "unlimited": {
     "title": "برای دسترسی نامحدود",
     "connectToBot": "اتصال به ربات",
