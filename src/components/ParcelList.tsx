@@ -37,10 +37,10 @@ interface ParcelListProps {
 }
 
 const ParcelList: React.FC<ParcelListProps> = () => {
-  const { isRTL } = useLanguage();
+  const { t, isRTL } = useLanguage();
   const { theme } = useTheme();
   const { webApp } = useTelegramContext();
-  
+
   const [activeButton, setActiveButton] = useState<'user' | 'admin'>('user');
   const [isLoading, setIsLoading] = useState(true);
   const [showForm, setShowForm] = useState(true); // Default to showing form until API response
@@ -88,7 +88,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
       try {
         setIsLoading(true);
         const response = await apiService.validate();
-        
+
         if (response.objectResult) {
           const { setPreferredLocation } = response.objectResult;
           setShowForm(!setPreferredLocation); // Show form if setPreferredLocation is false, show list if true
@@ -167,12 +167,12 @@ const ParcelList: React.FC<ParcelListProps> = () => {
         <div style={{ marginBottom: '20px', width: '100%', padding: '0' }}>
           <SkeletonLoader type="profile" height="60px" />
         </div>
-        
+
         {/* Logo Skeleton */}
         <div style={{ marginBottom: '30px' }}>
           <SkeletonLoader type="text" width="120px" height="40px" />
         </div>
-        
+
         {/* Content Skeleton */}
         <div style={{ width: '100%', padding: '0 20px', gap: '20px', display: 'flex', flexDirection: 'column' }}>
           <SkeletonLoader type="text" width="150px" height="20px" />
@@ -233,11 +233,11 @@ const ParcelList: React.FC<ParcelListProps> = () => {
           fontFamily: 'IRANSansX, sans-serif',
           fontWeight: '700'
         }}>
-          لیست بسته‌ها
+          {t('notFound.description')}
         </h2>
 
         {/* Flights List */}
-        <div style={{ width: '100%', margin: '0 auto', padding: '0', maxWidth: '400px'  }}>
+        <div style={{ width: '100%', margin: '0 auto', maxWidth: '400px', padding: '0 20px' }}>
           {flightsLoading ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {[1, 2, 3].map((i) => (
@@ -267,8 +267,8 @@ const ParcelList: React.FC<ParcelListProps> = () => {
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               {flights.map((flight) => (
-                 <div
-                   key={flight.requestId}
+                <div
+                  key={flight.requestId}
                   style={{
                     backgroundColor: '#212a33',
                     borderRadius: '12px',
@@ -350,210 +350,210 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                   </div>
 
                   {/* Compact Specifications */}
-                   <div style={{
-                     display: 'flex',
-                     gap: '8px',
-                     marginBottom: '12px'
-                   }}>
-                     <div 
-                       onClick={() => toggleFlightAccordion(flight.requestId)}
-                       style={{
-                         flex: 1,
-                         backgroundColor: '#1a2329',
-                         padding: '10px',
-                         borderRadius: '8px',
-                         border: '1px solid #2d3748',
-                         cursor: 'pointer',
-                         transition: 'all 0.2s ease',
-                         background: expandedFlights.has(flight.requestId) ? 'linear-gradient(135deg, #1f2937, #374151)' : '#1a2329'
-                       }}
-                     >
-                       <div style={{
-                         display: 'flex',
-                         alignItems: 'center',
-                         justifyContent: 'space-between'
-                       }}>
-                         <div style={{
-                           display: 'flex',
-                           alignItems: 'center',
-                           gap: '6px'
-                         }}>
-                           <span style={{ fontSize: '12px' }}>📦</span>
-                           <span style={{
-                             fontSize: '11px',
-                             color: '#ffffff',
-                             fontFamily: 'IRANSansX, sans-serif',
-                             fontWeight: '600'
-                           }}>
-                             {isRTL ? 'مشخصات' : 'Specs'}
-                           </span>
-                         </div>
-                         <span style={{
-                           fontSize: '10px',
-                           color: '#50b4ff',
-                           transform: expandedFlights.has(flight.requestId) ? 'rotate(180deg)' : 'rotate(0deg)',
-                           transition: 'transform 0.2s ease'
-                         }}>▼</span>
-                       </div>
-                       <div style={{
-                         fontSize: '9px',
-                         color: '#848d96',
-                         fontFamily: 'IRANSansX, sans-serif',
-                         marginTop: '4px'
-                       }}>
-                         ⚖️ {flight.maxWeightKg || 'N/A'}kg • 📐 {flight.maxLengthCm || 'N/A'}×{flight.maxWidthCm || 'N/A'}×{flight.maxHeightCm || 'N/A'}cm
-                       </div>
-                     </div>
-                   </div>
+                  <div style={{
+                    display: 'flex',
+                    gap: '8px',
+                    marginBottom: '12px'
+                  }}>
+                    <div
+                      onClick={() => toggleFlightAccordion(flight.requestId)}
+                      style={{
+                        flex: 1,
+                        backgroundColor: '#1a2329',
+                        padding: '10px',
+                        borderRadius: '8px',
+                        border: '1px solid #2d3748',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease',
+                        background: expandedFlights.has(flight.requestId) ? 'linear-gradient(135deg, #1f2937, #374151)' : '#1a2329'
+                      }}
+                    >
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between'
+                      }}>
+                        <div style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '6px'
+                        }}>
+                          <span style={{ fontSize: '12px' }}>📦</span>
+                          <span style={{
+                            fontSize: '11px',
+                            color: '#ffffff',
+                            fontFamily: 'IRANSansX, sans-serif',
+                            fontWeight: '600'
+                          }}>
+                            {isRTL ? 'مشخصات' : 'Specs'}
+                          </span>
+                        </div>
+                        <span style={{
+                          fontSize: '10px',
+                          color: '#50b4ff',
+                          transform: expandedFlights.has(flight.requestId) ? 'rotate(180deg)' : 'rotate(0deg)',
+                          transition: 'transform 0.2s ease'
+                        }}>▼</span>
+                      </div>
+                      <div style={{
+                        fontSize: '9px',
+                        color: '#848d96',
+                        fontFamily: 'IRANSansX, sans-serif',
+                        marginTop: '4px'
+                      }}>
+                        ⚖️ {flight.maxWeightKg || 'N/A'}kg • 📐 {flight.maxLengthCm || 'N/A'}×{flight.maxWidthCm || 'N/A'}×{flight.maxHeightCm || 'N/A'}cm
+                      </div>
+                    </div>
+                  </div>
 
-                   {/* Expanded Specifications */}
-                   {expandedFlights.has(flight.requestId) && (
-                     <div style={{
-                       backgroundColor: '#0f1419',
-                       padding: '12px',
-                       borderRadius: '8px',
-                       border: '1px solid #1f2937',
-                       marginBottom: '12px',
-                       animation: 'slideDown 0.3s ease'
-                     }}>
-                       <div style={{
-                         display: 'grid',
-                         gridTemplateColumns: '1fr 1fr 1fr 1fr',
-                         gap: '8px'
-                       }}>
-                         <div style={{ textAlign: 'center' }}>
-                           <div style={{
-                             fontSize: '16px',
-                             marginBottom: '4px'
-                           }}>⚖️</div>
-                           <div style={{
-                             fontSize: '10px',
-                             color: '#50b4ff',
-                             fontFamily: 'IRANSansX, sans-serif',
-                             fontWeight: '600'
-                           }}>
-                             {flight.maxWeightKg || 'N/A'}kg
-                           </div>
-                         </div>
-                         <div style={{ textAlign: 'center' }}>
-                           <div style={{
-                             fontSize: '16px',
-                             marginBottom: '4px'
-                           }}>📏</div>
-                           <div style={{
-                             fontSize: '10px',
-                             color: '#50b4ff',
-                             fontFamily: 'IRANSansX, sans-serif',
-                             fontWeight: '600'
-                           }}>
-                             {flight.maxLengthCm || 'N/A'}cm
-                           </div>
-                         </div>
-                         <div style={{ textAlign: 'center' }}>
-                           <div style={{
-                             fontSize: '16px',
-                             marginBottom: '4px'
-                           }}>📐</div>
-                           <div style={{
-                             fontSize: '10px',
-                             color: '#50b4ff',
-                             fontFamily: 'IRANSansX, sans-serif',
-                             fontWeight: '600'
-                           }}>
-                             {flight.maxWidthCm || 'N/A'}cm
-                           </div>
-                         </div>
-                         <div style={{ textAlign: 'center' }}>
-                           <div style={{
-                             fontSize: '16px',
-                             marginBottom: '4px'
-                           }}>📊</div>
-                           <div style={{
-                             fontSize: '10px',
-                             color: '#50b4ff',
-                             fontFamily: 'IRANSansX, sans-serif',
-                             fontWeight: '600'
-                           }}>
-                             {flight.maxHeightCm || 'N/A'}cm
-                           </div>
-                         </div>
-                       </div>
-                     </div>
-                   )}
+                  {/* Expanded Specifications */}
+                  {expandedFlights.has(flight.requestId) && (
+                    <div style={{
+                      backgroundColor: '#0f1419',
+                      padding: '12px',
+                      borderRadius: '8px',
+                      border: '1px solid #1f2937',
+                      marginBottom: '12px',
+                      animation: 'slideDown 0.3s ease'
+                    }}>
+                      <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: '1fr 1fr 1fr 1fr',
+                        gap: '8px'
+                      }}>
+                        <div style={{ textAlign: 'center' }}>
+                          <div style={{
+                            fontSize: '16px',
+                            marginBottom: '4px'
+                          }}>⚖️</div>
+                          <div style={{
+                            fontSize: '10px',
+                            color: '#50b4ff',
+                            fontFamily: 'IRANSansX, sans-serif',
+                            fontWeight: '600'
+                          }}>
+                            {flight.maxWeightKg || 'N/A'}kg
+                          </div>
+                        </div>
+                        <div style={{ textAlign: 'center' }}>
+                          <div style={{
+                            fontSize: '16px',
+                            marginBottom: '4px'
+                          }}>📏</div>
+                          <div style={{
+                            fontSize: '10px',
+                            color: '#50b4ff',
+                            fontFamily: 'IRANSansX, sans-serif',
+                            fontWeight: '600'
+                          }}>
+                            {flight.maxLengthCm || 'N/A'}cm
+                          </div>
+                        </div>
+                        <div style={{ textAlign: 'center' }}>
+                          <div style={{
+                            fontSize: '16px',
+                            marginBottom: '4px'
+                          }}>📐</div>
+                          <div style={{
+                            fontSize: '10px',
+                            color: '#50b4ff',
+                            fontFamily: 'IRANSansX, sans-serif',
+                            fontWeight: '600'
+                          }}>
+                            {flight.maxWidthCm || 'N/A'}cm
+                          </div>
+                        </div>
+                        <div style={{ textAlign: 'center' }}>
+                          <div style={{
+                            fontSize: '16px',
+                            marginBottom: '4px'
+                          }}>📊</div>
+                          <div style={{
+                            fontSize: '10px',
+                            color: '#50b4ff',
+                            fontFamily: 'IRANSansX, sans-serif',
+                            fontWeight: '600'
+                          }}>
+                            {flight.maxHeightCm || 'N/A'}cm
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
                   {/* Compact Item Types */}
-                   {flight.itemTypes && flight.itemTypes.length > 0 && (
-                     <div style={{
-                       marginBottom: '10px'
-                     }}>
-                       <div style={{
-                         display: 'flex',
-                         alignItems: 'center',
-                         gap: '6px',
-                         marginBottom: '6px'
-                       }}>
-                         <span style={{ fontSize: '12px' }}>🏷️</span>
-                         <span style={{
-                           fontSize: '10px',
-                           color: '#848d96',
-                           fontFamily: 'IRANSansX, sans-serif',
-                           fontWeight: '500'
-                         }}>
-                           {isRTL ? 'انواع اقلام' : 'Items'}
-                         </span>
-                       </div>
-                       <div style={{
-                         display: 'flex',
-                         flexWrap: 'wrap',
-                         gap: '4px'
-                       }}>
-                         {flight.itemTypes.slice(0, 3).map((itemType, index) => (
-                           <span
-                             key={index}
-                             style={{
-                               fontSize: '9px',
-                               padding: '3px 8px',
-                               borderRadius: '12px',
-                               background: 'linear-gradient(135deg, #2563eb, #1d4ed8)',
-                               color: '#ffffff',
-                               fontFamily: 'IRANSansX, sans-serif',
-                               fontWeight: '600'
-                             }}
-                           >
-                             {itemType}
-                           </span>
-                         ))}
-                         {flight.itemTypes.length > 3 && (
-                           <span style={{
-                             fontSize: '9px',
-                             padding: '3px 8px',
-                             borderRadius: '12px',
-                             backgroundColor: '#374151',
-                             color: '#9ca3af',
-                             fontFamily: 'IRANSansX, sans-serif',
-                             fontWeight: '500'
-                           }}>
-                             +{flight.itemTypes.length - 3}
-                           </span>
-                         )}
-                       </div>
-                     </div>
-                   )}
+                  {flight.itemTypes && flight.itemTypes.length > 0 && (
+                    <div style={{
+                      marginBottom: '10px'
+                    }}>
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        marginBottom: '6px'
+                      }}>
+                        <span style={{ fontSize: '12px' }}>🏷️</span>
+                        <span style={{
+                          fontSize: '10px',
+                          color: '#848d96',
+                          fontFamily: 'IRANSansX, sans-serif',
+                          fontWeight: '500'
+                        }}>
+                          {isRTL ? 'انواع اقلام' : 'Items'}
+                        </span>
+                      </div>
+                      <div style={{
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        gap: '4px'
+                      }}>
+                        {flight.itemTypes.slice(0, 3).map((itemType, index) => (
+                          <span
+                            key={index}
+                            style={{
+                              fontSize: '9px',
+                              padding: '3px 8px',
+                              borderRadius: '12px',
+                              background: 'linear-gradient(135deg, #2563eb, #1d4ed8)',
+                              color: '#ffffff',
+                              fontFamily: 'IRANSansX, sans-serif',
+                              fontWeight: '600'
+                            }}
+                          >
+                            {itemType}
+                          </span>
+                        ))}
+                        {flight.itemTypes.length > 3 && (
+                          <span style={{
+                            fontSize: '9px',
+                            padding: '3px 8px',
+                            borderRadius: '12px',
+                            backgroundColor: '#374151',
+                            color: '#9ca3af',
+                            fontFamily: 'IRANSansX, sans-serif',
+                            fontWeight: '500'
+                          }}>
+                            +{flight.itemTypes.length - 3}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )}
 
-                   {/* Compact Description */}
-                   {flight.description && (
-                     <div style={{
-                       fontSize: '10px',
-                       color: '#a0aec0',
-                       fontFamily: 'IRANSansX, sans-serif',
-                       fontStyle: 'italic',
-                       padding: '8px 0',
-                       borderTop: '1px solid #2d3748',
-                       lineHeight: '1.4'
-                     }}>
-                       💬 {flight.description.length > 80 ? flight.description.substring(0, 80) + '...' : flight.description}
-                     </div>
-                   )}
+                  {/* Compact Description */}
+                  {flight.description && (
+                    <div style={{
+                      fontSize: '10px',
+                      color: '#a0aec0',
+                      fontFamily: 'IRANSansX, sans-serif',
+                      fontStyle: 'italic',
+                      padding: '8px 0',
+                      borderTop: '1px solid #2d3748',
+                      lineHeight: '1.4'
+                    }}>
+                      💬 {flight.description.length > 80 ? flight.description.substring(0, 80) + '...' : flight.description}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

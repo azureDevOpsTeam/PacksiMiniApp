@@ -157,5 +157,8 @@
     "title": "Page Not Found",
     "description": "Digital signature is invalid. Please try again.",
     "retry": "Try Again"
+  },
+  "parcelList": {
+    "title": "Airport List"
   }
 }
