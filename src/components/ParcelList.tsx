@@ -37,7 +37,7 @@ interface ParcelListProps {
 }
 
 const ParcelList: React.FC<ParcelListProps> = () => {
-  const { isRTL, t } = useLanguage();
+  const { isRTL } = useLanguage();
   const { theme } = useTheme();
   const { webApp } = useTelegramContext();
   
@@ -47,10 +47,10 @@ const ParcelList: React.FC<ParcelListProps> = () => {
   const [flights, setFlights] = useState<OutboundTrip[]>([]);
   const [flightsLoading, setFlightsLoading] = useState(false);
   const [flightsError, setFlightsError] = useState<string | null>(null);
-  const [expandedFlights, setExpandedFlights] = useState<Set<string>>(new Set());
+  const [expandedFlights, setExpandedFlights] = useState<Set<number>>(new Set());
 
   // Toggle accordion for specific flight
-  const toggleFlightAccordion = (requestId: string) => {
+  const toggleFlightAccordion = (requestId: number) => {
     setExpandedFlights(prev => {
       const newSet = new Set(prev);
       if (newSet.has(requestId)) {
