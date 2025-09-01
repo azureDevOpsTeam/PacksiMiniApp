@@ -108,6 +108,22 @@ const ParcelList: React.FC<ParcelListProps> = () => {
   const [flightsLoading, setFlightsLoading] = useState(false);
   const [flightsError, setFlightsError] = useState<string | null>(null);
   const [expandedFlights, setExpandedFlights] = useState<Set<number>>(new Set());
+  const [searchQuery, setSearchQuery] = useState<string>('');
+
+  // Filter flights based on search query
+  const filteredFlights = flights.filter(flight => {
+    if (!searchQuery.trim()) return true;
+    
+    const query = searchQuery.toLowerCase().trim();
+    const originCity = flight.originCity?.toLowerCase() || '';
+    const destinationCity = flight.destinationCity?.toLowerCase() || '';
+    const itemTypes = isRTL ? flight.itemTypesFa : flight.itemTypes;
+    const itemTypesText = itemTypes?.join(' ').toLowerCase() || '';
+    
+    return originCity.includes(query) || 
+           destinationCity.includes(query) || 
+           itemTypesText.includes(query);
+  });
 
   // Toggle accordion for specific flight
   const toggleFlightAccordion = (requestId: number) => {
@@ -296,8 +312,60 @@ const ParcelList: React.FC<ParcelListProps> = () => {
           {t('parcelList.title')}
         </h2>
 
+        {/* Search Box */}
+        <div style={{ width: '100%', margin: '0 auto 20px auto', maxWidth: '400px' }}>
+          <div style={{
+            position: 'relative'
+          }}>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder={isRTL ? 'جستجو بر اساس مبدأ، مقصد یا نوع مدرک...' : 'Search by origin, destination or document type...'}
+              style={{
+                width: '100%',
+                padding: '8px 12px',
+                borderRadius: '5px',
+                border: '1px solid #3a4a5c',
+                backgroundColor: '#212a33',
+                color: '#848d96',
+                fontSize: '13px',
+                fontFamily: 'IRANSansX, sans-serif',
+                direction: isRTL ? 'rtl' : 'ltr',
+                textAlign: isRTL ? 'right' : 'left',
+                outline: 'none'
+              }}
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                style={{
+                  position: 'absolute',
+                  right: isRTL ? 'auto' : '8px',
+                  left: isRTL ? '8px' : 'auto',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'none',
+                  border: 'none',
+                  color: '#848d96',
+                  fontSize: '14px',
+                  cursor: 'pointer',
+                  padding: '2px',
+                  borderRadius: '2px',
+                  opacity: 0.7,
+                  transition: 'opacity 0.2s'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
+                onMouseLeave={(e) => e.currentTarget.style.opacity = '0.7'}
+              >
+                ✕
+              </button>
+            )}
+          </div>
+        </div>
+
         {/* Flights List */}
-        <div style={{ width: '100%', margin: '0 auto', maxWidth: '400px', padding: '0 20px' }}>
+        <div style={{ width: '100%', margin: '0 auto', maxWidth: '400px' }}>
           {flightsLoading ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {[1, 2, 3].map((i) => (
@@ -324,9 +392,19 @@ const ParcelList: React.FC<ParcelListProps> = () => {
             }}>
               {t('parcelList.flightsNotFound')}
             </div>
+          ) : filteredFlights.length === 0 ? (
+            <div style={{
+              padding: '20px',
+              textAlign: 'center',
+              color: '#848d96',
+              fontSize: '14px',
+              fontFamily: 'IRANSansX, sans-serif'
+            }}>
+              {isRTL ? 'هیچ نتیجه‌ای برای جستجوی شما یافت نشد' : 'No results found for your search'}
+            </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-              {flights.map((flight) => (
+              {filteredFlights.map((flight) => (
                 <div
                   key={flight.requestId}
                   className="flight-card"
