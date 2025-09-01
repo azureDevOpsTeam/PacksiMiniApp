@@ -240,7 +240,7 @@ class ApiService {
 
   async getCitiesTree(): Promise<CitiesTreeResponse> {
     try {
-      const response = await fetch(`${API_BASE_URL}/Region/GetCitiesTree`, {
+      const response = await fetch(`${API_BASE_URL}/MiniApp/Region/GetCitiesTree`, {
         method: 'GET',
         headers: this.getHeaders()
       });
@@ -282,7 +282,7 @@ class ApiService {
 
   async getCountries(): Promise<CountriesResponse> {
     try {
-      const response = await fetch(`${API_BASE_URL}/Region/GetCountries`, {
+      const response = await fetch(`${API_BASE_URL}/MiniApp/Region/GetCountries`, {
         method: 'GET',
         headers: this.getHeaders()
       });
