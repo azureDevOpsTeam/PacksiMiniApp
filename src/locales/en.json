@@ -159,6 +159,7 @@
     "retry": "Try Again"
   },
   "parcelList": {
-    "title": "Airport List"
+    "title": "Airport List",
+    "flightsNotFound": "No flights found."
   }
 }

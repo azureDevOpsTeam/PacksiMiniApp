@@ -226,6 +226,7 @@ export interface OutboundTrip {
   arrivalDatePersian: string | null;
   suggestedPrice: number | null;
   itemTypes: string[];
+  itemTypesFa: string[];
   description: string | null;
   maxWeightKg: number | null;
   maxLengthCm: number | null;

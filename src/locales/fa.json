@@ -159,6 +159,7 @@
     "retry": "تلاش مجدد"
   },
   "parcelList": {
-    "title": "لیست سفرها"
+    "title": "لیست سفرها",
+    "flightsNotFound": "هیچ پروازی یافت نشد"
   }
 }
