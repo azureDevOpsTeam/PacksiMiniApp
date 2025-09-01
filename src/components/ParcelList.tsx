@@ -120,14 +120,14 @@ const ParcelList: React.FC<ParcelListProps> = () => {
       const destinationCity = flight.destinationCity?.toLowerCase() || '';
       const itemTypes = isRTL ? flight.itemTypesFa : flight.itemTypes;
       const itemTypesText = itemTypes?.join(' ').toLowerCase() || '';
-      
-      const matchesSearch = originCity.includes(query) || 
-                           destinationCity.includes(query) || 
-                           itemTypesText.includes(query);
-      
+
+      const matchesSearch = originCity.includes(query) ||
+        destinationCity.includes(query) ||
+        itemTypesText.includes(query);
+
       return matchesSearch;
     }
-    
+
     return true;
   });
 
@@ -149,7 +149,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
     setFlightsLoading(true);
     setFlightsError(null);
     try {
-      const response = tripType === 'outbound' 
+      const response = tripType === 'outbound'
         ? await apiService.getOutboundTrips()
         : await apiService.getInboundTrips();
       if (response.objectResult) {
@@ -306,15 +306,14 @@ const ParcelList: React.FC<ParcelListProps> = () => {
       }}>
         {/* Settings Component */}
         <Settings activeButton={activeButton} setActiveButton={setActiveButton} />
-        
+
         {/* Trip Type Filter Buttons */}
         <div style={{
-          position: 'fixed',
-          top: '20px',
-          left: '20px',
+          position: 'absolute',
+          top: '80px',
+          left: '-1px',
           display: 'flex',
           flexDirection: 'column',
-          gap: '8px',
           zIndex: 1000
         }}>
           <button
@@ -322,7 +321,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
             style={{
               width: '40px',
               height: '40px',
-              borderRadius: '10px',
+              borderRadius: '0 10px 0 0',
               border: '1px solid #3a4a5c',
               backgroundColor: '#212a33',
               backdropFilter: 'blur(10px)',
@@ -339,16 +338,16 @@ const ParcelList: React.FC<ParcelListProps> = () => {
             title={isRTL ? 'پروازهای خروجی' : 'Outbound Flights'}
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-              <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" fill="currentColor" transform="rotate(-45 12 12)"/>
+              <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" fill="currentColor" transform="rotate(-45 12 12)" />
             </svg>
           </button>
-          
+
           <button
             onClick={() => setTripType('inbound')}
             style={{
               width: '40px',
               height: '40px',
-              borderRadius: '10px',
+              borderRadius: '0 0 10px 0',
               border: '1px solid #3a4a5c',
               backgroundColor: '#212a33',
               backdropFilter: 'blur(10px)',
@@ -365,7 +364,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
             title={isRTL ? 'پروازهای ورودی' : 'Inbound Flights'}
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-              <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" fill="currentColor" transform="rotate(135 12 12)"/>
+              <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" fill="currentColor" transform="rotate(135 12 12)" />
             </svg>
           </button>
         </div>
@@ -387,14 +386,14 @@ const ParcelList: React.FC<ParcelListProps> = () => {
           fontFamily: 'IRANSansX, sans-serif',
           fontWeight: '700'
         }}>
-          {tripType === 'outbound' 
+          {tripType === 'outbound'
             ? (isRTL ? 'لیست پروازهای خروجی' : 'Outbound Flights List')
             : (isRTL ? 'لیست پروازهای ورودی' : 'Inbound Flights List')
           }
         </h2>
 
         {/* Search Box */}
-        <div style={{ width: '100%', margin: '0 auto 20px auto', maxWidth: '400px' }}>
+        <div style={{ width: '100%', margin: '0 auto 20px auto', maxWidth: '400px', padding: '20px' }}>
           <div style={{
             position: 'relative'
           }}>
@@ -446,7 +445,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
         </div>
 
         {/* Flights List */}
-        <div style={{ width: '100%', margin: '0 auto', maxWidth: '400px' }}>
+        <div style={{ width: '100%', margin: '0 auto', maxWidth: '400px', padding: '20px' }}>
           {flightsLoading ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {[1, 2, 3].map((i) => (
@@ -564,7 +563,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                       #{flight.requestId}
                     </div>
                   </div>
-                  
+
                   <div style={{
                     fontSize: '11px',
                     color: '#94a3b8',
@@ -605,7 +604,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                         transition: 'transform 0.2s ease'
                       }}>▼</div>
                     </div>
-                    
+
                     <div style={{
                       display: 'flex',
                       flexDirection: 'column',
@@ -626,44 +625,44 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                           </span>
                         )}
                       </div>
-                      {((isRTL && flight.itemTypesFa && flight.itemTypesFa.length > 0) || 
+                      {((isRTL && flight.itemTypesFa && flight.itemTypesFa.length > 0) ||
                         (!isRTL && flight.itemTypes && flight.itemTypes.length > 0)) && (
-                        <div style={{
-                          display: 'flex',
-                          flexWrap: 'wrap',
-                          gap: '4px',
-                          marginTop: '2px'
-                        }}>
-                          {(isRTL ? flight.itemTypesFa : flight.itemTypes)?.slice(0, 3).map((itemType: string, index: number) => (
-                            <span
-                              key={index}
-                              style={{
-                                fontSize: '8px',
-                                padding: '2px 4px',
-                                borderRadius: '3px',
-                                background: 'rgba(80, 180, 255, 0.15)',
-                                color: '#94a3b8',
-                                fontFamily: 'IRANSansX, sans-serif'
-                              }}
-                            >
-                              {itemType}
-                            </span>
-                          ))}
-                          {(isRTL ? flight.itemTypesFa : flight.itemTypes) && 
-                           (isRTL ? flight.itemTypesFa : flight.itemTypes).length > 3 && (
-                            <span style={{
-                              fontSize: '8px',
-                              padding: '2px 4px',
-                              borderRadius: '3px',
-                              background: 'rgba(55, 65, 81, 0.3)',
-                              color: '#64748b',
-                              fontFamily: 'IRANSansX, sans-serif'
-                            }}>
-                              +{(isRTL ? flight.itemTypesFa : flight.itemTypes).length - 3}
-                            </span>
-                          )}
-                        </div>
-                      )}
+                          <div style={{
+                            display: 'flex',
+                            flexWrap: 'wrap',
+                            gap: '4px',
+                            marginTop: '2px'
+                          }}>
+                            {(isRTL ? flight.itemTypesFa : flight.itemTypes)?.slice(0, 3).map((itemType: string, index: number) => (
+                              <span
+                                key={index}
+                                style={{
+                                  fontSize: '8px',
+                                  padding: '2px 4px',
+                                  borderRadius: '3px',
+                                  background: 'rgba(80, 180, 255, 0.15)',
+                                  color: '#94a3b8',
+                                  fontFamily: 'IRANSansX, sans-serif'
+                                }}
+                              >
+                                {itemType}
+                              </span>
+                            ))}
+                            {(isRTL ? flight.itemTypesFa : flight.itemTypes) &&
+                              (isRTL ? flight.itemTypesFa : flight.itemTypes).length > 3 && (
+                                <span style={{
+                                  fontSize: '8px',
+                                  padding: '2px 4px',
+                                  borderRadius: '3px',
+                                  background: 'rgba(55, 65, 81, 0.3)',
+                                  color: '#64748b',
+                                  fontFamily: 'IRANSansX, sans-serif'
+                                }}>
+                                  +{(isRTL ? flight.itemTypesFa : flight.itemTypes).length - 3}
+                                </span>
+                              )}
+                          </div>
+                        )}
                     </div>
                   </div>
 
@@ -693,7 +692,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                         `,
                         pointerEvents: 'none'
                       }} />
-                      
+
                       {/* Header */}
                       <div style={{
                         display: 'flex',
@@ -733,7 +732,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                           </div>
                         </div>
                       </div>
-                      
+
                       {/* Specifications Grid */}
                       <div style={{
                         display: 'grid',
