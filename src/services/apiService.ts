@@ -86,10 +86,8 @@ class ApiService {
     // Add Telegram Init Data if available
     const initData = window.Telegram?.WebApp?.initData;
     if (initData && initData.trim() !== '') {
-      console.log('Using Telegram initData:', initData.substring(0, 50) + '...');
       headers['X-Telegram-Init-Data'] = initData;
     } else {
-      console.log('No Telegram initData available, using development token');
       // Use provided token for development
       headers['X-Telegram-Init-Data'] = 'user=%7B%22id%22%3A1030212127%2C%22first_name%22%3A%22Shahram%22%2C%22last_name%22%3A%22%22%2C%22username%22%3A%22Shahram0weisy%22%2C%22language_code%22%3A%22en%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Ft.me%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2FEVbiVIJZP-ipzuxmiuKkh1k1-dJF0U16tjKJdfQM7M4.svg%22%7D&chat_instance=-2088651826057668234&chat_type=private&auth_date=1756212197&signature=iA6M2-lTMxnMONVbpKecVO85-1k5qRt-yY-YmRwWJhewyKj9uExboOzmDatXJCDN4utWeidKBtYez_lSlnH5AQ&hash=11b4fa4222cef74eca3955f6969b43f4e843d8deb9228983796365849a4adf1c';
     }
