@@ -103,7 +103,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
 
   const [activeButton, setActiveButton] = useState<'user' | 'admin'>('user');
   const [isLoading, setIsLoading] = useState(true);
-  const [showForm, setShowForm] = useState(true); // Default to showing form until API response
+  const [showForm, setShowForm] = useState(false); // Default to showing list
   const [flights, setFlights] = useState<OutboundTrip[]>([]);
   const [flightsLoading, setFlightsLoading] = useState(false);
   const [flightsError, setFlightsError] = useState<string | null>(null);
@@ -171,20 +171,14 @@ const ParcelList: React.FC<ParcelListProps> = () => {
     const checkPreferredLocation = async () => {
       try {
         setIsLoading(true);
-        const response = await apiService.validate();
-
-        if (response.objectResult) {
-          const { setPreferredLocation } = response.objectResult;
-          setShowForm(!setPreferredLocation); // Show form if setPreferredLocation is false, show list if true
-          // Fetch flights when user has preferred location
-          if (setPreferredLocation) {
-            fetchFlights();
-          }
-        }
+        // Always show list instead of form
+        setShowForm(false);
+        fetchFlights();
       } catch (error) {
         console.error('Error checking preferred location:', error);
-        // On error, show form by default
-        setShowForm(true);
+        // Even on error, show list
+        setShowForm(false);
+        fetchFlights();
       } finally {
         setIsLoading(false);
       }
@@ -489,272 +483,243 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                   key={flight.requestId}
                   className="flight-card"
                   style={{
-                    background: 'rgba(26, 35, 50, 0.6)',
-                    backdropFilter: 'blur(8px)',
-                    borderRadius: '12px',
-                    padding: '14px',
-                    border: '1px solid rgba(80, 180, 255, 0.08)',
+                    background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #ffffff 100%)',
+                    borderRadius: '20px',
+                    padding: '0',
+                    border: '2px solid #e2e8f0',
                     direction: isRTL ? 'rtl' : 'ltr',
-                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-                    transition: 'all 0.2s ease',
+                    boxShadow: '0 10px 30px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1)',
+                    transition: 'all 0.3s ease',
                     position: 'relative',
-                    cursor: 'pointer'
+                    cursor: 'pointer',
+                    overflow: 'hidden',
+                    fontFamily: 'IRANSansX, sans-serif',
+                    minHeight: '200px'
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-2px)';
-                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(80, 180, 255, 0.15)';
+                    e.currentTarget.style.transform = 'translateY(-5px) scale(1.02)';
+                    e.currentTarget.style.boxShadow = '0 20px 40px rgba(0, 0, 0, 0.2), 0 8px 16px rgba(0, 0, 0, 0.15)';
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.1)';
+                    e.currentTarget.style.transform = 'translateY(0) scale(1)';
+                    e.currentTarget.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1)';
                   }}
                 >
-                  {/* Flight status indicator */}
+                  {/* Airline Header */}
                   <div style={{
-                    position: 'absolute',
-                    top: '12px',
-                    right: isRTL ? 'auto' : '12px',
-                    left: isRTL ? '12px' : 'auto',
-                    width: '8px',
-                    height: '8px',
-                    borderRadius: '50%',
-                    background: '#10b981',
-                    opacity: 0.8
-                  }} />
-
-                  {/* Flight Header */}
-                  <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    marginBottom: '12px'
+                    background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+                    padding: '20px',
+                    color: 'white',
+                    position: 'relative',
+                    overflow: 'hidden'
                   }}>
+                    {/* Background Pattern */}
+                    <div style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      backgroundImage: `
+                        radial-gradient(circle at 20% 20%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(255,255,255,0.05) 0%, transparent 50%)
+                      `,
+                      pointerEvents: 'none'
+                    }} />
+                    
+                    {/* Airline Info */}
                     <div style={{
                       display: 'flex',
+                      justifyContent: 'space-between',
                       alignItems: 'center',
-                      gap: '8px'
-                    }}>
-                      <span style={{
-                        fontSize: '14px',
-                        fontWeight: '600',
-                        color: '#e2e8f0'
-                      }}>
-                        {flight.originCity}
-                      </span>
-                      <span style={{
-                        fontSize: '12px',
-                        color: '#64748b'
-                      }}>
-                        →
-                      </span>
-                      <span style={{
-                        fontSize: '14px',
-                        fontWeight: '600',
-                        color: '#e2e8f0'
-                      }}>
-                        {flight.destinationCity}
-                      </span>
-                    </div>
-                    <div style={{
-                      fontSize: '11px',
-                      color: '#64748b',
-                      fontWeight: '500'
-                    }}>
-                      #{flight.requestId}
-                    </div>
-                  </div>
-
-                  <div style={{
-                    fontSize: '11px',
-                    color: '#94a3b8',
-                    marginBottom: '12px'
-                  }}>
-                    {formatDate(flight.departureDate)}
-                  </div>
-
-                  {/* Cargo Specifications */}
-                  <div
-                    onClick={() => toggleFlightAccordion(flight.requestId)}
-                    style={{
-                      background: 'rgba(15, 23, 42, 0.4)',
-                      padding: '10px',
-                      borderRadius: '8px',
-                      border: '1px solid rgba(80, 180, 255, 0.1)',
-                      cursor: 'pointer',
-                      marginBottom: '12px',
-                      transition: 'all 0.2s ease'
-                    }}
-                  >
-                    <div style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between'
-                    }}>
-                      <div style={{
-                        fontSize: '12px',
-                        color: '#cbd5e1',
-                        fontWeight: '500'
-                      }}>
-                        {isRTL ? 'مشخصات بار' : 'Cargo Details'}
-                      </div>
-                      <div style={{
-                        fontSize: '10px',
-                        color: '#64748b',
-                        transform: expandedFlights.has(flight.requestId) ? 'rotate(180deg)' : 'rotate(0deg)',
-                        transition: 'transform 0.2s ease'
-                      }}>▼</div>
-                    </div>
-
-                    <div style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: '6px',
-                      marginTop: '6px'
-                    }}>
-                      <div style={{
-                        display: 'flex',
-                        gap: '8px',
-                        fontSize: '10px',
-                        color: '#94a3b8'
-                      }}>
-                        {flight.maxWeightKg && <span>{flight.maxWeightKg}kg</span>}
-                        {flight.maxWeightKg && (flight.maxLengthCm || flight.maxWidthCm || flight.maxHeightCm) && <span>•</span>}
-                        {(flight.maxLengthCm || flight.maxWidthCm || flight.maxHeightCm) && (
-                          <span>
-                            {flight.maxLengthCm || '?'}×{flight.maxWidthCm || '?'}×{flight.maxHeightCm || '?'}cm
-                          </span>
-                        )}
-                      </div>
-                      {((isRTL && flight.itemTypesFa && flight.itemTypesFa.length > 0) ||
-                        (!isRTL && flight.itemTypes && flight.itemTypes.length > 0)) && (
-                          <div style={{
-                            display: 'flex',
-                            flexWrap: 'wrap',
-                            gap: '4px',
-                            marginTop: '2px'
-                          }}>
-                            {(isRTL ? flight.itemTypesFa : flight.itemTypes)?.slice(0, 3).map((itemType: string, index: number) => (
-                              <span
-                                key={index}
-                                style={{
-                                  fontSize: '8px',
-                                  padding: '2px 4px',
-                                  borderRadius: '3px',
-                                  background: 'rgba(80, 180, 255, 0.15)',
-                                  color: '#94a3b8',
-                                  fontFamily: 'IRANSansX, sans-serif'
-                                }}
-                              >
-                                {itemType}
-                              </span>
-                            ))}
-                            {(isRTL ? flight.itemTypesFa : flight.itemTypes) &&
-                              (isRTL ? flight.itemTypesFa : flight.itemTypes).length > 3 && (
-                                <span style={{
-                                  fontSize: '8px',
-                                  padding: '2px 4px',
-                                  borderRadius: '3px',
-                                  background: 'rgba(55, 65, 81, 0.3)',
-                                  color: '#64748b',
-                                  fontFamily: 'IRANSansX, sans-serif'
-                                }}>
-                                  +{(isRTL ? flight.itemTypesFa : flight.itemTypes).length - 3}
-                                </span>
-                              )}
-                          </div>
-                        )}
-                    </div>
-                  </div>
-
-                  {/* Expanded Cargo Details */}
-                  {expandedFlights.has(flight.requestId) && (
-                    <div style={{
-                      background: 'linear-gradient(135deg, #0a0e13 0%, #1a2329 50%, #0a0e13 100%)',
-                      padding: '20px',
-                      borderRadius: '16px',
-                      border: '2px solid rgba(80, 180, 255, 0.2)',
-                      marginBottom: '16px',
-                      animation: 'slideDown 0.4s ease',
-                      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+                      marginBottom: '15px',
                       position: 'relative',
-                      overflow: 'hidden'
+                      zIndex: 1
                     }}>
-                      {/* Background Pattern */}
-                      <div style={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        backgroundImage: `
-                          radial-gradient(circle at 10% 10%, rgba(80, 180, 255, 0.05) 0%, transparent 50%),
-                          radial-gradient(circle at 90% 90%, rgba(16, 185, 129, 0.05) 0%, transparent 50%)
-                        `,
-                        pointerEvents: 'none'
-                      }} />
-
-                      {/* Header */}
                       <div style={{
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '12px',
-                        marginBottom: '20px',
-                        paddingBottom: '12px',
-                        borderBottom: '1px solid rgba(80, 180, 255, 0.2)'
+                        gap: '10px'
                       }}>
                         <div style={{
-                          width: '48px',
-                          height: '48px',
-                          borderRadius: '16px',
-                          background: 'linear-gradient(135deg, #50b4ff, #2563eb)',
+                          width: '40px',
+                          height: '40px',
+                          background: 'rgba(255,255,255,0.2)',
+                          borderRadius: '50%',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          fontSize: '20px',
-                          boxShadow: '0 6px 20px rgba(80, 180, 255, 0.4)'
-                        }}>📦</div>
+                          fontSize: '20px'
+                        }}>✈️</div>
                         <div>
                           <div style={{
-                            fontSize: '14px',
-                            color: '#ffffff',
-                            fontFamily: 'IRANSansX, sans-serif',
-                            fontWeight: '700',
+                            fontSize: '16px',
+                            fontWeight: 'bold',
                             marginBottom: '2px'
-                          }}>
-                            {isRTL ? 'مشخصات کامل بار' : 'Complete Cargo Specifications'}
-                          </div>
+                          }}>PACKSI CARGO</div>
                           <div style={{
                             fontSize: '10px',
-                            color: '#a0aec0',
-                            fontFamily: 'IRANSansX, sans-serif'
-                          }}>
-                            {isRTL ? 'حداکثر ابعاد و وزن مجاز' : 'Maximum allowed dimensions and weight'}
-                          </div>
+                            opacity: 0.8
+                          }}>{isRTL ? 'بلیط بار' : 'CARGO TICKET'}</div>
                         </div>
                       </div>
-
-                      {/* Specifications Grid */}
                       <div style={{
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
-                        gap: '16px'
+                        textAlign: isRTL ? 'left' : 'right'
                       }}>
                         <div style={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          gap: '12px',
+                          fontSize: '12px',
+                          opacity: 0.8,
+                          marginBottom: '2px'
+                        }}>{isRTL ? 'شماره درخواست' : 'REQUEST ID'}</div>
+                        <div style={{
                           fontSize: '14px',
-                          color: '#6b7280',
-                          fontFamily: 'IRANSansX, sans-serif'
-                        }}>
-                          <span>{isRTL ? 'وزن:' : 'Weight:'} {flight.maxWeightKg || 'N/A'} {isRTL ? 'کیلوگرم' : 'kg'}</span>
-                          <span>{isRTL ? 'ابعاد:' : 'Dimensions:'} {flight.maxLengthCm || 'N/A'}×{flight.maxWidthCm || 'N/A'}×{flight.maxHeightCm || 'N/A'} {isRTL ? 'سانتی‌متر' : 'cm'}</span>
-                        </div>
+                          fontWeight: 'bold'
+                        }}>#{flight.requestId}</div>
                       </div>
                     </div>
-                  )}
 
+                    {/* Flight Route */}
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      position: 'relative',
+                      zIndex: 1
+                    }}>
+                      <div style={{
+                        textAlign: 'center',
+                        flex: 1
+                      }}>
+                        <div style={{
+                          fontSize: '18px',
+                          fontWeight: 'bold',
+                          marginBottom: '4px'
+                        }}>{flight.originCity}</div>
+                        <div style={{
+                          fontSize: '10px',
+                          opacity: 0.8
+                        }}>{isRTL ? 'مبدأ' : 'FROM'}</div>
+                      </div>
+                      
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        margin: '0 20px'
+                      }}>
+                        <div style={{
+                          width: '30px',
+                          height: '1px',
+                          background: 'rgba(255,255,255,0.5)'
+                        }} />
+                        <div style={{
+                          fontSize: '16px',
+                          animation: 'pulse 2s infinite'
+                        }}>✈️</div>
+                        <div style={{
+                          width: '30px',
+                          height: '1px',
+                          background: 'rgba(255,255,255,0.5)'
+                        }} />
+                      </div>
+                      
+                      <div style={{
+                        textAlign: 'center',
+                        flex: 1
+                      }}>
+                        <div style={{
+                          fontSize: '18px',
+                          fontWeight: 'bold',
+                          marginBottom: '4px'
+                        }}>{flight.destinationCity}</div>
+                        <div style={{
+                          fontSize: '10px',
+                          opacity: 0.8
+                        }}>{isRTL ? 'مقصد' : 'TO'}</div>
+                      </div>
+                    </div>
+                  </div>
 
+                  {/* Ticket Info Bar */}
+                  <div style={{
+                    background: 'linear-gradient(90deg, #f1f5f9 0%, #e2e8f0 100%)',
+                    padding: '12px 20px',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    borderBottom: '2px dashed #cbd5e1'
+                  }}>
+                    <div>
+                      <div style={{
+                        fontSize: '10px',
+                        color: '#64748b',
+                        marginBottom: '2px'
+                      }}>{isRTL ? 'تاریخ پرواز' : 'FLIGHT DATE'}</div>
+                      <div style={{
+                        fontSize: '14px',
+                        fontWeight: 'bold',
+                        color: '#1e293b'
+                      }}>{formatDate(flight.departureDate)}</div>
+                    </div>
+                    <div style={{
+                      width: '60px',
+                      height: '60px',
+                      background: 'white',
+                      border: '2px solid #e2e8f0',
+                      borderRadius: '8px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '8px',
+                      color: '#64748b',
+                      textAlign: 'center',
+                      lineHeight: '1.2'
+                    }}>
+                      QR CODE<br/>PLACEHOLDER
+                    </div>
+                  </div>
+
+                  {/* Item Types Section */}
+                  {((isRTL && flight.itemTypesFa && flight.itemTypesFa.length > 0) ||
+                    (!isRTL && flight.itemTypes && flight.itemTypes.length > 0)) && (
+                    <div style={{
+                      padding: '20px',
+                      background: 'white',
+                      borderTop: '2px dashed #cbd5e1'
+                    }}>
+                      <div style={{
+                        fontSize: '12px',
+                        color: '#64748b',
+                        marginBottom: '12px',
+                        fontWeight: '500',
+                        textAlign: 'center'
+                      }}>{isRTL ? 'انواع اقلام مجاز' : 'ALLOWED ITEM TYPES'}</div>
+                      <div style={{
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        gap: '8px',
+                        justifyContent: 'center'
+                      }}>
+                        {(isRTL ? flight.itemTypesFa : flight.itemTypes)?.map((itemType: string, index: number) => (
+                          <span
+                            key={index}
+                            style={{
+                              fontSize: '11px',
+                              padding: '6px 12px',
+                              borderRadius: '8px',
+                              background: 'linear-gradient(135deg, #dbeafe, #bfdbfe)',
+                              color: '#1e40af',
+                              fontWeight: '600',
+                              border: '1px solid #93c5fd',
+                              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+                            }}
+                          >
+                            {itemType}
+                          </span>
+                        ))}
+                       </div>
+                     </div>
+                   )}
 
                   {/* Compact Description */}
                   {flight.description && (
