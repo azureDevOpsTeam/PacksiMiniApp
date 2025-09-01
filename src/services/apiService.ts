@@ -74,7 +74,7 @@ class ApiService {
       };
     });
   }
-  
+
   private getHeaders(isFormData: boolean = false): HeadersInit {
     const headers: HeadersInit = {};
 
@@ -167,7 +167,7 @@ class ApiService {
       if (files && files.length > 0) {
         const totalSize = files.reduce((sum, file) => sum + file.size, 0);
         const MAX_TOTAL_SIZE = 8 * 1024 * 1024; // 8MB
-        
+
         if (totalSize > MAX_TOTAL_SIZE) {
           return {
             success: false,
@@ -188,7 +188,7 @@ class ApiService {
       formData.append('MaxLengthCm', (model.maxLengthCm || 0).toString());
       formData.append('MaxWidthCm', (model.maxWidthCm || 0).toString());
       formData.append('MaxHeightCm', (model.maxHeightCm || 0).toString());
-      
+
       // Add ItemTypeIds array
       if (model.itemTypeIds && model.itemTypeIds.length > 0) {
         model.itemTypeIds.forEach(id => {
@@ -301,7 +301,7 @@ class ApiService {
 
   async getUserInfo(): Promise<UserInfoResponse> {
     try {
-      const response = await fetch(`${API_BASE_URL}/MiniApp/UserInfo`, {
+      const response = await fetch(`${API_BASE_URL}/miniapp/Identity/UserInfo`, {
         method: 'GET',
         headers: this.getHeaders()
       });
@@ -323,7 +323,7 @@ class ApiService {
       console.log('Sending phone verification request:', payload);
       console.log('Headers:', this.getHeaders());
 
-      const response = await fetch(`${API_BASE_URL}/MiniApp/VerifyPhoneNumber`, {
+      const response = await fetch(`${API_BASE_URL}/miniapp/Identity/VerifyPhoneNumber`, {
         method: 'POST',
         headers: this.getHeaders(),
         body: JSON.stringify(payload)
@@ -386,7 +386,7 @@ class ApiService {
 
   async validate(): Promise<ValidateResponse> {
     try {
-      const response = await fetch(`${API_BASE_URL}/MiniApp/validate`, {
+      const response = await fetch(`${API_BASE_URL}/miniapp/Identity/validate`, {
         method: 'GET',
         headers: this.getHeaders()
       });
@@ -405,7 +405,7 @@ class ApiService {
 
   async addUserPreferredLocation(request: AddUserPreferredLocationRequest): Promise<AddUserPreferredLocationResponse> {
     try {
-      const response = await fetch(`${API_BASE_URL}/MiniApp/AddUserPreferredLocation`, {
+      const response = await fetch(`${API_BASE_URL}/miniapp/Identity/AddUserPreferredLocation`, {
         method: 'POST',
         headers: this.getHeaders(),
         body: JSON.stringify(request)
@@ -425,7 +425,7 @@ class ApiService {
 
   async updateProfile(request: UpdateProfileRequest): Promise<UpdateProfileResponse> {
     try {
-      const response = await fetch(`${API_BASE_URL}/MiniApp/UpdateUserProfile`, {
+      const response = await fetch(`${API_BASE_URL}/miniapp/Identity/UpdateUserProfile`, {
         method: 'POST',
         headers: this.getHeaders(),
         body: JSON.stringify(request)
