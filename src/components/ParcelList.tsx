@@ -109,20 +109,26 @@ const ParcelList: React.FC<ParcelListProps> = () => {
   const [flightsError, setFlightsError] = useState<string | null>(null);
   const [expandedFlights, setExpandedFlights] = useState<Set<number>>(new Set());
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [tripType, setTripType] = useState<'inbound' | 'outbound'>('outbound');
 
   // Filter flights based on search query
   const filteredFlights = flights.filter(flight => {
-    if (!searchQuery.trim()) return true;
+    // Search filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim();
+      const originCity = flight.originCity?.toLowerCase() || '';
+      const destinationCity = flight.destinationCity?.toLowerCase() || '';
+      const itemTypes = isRTL ? flight.itemTypesFa : flight.itemTypes;
+      const itemTypesText = itemTypes?.join(' ').toLowerCase() || '';
+      
+      const matchesSearch = originCity.includes(query) || 
+                           destinationCity.includes(query) || 
+                           itemTypesText.includes(query);
+      
+      return matchesSearch;
+    }
     
-    const query = searchQuery.toLowerCase().trim();
-    const originCity = flight.originCity?.toLowerCase() || '';
-    const destinationCity = flight.destinationCity?.toLowerCase() || '';
-    const itemTypes = isRTL ? flight.itemTypesFa : flight.itemTypes;
-    const itemTypesText = itemTypes?.join(' ').toLowerCase() || '';
-    
-    return originCity.includes(query) || 
-           destinationCity.includes(query) || 
-           itemTypesText.includes(query);
+    return true;
   });
 
   // Toggle accordion for specific flight
@@ -138,12 +144,14 @@ const ParcelList: React.FC<ParcelListProps> = () => {
     });
   };
 
-  // Fetch outbound flights
+  // Fetch flights based on trip type
   const fetchFlights = async () => {
     setFlightsLoading(true);
     setFlightsError(null);
     try {
-      const response = await apiService.getOutboundTrips();
+      const response = tripType === 'outbound' 
+        ? await apiService.getOutboundTrips()
+        : await apiService.getInboundTrips();
       if (response.objectResult) {
         setFlights(response.objectResult);
       } else {
@@ -184,6 +192,13 @@ const ParcelList: React.FC<ParcelListProps> = () => {
 
     checkPreferredLocation();
   }, []);
+
+  // Fetch flights when tripType changes
+  useEffect(() => {
+    if (!showForm) {
+      fetchFlights();
+    }
+  }, [tripType]);
 
   // Handle form completion
   const handleFormComplete = () => {
@@ -291,6 +306,69 @@ const ParcelList: React.FC<ParcelListProps> = () => {
       }}>
         {/* Settings Component */}
         <Settings activeButton={activeButton} setActiveButton={setActiveButton} />
+        
+        {/* Trip Type Filter Buttons */}
+        <div style={{
+          position: 'fixed',
+          top: '20px',
+          left: '20px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '8px',
+          zIndex: 1000
+        }}>
+          <button
+            onClick={() => setTripType('outbound')}
+            style={{
+              width: '40px',
+              height: '40px',
+              borderRadius: '10px',
+              border: '1px solid #3a4a5c',
+              backgroundColor: '#212a33',
+              backdropFilter: 'blur(10px)',
+              color: tripType === 'outbound' ? '#50b4ff' : '#848d96',
+              fontSize: '16px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'all 0.3s ease',
+              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
+              opacity: '0.9'
+            }}
+            title={isRTL ? 'پروازهای خروجی' : 'Outbound Flights'}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" fill="currentColor" transform="rotate(-45 12 12)"/>
+            </svg>
+          </button>
+          
+          <button
+            onClick={() => setTripType('inbound')}
+            style={{
+              width: '40px',
+              height: '40px',
+              borderRadius: '10px',
+              border: '1px solid #3a4a5c',
+              backgroundColor: '#212a33',
+              backdropFilter: 'blur(10px)',
+              color: tripType === 'inbound' ? '#50b4ff' : '#848d96',
+              fontSize: '16px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'all 0.3s ease',
+              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
+              opacity: '0.9'
+            }}
+            title={isRTL ? 'پروازهای ورودی' : 'Inbound Flights'}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" fill="currentColor" transform="rotate(135 12 12)"/>
+            </svg>
+          </button>
+        </div>
 
         {/* Header with Logo */}
         <div style={{
@@ -309,7 +387,10 @@ const ParcelList: React.FC<ParcelListProps> = () => {
           fontFamily: 'IRANSansX, sans-serif',
           fontWeight: '700'
         }}>
-          {t('parcelList.title')}
+          {tripType === 'outbound' 
+            ? (isRTL ? 'لیست پروازهای خروجی' : 'Outbound Flights List')
+            : (isRTL ? 'لیست پروازهای ورودی' : 'Inbound Flights List')
+          }
         </h2>
 
         {/* Search Box */}
