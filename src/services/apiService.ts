@@ -1,6 +1,6 @@
 import type { CreateRequestPayload, ApiResponse, CreateRequestResponse, CitiesTreeResponse, ItemTypeResponse, CountriesResponse, UserInfoResponse, VerifyPhoneNumberPayload, VerifyPhoneNumberResponse, ValidateResponse, AddUserPreferredLocationRequest, AddUserPreferredLocationResponse, UpdateProfileRequest, UpdateProfileResponse } from '../types/api';
 
-const API_BASE_URL = 'https://api.packsi.net/api';
+const API_BASE_URL = 'https://api.packsi.net/api/miniapp';
 //const API_BASE_URL = 'http://localhost:5005/api/miniapp';
 
 class ApiService {
@@ -240,7 +240,7 @@ class ApiService {
 
   async getCitiesTree(): Promise<CitiesTreeResponse> {
     try {
-      const response = await fetch(`${API_BASE_URL}/MiniApp/Region/GetCitiesTree`, {
+      const response = await fetch(`${API_BASE_URL}/Region/GetCitiesTree`, {
         method: 'GET',
         headers: this.getHeaders()
       });
@@ -263,7 +263,7 @@ class ApiService {
 
   async getItemTypes(): Promise<ItemTypeResponse> {
     try {
-      const response = await fetch(`${API_BASE_URL}/MiniApp/ItemType`, {
+      const response = await fetch(`${API_BASE_URL}/ItemType`, {
         method: 'GET',
         headers: this.getHeaders()
       });
@@ -282,7 +282,7 @@ class ApiService {
 
   async getCountries(): Promise<CountriesResponse> {
     try {
-      const response = await fetch(`${API_BASE_URL}/MiniApp/Region/GetCountries`, {
+      const response = await fetch(`${API_BASE_URL}/Region/GetCountries`, {
         method: 'GET',
         headers: this.getHeaders()
       });
@@ -301,7 +301,7 @@ class ApiService {
 
   async getUserInfo(): Promise<UserInfoResponse> {
     try {
-      const response = await fetch(`${API_BASE_URL}/miniapp/Identity/UserInfo`, {
+      const response = await fetch(`${API_BASE_URL}/Identity/UserInfo`, {
         method: 'GET',
         headers: this.getHeaders()
       });
@@ -323,7 +323,7 @@ class ApiService {
       console.log('Sending phone verification request:', payload);
       console.log('Headers:', this.getHeaders());
 
-      const response = await fetch(`${API_BASE_URL}/miniapp/Identity/VerifyPhoneNumber`, {
+      const response = await fetch(`${API_BASE_URL}/Identity/VerifyPhoneNumber`, {
         method: 'POST',
         headers: this.getHeaders(),
         body: JSON.stringify(payload)
@@ -386,7 +386,7 @@ class ApiService {
 
   async validate(): Promise<ValidateResponse> {
     try {
-      const response = await fetch(`${API_BASE_URL}/miniapp/Identity/validate`, {
+      const response = await fetch(`${API_BASE_URL}/Identity/validate`, {
         method: 'GET',
         headers: this.getHeaders()
       });
@@ -405,7 +405,7 @@ class ApiService {
 
   async addUserPreferredLocation(request: AddUserPreferredLocationRequest): Promise<AddUserPreferredLocationResponse> {
     try {
-      const response = await fetch(`${API_BASE_URL}/miniapp/Identity/AddUserPreferredLocation`, {
+      const response = await fetch(`${API_BASE_URL}/Identity/AddUserPreferredLocation`, {
         method: 'POST',
         headers: this.getHeaders(),
         body: JSON.stringify(request)
@@ -425,7 +425,7 @@ class ApiService {
 
   async updateProfile(request: UpdateProfileRequest): Promise<UpdateProfileResponse> {
     try {
-      const response = await fetch(`${API_BASE_URL}/miniapp/Identity/UpdateUserProfile`, {
+      const response = await fetch(`${API_BASE_URL}/Identity/UpdateUserProfile`, {
         method: 'POST',
         headers: this.getHeaders(),
         body: JSON.stringify(request)
