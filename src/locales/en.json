@@ -48,6 +48,12 @@
     "maxLengthCm": "Max Length (cm)",
     "maxWidthCm": "Max Width (cm)",
     "maxHeightCm": "Max Height (cm)",
+    "menu": {
+      "details": "Details",
+      "selectTrip": "Select Trip",
+      "saveToFavorites": "Save to Favorites",
+      "report": "Report"
+    },
     "description": "Description",
     "dimensions": "Dimensions",
     "weight": "Weight",

@@ -48,6 +48,12 @@
     "maxLengthCm": "حداکثر طول (سانتی‌متر)",
     "maxWidthCm": "حداکثر عرض (سانتی‌متر)",
     "maxHeightCm": "حداکثر ارتفاع (سانتی‌متر)",
+    "menu": {
+      "details": "جزئیات",
+      "selectTrip": "انتخاب سفر",
+      "saveToFavorites": "ذخیره در مورد علاقه",
+      "report": "گزارش"
+    },
     "description": "توضیحات",
     "dimensions": "ابعاد",
     "weight": "وزن",

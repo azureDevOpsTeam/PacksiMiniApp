@@ -107,6 +107,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
   const [flights, setFlights] = useState<OutboundTrip[]>([]);
   const [flightsLoading, setFlightsLoading] = useState(false);
   const [flightsError, setFlightsError] = useState<string | null>(null);
+  const [activeMenu, setActiveMenu] = useState<number | null>(null);
 
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [tripType, setTripType] = useState<'inbound' | 'outbound'>('outbound');
@@ -131,8 +132,45 @@ const ParcelList: React.FC<ParcelListProps> = () => {
     return true;
   });
 
-  // Toggle accordion for specific flight
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => {
+      if (activeMenu) {
+        setActiveMenu(null);
+      }
+    };
 
+    document.addEventListener('click', handleClickOutside);
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [activeMenu]);
+
+  // Handle menu actions
+  const handleMenuAction = (action: string, flight: OutboundTrip) => {
+    setActiveMenu(null);
+    
+    switch (action) {
+      case 'details':
+        // Handle flight details view
+        console.log('Show details for flight:', flight.requestId);
+        break;
+      case 'selectTrip':
+        // Handle trip selection
+        console.log('Select trip:', flight.requestId);
+        break;
+      case 'saveToFavorites':
+        // Handle save to favorites
+        console.log('Save to favorites:', flight.requestId);
+        break;
+      case 'report':
+        // Handle report
+        console.log('Report flight:', flight.requestId);
+        break;
+      default:
+        break;
+    }
+  };
 
   // Fetch flights based on trip type
   const fetchFlights = async () => {
@@ -553,18 +591,170 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                           }}>{isRTL ? 'بلیط بار' : 'CARGO TICKET'}</div>
                         </div>
                       </div>
+                      
                       <div style={{
-                        textAlign: isRTL ? 'left' : 'right'
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '15px'
                       }}>
+                        {/* Request ID */}
                         <div style={{
-                          fontSize: '12px',
-                          opacity: 0.8,
-                          marginBottom: '2px'
-                        }}>{isRTL ? 'شماره درخواست' : 'REQUEST ID'}</div>
+                          textAlign: isRTL ? 'left' : 'right'
+                        }}>
+                          <div style={{
+                            fontSize: '12px',
+                            opacity: 0.8,
+                            marginBottom: '2px'
+                          }}>{isRTL ? 'شماره درخواست' : 'REQUEST ID'}</div>
+                          <div style={{
+                            fontSize: '14px',
+                            fontWeight: 'bold'
+                          }}>#{flight.requestId}</div>
+                        </div>
+                        
+                        {/* Three Dots Menu */}
                         <div style={{
-                          fontSize: '14px',
-                          fontWeight: 'bold'
-                        }}>#{flight.requestId}</div>
+                          position: 'relative',
+                          zIndex: 1001
+                        }}>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setActiveMenu(activeMenu === flight.requestId ? null : flight.requestId);
+                            }}
+                            style={{
+                              background: 'rgba(255,255,255,0.2)',
+                              border: 'none',
+                              borderRadius: '50%',
+                              width: '32px',
+                              height: '32px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              cursor: 'pointer',
+                              fontSize: '16px',
+                              color: 'white',
+                              transition: 'all 0.2s ease'
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.background = 'rgba(255,255,255,0.3)';
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.background = 'rgba(255,255,255,0.2)';
+                            }}
+                          >
+                            ⋮
+                          </button>
+                          
+                          {/* Dropdown Menu */}
+                          {activeMenu === flight.requestId && (
+                            <div style={{
+                              position: 'absolute',
+                              top: '100%',
+                              [isRTL ? 'left' : 'right']: '0',
+                              background: 'white',
+                              borderRadius: '8px',
+                              boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
+                              minWidth: '180px',
+                              zIndex: 10000,
+                              overflow: 'hidden',
+                              border: '1px solid #e5e7eb',
+                              marginTop: '4px'
+                            }}>
+                              <div
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleMenuAction('details', flight);
+                                }}
+                                style={{
+                                  padding: '12px 16px',
+                                  cursor: 'pointer',
+                                  fontSize: '14px',
+                                  color: '#374151',
+                                  borderBottom: '1px solid #f3f4f6',
+                                  transition: 'background-color 0.2s ease',
+                                  textAlign: isRTL ? 'right' : 'left'
+                                }}
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.backgroundColor = '#f9fafb';
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.backgroundColor = 'transparent';
+                                }}
+                              >
+                                {t('flights.menu.details')}
+                              </div>
+                              <div
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleMenuAction('selectTrip', flight);
+                                }}
+                                style={{
+                                  padding: '12px 16px',
+                                  cursor: 'pointer',
+                                  fontSize: '14px',
+                                  color: '#374151',
+                                  borderBottom: '1px solid #f3f4f6',
+                                  transition: 'background-color 0.2s ease',
+                                  textAlign: isRTL ? 'right' : 'left'
+                                }}
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.backgroundColor = '#f9fafb';
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.backgroundColor = 'transparent';
+                                }}
+                              >
+                                {t('flights.menu.selectTrip')}
+                              </div>
+                              <div
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleMenuAction('saveToFavorites', flight);
+                                }}
+                                style={{
+                                  padding: '12px 16px',
+                                  cursor: 'pointer',
+                                  fontSize: '14px',
+                                  color: '#374151',
+                                  borderBottom: '1px solid #f3f4f6',
+                                  transition: 'background-color 0.2s ease',
+                                  textAlign: isRTL ? 'right' : 'left'
+                                }}
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.backgroundColor = '#f9fafb';
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.backgroundColor = 'transparent';
+                                }}
+                              >
+                                {t('flights.menu.saveToFavorites')}
+                              </div>
+                              <div
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleMenuAction('report', flight);
+                                }}
+                                style={{
+                                  padding: '12px 16px',
+                                  cursor: 'pointer',
+                                  fontSize: '14px',
+                                  color: '#374151',
+                                  transition: 'background-color 0.2s ease',
+                                  textAlign: isRTL ? 'right' : 'left'
+                                }}
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.backgroundColor = '#f9fafb';
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.backgroundColor = 'transparent';
+                                }}
+                              >
+                                {t('flights.menu.report')}
+                              </div>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
 
@@ -714,15 +904,13 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                   {/* Compact Description */}
                   {flight.description && (
                     <div style={{
-                      background: 'rgba(15, 23, 42, 0.4)',
+                      background: 'rgba(3, 125, 136, 0.8)',
                       padding: '8px',
-                      borderRadius: '6px',
                       border: '1px solid rgba(80, 180, 255, 0.1)',
-                      marginBottom: '8px'
                     }}>
                       <div style={{
                         fontSize: '10px',
-                        color: '#94a3b8',
+                        color: '#000',
                         marginBottom: '4px',
                         fontFamily: 'IRANSansX, sans-serif'
                       }}>
@@ -730,7 +918,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                       </div>
                       <div style={{
                         fontSize: '10px',
-                        color: '#cbd5e1',
+                        color: '#fff',
                         fontFamily: 'IRANSansX, sans-serif',
                         lineHeight: '1.4'
                       }}>
