@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useLanguage } from '../hooks/useLanguage';
 import { useTheme } from '../hooks/useTheme';
 import { useTelegramContext } from '../hooks/useTelegramContext';
@@ -176,28 +177,36 @@ const ParcelList: React.FC<ParcelListProps> = () => {
   // Handle select trip API call
   const handleSelectTrip = async (requestId: number) => {
     try {
+      console.log('handleSelectTrip called with requestId:', requestId);
+      
       // Show loading state
       if (webApp) {
         webApp.showAlert(isRTL ? 'در حال پردازش...' : 'Processing...');
       }
 
+      console.log('Calling apiService.selectRequest...');
       const response = await apiService.selectRequest({
         model: {
           requestId: requestId
         }
       });
 
+      console.log('API Response:', response);
+
       // Check if the API call was successful
       if (response.requestStatus.value === 1) {
         // Success - show confirmation message
+        console.log('API call successful');
         if (webApp) {
           webApp.showAlert(response.message || (isRTL ? 'سفر با موفقیت انتخاب شد' : 'Trip selected successfully'));
         }
         
         // Refresh the flights list to update status
+        console.log('Refreshing flights list...');
         await fetchFlights();
       } else {
         // Error from API
+        console.log('API call failed with status:', response.requestStatus);
         if (webApp) {
           webApp.showAlert(response.message || (isRTL ? 'خطا در انتخاب سفر' : 'Error selecting trip'));
         }
@@ -737,113 +746,194 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                             ⋮
                           </button>
                           
-                          {/* Dropdown Menu */}
-                          {activeMenu === flight.requestId && (
-                            <div style={{
-                              position: 'absolute',
-                              top: '100%',
-                              [isRTL ? 'left' : 'right']: '0',
-                              background: 'white',
-                              borderRadius: '8px',
-                              boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
-                              minWidth: '180px',
-                              zIndex: 10000,
-                              overflow: 'hidden',
-                              border: '1px solid #e5e7eb',
-                              marginTop: '4px'
-                            }}>
-                              <div
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleMenuAction('details', flight);
-                                }}
+                          {/* Popup Menu Overlay */}
+                          {activeMenu === flight.requestId && createPortal(
+                            <>
+                              {/* Background Overlay */}
+                              <div 
+                                onClick={() => setActiveMenu(null)}
                                 style={{
-                                  padding: '12px 16px',
-                                  cursor: 'pointer',
-                                  fontSize: '14px',
-                                  color: '#374151',
-                                  borderBottom: '1px solid #f3f4f6',
-                                  transition: 'background-color 0.2s ease',
-                                  textAlign: isRTL ? 'right' : 'left'
+                                  position: 'fixed',
+                                  top: 0,
+                                  left: 0,
+                                  right: 0,
+                                  bottom: 0,
+                                  backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                                  zIndex: 99999,
+                                  backdropFilter: 'blur(4px)'
                                 }}
-                                onMouseEnter={(e) => {
-                                  e.currentTarget.style.backgroundColor = '#f9fafb';
-                                }}
-                                onMouseLeave={(e) => {
-                                  e.currentTarget.style.backgroundColor = 'transparent';
-                                }}
-                              >
-                                {t('flights.menu.details')}
+                              />
+                              
+                              <div style={{
+                                position: 'fixed',
+                                top: '50%',
+                                left: '50%',
+                                transform: 'translate(-50%, -50%)',
+                                background: 'linear-gradient(135deg, rgba(26, 32, 38, 0.95) 0%, rgba(36, 43, 53, 0.95) 100%)',
+                                borderRadius: '20px',
+                                boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1)',
+                                minWidth: '280px',
+                                maxWidth: '320px',
+                                zIndex: 100000,
+                                overflow: 'hidden',
+                                backdropFilter: 'blur(20px)',
+                                border: '1px solid rgba(255, 255, 255, 0.1)',
+                                animation: 'fadeInScale 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+                              }}>
+                                {/* Menu Header */}
+                                <div style={{
+                                  padding: '20px 20px 16px 20px',
+                                  borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+                                  textAlign: 'center'
+                                }}>
+                                  <h3 style={{
+                                    margin: 0,
+                                    fontSize: '16px',
+                                    fontWeight: '600',
+                                    color: '#ffffff',
+                                    fontFamily: 'IRANSansX, sans-serif'
+                                  }}>
+                                    {isRTL ? 'عملیات' : 'Actions'}
+                                  </h3>
+                                  <p style={{
+                                    margin: '4px 0 0 0',
+                                    fontSize: '12px',
+                                    color: '#a0a8b0',
+                                    fontFamily: 'IRANSansX, sans-serif'
+                                  }}>
+                                    {isRTL ? `درخواست #${flight.requestId}` : `Request #${flight.requestId}`}
+                                  </p>
+                                </div>
+                                
+                                {/* Menu Items */}
+                                <div style={{ padding: '8px' }}>
+                                  <div
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleMenuAction('details', flight);
+                                    }}
+                                    style={{
+                                      padding: '16px 20px',
+                                      cursor: 'pointer',
+                                      fontSize: '14px',
+                                      color: '#ffffff',
+                                      borderRadius: '12px',
+                                      transition: 'all 0.3s ease',
+                                      textAlign: isRTL ? 'right' : 'left',
+                                      fontFamily: 'IRANSansX, sans-serif',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      gap: '12px',
+                                      marginBottom: '4px'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                      e.currentTarget.style.backgroundColor = 'rgba(80, 180, 255, 0.2)';
+                                      e.currentTarget.style.transform = 'translateX(' + (isRTL ? '-4px' : '4px') + ')';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                      e.currentTarget.style.backgroundColor = 'transparent';
+                                      e.currentTarget.style.transform = 'translateX(0)';
+                                    }}
+                                  >
+                                    <span style={{ fontSize: '16px' }}>📋</span>
+                                    {t('flights.menu.details')}
+                                  </div>
+                                  <div
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleMenuAction('selectTrip', flight);
+                                    }}
+                                    style={{
+                                      padding: '16px 20px',
+                                      cursor: 'pointer',
+                                      fontSize: '14px',
+                                      color: '#ffffff',
+                                      borderRadius: '12px',
+                                      transition: 'all 0.3s ease',
+                                      textAlign: isRTL ? 'right' : 'left',
+                                      fontFamily: 'IRANSansX, sans-serif',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      gap: '12px',
+                                      marginBottom: '4px'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                      e.currentTarget.style.backgroundColor = 'rgba(46, 213, 115, 0.2)';
+                                      e.currentTarget.style.transform = 'translateX(' + (isRTL ? '-4px' : '4px') + ')';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                      e.currentTarget.style.backgroundColor = 'transparent';
+                                      e.currentTarget.style.transform = 'translateX(0)';
+                                    }}
+                                  >
+                                    <span style={{ fontSize: '16px' }}>✈️</span>
+                                    {t('flights.menu.selectTrip')}
+                                  </div>
+                                  <div
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleMenuAction('saveToFavorites', flight);
+                                    }}
+                                    style={{
+                                      padding: '16px 20px',
+                                      cursor: 'pointer',
+                                      fontSize: '14px',
+                                      color: '#ffffff',
+                                      borderRadius: '12px',
+                                      transition: 'all 0.3s ease',
+                                      textAlign: isRTL ? 'right' : 'left',
+                                      fontFamily: 'IRANSansX, sans-serif',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      gap: '12px',
+                                      marginBottom: '4px'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                      e.currentTarget.style.backgroundColor = 'rgba(255, 193, 7, 0.2)';
+                                      e.currentTarget.style.transform = 'translateX(' + (isRTL ? '-4px' : '4px') + ')';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                      e.currentTarget.style.backgroundColor = 'transparent';
+                                      e.currentTarget.style.transform = 'translateX(0)';
+                                    }}
+                                  >
+                                    <span style={{ fontSize: '16px' }}>⭐</span>
+                                    {t('flights.menu.saveToFavorites')}
+                                  </div>
+                                  <div
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleMenuAction('report', flight);
+                                    }}
+                                    style={{
+                                      padding: '16px 20px',
+                                      cursor: 'pointer',
+                                      fontSize: '14px',
+                                      color: '#ffffff',
+                                      borderRadius: '12px',
+                                      transition: 'all 0.3s ease',
+                                      textAlign: isRTL ? 'right' : 'left',
+                                      fontFamily: 'IRANSansX, sans-serif',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      gap: '12px'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                      e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.2)';
+                                      e.currentTarget.style.transform = 'translateX(' + (isRTL ? '-4px' : '4px') + ')';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                      e.currentTarget.style.backgroundColor = 'transparent';
+                                      e.currentTarget.style.transform = 'translateX(0)';
+                                    }}
+                                  >
+                                    <span style={{ fontSize: '16px' }}>🚨</span>
+                                    {t('flights.menu.report')}
+                                  </div>
+                                </div>
                               </div>
-                              <div
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleMenuAction('selectTrip', flight);
-                                }}
-                                style={{
-                                  padding: '12px 16px',
-                                  cursor: 'pointer',
-                                  fontSize: '14px',
-                                  color: '#374151',
-                                  borderBottom: '1px solid #f3f4f6',
-                                  transition: 'background-color 0.2s ease',
-                                  textAlign: isRTL ? 'right' : 'left'
-                                }}
-                                onMouseEnter={(e) => {
-                                  e.currentTarget.style.backgroundColor = '#f9fafb';
-                                }}
-                                onMouseLeave={(e) => {
-                                  e.currentTarget.style.backgroundColor = 'transparent';
-                                }}
-                              >
-                                {t('flights.menu.selectTrip')}
-                              </div>
-                              <div
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleMenuAction('saveToFavorites', flight);
-                                }}
-                                style={{
-                                  padding: '12px 16px',
-                                  cursor: 'pointer',
-                                  fontSize: '14px',
-                                  color: '#374151',
-                                  borderBottom: '1px solid #f3f4f6',
-                                  transition: 'background-color 0.2s ease',
-                                  textAlign: isRTL ? 'right' : 'left'
-                                }}
-                                onMouseEnter={(e) => {
-                                  e.currentTarget.style.backgroundColor = '#f9fafb';
-                                }}
-                                onMouseLeave={(e) => {
-                                  e.currentTarget.style.backgroundColor = 'transparent';
-                                }}
-                              >
-                                {t('flights.menu.saveToFavorites')}
-                              </div>
-                              <div
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleMenuAction('report', flight);
-                                }}
-                                style={{
-                                  padding: '12px 16px',
-                                  cursor: 'pointer',
-                                  fontSize: '14px',
-                                  color: '#374151',
-                                  transition: 'background-color 0.2s ease',
-                                  textAlign: isRTL ? 'right' : 'left'
-                                }}
-                                onMouseEnter={(e) => {
-                                  e.currentTarget.style.backgroundColor = '#f9fafb';
-                                }}
-                                onMouseLeave={(e) => {
-                                  e.currentTarget.style.backgroundColor = 'transparent';
-                                }}
-                              >
-                                {t('flights.menu.report')}
-                              </div>
-                            </div>
+                            </>,
+                            document.body
                           )}
                         </div>
                       </div>
