@@ -147,7 +147,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
   }, [activeMenu]);
 
   // Handle menu actions
-  const handleMenuAction = (action: string, flight: OutboundTrip) => {
+  const handleMenuAction = async (action: string, flight: OutboundTrip) => {
     setActiveMenu(null);
     
     switch (action) {
@@ -157,7 +157,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
         break;
       case 'selectTrip':
         // Handle trip selection
-        console.log('Select trip:', flight.requestId);
+        await handleSelectTrip(flight.requestId);
         break;
       case 'saveToFavorites':
         // Handle save to favorites
@@ -169,6 +169,44 @@ const ParcelList: React.FC<ParcelListProps> = () => {
         break;
       default:
         break;
+    }
+  };
+
+  // Handle select trip API call
+  const handleSelectTrip = async (requestId: number) => {
+    try {
+      // Show loading state
+      if (webApp) {
+        webApp.showAlert(isRTL ? 'در حال پردازش...' : 'Processing...');
+      }
+
+      const response = await apiService.selectRequest({
+        model: {
+          requestId: requestId
+        }
+      });
+
+      // Check if the API call was successful
+      if (response.requestStatus.value === 1) {
+        // Success - show confirmation message
+        if (webApp) {
+          webApp.showAlert(response.message || (isRTL ? 'سفر با موفقیت انتخاب شد' : 'Trip selected successfully'));
+        }
+        
+        // Refresh the flights list to update status
+        await fetchFlights();
+      } else {
+        // Error from API
+        if (webApp) {
+          webApp.showAlert(response.message || (isRTL ? 'خطا در انتخاب سفر' : 'Error selecting trip'));
+        }
+      }
+    } catch (error) {
+      console.error('Error selecting trip:', error);
+      // Show error message
+      if (webApp) {
+        webApp.showAlert(isRTL ? 'خطا در ارتباط با سرور' : 'Server connection error');
+      }
     }
   };
 
@@ -242,6 +280,42 @@ const ParcelList: React.FC<ParcelListProps> = () => {
       });
     } catch {
       return dateString;
+    }
+  };
+
+  // Function to get status display based on currentUserStatus
+  const getStatusDisplay = (status: number) => {
+    switch (status) {
+      case 0:
+        return {
+          text: isRTL ? 'در انتظار' : 'Pending',
+          color: '#f59e0b',
+          bgColor: 'rgba(245, 158, 11, 0.1)'
+        };
+      case 1:
+        return {
+          text: isRTL ? 'تأیید شده' : 'Confirmed',
+          color: '#10b981',
+          bgColor: 'rgba(16, 185, 129, 0.1)'
+        };
+      case 2:
+        return {
+          text: isRTL ? 'لغو شده' : 'Cancelled',
+          color: '#ef4444',
+          bgColor: 'rgba(239, 68, 68, 0.1)'
+        };
+      case 3:
+        return {
+          text: isRTL ? 'تکمیل شده' : 'Completed',
+          color: '#8b5cf6',
+          bgColor: 'rgba(139, 92, 246, 0.1)'
+        };
+      default:
+        return {
+          text: isRTL ? 'نامشخص' : 'Unknown',
+          color: '#6b7280',
+          bgColor: 'rgba(107, 114, 128, 0.1)'
+        };
     }
   };
 
@@ -584,7 +658,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                             fontSize: '16px',
                             fontWeight: 'bold',
                             marginBottom: '2px'
-                          }}>PACKSI CARGO</div>
+                          }}>{flight.fullName}</div>
                           <div style={{
                             fontSize: '10px',
                             opacity: 0.8
@@ -599,18 +673,34 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                       }}>
                         {/* Request ID */}
                         <div style={{
-                          textAlign: isRTL ? 'left' : 'right'
-                        }}>
+                        textAlign: isRTL ? 'left' : 'right'
+                      }}>
+                        <div style={{
+                          fontSize: '12px',
+                          opacity: 0.8,
+                          marginBottom: '2px'
+                        }}>{isRTL ? 'شماره درخواست' : 'REQUEST ID'}</div>
+                        <div style={{
+                          fontSize: '14px',
+                          fontWeight: 'bold'
+                        }}>#{flight.requestId}</div>
+                        {/* Status Badge */}
+                        {flight.currentUserStatus !== undefined && (
                           <div style={{
-                            fontSize: '12px',
-                            opacity: 0.8,
-                            marginBottom: '2px'
-                          }}>{isRTL ? 'شماره درخواست' : 'REQUEST ID'}</div>
-                          <div style={{
-                            fontSize: '14px',
-                            fontWeight: 'bold'
-                          }}>#{flight.requestId}</div>
-                        </div>
+                            marginTop: '8px',
+                            padding: '4px 8px',
+                            borderRadius: '12px',
+                            fontSize: '10px',
+                            fontWeight: 'bold',
+                            backgroundColor: getStatusDisplay(flight.currentUserStatus).bgColor,
+                            color: getStatusDisplay(flight.currentUserStatus).color,
+                            border: `1px solid ${getStatusDisplay(flight.currentUserStatus).color}`,
+                            textAlign: 'center'
+                          }}>
+                            {getStatusDisplay(flight.currentUserStatus).text}
+                          </div>
+                        )}
+                      </div>
                         
                         {/* Three Dots Menu */}
                         <div style={{

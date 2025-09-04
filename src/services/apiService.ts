@@ -1,4 +1,4 @@
-import type { CreateRequestPayload, ApiResponse, CreateRequestResponse, CitiesTreeResponse, ItemTypeResponse, CountriesResponse, UserInfoResponse, VerifyPhoneNumberPayload, VerifyPhoneNumberResponse, ValidateResponse, AddUserPreferredLocationRequest, AddUserPreferredLocationResponse, UpdateProfileRequest, UpdateProfileResponse, OutboundTripsResponse } from '../types/api';
+import type { CreateRequestPayload, ApiResponse, CreateRequestResponse, CitiesTreeResponse, ItemTypeResponse, CountriesResponse, UserInfoResponse, VerifyPhoneNumberPayload, VerifyPhoneNumberResponse, ValidateResponse, AddUserPreferredLocationRequest, AddUserPreferredLocationResponse, UpdateProfileRequest, UpdateProfileResponse, OutboundTripsResponse, SelectRequestPayload, SelectRequestResponse } from '../types/api';
 
 const API_BASE_URL = 'https://api.packsi.net/api/miniapp';
 //const API_BASE_URL = 'http://localhost:5005/api/miniapp';
@@ -475,6 +475,26 @@ class ApiService {
       return data;
     } catch (error) {
       console.error('Error fetching inbound trips:', error);
+      throw error;
+    }
+  }
+
+  async selectRequest(request: SelectRequestPayload): Promise<SelectRequestResponse> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/Request/SelectRequest`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify(request)
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error selecting request:', error);
       throw error;
     }
   }

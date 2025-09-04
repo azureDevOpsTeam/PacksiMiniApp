@@ -218,8 +218,11 @@ export interface UpdateProfileResponse {
 export interface OutboundTrip {
   requestId: number;
   userAccountId: number;
+  fullName: string;
   originCity: string;
+  originCityFa: string;
   destinationCity: string;
+  destinationCityFa: string;
   departureDate: string;
   departureDatePersian: string | null;
   arrivalDate: string;
@@ -232,6 +235,7 @@ export interface OutboundTrip {
   maxLengthCm: number | null;
   maxWidthCm: number | null;
   maxHeightCm: number | null;
+  currentUserStatus: number;
 }
 
 export interface OutboundTripsResponse {
@@ -242,6 +246,29 @@ export interface OutboundTripsResponse {
   };
   message: string;
   objectResult: OutboundTrip[];
+  notificationType: {
+    name: string;
+    value: number;
+  };
+}
+
+// Select Request API Types
+export interface SelectRequestModel {
+  requestId: number;
+}
+
+export interface SelectRequestPayload {
+  model: SelectRequestModel;
+}
+
+export interface SelectRequestResponse {
+  validationResult: any;
+  requestStatus: {
+    name: string;
+    value: number;
+  };
+  message: string;
+  objectResult: any;
   notificationType: {
     name: string;
     value: number;
