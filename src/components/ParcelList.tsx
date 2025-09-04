@@ -55,6 +55,15 @@ const accordionStyles = `
     }
   }
   
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  
   .flight-card {
     position: relative;
     overflow: hidden;
@@ -103,12 +112,13 @@ const ParcelList: React.FC<ParcelListProps> = () => {
   const { webApp } = useTelegramContext();
 
   const [activeButton, setActiveButton] = useState<'user' | 'admin'>('user');
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [showForm, setShowForm] = useState(false); // Default to showing list
   const [flights, setFlights] = useState<OutboundTrip[]>([]);
-  const [flightsLoading, setFlightsLoading] = useState(false);
+  const [flightsLoading, setFlightsLoading] = useState(true);
   const [flightsError, setFlightsError] = useState<string | null>(null);
   const [activeMenu, setActiveMenu] = useState<number | null>(null);
+  const [apiResult, setApiResult] = useState<{success: boolean, message: string} | null>(null);
 
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [tripType, setTripType] = useState<'inbound' | 'outbound'>('outbound');
@@ -180,9 +190,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
       console.log('handleSelectTrip called with requestId:', requestId);
       
       // Show loading state
-      if (webApp) {
-        webApp.showAlert(isRTL ? 'در حال پردازش...' : 'Processing...');
-      }
+      setIsLoading(true);
 
       console.log('Calling apiService.selectRequest...');
       const response = await apiService.selectRequest({
@@ -193,13 +201,20 @@ const ParcelList: React.FC<ParcelListProps> = () => {
 
       console.log('API Response:', response);
 
-      // Check if the API call was successful
-      if (response.requestStatus.value === 1) {
-        // Success - show confirmation message
+      // Check if the API call was successful (value 0 means success based on provided response)
+      if (response.requestStatus.value === 0) {
+        // Success - show confirmation message in modal
         console.log('API call successful');
-        if (webApp) {
-          webApp.showAlert(response.message || (isRTL ? 'سفر با موفقیت انتخاب شد' : 'Trip selected successfully'));
-        }
+        setApiResult({
+          success: true,
+          message: response.message || (isRTL ? 'سفر با موفقیت انتخاب شد' : 'Trip selected successfully')
+        });
+        
+        // Auto-dismiss after 3 seconds
+        setTimeout(() => {
+          setApiResult(null);
+          setActiveMenu(null); // Close the menu
+        }, 3000);
         
         // Refresh the flights list to update status
         console.log('Refreshing flights list...');
@@ -207,16 +222,30 @@ const ParcelList: React.FC<ParcelListProps> = () => {
       } else {
         // Error from API
         console.log('API call failed with status:', response.requestStatus);
-        if (webApp) {
-          webApp.showAlert(response.message || (isRTL ? 'خطا در انتخاب سفر' : 'Error selecting trip'));
-        }
+        setApiResult({
+          success: false,
+          message: response.message || (isRTL ? 'خطا در انتخاب سفر' : 'Error selecting trip')
+        });
+        
+        // Auto-dismiss after 3 seconds
+        setTimeout(() => {
+          setApiResult(null);
+        }, 3000);
       }
     } catch (error) {
       console.error('Error selecting trip:', error);
-      // Show error message
-      if (webApp) {
-        webApp.showAlert(isRTL ? 'خطا در ارتباط با سرور' : 'Server connection error');
-      }
+      // Show error message in modal
+      setApiResult({
+        success: false,
+        message: isRTL ? 'خطا در ارتباط با سرور' : 'Server connection error'
+      });
+      
+      // Auto-dismiss after 3 seconds
+      setTimeout(() => {
+        setApiResult(null);
+      }, 3000);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -931,6 +960,68 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                                     {t('flights.menu.report')}
                                   </div>
                                 </div>
+                                
+                                {/* Loading Indicator */}
+                                {isLoading && (
+                                  <div style={{
+                                    position: 'absolute',
+                                    top: 0,
+                                    left: 0,
+                                    right: 0,
+                                    bottom: 0,
+                                    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    borderRadius: '16px',
+                                    zIndex: 1000
+                                  }}>
+                                    <div style={{
+                                      width: '24px',
+                                      height: '24px',
+                                      border: '3px solid rgba(255, 255, 255, 0.3)',
+                                      borderTop: '3px solid #ffffff',
+                                      borderRadius: '50%',
+                                      animation: 'spin 1s linear infinite'
+                                    }} />
+                                  </div>
+                                )}
+                                
+                                {/* API Result Display */}
+                                {apiResult && (
+                                  <div style={{
+                                    position: 'absolute',
+                                    top: 0,
+                                    left: 0,
+                                    right: 0,
+                                    bottom: 0,
+                                    backgroundColor: apiResult.success ? 'rgba(34, 197, 94, 0.95)' : 'rgba(239, 68, 68, 0.95)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    borderRadius: '16px',
+                                    zIndex: 1001,
+                                    padding: '20px',
+                                    textAlign: 'center'
+                                  }}>
+                                    <div>
+                                      <div style={{
+                                        fontSize: '24px',
+                                        marginBottom: '8px'
+                                      }}>
+                                        {apiResult.success ? '✅' : '❌'}
+                                      </div>
+                                      <div style={{
+                                        color: '#ffffff',
+                                        fontSize: '14px',
+                                        fontFamily: 'IRANSansX, sans-serif',
+                                        lineHeight: '1.4'
+                                      }}>
+                                        {apiResult.message}
+                                      </div>
+                                    </div>
+                                  </div>
+                                )}
                               </div>
                             </>,
                             document.body
