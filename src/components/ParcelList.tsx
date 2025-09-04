@@ -148,6 +148,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
 
   // Handle menu actions
   const handleMenuAction = async (action: string, flight: OutboundTrip) => {
+    console.log('handleMenuAction called with action:', action, 'requestId:', flight.requestId);
     setActiveMenu(null);
     
     switch (action) {
