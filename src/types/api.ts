@@ -236,6 +236,8 @@ export interface OutboundTrip {
   maxWidthCm: number | null;
   maxHeightCm: number | null;
   currentUserStatus: number;
+  currentUserStatusEn: string;
+  currentUserStatusFa: string;
 }
 
 export interface OutboundTripsResponse {

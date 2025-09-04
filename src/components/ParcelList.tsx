@@ -210,13 +210,27 @@ const ParcelList: React.FC<ParcelListProps> = () => {
           message: response.message || (isRTL ? 'سفر با موفقیت انتخاب شد' : 'Trip selected successfully')
         });
         
+        // Update local state immediately to show "selected" status
+        setFlights(prevFlights => 
+          prevFlights.map(flight => 
+            flight.requestId === requestId 
+              ? {
+                  ...flight,
+                  currentUserStatus: 1, // Set to selected status
+                  currentUserStatusEn: 'Selected',
+                  currentUserStatusFa: 'انتخاب شده'
+                }
+              : flight
+          )
+        );
+        
         // Auto-dismiss after 3 seconds
         setTimeout(() => {
           setApiResult(null);
           setActiveMenu(null); // Close the menu
         }, 3000);
         
-        // Refresh the flights list to update status
+        // Refresh the flights list to update status from server
         console.log('Refreshing flights list...');
         await fetchFlights();
       } else {
@@ -323,39 +337,37 @@ const ParcelList: React.FC<ParcelListProps> = () => {
   };
 
   // Function to get status display based on currentUserStatus
-  const getStatusDisplay = (status: number) => {
-    switch (status) {
+  const getStatusDisplay = (flight: OutboundTrip) => {
+    const statusText = isRTL ? flight.currentUserStatusFa : flight.currentUserStatusEn;
+    
+    // Determine color based on status value
+    let color = '#6b7280';
+    let bgColor = 'rgba(107, 114, 128, 0.1)';
+    
+    switch (flight.currentUserStatus) {
       case 0:
-        return {
-          text: isRTL ? 'در انتظار' : 'Pending',
-          color: '#f59e0b',
-          bgColor: 'rgba(245, 158, 11, 0.1)'
-        };
+        color = '#f59e0b';
+        bgColor = 'rgba(245, 158, 11, 0.1)';
+        break;
       case 1:
-        return {
-          text: isRTL ? 'تأیید شده' : 'Confirmed',
-          color: '#10b981',
-          bgColor: 'rgba(16, 185, 129, 0.1)'
-        };
+        color = '#10b981';
+        bgColor = 'rgba(16, 185, 129, 0.1)';
+        break;
       case 2:
-        return {
-          text: isRTL ? 'لغو شده' : 'Cancelled',
-          color: '#ef4444',
-          bgColor: 'rgba(239, 68, 68, 0.1)'
-        };
+        color = '#ef4444';
+        bgColor = 'rgba(239, 68, 68, 0.1)';
+        break;
       case 3:
-        return {
-          text: isRTL ? 'تکمیل شده' : 'Completed',
-          color: '#8b5cf6',
-          bgColor: 'rgba(139, 92, 246, 0.1)'
-        };
-      default:
-        return {
-          text: isRTL ? 'نامشخص' : 'Unknown',
-          color: '#6b7280',
-          bgColor: 'rgba(107, 114, 128, 0.1)'
-        };
+        color = '#8b5cf6';
+        bgColor = 'rgba(139, 92, 246, 0.1)';
+        break;
     }
+    
+    return {
+      text: statusText || (isRTL ? 'نامشخص' : 'Unknown'),
+      color,
+      bgColor
+    };
   };
 
 
@@ -731,12 +743,12 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                             borderRadius: '12px',
                             fontSize: '10px',
                             fontWeight: 'bold',
-                            backgroundColor: getStatusDisplay(flight.currentUserStatus).bgColor,
-                            color: getStatusDisplay(flight.currentUserStatus).color,
-                            border: `1px solid ${getStatusDisplay(flight.currentUserStatus).color}`,
+                            backgroundColor: getStatusDisplay(flight).bgColor,
+                            color: getStatusDisplay(flight).color,
+                            border: `1px solid ${getStatusDisplay(flight).color}`,
                             textAlign: 'center'
                           }}>
-                            {getStatusDisplay(flight.currentUserStatus).text}
+                            {getStatusDisplay(flight).text}
                           </div>
                         )}
                       </div>
