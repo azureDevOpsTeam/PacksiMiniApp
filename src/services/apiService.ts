@@ -206,7 +206,7 @@ class ApiService {
         }
       }
 
-      const response = await fetch(`${API_BASE_URL}/MiniApp/Create`, {
+      const response = await fetch(`${API_BASE_URL}/Request/Create`, {
         method: 'POST',
         headers: this.getHeaders(true), // Always FormData
         body: formData
