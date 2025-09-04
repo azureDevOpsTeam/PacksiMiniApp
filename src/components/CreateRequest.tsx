@@ -852,6 +852,7 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
                 itemTypes.map(itemType => (
                   <label
                     key={itemType.itemTypeId}
+                    onClick={() => handleItemTypeToggle(itemType.itemTypeId)}
                     style={{
                       display: 'flex',
                       alignItems: 'center',

@@ -32,7 +32,7 @@ export const useFormValidation = (rules: ValidationRules) => {
     // Required validation
     if (rule.required) {
       if (value === undefined || value === null || value === '' || 
-          (typeof value === 'number' && (value === 0 || value === -1)) ||
+          (typeof value === 'number' && fieldName !== 'requestType' && value === 0) ||
           (Array.isArray(value) && value.length === 0)) {
         setErrors(prev => ({ ...prev, [fieldName]: 'این فیلد الزامی است' }));
         return false;
