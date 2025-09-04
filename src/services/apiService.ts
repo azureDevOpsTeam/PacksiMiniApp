@@ -89,7 +89,7 @@ class ApiService {
       headers['X-Telegram-Init-Data'] = initData;
     } else {
       // Use provided token for development
-      headers['X-Telegram-Init-Data'] = 'query_id=AAEUWrBhAgAAABRasGFb2DER&user=%7B%22id%22%3A5933914644%2C%22first_name%22%3A%22Shahram%22%2C%22last_name%22%3A%22%22%2C%22username%22%3A%22ShahramOweisy%22%2C%22language_code%22%3A%22en%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Ft.me%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2FQGwtYapyXkY4-jZJkczPeUb_XKfimJozOKy8lZzBhtQc4cO4xBQzwdPwcb_QSNih.svg%22%7D&auth_date=1756758321&signature=L_cOpJiTdbidZE0yNspGhzlhPLsI3oVt39fPHLh2xBNTzzKTLdg6D0dbScEFitwh8JDNRuN0Lj_WJZeUfOyIDQ&hash=bcd11c43b8092a7d950e3a25003f95387005fb1abb261ba74727f6e1cd198616';
+      headers['X-Telegram-Init-Data'] = 'user=%7B%22id%22%3A5933914644%2C%22first_name%22%3A%22Shahram%22%2C%22last_name%22%3A%22%22%2C%22username%22%3A%22ShahramOweisy%22%2C%22language_code%22%3A%22en%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Ft.me%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2FQGwtYapyXkY4-jZJkczPeUb_XKfimJozOKy8lZzBhtQc4cO4xBQzwdPwcb_QSNih.svg%22%7D&chat_instance=-2675852455221065738&chat_type=sender&auth_date=1756919843&signature=oVTvDp3bgZDaX_Yds0PCzANzn1HuH6xTGfLaR3WXKzzwU8e2kceGTS79nkv9Jugd0JYxT5CxBkTyWtD0kd55Bw&hash=f5ca10f64ee5cc692049905c26cadb73fdd05c22bee2fcb1b71da41a149f3f14';
     }
 
     // Add additional headers for mobile compatibility
@@ -261,7 +261,7 @@ class ApiService {
 
   async getItemTypes(): Promise<ItemTypeResponse> {
     try {
-      const response = await fetch(`${API_BASE_URL}/ItemType`, {
+      const response = await fetch(`${API_BASE_URL}/Request/ItemType`, {
         method: 'GET',
         headers: this.getHeaders()
       });

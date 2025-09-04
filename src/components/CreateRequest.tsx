@@ -855,14 +855,19 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
                     style={{
                       display: 'flex',
                       alignItems: 'center',
-                      padding: '8px 12px',
-                      borderRadius: '5px',
-                      border: '1px solid #3a4a5c',
+                      padding: '12px',
+                      borderRadius: '8px',
+                      border: formData.itemTypeIds.includes(itemType.itemTypeId)
+                        ? '2px solid #50b4ff'
+                        : '1px solid #3a4a5c',
                       backgroundColor: formData.itemTypeIds.includes(itemType.itemTypeId)
-                        ? '#50b4ff20'
+                        ? '#50b4ff15'
                         : '#212a33',
                       cursor: 'pointer',
-                      transition: 'all 0.2s ease'
+                      transition: 'all 0.2s ease',
+                      boxShadow: formData.itemTypeIds.includes(itemType.itemTypeId)
+                        ? '0 0 0 1px #50b4ff40'
+                        : 'none'
                     }}
                   >
                     <input
@@ -871,13 +876,22 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
                       onChange={() => handleItemTypeToggle(itemType.itemTypeId)}
                       style={{
                         marginRight: isRTL ? '0' : '8px',
-                        marginLeft: isRTL ? '8px' : '0'
+                        marginLeft: isRTL ? '8px' : '0',
+                        width: '18px',
+                        height: '18px',
+                        accentColor: '#50b4ff',
+                        cursor: 'pointer'
                       }}
                     />
                     <span style={{
                       fontSize: '14px',
-                      color: '#848d96',
-                      fontFamily: 'IRANSansX, sans-serif'
+                      color: formData.itemTypeIds.includes(itemType.itemTypeId)
+                        ? '#ffffff'
+                        : '#848d96',
+                      fontFamily: 'IRANSansX, sans-serif',
+                      fontWeight: formData.itemTypeIds.includes(itemType.itemTypeId)
+                        ? '600'
+                        : '400'
                     }}>
                       {isRTL ? itemType.persianName : itemType.itemType}
                     </span>
