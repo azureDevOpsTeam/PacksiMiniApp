@@ -1,9 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled, { keyframes } from 'styled-components';
-import { useNavigate } from 'react-router-dom';
 import { apiService } from '../services/apiService';
 import type { ChatMessage, Conversation, LiveChatUser } from '../types/api';
-import { useTelegramButtons } from '../hooks/useTelegramButtons';
 
 // Animations
 const showChatEven = keyframes`
@@ -30,68 +28,15 @@ const ChatContainer = styled.div`
   background: linear-gradient(-45deg, #183850 0%, #183850 25%, #192C46 50%, #22254C 75%, #22254C 100%);
   background-repeat: no-repeat;
   background-attachment: fixed;
-  display: flex;
-  flex-direction: column;
   font-family: 'IRANSansX', sans-serif;
 `;
 
-const ChatHeader = styled.div`
-  display: flex;
-  align-items: center;
-  padding: 16px 20px;
-  background: rgba(25, 147, 147, 0.1);
-  border-bottom: 1px solid rgba(25, 147, 147, 0.2);
-`;
 
-const BackButton = styled.button`
-  background: none;
-  border: none;
-  color: #0AD5C1;
-  font-size: 18px;
-  cursor: pointer;
-  margin-left: 15px;
-  padding: 8px;
-  border-radius: 50%;
-  transition: background-color 0.2s;
-  
-  &:hover {
-    background-color: rgba(10, 213, 193, 0.1);
-  }
-`;
-
-const UserInfo = styled.div`
-  display: flex;
-  align-items: center;
-  flex: 1;
-`;
-
-const Avatar = styled.img`
-  width: 50px;
-  height: 50px;
-  border-radius: 50px;
-  margin-left: 15px;
-`;
-
-const UserDetails = styled.div`
-  color: #0AD5C1;
-  
-  h3 {
-    margin: 0;
-    font-size: 18px;
-    font-weight: 600;
-  }
-  
-  p {
-    margin: 0;
-    font-size: 14px;
-    opacity: 0.8;
-  }
-`;
 
 const ChatThread = styled.ul`
-  flex: 1;
-  margin: 24px auto 0 auto;
-  padding: 0 20px 0 0;
+  height: 100vh;
+  margin: 0 auto;
+  padding: 20px;
   list-style: none;
   overflow-y: scroll;
   overflow-x: hidden;
@@ -183,61 +128,7 @@ const MessageItem = styled.li<{ isOdd: boolean }>`
   `}
 `;
 
-const ChatWindow = styled.form`
-  position: fixed;
-  bottom: 18px;
-  left: 5%;
-  width: 90%;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  
-  @media (min-width: 768px) {
-    left: 25%;
-    width: 50%;
-  }
-`;
 
-const ChatInput = styled.input`
-  flex: 1;
-  height: 48px;
-  font: 32px/48px 'IRANSansX', sans-serif;
-  background: none;
-  color: #0AD5C1;
-  border: 0;
-  border-bottom: 1px solid rgba(25, 147, 147, 0.2);
-  outline: none;
-  
-  &::placeholder {
-    color: rgba(10, 213, 193, 0.5);
-  }
-`;
-
-const SendButton = styled.button`
-  background: linear-gradient(45deg, #0AD5C1, #0EC879);
-  border: none;
-  border-radius: 50%;
-  width: 48px;
-  height: 48px;
-  color: white;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s;
-  
-  &:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 12px rgba(10, 213, 193, 0.3);
-  }
-  
-  &:disabled {
-    background: rgba(25, 147, 147, 0.2);
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
-  }
-`;
 
 const EmptyState = styled.div`
   display: flex;
@@ -290,32 +181,15 @@ const LoadingSpinner = styled.div`
 
 interface ChatWindowProps {
   selectedUser: LiveChatUser;
-  onBack: () => void;
 }
 
-const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser, onBack }) => {
+const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(true);
-  const [sending, setSending] = useState(false);
   const [conversation, setConversation] = useState<Conversation | null>(null);
-  const [showMenu, setShowMenu] = useState(false);
-  const [isBlocked, setIsBlocked] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const navigate = useNavigate();
   
-  // Setup Telegram back button
-  useTelegramButtons({
-    secondaryButton: {
-      text: 'بازگشت',
-      onClick: () => {
-        navigate('/chatlist');
-      },
-      isVisible: true,
-      isEnabled: true,
-      position: 'left'
-    }
-  });
+
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -325,18 +199,7 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser, onBack }
     scrollToBottom();
   }, [messages]);
 
-  useEffect(() => {
-    const handleClickOutside = () => {
-      if (showMenu) {
-        setShowMenu(false);
-      }
-    };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [showMenu]);
 
 
 
@@ -389,53 +252,7 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser, onBack }
     }
   };
 
-  const handleSendMessage = async () => {
-    if (!newMessage.trim() || sending) return;
 
-    try {
-      setSending(true);
-      
-      const response = await apiService.sendMessage({
-        model: {
-          receiverId: selectedUser.requestCreatorId,
-          content: newMessage.trim()
-        }
-      });
-
-      // Add the new message to the list
-      setMessages(prev => [...prev, response.objectResult]);
-      setNewMessage('');
-      
-      // Reload conversation data to get updated info
-      await loadConversationAndMessages();
-    } catch (error) {
-      console.error('Error sending message:', error);
-    } finally {
-      setSending(false);
-    }
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSendMessage();
-    }
-  };
-
-  const handleBlockUser = async () => {
-    try {
-      await apiService.blockUser({
-        model: {
-          userId: selectedUser.requestCreatorId,
-          isBlocked: !isBlocked
-        }
-      });
-      setIsBlocked(!isBlocked);
-      setShowMenu(false);
-    } catch (error) {
-      console.error('Error blocking/unblocking user:', error);
-    }
-  };
 
   const formatTime = (dateString: string) => {
     const date = new Date(dateString);
@@ -460,91 +277,10 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser, onBack }
     }
   };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    handleSendMessage();
-  };
+
 
   return (
     <ChatContainer>
-      {/* Header */}
-      <ChatHeader>
-        <BackButton onClick={onBack}>
-          ←
-        </BackButton>
-        
-        <UserInfo>
-          <Avatar
-            src={selectedUser.avatar || '/default-avatar.png'}
-            alt={selectedUser.requestCreatorDisplayName}
-          />
-          
-          <UserDetails>
-            <h3>{selectedUser.requestCreatorDisplayName}</h3>
-            <p>{selectedUser.isOnline ? 'آنلاین' : 'آفلاین'}</p>
-          </UserDetails>
-        </UserInfo>
-        
-        {/* Menu Button */}
-        <div style={{ position: 'relative' }}>
-          <button
-            onClick={() => setShowMenu(!showMenu)}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: '#0AD5C1',
-              cursor: 'pointer',
-              padding: '8px',
-              borderRadius: '50%',
-              transition: 'background-color 0.2s'
-            }}
-          >
-            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
-            </svg>
-          </button>
-          
-          {/* Dropdown Menu */}
-          {showMenu && (
-            <div style={{
-              position: 'absolute',
-              left: '0',
-              marginTop: '8px',
-              width: '200px',
-              background: 'rgba(25, 147, 147, 0.1)',
-              borderRadius: '10px',
-              border: '1px solid rgba(25, 147, 147, 0.2)',
-              zIndex: 50,
-              backdropFilter: 'blur(10px)'
-            }}>
-              <button
-                onClick={handleBlockUser}
-                style={{
-                  width: '100%',
-                  padding: '12px 16px',
-                  textAlign: 'right',
-                  background: 'none',
-                  border: 'none',
-                  color: '#0AD5C1',
-                  cursor: 'pointer',
-                  borderRadius: '10px',
-                  transition: 'background-color 0.2s',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'flex-end'
-                }}
-              >
-                <span style={{ marginLeft: '8px' }}>
-                  {isBlocked ? 'رفع مسدودیت کاربر' : 'مسدود کردن کاربر'}
-                </span>
-                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728" />
-                </svg>
-              </button>
-            </div>
-          )}
-        </div>
-      </ChatHeader>
 
       {/* Messages */}
       <ChatThread>
@@ -601,39 +337,7 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser, onBack }
         <div ref={messagesEndRef} />
       </ChatThread>
 
-      {/* Message Input */}
-      <ChatWindow onSubmit={handleFormSubmit}>
-        <ChatInput
-          type="text"
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-          onKeyPress={handleKeyPress}
-          placeholder={isBlocked ? "کاربر مسدود شده است" : "پیام خود را بنویسید..."}
-          disabled={isBlocked || sending}
-          autoComplete="off"
-          autoFocus
-        />
-        
-        <SendButton
-          type="submit"
-          disabled={!newMessage.trim() || sending || isBlocked}
-        >
-          {sending ? (
-            <div style={{
-              width: '20px',
-              height: '20px',
-              border: '2px solid rgba(255, 255, 255, 0.3)',
-              borderTop: '2px solid white',
-              borderRadius: '50%',
-              animation: 'spin 1s linear infinite'
-            }}></div>
-          ) : (
-            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-            </svg>
-          )}
-        </SendButton>
-      </ChatWindow>
+
     </ChatContainer>
   );
 };

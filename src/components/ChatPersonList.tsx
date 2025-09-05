@@ -145,13 +145,7 @@ const ChatPersonList: React.FC = () => {
     }
   };
 
-  const handleBackFromChat = () => {
-    setShowChatWindow(false);
-    setSelectedUser(null);
-    setSelectedPersonId(null);
-    // Refresh the chat list to update unread counts
-    fetchLiveChatUsers();
-  };
+
 
   const handleMenuAction = (action: string, personName: string) => {
     setShowMenu(null);
@@ -773,7 +767,6 @@ const ChatPersonList: React.FC = () => {
         }}>
           <ChatWindow 
             selectedUser={selectedUser} 
-            onBack={handleBackFromChat} 
           />
         </div>
       )}
