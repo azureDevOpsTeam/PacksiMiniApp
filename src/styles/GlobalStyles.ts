@@ -25,9 +25,9 @@ export const GlobalStyles = createGlobalStyle`
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
     /* iOS specific fixes */
-    position: fixed;
+    margin: 0;
     width: 100%;
-    height: 100%;
+    min-height: 100vh;
     -webkit-user-select: none;
     -webkit-touch-callout: none;
     -webkit-text-size-adjust: none;
@@ -41,7 +41,6 @@ export const GlobalStyles = createGlobalStyle`
     overflow-x: hidden;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    height: 100%;
   }
 
   /* Telegram WebApp specific styles */

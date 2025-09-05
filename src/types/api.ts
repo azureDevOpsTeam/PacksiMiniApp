@@ -348,3 +348,115 @@ export interface LiveChatUsersResponse {
     value: number;
   };
 }
+
+// Chat API Types
+export interface Conversation {
+  id: number;
+  participantId: number;
+  participantName: string;
+  participantAvatar: string;
+  lastMessage: string;
+  lastMessageTime: string;
+  unreadCount: number;
+  isOnline: boolean;
+  isBlocked: boolean;
+}
+
+export interface ConversationsResponse {
+  validationResult: any;
+  requestStatus: {
+    name: string;
+    value: number;
+  };
+  message: string;
+  objectResult: Conversation[];
+  notificationType: {
+    name: string;
+    value: number;
+  };
+}
+
+export interface ChatMessage {
+  id: number;
+  conversationId: number;
+  senderId: number;
+  receiverId: number;
+  content: string;
+  sentAt: string;
+  isRead: boolean;
+  messageType: 'text' | 'image' | 'file';
+}
+
+export interface MessagesResponse {
+  validationResult: any;
+  requestStatus: {
+    name: string;
+    value: number;
+  };
+  message: string;
+  objectResult: ChatMessage[];
+  notificationType: {
+    name: string;
+    value: number;
+  };
+}
+
+export interface SendMessageModel {
+  receiverId: number;
+  content: string;
+}
+
+export interface SendMessagePayload {
+  model: SendMessageModel;
+}
+
+export interface SendMessageResponse {
+  validationResult: any;
+  requestStatus: {
+    name: string;
+    value: number;
+  };
+  message: string;
+  objectResult: ChatMessage;
+  notificationType: {
+    name: string;
+    value: number;
+  };
+}
+
+export interface BlockUserModel {
+  userId: number;
+  isBlocked: boolean;
+}
+
+export interface BlockUserPayload {
+  model: BlockUserModel;
+}
+
+export interface BlockUserResponse {
+  validationResult: any;
+  requestStatus: {
+    name: string;
+    value: number;
+  };
+  message: string;
+  objectResult: any;
+  notificationType: {
+    name: string;
+    value: number;
+  };
+}
+
+export interface MarkReadResponse {
+  validationResult: any;
+  requestStatus: {
+    name: string;
+    value: number;
+  };
+  message: string;
+  objectResult: any;
+  notificationType: {
+    name: string;
+    value: number;
+  };
+}

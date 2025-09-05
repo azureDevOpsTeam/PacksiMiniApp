@@ -35,7 +35,7 @@ export default defineConfig({
     host: true,
     https: false, // Set to true if you need HTTPS for development
     hmr: {
-      port: 46890, // Use a different port for HMR to avoid conflicts
+      overlay: false, // Disable error overlay to prevent WebSocket issues
     },
     // تنظیمات cache control برای development
     headers: {

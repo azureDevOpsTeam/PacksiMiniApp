@@ -1,4 +1,4 @@
-import type { CreateRequestPayload, ApiResponse, CreateRequestResponse, CitiesTreeResponse, ItemTypeResponse, CountriesResponse, UserInfoResponse, VerifyPhoneNumberPayload, VerifyPhoneNumberResponse, ValidateResponse, AddUserPreferredLocationRequest, AddUserPreferredLocationResponse, UpdateProfileRequest, UpdateProfileResponse, OutboundTripsResponse, SelectRequestPayload, SelectRequestResponse, GetMyRequestTripsResponse, LiveChatUsersResponse } from '../types/api';
+import type { CreateRequestPayload, ApiResponse, CreateRequestResponse, CitiesTreeResponse, ItemTypeResponse, CountriesResponse, UserInfoResponse, VerifyPhoneNumberPayload, VerifyPhoneNumberResponse, ValidateResponse, AddUserPreferredLocationRequest, AddUserPreferredLocationResponse, UpdateProfileRequest, UpdateProfileResponse, OutboundTripsResponse, SelectRequestPayload, SelectRequestResponse, GetMyRequestTripsResponse, LiveChatUsersResponse, ConversationsResponse, MessagesResponse, SendMessagePayload, SendMessageResponse, BlockUserPayload, BlockUserResponse, MarkReadResponse } from '../types/api';
 
 const API_BASE_URL = 'https://api.packsi.net/api/miniapp';
 //const API_BASE_URL = 'http://localhost:5005/api/miniapp';
@@ -520,6 +520,104 @@ class ApiService {
       return data;
     } catch (error) {
       console.error('Error fetching live chat users:', error);
+      throw error;
+    }
+  }
+
+  // Chat API Methods
+  async getConversations(): Promise<ConversationsResponse> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/LiveChat/conversations`, {
+        method: 'GET',
+        headers: this.getHeaders()
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching conversations:', error);
+      throw error;
+    }
+  }
+
+  async getMessages(conversationId: number): Promise<MessagesResponse> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/LiveChat/conversations/${conversationId}/messages`, {
+        method: 'GET',
+        headers: this.getHeaders()
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching messages:', error);
+      throw error;
+    }
+  }
+
+  async sendMessage(payload: SendMessagePayload): Promise<SendMessageResponse> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/LiveChat/messages`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error sending message:', error);
+      throw error;
+    }
+  }
+
+  async blockUser(payload: BlockUserPayload): Promise<BlockUserResponse> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/LiveChat/block`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error blocking/unblocking user:', error);
+      throw error;
+    }
+  }
+
+  async markConversationAsRead(conversationId: number): Promise<MarkReadResponse> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/LiveChat/conversations/${conversationId}/mark-read`, {
+        method: 'PUT',
+        headers: this.getHeaders()
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error marking conversation as read:', error);
       throw error;
     }
   }

@@ -5,6 +5,7 @@ import { apiService } from '../services/apiService';
 import type { LiveChatUser } from '../types/api';
 import Logo from './Logo';
 import Settings from './Settings';
+import ChatWindow from './ChatWindow';
 
 interface ChatPerson {
   id: string;
@@ -36,6 +37,9 @@ const ChatPersonList: React.FC = () => {
   const [chatPersons, setChatPersons] = useState<ChatPerson[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [showChatWindow, setShowChatWindow] = useState<boolean>(false);
+  const [selectedUser, setSelectedUser] = useState<LiveChatUser | null>(null);
+  const [liveChatUsers, setLiveChatUsers] = useState<LiveChatUser[]>([]);
 
   // Convert LiveChatUser to ChatPerson
   const convertLiveChatUserToChatPerson = (user: LiveChatUser): ChatPerson => {
@@ -76,6 +80,7 @@ const ChatPersonList: React.FC = () => {
           LastSeenFa: user.LastSeenFa || 'به تازگی'
         }));
 
+        setLiveChatUsers(usersWithLastSeen);
         const convertedUsers = usersWithLastSeen.map(convertLiveChatUserToChatPerson);
         setChatPersons(convertedUsers);
       } else {
@@ -131,9 +136,21 @@ const ChatPersonList: React.FC = () => {
 
   const handlePersonClick = (personId: string) => {
     setSelectedPersonId(personId);
-    if (webApp) {
-      webApp.showAlert(`Opening chat with ${filteredChatPersons.find(p => p.id === personId)?.name}`);
+    
+    // Find the selected user from liveChatUsers
+    const user = liveChatUsers.find(u => u.requestCreatorId?.toString() === personId);
+    if (user) {
+      setSelectedUser(user);
+      setShowChatWindow(true);
     }
+  };
+
+  const handleBackFromChat = () => {
+    setShowChatWindow(false);
+    setSelectedUser(null);
+    setSelectedPersonId(null);
+    // Refresh the chat list to update unread counts
+    fetchLiveChatUsers();
   };
 
   const handleMenuAction = (action: string, personName: string) => {
@@ -289,12 +306,13 @@ const ChatPersonList: React.FC = () => {
         flexDirection: 'column',
         justifyContent: 'flex-start',
         alignItems: 'center',
-        minHeight: '100vh',
-        padding: '80px 20px 0 20px',
+        height: '100vh',
+        padding: '20px',
         textAlign: 'center',
         position: 'relative',
         backgroundColor: '#17212b',
-        direction: 'ltr'
+        direction: 'ltr',
+        overflow: 'hidden'
       }}>
         {/* Settings Component */}
         <Settings activeButton={activeButton} setActiveButton={setActiveButton} />
@@ -433,7 +451,10 @@ const ChatPersonList: React.FC = () => {
           maxWidth: '400px',
           display: 'flex',
           flexDirection: 'column',
-          gap: '12px'
+          gap: '12px',
+          flex: 1,
+          overflowY: 'auto',
+          paddingBottom: '20px'
         }}>
           {loading ? (
             <div style={{
@@ -484,12 +505,12 @@ const ChatPersonList: React.FC = () => {
             filteredChatPersons.map((person, index) => (
               <div
                 key={person.id}
-                onClick={() => handlePersonClick(person.id)}
+                onClick={() => handlePersonClick(person.requestCreatorId?.toString() || '')}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
                   padding: '8px 15px',
-                  backgroundColor: selectedPersonId === person.id ? 'rgba(80, 180, 255, 0.15)' : 'rgba(26, 32, 38, 0.8)',
+                  backgroundColor: selectedPersonId === person.requestCreatorId?.toString() ? 'rgba(80, 180, 255, 0.15)' : 'rgba(26, 32, 38, 0.8)',
                   borderRadius: '20px',
                   cursor: 'pointer',
                   transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
@@ -738,6 +759,24 @@ const ChatPersonList: React.FC = () => {
           }
         }
       `}</style>
+      
+      {/* Chat Window */}
+      {showChatWindow && selectedUser && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'white',
+          zIndex: 10000
+        }}>
+          <ChatWindow 
+            selectedUser={selectedUser} 
+            onBack={handleBackFromChat} 
+          />
+        </div>
+      )}
     </>
   );
 };
