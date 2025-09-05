@@ -21,7 +21,7 @@ class SignalRService {
     const telegramInitData = (window as any).Telegram?.WebApp?.initData || '';
     
     this.connection = new HubConnectionBuilder()
-      .withUrl('https://api.packsi.net/chatHub', {
+      .withUrl('https://api.packsi.net/api/miniapp/chatHub', {
         accessTokenFactory: () => telegramInitData
       })
       .withAutomaticReconnect({
@@ -62,7 +62,7 @@ class SignalRService {
 
     // Handle incoming messages
     this.connection.on('ReceiveMessage', (message: ChatMessage) => {
-      console.log('Received message via SignalR:', message);
+      console.log('📨 Received message via SignalR:', message);
       this.onMessageReceived?.(message);
     });
 
@@ -79,17 +79,19 @@ class SignalRService {
 
   async connect(): Promise<boolean> {
     if (!this.connection || this.isConnected) {
+      console.log('SignalR already connected or no connection object');
       return this.isConnected;
     }
 
+    console.log('Attempting to connect to SignalR...');
     try {
       await this.connection.start();
       this.isConnected = true;
       this.onConnectionStateChanged?.(true);
-      console.log('SignalR connected successfully');
+      console.log('✅ SignalR connected successfully');
       return true;
     } catch (error) {
-      console.error('Error connecting to SignalR:', error);
+      console.error('❌ Error connecting to SignalR:', error);
       this.isConnected = false;
       this.onConnectionStateChanged?.(false);
       return false;
@@ -130,16 +132,16 @@ class SignalRService {
 
   async joinConversation(conversationId: number): Promise<boolean> {
     if (!this.connection || !this.isConnected) {
-      console.error('SignalR not connected');
+      console.error('❌ SignalR not connected for joining conversation');
       return false;
     }
 
     try {
       await this.connection.invoke('JoinConversation', conversationId);
-      console.log(`Joined conversation ${conversationId}`);
+      console.log(`✅ Joined conversation ${conversationId}`);
       return true;
     } catch (error) {
-      console.error('Error joining conversation:', error);
+      console.error('❌ Error joining conversation:', error);
       return false;
     }
   }
