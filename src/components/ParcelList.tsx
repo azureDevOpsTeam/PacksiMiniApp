@@ -126,26 +126,22 @@ const ParcelList: React.FC<ParcelListProps> = () => {
   type TabType = 'incoming' | 'outgoing' | 'favorites' | 'selected';
   const [activeTab, setActiveTab] = useState<TabType>('outgoing');
 
-  // Filter flights based on search query and active tab
+  // Filter flights based on search query and active tab using recordType
   const filteredFlights = flights.filter(flight => {
-    // Tab filter
+    // Tab filter based on recordType
     let matchesTab = true;
     switch (activeTab) {
       case 'incoming':
-        // Show inbound flights (you may need to add a field to distinguish)
-        matchesTab = true; // For now, show all
+        matchesTab = flight.recordType === 'inbound';
         break;
       case 'outgoing':
-        // Show outbound flights
-        matchesTab = true;
+        matchesTab = flight.recordType === 'outbound';
         break;
       case 'favorites':
-        // Show favorited flights (you may need to add a field)
-        matchesTab = flight.isFavorite === true; // Assuming this field exists
+        matchesTab = flight.recordType === 'favorite';
         break;
       case 'selected':
-        // Show selected flights
-        matchesTab = flight.currentUserStatus === 1;
+        matchesTab = flight.recordType === 'selected';
         break;
       default:
         matchesTab = true;
@@ -289,16 +285,12 @@ const ParcelList: React.FC<ParcelListProps> = () => {
     }
   };
 
-  // Fetch flights based on active tab
+  // Fetch flights using new GetRequestTrips endpoint
   const fetchFlights = async () => {
     setFlightsLoading(true);
     setFlightsError(null);
     try {
-      // For now, we'll fetch outbound trips for all tabs
-      // You can modify this logic based on your API structure
-      const response = activeTab === 'incoming'
-        ? await apiService.getInboundTrips()
-        : await apiService.getOutboundTrips();
+      const response = await apiService.getRequestTrips();
       if (response.objectResult) {
         setFlights(response.objectResult);
       } else {
@@ -334,12 +326,8 @@ const ParcelList: React.FC<ParcelListProps> = () => {
     checkPreferredLocation();
   }, []);
 
-  // Fetch flights when activeTab changes
-  useEffect(() => {
-    if (!showForm) {
-      fetchFlights();
-    }
-  }, [activeTab]);
+  // No need to fetch flights when activeTab changes since we get all data at once
+  // Filtering is now done client-side based on recordType
 
   // Handle form completion
   const handleFormComplete = () => {
@@ -464,30 +452,33 @@ const ParcelList: React.FC<ParcelListProps> = () => {
     <div style={{
       display: 'flex',
       flexDirection: 'column',
-      justifyContent: 'flex-start',
-      alignItems: 'stretch',
-      minHeight: '100vh',
-      padding: '80px 0 0 0',
-      textAlign: 'center',
+      height: '100vh',
+      backgroundColor: theme.colors.background,
+      color: theme.colors.text.primary,
+      direction: isRTL ? 'rtl' : 'ltr',
+      fontFamily: 'IRANSansX, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
       position: 'relative'
     }}>
-      <div style={{
-        minHeight: '100vh',
-        backgroundColor: theme.colors.background,
-        color: theme.colors.text.primary,
-        direction: isRTL ? 'rtl' : 'ltr',
-        fontFamily: 'IRANSansX, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-        width: '100%'
-      }}>
-        {/* Settings Component */}
-        <Settings activeButton={activeButton} setActiveButton={setActiveButton} />
+      {/* Settings Component */}
+      <Settings activeButton={activeButton} setActiveButton={setActiveButton} />
 
+      {/* Fixed Header */}
+      <div style={{
+        position: 'fixed',
+        top: '80px',
+        left: '0',
+        right: '0',
+        backgroundColor: theme.colors.background,
+        zIndex: 100,
+        paddingBottom: '20px',
+      }}>
         {/* Header with Logo */}
         <div style={{
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          marginBottom: '15px'
+          marginBottom: '15px',
+          paddingTop: '20px'
         }}>
           <Logo />
         </div>
@@ -497,7 +488,8 @@ const ParcelList: React.FC<ParcelListProps> = () => {
           margin: '0 auto 20px auto',
           color: '#50b4ff',
           fontFamily: 'IRANSansX, sans-serif',
-          fontWeight: '700'
+          fontWeight: '700',
+          textAlign: 'center'
         }}>
           {(() => {
             switch (activeTab) {
@@ -570,9 +562,18 @@ const ParcelList: React.FC<ParcelListProps> = () => {
             ))}
           </div>
         </div>
+      </div>
+
+      {/* Scrollable Content */}
+      <div style={{
+        marginTop: '240px',
+        flex: 1,
+        overflowY: 'auto',
+        paddingBottom: '20px'
+      }}>
 
         {/* Search Box */}
-        <div style={{ width: '100%', margin: '0 auto 20px auto', maxWidth: '400px', padding: '20px' }}>
+        <div style={{ width: '100%', margin: '5px auto 20px auto', maxWidth: '400px', padding: '20px' }}>
           <div style={{
             position: 'relative'
           }}>
@@ -620,11 +621,10 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                 ✕
               </button>
             )}
-          </div>
         </div>
 
         {/* Flights List */}
-        <div style={{ width: '100%', margin: '0 auto', maxWidth: '400px', padding: '20px' }}>
+        <div style={{ width: '100%', margin: '0 auto', maxWidth: '400px', padding: '20px 0' }}>
           {flightsLoading ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {[1, 2, 3].map((i) => (
@@ -1248,6 +1248,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
           )}
         </div>
       </div>
+    </div>
     </div>
   );
 };

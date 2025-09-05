@@ -441,9 +441,9 @@ class ApiService {
     }
   }
 
-  async getOutboundTrips(): Promise<OutboundTripsResponse> {
+  async getRequestTrips(): Promise<OutboundTripsResponse> {
     try {
-      const response = await fetch(`${API_BASE_URL}/Request/OutboundTrips`, {
+      const response = await fetch(`${API_BASE_URL}/Request/GetRequestTrips`, {
         method: 'GET',
         headers: this.getHeaders()
       });
@@ -455,26 +455,7 @@ class ApiService {
       const data = await response.json();
       return data;
     } catch (error) {
-      console.error('Error fetching outbound trips:', error);
-      throw error;
-    }
-  }
-
-  async getInboundTrips(): Promise<OutboundTripsResponse> {
-    try {
-      const response = await fetch(`${API_BASE_URL}/Request/InboundTrips`, {
-        method: 'GET',
-        headers: this.getHeaders()
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error('Error fetching inbound trips:', error);
+      console.error('Error fetching request trips:', error);
       throw error;
     }
   }
