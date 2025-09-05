@@ -397,7 +397,7 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
                 formatDate(messages[index - 1].sentAt) !== formatDate(message.sentAt);
               
               return (
-                <React.Fragment key={message.id}>
+                <React.Fragment key={`message-${index}-${message.id}`}>
                   {showDate && (
                     <li style={{
                       textAlign: 'center',

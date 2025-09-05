@@ -138,7 +138,7 @@ const ChatPersonList: React.FC = () => {
     setSelectedPersonId(personId);
     
     // Find the selected user from liveChatUsers
-    const user = liveChatUsers.find(u => u.requestCreatorId?.toString() === personId);
+    const user = liveChatUsers.find(u => u.RequestId?.toString() === personId);
     if (user) {
       setSelectedUser(user);
       setShowChatWindow(true);
@@ -350,7 +350,7 @@ const ChatPersonList: React.FC = () => {
             { key: 'online' as TabType, label: language === 'fa' ? 'آنلاین' : 'Online', icon: '🟢', count: 2 },
             { key: 'archive' as TabType, label: language === 'fa' ? 'آرشیو' : 'Archive', icon: '📁', count: 0 }
           ].map((tab, index) => (
-            <React.Fragment key={tab.key}>
+            <React.Fragment key={`tab-${index}-${tab.key}`}>
               <button
                 onClick={() => setActiveTab(tab.key)}
                 style={{
