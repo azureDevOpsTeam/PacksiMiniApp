@@ -139,8 +139,8 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
 
 
   const requestTypes = [
-    { id: 0, name: t('createRequest.passenger'), nameEn: 'Passenger' },
-    { id: 1, name: t('createRequest.sender'), nameEn: 'Sender' }
+    { id: 1, name: t('createRequest.passenger'), nameEn: 'Passenger' },
+    { id: 2, name: t('createRequest.sender'), nameEn: 'Sender' }
   ];
 
 
