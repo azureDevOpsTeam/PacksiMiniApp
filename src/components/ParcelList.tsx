@@ -520,7 +520,6 @@ const ParcelList: React.FC<ParcelListProps> = () => {
         <div style={{
           display: 'flex',
           justifyContent: 'center',
-          marginBottom: '20px',
           padding: '0 20px'
         }}>
           <div style={{
