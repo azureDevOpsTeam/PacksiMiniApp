@@ -1,4 +1,4 @@
-import type { CreateRequestPayload, ApiResponse, CreateRequestResponse, CitiesTreeResponse, ItemTypeResponse, CountriesResponse, UserInfoResponse, VerifyPhoneNumberPayload, VerifyPhoneNumberResponse, ValidateResponse, AddUserPreferredLocationRequest, AddUserPreferredLocationResponse, UpdateProfileRequest, UpdateProfileResponse, OutboundTripsResponse, SelectRequestPayload, SelectRequestResponse, GetMyRequestTripsResponse } from '../types/api';
+import type { CreateRequestPayload, ApiResponse, CreateRequestResponse, CitiesTreeResponse, ItemTypeResponse, CountriesResponse, UserInfoResponse, VerifyPhoneNumberPayload, VerifyPhoneNumberResponse, ValidateResponse, AddUserPreferredLocationRequest, AddUserPreferredLocationResponse, UpdateProfileRequest, UpdateProfileResponse, OutboundTripsResponse, SelectRequestPayload, SelectRequestResponse, GetMyRequestTripsResponse, LiveChatUsersResponse } from '../types/api';
 
 const API_BASE_URL = 'https://api.packsi.net/api/miniapp';
 //const API_BASE_URL = 'http://localhost:5005/api/miniapp';
@@ -89,7 +89,7 @@ class ApiService {
       headers['X-Telegram-Init-Data'] = initData;
     } else {
       // Use provided token for development
-      headers['X-Telegram-Init-Data'] = 'user=%7B%22id%22%3A5933914644%2C%22first_name%22%3A%22Shahram%22%2C%22last_name%22%3A%22%22%2C%22username%22%3A%22ShahramOweisy%22%2C%22language_code%22%3A%22en%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Ft.me%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2FQGwtYapyXkY4-jZJkczPeUb_XKfimJozOKy8lZzBhtQc4cO4xBQzwdPwcb_QSNih.svg%22%7D&chat_instance=-2675852455221065738&chat_type=sender&auth_date=1756919843&signature=oVTvDp3bgZDaX_Yds0PCzANzn1HuH6xTGfLaR3WXKzzwU8e2kceGTS79nkv9Jugd0JYxT5CxBkTyWtD0kd55Bw&hash=f5ca10f64ee5cc692049905c26cadb73fdd05c22bee2fcb1b71da41a149f3f14';
+      headers['X-Telegram-Init-Data'] = 'user=%7B%22id%22%3A5933914644%2C%22first_name%22%3A%22Shahram%22%2C%22last_name%22%3A%22%22%2C%22language_code%22%3A%22en%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Ft.me%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2FQGwtYapyXkY4-jZJkczPeUb_XKfimJozOKy8lZzBhtQc4cO4xBQzwdPwcb_QSNih.svg%22%7D&chat_instance=-2675852455221065738&chat_type=sender&auth_date=1757080096&signature=aQwFSYCv7hl42G0l0JJwhgbEyluQyTbBcI83UwnTYWprJ9tK_ki3inQ92JtpdMm8kYN5b9FAx5Jzdu6OelmRBw&hash=01902d3255aba73e70ff387e58237fd65d420adaee9f03862198bc36133b5fc3';
     }
 
     // Add additional headers for mobile compatibility
@@ -501,6 +501,25 @@ class ApiService {
       return data;
     } catch (error) {
       console.error('Error selecting request:', error);
+      throw error;
+    }
+  }
+
+  async getLiveChatUsers(): Promise<LiveChatUsersResponse> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/LiveChat/users`, {
+        method: 'GET',
+        headers: this.getHeaders()
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching live chat users:', error);
       throw error;
     }
   }

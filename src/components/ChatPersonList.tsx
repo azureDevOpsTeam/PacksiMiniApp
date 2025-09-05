@@ -1,6 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLanguage } from '../hooks/useLanguage';
 import { useTelegramContext } from '../hooks/useTelegramContext';
+import { apiService } from '../services/apiService';
+import type { LiveChatUser } from '../types/api';
 import Logo from './Logo';
 import Settings from './Settings';
 
@@ -14,17 +16,83 @@ interface ChatPerson {
   unreadCount: number;
   type: 'personal' | 'group';
   isArchived: boolean;
+  requestId?: number;
+  requestCreatorId?: number;
+  currentUserAccountId?: number;
+  isBlocked?: boolean;
+  LastSeenEn?: string | null;
+  LastSeenFa?: string | null;
 }
 
 type TabType = 'all' | 'online' | 'archive' | 'groups';
 
 const ChatPersonList: React.FC = () => {
   const { language } = useLanguage();
-  const {webApp } = useTelegramContext();
+  const { webApp } = useTelegramContext();
   const [activeButton, setActiveButton] = React.useState<'user' | 'admin'>('user');
   const [selectedPersonId, setSelectedPersonId] = React.useState<string | null>(null);
   const [showMenu, setShowMenu] = React.useState<string | null>(null);
   const [activeTab, setActiveTab] = React.useState<TabType>('all');
+  const [chatPersons, setChatPersons] = useState<ChatPerson[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Convert LiveChatUser to ChatPerson
+  const convertLiveChatUserToChatPerson = (user: LiveChatUser): ChatPerson => {
+    const lastSeenValue = language === 'fa' ? user.LastSeenFa : user.LastSeenEn;
+
+    return {
+      id: user.RequestId?.toString() || 'unknown',
+      name: user.requestCreatorDisplayName || 'Unknown User',
+      lastMessage: user.LastMessage || '',
+      time: lastSeenValue || '',
+      avatar: user.avatar || '',
+      isOnline: user.isOnline || false,
+      unreadCount: 0, // This might need to be added to API response
+      type: 'personal' as const,
+      isArchived: false,
+      requestId: user.RequestId,
+      requestCreatorId: user.requestCreatorId,
+      currentUserAccountId: user.currentUserAccountId,
+      isBlocked: user.isBlocked || false,
+      LastSeenEn: user.LastSeenEn,
+      LastSeenFa: user.LastSeenFa
+    };
+  };
+
+  // Fetch live chat users
+  const fetchLiveChatUsers = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await apiService.getLiveChatUsers();
+
+      if (response?.requestStatus?.value === 0) {
+        const users = response.objectResult || [];
+        // Add realistic test data if API doesn't return LastSeen fields
+        const usersWithLastSeen = users.map(user => ({
+          ...user,
+          LastSeenEn: user.LastSeenEn || 'Recently',
+          LastSeenFa: user.LastSeenFa || 'به تازگی'
+        }));
+
+        const convertedUsers = usersWithLastSeen.map(convertLiveChatUserToChatPerson);
+        setChatPersons(convertedUsers);
+      } else {
+        setError(response?.message || 'خطا در دریافت لیست کاربران');
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'خطا در دریافت لیست کاربران');
+      console.error('Error fetching live chat users:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch live chat users on component mount
+  useEffect(() => {
+    fetchLiveChatUsers();
+  }, []);
 
   // Setup back button
   useEffect(() => {
@@ -43,109 +111,28 @@ const ChatPersonList: React.FC = () => {
       webApp.BackButton.hide();
     };
   }, [webApp]);
- 
-  // Sample data
-  const allChatPersons: ChatPerson[] = [
-    {
-      id: '1',
-      name: 'Ahmad Mohammadi',
-      lastMessage: 'Hello, how are you?',
-      time: '10:30',
-      avatar: 'src/assets/images/avatar/07.jpg',
-      isOnline: true,
-      unreadCount: 2,
-      type: 'personal',
-      isArchived: false
-    },
-    {
-      id: '2', 
-      name: 'Fateme Ahmadi',
-      lastMessage: 'We have a meeting tomorrow',
-      time: '09:15',
-      avatar: 'src/assets/images/avatar/06.jpg',
-      isOnline: true,
-      unreadCount: 0,
-      type: 'personal',
-      isArchived: false
-    },
-    {
-      id: '3',
-      name: 'Ali Rezaei', 
-      lastMessage: 'Thanks for your help',
-      time: 'Yesterday',
-      avatar: 'src/assets/images/avatar/05.jpg',
-      isOnline: false,
-      unreadCount: 1,
-      type: 'personal',
-      isArchived: false
-    },
-    {
-      id: '4',
-      name: 'Development Team',
-      lastMessage: 'New project started',
-      time: '14:20',
-      avatar: 'src/assets/images/avatar/02.jpg',
-      isOnline: true,
-      unreadCount: 5,
-      type: 'personal',
-      isArchived: false
-    },
-    {
-      id: '5',
-      name: 'Design Team',
-      lastMessage: 'New design is ready',
-      time: '16:45',
-      avatar: 'src/assets/images/avatar/04.jpg',
-      isOnline: false,
-      unreadCount: 3,
-      type: 'personal',
-      isArchived: false
-    },
-    {
-      id: '6',
-      name: 'Design Team',
-      lastMessage: 'New design is ready',
-      time: '16:45',
-      avatar: 'src/assets/images/avatar/03.jpg',
-      isOnline: false,
-      unreadCount: 3,
-      type: 'personal',
-      isArchived: false
-    },
-    {
-      id: '7',
-      name: 'Design Team',
-      lastMessage: 'New design is ready',
-      time: '16:45',
-      avatar: 'src/assets/images/avatar/01.jpg',
-      isOnline: true,
-      unreadCount: 3,
-      type: 'personal',
-      isArchived: false
-    }
-  ];
 
   // Filter chats based on active tab
   const getFilteredChats = () => {
     switch (activeTab) {
       case 'online':
-        return allChatPersons.filter(person => person.isOnline && !person.isArchived);
+        return chatPersons.filter(person => person.isOnline && !person.isArchived);
       case 'archive':
-        return allChatPersons.filter(person => person.isArchived);
+        return chatPersons.filter(person => person.isArchived);
       case 'groups':
-        return allChatPersons.filter(person => person.type === 'group' && !person.isArchived);
+        return chatPersons.filter(person => person.type === 'group' && !person.isArchived);
       case 'all':
       default:
-        return allChatPersons.filter(person => !person.isArchived);
+        return chatPersons.filter(person => !person.isArchived);
     }
   };
 
-  const chatPersons = getFilteredChats();
+  const filteredChatPersons = getFilteredChats();
 
   const handlePersonClick = (personId: string) => {
     setSelectedPersonId(personId);
     if (webApp) {
-      webApp.showAlert(`Opening chat with ${chatPersons.find(p => p.id === personId)?.name}`);
+      webApp.showAlert(`Opening chat with ${filteredChatPersons.find(p => p.id === personId)?.name}`);
     }
   };
 
@@ -156,12 +143,17 @@ const ChatPersonList: React.FC = () => {
     }
   };
 
+  // Refresh function
+  const handleRefresh = () => {
+    fetchLiveChatUsers();
+  };
+
   // Close menu when clicking outside
   React.useEffect(() => {
     const handleClickOutside = () => {
       setShowMenu(null);
     };
-    
+
     if (showMenu) {
       document.addEventListener('click', handleClickOutside);
       return () => document.removeEventListener('click', handleClickOutside);
@@ -172,7 +164,7 @@ const ChatPersonList: React.FC = () => {
     <>
       {/* Global Menu Overlay */}
       {showMenu && (
-        <div 
+        <div
           style={{
             position: 'fixed',
             top: 0,
@@ -188,7 +180,7 @@ const ChatPersonList: React.FC = () => {
           }}
           onClick={() => setShowMenu(null)}
         >
-          <div 
+          <div
             style={{
               backgroundColor: 'rgba(23, 33, 43, 0.98)',
               borderRadius: '24px',
@@ -214,7 +206,7 @@ const ChatPersonList: React.FC = () => {
               animation: 'shimmer 3s infinite',
               pointerEvents: 'none'
             }} />
-            
+
             {/* Menu Header */}
             <div style={{
               textAlign: 'center',
@@ -232,7 +224,7 @@ const ChatPersonList: React.FC = () => {
                 {language === 'fa' ? 'گزینه‌های چت' : 'Chat Options'}
               </h3>
             </div>
-            
+
             {/* Menu Items */}
             {[
               { label: language === 'fa' ? 'پین کردن چت' : 'Pin Chat', icon: '📌', color: '#ffa502' },
@@ -244,7 +236,7 @@ const ChatPersonList: React.FC = () => {
                 key={index}
                 onClick={(e) => {
                   e.stopPropagation();
-                  const person = chatPersons.find(p => p.id === showMenu);
+                  const person = filteredChatPersons.find(p => p.id === showMenu);
                   if (person) {
                     handleMenuAction(item.label, person.name);
                   }
@@ -306,7 +298,7 @@ const ChatPersonList: React.FC = () => {
       }}>
         {/* Settings Component */}
         <Settings activeButton={activeButton} setActiveButton={setActiveButton} />
-        
+
         {/* Logo */}
         <div style={{
           display: 'flex',
@@ -316,11 +308,11 @@ const ChatPersonList: React.FC = () => {
         }}>
           <Logo />
         </div>
-        
+
         {/* Welcome Text */}
-        <p style={{ 
-          marginBottom: '20px', 
-          fontSize: '14px', 
+        <p style={{
+          marginBottom: '20px',
+          fontSize: '14px',
           fontFamily: 'IRANSansX, sans-serif',
           color: '#848d96'
         }}>
@@ -346,9 +338,8 @@ const ChatPersonList: React.FC = () => {
             { key: 'online' as TabType, label: language === 'fa' ? 'آنلاین' : 'Online', icon: '🟢', count: 2 },
             { key: 'archive' as TabType, label: language === 'fa' ? 'آرشیو' : 'Archive', icon: '📁', count: 0 }
           ].map((tab, index) => (
-            <>
+            <React.Fragment key={tab.key}>
               <button
-                key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
                 style={{
                   flex: 1,
@@ -400,7 +391,7 @@ const ChatPersonList: React.FC = () => {
                 )}
                 <span style={{ position: 'relative', zIndex: 1, fontSize: '14px' }}>{tab.icon}</span>
                 <span style={{ position: 'relative', zIndex: 1 }}>{tab.label}</span>
-                
+
                 {/* Badge for notifications */}
                 {tab.count > 0 && (
                   <span style={{
@@ -431,9 +422,8 @@ const ChatPersonList: React.FC = () => {
                   height: '20px',
                   backgroundColor: 'rgba(134, 150, 160, 0.2)',
                   alignSelf: 'center'
-                }} />
-              )}
-            </>
+                }} />)}              
+            </React.Fragment>
           ))}
         </div>
 
@@ -445,7 +435,42 @@ const ChatPersonList: React.FC = () => {
           flexDirection: 'column',
           gap: '12px'
         }}>
-          {chatPersons.length === 0 ? (
+          {loading ? (
+            <div style={{
+              textAlign: 'center',
+              padding: '40px 20px',
+              color: '#848d96',
+              fontSize: '14px',
+              fontFamily: 'IRANSansX, sans-serif'
+            }}>
+              {language === 'fa' ? 'در حال بارگذاری...' : 'Loading...'}
+            </div>
+          ) : error ? (
+            <div style={{
+              textAlign: 'center',
+              padding: '40px 20px',
+              color: '#ff6b6b',
+              fontSize: '14px',
+              fontFamily: 'IRANSansX, sans-serif'
+            }}>
+              <div>{error}</div>
+              <button
+                onClick={handleRefresh}
+                style={{
+                  marginTop: '10px',
+                  padding: '8px 16px',
+                  backgroundColor: '#50b4ff',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  fontFamily: 'IRANSansX, sans-serif'
+                }}
+              >
+                {language === 'fa' ? 'تلاش مجدد' : 'Retry'}
+              </button>
+            </div>
+          ) : filteredChatPersons.length === 0 ? (
             <div style={{
               textAlign: 'center',
               padding: '40px 20px',
@@ -456,7 +481,7 @@ const ChatPersonList: React.FC = () => {
               {language === 'fa' ? 'چتی یافت نشد' : 'No chats found'}
             </div>
           ) : (
-            chatPersons.map((person, index) => (
+            filteredChatPersons.map((person, index) => (
               <div
                 key={person.id}
                 onClick={() => handlePersonClick(person.id)}

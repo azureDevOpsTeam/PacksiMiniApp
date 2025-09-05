@@ -320,3 +320,31 @@ export interface GetMyRequestTripsResponse {
   data: MyRequestTrip[];
   message?: string;
 }
+
+// LiveChat API Types
+export interface LiveChatUser {
+  requestCreatorId: number;
+  RequestId: number;
+  requestCreatorDisplayName: string;
+  currentUserAccountId: number;
+  avatar: string;
+  LastMessage: string;
+  isOnline: boolean;
+  isBlocked: boolean;
+  LastSeenEn: string | null;
+  LastSeenFa: string | null;
+}
+
+export interface LiveChatUsersResponse {
+  validationResult: any;
+  requestStatus: {
+    name: string;
+    value: number;
+  };
+  message: string;
+  objectResult: LiveChatUser[];
+  notificationType: {
+    name: string;
+    value: number;
+  };
+}
