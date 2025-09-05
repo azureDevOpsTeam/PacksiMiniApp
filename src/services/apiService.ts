@@ -460,9 +460,9 @@ class ApiService {
     }
   }
 
-  async getMyRequestTrips(userId: number): Promise<GetMyRequestTripsResponse> {
+  async getMyRequestTrips(): Promise<GetMyRequestTripsResponse> {
     try {
-      const response = await fetch(`${API_BASE_URL}/Request/GetMyRequestTrips?userId=${userId}`, {
+      const response = await fetch(`${API_BASE_URL}/Request/GetMyRequestTrips`, {
         method: 'GET',
         headers: this.getHeaders()
       });

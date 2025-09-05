@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../hooks/useLanguage';
 import { useTheme } from '../hooks/useTheme';
-import { useTelegramContext } from '../hooks/useTelegramContext';
+// import { useTelegramContext } from '../hooks/useTelegramContext'; // Not needed
 import { apiService } from '../services/apiService';
 import type { MyRequestTrip } from '../types/api';
 import Logo from './Logo';
@@ -84,9 +84,9 @@ type TabType = 'passenger' | 'sender';
 interface MyRequestProps {}
 
 const MyRequest: React.FC<MyRequestProps> = () => {
-  const { isRTL, t } = useLanguage();
+  const { isRTL } = useLanguage();
   const { theme } = useTheme();
-  const { user } = useTelegramContext();
+  // const { user } = useTelegramContext(); // Not needed as API uses token
   
   const [activeTab, setActiveTab] = useState<TabType>('passenger');
   const [requests, setRequests] = useState<MyRequestTrip[]>([]);
@@ -97,12 +97,10 @@ const MyRequest: React.FC<MyRequestProps> = () => {
   // Fetch requests
   useEffect(() => {
     const fetchRequests = async () => {
-      if (!user?.id) return;
-      
       try {
         setRequestsLoading(true);
         setRequestsError(null);
-        const response = await apiService.getMyRequestTrips(user.id);
+        const response = await apiService.getMyRequestTrips();
         setRequests(response.data || []);
       } catch (error) {
         console.error('Error fetching requests:', error);
@@ -113,7 +111,7 @@ const MyRequest: React.FC<MyRequestProps> = () => {
     };
 
     fetchRequests();
-  }, [user?.id, isRTL]);
+  }, [isRTL]);
 
   // Filter requests based on active tab and search query
   const filteredRequests = requests.filter(request => {

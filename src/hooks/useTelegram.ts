@@ -17,8 +17,18 @@ export const useTelegram = (): TelegramContextType => {
       // Set up the app
       // Expand to full screen to hide header
       WebApp.expand();
-      if (WebApp.platform !== 'tdesktop')
-        WebApp.requestFullscreen();
+      // Check if requestFullscreen is supported (available from version 6.1+)
+      if (WebApp.platform !== 'tdesktop' && 
+          typeof WebApp.requestFullscreen === 'function' && 
+          WebApp.version && 
+          parseFloat(WebApp.version) >= 6.1) {
+        try {
+          WebApp.requestFullscreen();
+        } catch (error) {
+          // requestFullscreen not supported in this version
+          console.warn('requestFullscreen not supported in this Telegram WebApp version');
+        }
+      }
       // Hide header by setting it to transparent/secondary background
       WebApp.setHeaderColor('secondary_bg_color');
 

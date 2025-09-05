@@ -27,7 +27,7 @@ const AppContent: React.FC = () => {
   const { isReady, webApp, user } = useTelegramContext();
   const { t, language } = useLanguage();
   const [activeButton, setActiveButton] = React.useState<'user' | 'admin'>('user');
-  const [currentPage, setCurrentPage] = React.useState<'home' | 'createRequest' | 'updateProfile' | 'addPreferredLocation' | 'parcelList' | 'chatPersonList' | 'notFound'>('home');
+  const [currentPage, setCurrentPage] = React.useState<'home' | 'createRequest' | 'updateProfile' | 'addPreferredLocation' | 'parcelList' | 'myRequest' | 'chatPersonList' | 'notFound'>('home');
   const [showVerifyPhone, setShowVerifyPhone] = React.useState<boolean>(false);
   const [showUpdateProfile, setShowUpdateProfile] = React.useState<boolean>(false);
   const [isValidating, setIsValidating] = React.useState<boolean>(true);
