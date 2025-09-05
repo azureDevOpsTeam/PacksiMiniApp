@@ -12,6 +12,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@microsoft/signalr": "^9.0.6",
     "@twa-dev/sdk": "^8.0.2",
     "@twa-dev/types": "^8.0.2",
     "i18next": "^25.3.6",

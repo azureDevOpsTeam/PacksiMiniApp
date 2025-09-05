@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled, { keyframes, css } from 'styled-components';
 import { apiService } from '../services/apiService';
+import signalRService from '../services/signalRService';
 import type { ChatMessage, LiveChatUser } from '../types/api';
 
 // Animations
@@ -222,6 +223,35 @@ const LoadingSpinner = styled.div`
   }
 `;
 
+const ConnectionStatus = styled.div<{ $connected: boolean }>`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  background: ${props => props.$connected ? '#4CAF50' : '#f44336'};
+  color: white;
+  z-index: 10;
+`;
+
+const TypingIndicator = styled.div`
+  padding: 8px 16px;
+  font-size: 12px;
+  color: #666;
+  font-style: italic;
+  background: #f5f5f5;
+  border-radius: 8px;
+  margin: 4px 0;
+  animation: pulse 1.5s ease-in-out infinite;
+  
+  @keyframes pulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+  }
+`;
+
 interface ChatWindowProps {
   selectedUser: LiveChatUser;
 }
@@ -231,7 +261,10 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
+  const [isSignalRConnected, setIsSignalRConnected] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const typingTimeoutRef = useRef<number | null>(null);
   
 
 
@@ -242,25 +275,62 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
   const handleSendMessage = async () => {
     if (!newMessage.trim() || sending || !selectedUser) return;
 
+    const messageContent = newMessage.trim();
+    setNewMessage('');
     setSending(true);
+
     try {
+      // Try to send via SignalR first
+      if (signalRService.connected && selectedUser.conversationId) {
+        const success = await signalRService.sendMessage(
+          selectedUser.conversationId,
+          messageContent,
+          selectedUser.reciverId
+        );
+        
+        if (success) {
+          // Message sent via SignalR, it will be received via the SignalR event
+          return;
+        }
+      }
+      
+      // Fallback to REST API if SignalR fails
       const messageData = {
         model: {
           receiverId: selectedUser.reciverId,
-          content: newMessage.trim()
+          content: messageContent
         }
       };
 
       const response = await apiService.sendMessage(messageData);
       
       if (response.objectResult) {
-        setNewMessage('');
         await fetchMessages();
       }
     } catch (error) {
       console.error('Error sending message:', error);
+      // Restore message on error
+      setNewMessage(messageContent);
     } finally {
       setSending(false);
+    }
+  };
+
+  const handleTyping = () => {
+    if (signalRService.connected && selectedUser.conversationId) {
+      signalRService.sendTypingIndicator(selectedUser.conversationId, true);
+      
+      // Clear previous timeout
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+      
+      // Set timeout to stop typing indicator
+      typingTimeoutRef.current = setTimeout(() => {
+        if (signalRService.connected && selectedUser.conversationId) {
+          signalRService.sendTypingIndicator(selectedUser.conversationId, false);
+        }
+      }, 2000);
     }
   };
 
@@ -280,12 +350,63 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
     scrollToBottom();
   }, [messages]);
 
+  // Initialize SignalR connection
+  useEffect(() => {
+    const initializeSignalR = async () => {
+      // Set up event handlers
+      signalRService.onMessage((message: ChatMessage) => {
+        // Only add message if it belongs to current conversation
+        if (message.conversationId === selectedUser.conversationId) {
+          setMessages(prev => {
+            // Check if message already exists to avoid duplicates
+            const exists = prev.some(m => m.id === message.id);
+            if (!exists) {
+              return [...prev, message];
+            }
+            return prev;
+          });
+        }
+      });
+
+      signalRService.onConnectionStateChange((connected: boolean) => {
+        setIsSignalRConnected(connected);
+      });
+
+      signalRService.onTyping((userId: number, typing: boolean) => {
+        // Show typing indicator if it's from the other user in current conversation
+        if (userId === selectedUser.reciverId) {
+          setIsTyping(typing);
+        }
+      });
+
+      // Connect to SignalR
+      const connected = await signalRService.connect();
+      if (connected && selectedUser.conversationId) {
+        await signalRService.joinConversation(selectedUser.conversationId);
+      }
+    };
+
+    initializeSignalR();
+
+    // Cleanup on unmount
+    return () => {
+      if (selectedUser.conversationId) {
+        signalRService.leaveConversation(selectedUser.conversationId);
+      }
+    };
+  }, [selectedUser.conversationId, selectedUser.reciverId]);
+
 
 
 
 
   useEffect(() => {
     loadConversationAndMessages();
+    
+    // Join the new conversation via SignalR
+    if (signalRService.connected && selectedUser.conversationId) {
+      signalRService.joinConversation(selectedUser.conversationId);
+    }
   }, [selectedUser.conversationId, selectedUser.reciverId]);
 
   useEffect(() => {
@@ -307,16 +428,9 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
     try {
       setLoading(true);
       
-      console.log('Loading conversation for user:', {
-        conversationId: selectedUser.conversationId,
-        reciverId: selectedUser.reciverId,
-        requestCreatorDisplayName: selectedUser.requestCreatorDisplayName
-      });
-      
       // Use conversationId directly from selectedUser
       if (selectedUser.conversationId) {
         // Load messages for this conversation
-        console.log('Calling API with conversationId:', selectedUser.conversationId);
         const messagesResponse = await apiService.getMessages(selectedUser.conversationId);
         setMessages(messagesResponse.objectResult);
         
@@ -375,6 +489,9 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
 
   return (
     <ChatContainer>
+      <ConnectionStatus $connected={isSignalRConnected}>
+        {isSignalRConnected ? 'متصل' : 'قطع شده'}
+      </ConnectionStatus>
 
       {/* Messages */}
       <ChatThread>
@@ -428,6 +545,11 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
                 </React.Fragment>
               );
             })}
+            {isTyping && (
+              <TypingIndicator>
+                {selectedUser.requestCreatorDisplayName} در حال تایپ...
+              </TypingIndicator>
+            )}
           </MessageList>
         )}
         <div ref={messagesEndRef} />
@@ -437,7 +559,10 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
         <ChatInput
           type="text"
           value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
+          onChange={(e) => {
+            setNewMessage(e.target.value);
+            handleTyping();
+          }}
           onKeyPress={handleKeyPress}
           placeholder="پیام خود را بنویسید..."
           disabled={sending}
