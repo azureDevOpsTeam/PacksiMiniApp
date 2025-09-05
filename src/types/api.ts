@@ -333,6 +333,7 @@ export interface LiveChatUser {
   isBlocked: boolean;
   lastSeenEn: string | null;
   lastSeenFa: string | null;
+  conversationId: number;
 }
 
 export interface LiveChatUsersResponse {

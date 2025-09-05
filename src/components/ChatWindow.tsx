@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import styled, { keyframes } from 'styled-components';
+import styled, { keyframes, css } from 'styled-components';
 import { apiService } from '../services/apiService';
-import type { ChatMessage, Conversation, LiveChatUser } from '../types/api';
+import type { ChatMessage, LiveChatUser } from '../types/api';
 
 // Animations
 const showChatEven = keyframes`
@@ -58,7 +58,7 @@ const MessageItem = styled.li<{ isOdd: boolean }>`
   border-radius: 10px;
   background-color: rgba(25, 147, 147, 0.2);
   
-  ${props => props.isOdd ? `
+  ${props => props.isOdd ? css`
     animation: ${showChatOdd} 0.15s 1 ease-in;
     float: right;
     margin-right: 80px;
@@ -85,7 +85,7 @@ const MessageItem = styled.li<{ isOdd: boolean }>`
       border-top: 15px solid rgba(25, 147, 147, 0.2);
       border-right: 15px solid transparent;
     }
-  ` : `
+  ` : css`
     animation: ${showChatEven} 0.15s 1 ease-in;
     float: left;
     margin-left: 80px;
@@ -231,7 +231,6 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
-  const [conversation, setConversation] = useState<Conversation | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
 
@@ -287,14 +286,14 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
 
   useEffect(() => {
     loadConversationAndMessages();
-  }, [selectedUser.reciverId]);
+  }, [selectedUser.conversationId, selectedUser.reciverId]);
 
   useEffect(() => {
     // Mark messages as read when chat window opens
     const markMessagesAsRead = async () => {
-      if (conversation?.id) {
+      if (selectedUser.conversationId) {
         try {
-          await apiService.markConversationAsRead(conversation.id);
+          await apiService.markConversationAsRead(selectedUser.conversationId);
         } catch (error) {
           console.error('Error marking messages as read:', error);
         }
@@ -302,27 +301,22 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
     };
 
     markMessagesAsRead();
-  }, [conversation?.id]);
+  }, [selectedUser.conversationId]);
 
   const loadConversationAndMessages = async () => {
     try {
       setLoading(true);
       
-      // First get conversations to find the conversation with this user
-      const conversationsResponse = await apiService.getConversations();
-      const userConversation = conversationsResponse.objectResult.find(
-        (conv: Conversation) => conv.participantId === selectedUser.reciverId
-      );
-      
-      if (userConversation) {
-        setConversation(userConversation);
-        
+      // Use conversationId directly from selectedUser
+      if (selectedUser.conversationId) {
         // Load messages for this conversation
-        const messagesResponse = await apiService.getMessages(userConversation.id);
+        const messagesResponse = await apiService.getMessages(selectedUser.conversationId);
         setMessages(messagesResponse.objectResult);
         
         // Mark conversation as read
-        await apiService.markConversationAsRead(userConversation.id);
+        await apiService.markConversationAsRead(selectedUser.conversationId);
+        
+        // Conversation loaded successfully
       } else {
         // No existing conversation, start with empty messages
         setMessages([]);
@@ -335,9 +329,9 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
   };
 
   const fetchMessages = async () => {
-    if (conversation?.id) {
+    if (selectedUser.conversationId) {
       try {
-        const messagesResponse = await apiService.getMessages(conversation.id);
+        const messagesResponse = await apiService.getMessages(selectedUser.conversationId);
         setMessages(messagesResponse.objectResult);
       } catch (error) {
         console.error('Error fetching messages:', error);
