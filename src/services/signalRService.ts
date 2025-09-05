@@ -21,7 +21,7 @@ class SignalRService {
     const telegramInitData = (window as any).Telegram?.WebApp?.initData || '';
     
     this.connection = new HubConnectionBuilder()
-      .withUrl('https://api.packsi.net/api/miniapp/chatHub', {
+      .withUrl('https://api.packsi.net/chatHub', {
         accessTokenFactory: () => telegramInitData
       })
       .withAutomaticReconnect({
