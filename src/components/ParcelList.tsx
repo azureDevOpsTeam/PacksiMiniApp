@@ -121,10 +121,36 @@ const ParcelList: React.FC<ParcelListProps> = () => {
   const [apiResult, setApiResult] = useState<{success: boolean, message: string} | null>(null);
 
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [tripType, setTripType] = useState<'inbound' | 'outbound'>('outbound');
+  
+  // Tab system
+  type TabType = 'incoming' | 'outgoing' | 'favorites' | 'selected';
+  const [activeTab, setActiveTab] = useState<TabType>('outgoing');
 
-  // Filter flights based on search query
+  // Filter flights based on search query and active tab
   const filteredFlights = flights.filter(flight => {
+    // Tab filter
+    let matchesTab = true;
+    switch (activeTab) {
+      case 'incoming':
+        // Show inbound flights (you may need to add a field to distinguish)
+        matchesTab = true; // For now, show all
+        break;
+      case 'outgoing':
+        // Show outbound flights
+        matchesTab = true;
+        break;
+      case 'favorites':
+        // Show favorited flights (you may need to add a field)
+        matchesTab = flight.isFavorite === true; // Assuming this field exists
+        break;
+      case 'selected':
+        // Show selected flights
+        matchesTab = flight.currentUserStatus === 1;
+        break;
+      default:
+        matchesTab = true;
+    }
+    
     // Search filter
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase().trim();
@@ -137,10 +163,10 @@ const ParcelList: React.FC<ParcelListProps> = () => {
         destinationCity.includes(query) ||
         itemTypesText.includes(query);
 
-      return matchesSearch;
+      return matchesTab && matchesSearch;
     }
 
-    return true;
+    return matchesTab;
   });
 
   // Close menu when clicking outside
@@ -263,14 +289,16 @@ const ParcelList: React.FC<ParcelListProps> = () => {
     }
   };
 
-  // Fetch flights based on trip type
+  // Fetch flights based on active tab
   const fetchFlights = async () => {
     setFlightsLoading(true);
     setFlightsError(null);
     try {
-      const response = tripType === 'outbound'
-        ? await apiService.getOutboundTrips()
-        : await apiService.getInboundTrips();
+      // For now, we'll fetch outbound trips for all tabs
+      // You can modify this logic based on your API structure
+      const response = activeTab === 'incoming'
+        ? await apiService.getInboundTrips()
+        : await apiService.getOutboundTrips();
       if (response.objectResult) {
         setFlights(response.objectResult);
       } else {
@@ -306,12 +334,12 @@ const ParcelList: React.FC<ParcelListProps> = () => {
     checkPreferredLocation();
   }, []);
 
-  // Fetch flights when tripType changes
+  // Fetch flights when activeTab changes
   useEffect(() => {
     if (!showForm) {
       fetchFlights();
     }
-  }, [tripType]);
+  }, [activeTab]);
 
   // Handle form completion
   const handleFormComplete = () => {
@@ -454,68 +482,6 @@ const ParcelList: React.FC<ParcelListProps> = () => {
         {/* Settings Component */}
         <Settings activeButton={activeButton} setActiveButton={setActiveButton} />
 
-        {/* Trip Type Filter Buttons */}
-        <div style={{
-          position: 'absolute',
-          top: '80px',
-          left: '-1px',
-          display: 'flex',
-          flexDirection: 'column',
-          zIndex: 1000
-        }}>
-          <button
-            onClick={() => setTripType('outbound')}
-            style={{
-              width: '40px',
-              height: '40px',
-              borderRadius: '0 10px 0 0',
-              border: '1px solid #3a4a5c',
-              backgroundColor: '#212a33',
-              backdropFilter: 'blur(10px)',
-              color: tripType === 'outbound' ? '#50b4ff' : '#848d96',
-              fontSize: '16px',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              transition: 'all 0.3s ease',
-              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
-              opacity: '0.9'
-            }}
-            title={isRTL ? 'پروازهای خروجی' : 'Outbound Flights'}
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-              <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" fill="currentColor" transform="rotate(-45 12 12)" />
-            </svg>
-          </button>
-
-          <button
-            onClick={() => setTripType('inbound')}
-            style={{
-              width: '40px',
-              height: '40px',
-              borderRadius: '0 0 10px 0',
-              border: '1px solid #3a4a5c',
-              backgroundColor: '#212a33',
-              backdropFilter: 'blur(10px)',
-              color: tripType === 'inbound' ? '#50b4ff' : '#848d96',
-              fontSize: '16px',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              transition: 'all 0.3s ease',
-              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
-              opacity: '0.9'
-            }}
-            title={isRTL ? 'پروازهای ورودی' : 'Inbound Flights'}
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-              <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" fill="currentColor" transform="rotate(135 12 12)" />
-            </svg>
-          </button>
-        </div>
-
         {/* Header with Logo */}
         <div style={{
           display: 'flex',
@@ -533,11 +499,78 @@ const ParcelList: React.FC<ParcelListProps> = () => {
           fontFamily: 'IRANSansX, sans-serif',
           fontWeight: '700'
         }}>
-          {tripType === 'outbound'
-            ? (isRTL ? 'لیست پروازهای خروجی' : 'Outbound Flights List')
-            : (isRTL ? 'لیست پروازهای ورودی' : 'Inbound Flights List')
+          {(() => {
+            switch (activeTab) {
+              case 'incoming':
+                return isRTL ? 'لیست پروازهای ورودی' : 'Incoming Flights List';
+              case 'outgoing':
+                return isRTL ? 'لیست پروازهای خروجی' : 'Outgoing Flights List';
+              case 'favorites':
+                return isRTL ? 'لیست مورد علاقه‌ها' : 'Favorites List';
+              case 'selected':
+                return isRTL ? 'لیست منتخب‌ها' : 'Selected List';
+              default:
+                return isRTL ? 'لیست پروازها' : 'Flights List';
+            }
+          })()
           }
         </h2>
+
+        {/* Tab Bar */}
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          marginBottom: '20px',
+          padding: '0 20px'
+        }}>
+          <div style={{
+            display: 'flex',
+            backgroundColor: '#212a33',
+            borderRadius: '12px',
+            padding: '4px',
+            gap: '2px',
+            border: '1px solid #3a4a5c'
+          }}>
+            {[
+              { key: 'incoming' as TabType, labelFa: 'ورودی', labelEn: 'Incoming' },
+              { key: 'outgoing' as TabType, labelFa: 'خروجی', labelEn: 'Outgoing' },
+              { key: 'favorites' as TabType, labelFa: 'مورد علاقه', labelEn: 'Favorites' },
+              { key: 'selected' as TabType, labelFa: 'منتخب', labelEn: 'Selected' }
+            ].map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  backgroundColor: activeTab === tab.key ? '#50b4ff' : 'transparent',
+                  color: activeTab === tab.key ? '#ffffff' : '#848d96',
+                  fontSize: '12px',
+                  fontFamily: 'IRANSansX, sans-serif',
+                  fontWeight: activeTab === tab.key ? '600' : '400',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  whiteSpace: 'nowrap'
+                }}
+                onMouseEnter={(e) => {
+                  if (activeTab !== tab.key) {
+                    e.currentTarget.style.backgroundColor = 'rgba(80, 180, 255, 0.1)';
+                    e.currentTarget.style.color = '#50b4ff';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (activeTab !== tab.key) {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                    e.currentTarget.style.color = '#848d96';
+                  }
+                }}
+              >
+                {isRTL ? tab.labelFa : tab.labelEn}
+              </button>
+            ))}
+          </div>
+        </div>
 
         {/* Search Box */}
         <div style={{ width: '100%', margin: '0 auto 20px auto', maxWidth: '400px', padding: '20px' }}>

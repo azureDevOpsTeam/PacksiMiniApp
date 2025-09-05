@@ -238,6 +238,7 @@ export interface OutboundTrip {
   currentUserStatus: number;
   currentUserStatusEn: string;
   currentUserStatusFa: string;
+  isFavorite?: boolean;
 }
 
 export interface OutboundTripsResponse {
