@@ -48,7 +48,7 @@ const MessageList = styled.ul`
   margin: 0;
 `;
 
-const MessageItem = styled.li<{ isOdd: boolean }>`
+const MessageItem = styled.li<{ $isOdd: boolean }>`
   position: relative;
   clear: both;
   display: inline-block;
@@ -58,7 +58,7 @@ const MessageItem = styled.li<{ isOdd: boolean }>`
   border-radius: 10px;
   background-color: rgba(25, 147, 147, 0.2);
   
-  ${props => props.isOdd ? css`
+  ${props => props.$isOdd ? css`
     animation: ${showChatOdd} 0.15s 1 ease-in;
     float: right;
     margin-right: 80px;
@@ -307,9 +307,16 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
     try {
       setLoading(true);
       
+      console.log('Loading conversation for user:', {
+        conversationId: selectedUser.conversationId,
+        reciverId: selectedUser.reciverId,
+        requestCreatorDisplayName: selectedUser.requestCreatorDisplayName
+      });
+      
       // Use conversationId directly from selectedUser
       if (selectedUser.conversationId) {
         // Load messages for this conversation
+        console.log('Calling API with conversationId:', selectedUser.conversationId);
         const messagesResponse = await apiService.getMessages(selectedUser.conversationId);
         setMessages(messagesResponse.objectResult);
         
@@ -391,9 +398,9 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
                 formatDate(messages[index - 1].sentAt) !== formatDate(message.sentAt);
               
               return (
-                <React.Fragment key={`message-${index}-${message.id}`}>
+                <React.Fragment key={`message-fragment-${message.id}-${index}`}>
                   {showDate && (
-                    <li style={{
+                    <li key={`date-${message.id}-${index}`} style={{
                       textAlign: 'center',
                       margin: '20px 0',
                       color: 'rgba(10, 213, 193, 0.6)',
@@ -405,7 +412,7 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
                     </li>
                   )}
                   
-                  <MessageItem isOdd={isMyMessage}>
+                  <MessageItem key={`msg-${message.id}-${index}`} $isOdd={isMyMessage}>
                     {message.content}
                     <div style={{
                       fontSize: '12px',

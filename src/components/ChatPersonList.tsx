@@ -46,7 +46,7 @@ const ChatPersonList: React.FC = () => {
     const lastSeenValue = language === 'fa' ? user.lastSeenFa : user.lastSeenEn;
 
     return {
-      id: user.requestId?.toString() || `unknown-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      id: user.reciverId?.toString() || `unknown-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       name: user.requestCreatorDisplayName || 'Unknown User',
       lastMessage: user.lastMessage || '',
       time: lastSeenValue || '',
@@ -137,8 +137,8 @@ const ChatPersonList: React.FC = () => {
   const handlePersonClick = (personId: string) => {
     setSelectedPersonId(personId);
     
-    // Find the selected user from liveChatUsers
-    const user = liveChatUsers.find(u => u.requestId?.toString() === personId);
+    // Find the selected user from liveChatUsers using reciverId
+    const user = liveChatUsers.find(u => u.reciverId?.toString() === personId);
     if (user) {
       setSelectedUser(user);
       setShowChatWindow(true);
