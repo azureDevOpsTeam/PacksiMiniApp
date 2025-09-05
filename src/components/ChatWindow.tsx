@@ -392,7 +392,7 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
         ) : (
           <MessageList>
             {messages.map((message, index) => {
-              const isMyMessage = message.senderId !== selectedUser.requestCreatorId;
+              const isMyMessage = message.senderId === selectedUser.currentUserAccountId;
               const showDate = index === 0 || 
                 formatDate(messages[index - 1].sentAt) !== formatDate(message.sentAt);
               
