@@ -43,24 +43,24 @@ const ChatPersonList: React.FC = () => {
 
   // Convert LiveChatUser to ChatPerson
   const convertLiveChatUserToChatPerson = (user: LiveChatUser): ChatPerson => {
-    const lastSeenValue = language === 'fa' ? user.LastSeenFa : user.LastSeenEn;
+    const lastSeenValue = language === 'fa' ? user.lastSeenFa : user.lastSeenEn;
 
     return {
-      id: user.RequestId?.toString() || 'unknown',
+      id: user.requestId?.toString() || `unknown-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       name: user.requestCreatorDisplayName || 'Unknown User',
-      lastMessage: user.LastMessage || '',
+      lastMessage: user.lastMessage || '',
       time: lastSeenValue || '',
       avatar: user.avatar || '',
       isOnline: user.isOnline || false,
       unreadCount: 0, // This might need to be added to API response
       type: 'personal' as const,
       isArchived: false,
-      requestId: user.RequestId,
-      requestCreatorId: user.requestCreatorId,
-      currentUserAccountId: user.currentUserAccountId,
+      requestId: user.requestId,
+      requestCreatorId: user.reciverId,
+      currentUserAccountId: user.senderId,
       isBlocked: user.isBlocked || false,
-      LastSeenEn: user.LastSeenEn,
-      LastSeenFa: user.LastSeenFa
+      LastSeenEn: user.lastSeenEn,
+      LastSeenFa: user.lastSeenFa
     };
   };
 
@@ -73,11 +73,11 @@ const ChatPersonList: React.FC = () => {
 
       if (response?.requestStatus?.value === 0) {
         const users = response.objectResult || [];
-        // Add realistic test data if API doesn't return LastSeen fields
+        // Add realistic test data if API doesn't return lastSeen fields
         const usersWithLastSeen = users.map(user => ({
           ...user,
-          LastSeenEn: user.LastSeenEn || 'Recently',
-          LastSeenFa: user.LastSeenFa || 'به تازگی'
+          lastSeenEn: user.lastSeenEn || 'Recently',
+          lastSeenFa: user.lastSeenFa || 'به تازگی'
         }));
 
         setLiveChatUsers(usersWithLastSeen);
@@ -138,7 +138,7 @@ const ChatPersonList: React.FC = () => {
     setSelectedPersonId(personId);
     
     // Find the selected user from liveChatUsers
-    const user = liveChatUsers.find(u => u.RequestId?.toString() === personId);
+    const user = liveChatUsers.find(u => u.requestId?.toString() === personId);
     if (user) {
       setSelectedUser(user);
       setShowChatWindow(true);
@@ -499,7 +499,7 @@ const ChatPersonList: React.FC = () => {
             filteredChatPersons.map((person, index) => (
               <div
                 key={person.id}
-                onClick={() => handlePersonClick(person.requestCreatorId?.toString() || '')}
+                onClick={() => handlePersonClick(person.id)}
                 style={{
                   display: 'flex',
                   alignItems: 'center',

@@ -323,16 +323,16 @@ export interface GetMyRequestTripsResponse {
 
 // LiveChat API Types
 export interface LiveChatUser {
-  requestCreatorId: number;
-  RequestId: number;
+  requestId: number;
+  reciverId: number;
   requestCreatorDisplayName: string;
-  currentUserAccountId: number;
-  avatar: string;
-  LastMessage: string;
+  senderId: number;
+  avatar: string | null;
+  lastMessage: string;
   isOnline: boolean;
   isBlocked: boolean;
-  LastSeenEn: string | null;
-  LastSeenFa: string | null;
+  lastSeenEn: string | null;
+  lastSeenFa: string | null;
 }
 
 export interface LiveChatUsersResponse {

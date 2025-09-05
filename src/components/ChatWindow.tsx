@@ -247,7 +247,7 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
     try {
       const messageData = {
         model: {
-          receiverId: selectedUser.requestCreatorId,
+          receiverId: selectedUser.reciverId,
           content: newMessage.trim()
         }
       };
@@ -287,7 +287,7 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
 
   useEffect(() => {
     loadConversationAndMessages();
-  }, [selectedUser.requestCreatorId]);
+  }, [selectedUser.reciverId]);
 
   useEffect(() => {
     // Mark messages as read when chat window opens
@@ -311,7 +311,7 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
       // First get conversations to find the conversation with this user
       const conversationsResponse = await apiService.getConversations();
       const userConversation = conversationsResponse.objectResult.find(
-        (conv: Conversation) => conv.participantId === selectedUser.requestCreatorId
+        (conv: Conversation) => conv.participantId === selectedUser.reciverId
       );
       
       if (userConversation) {
@@ -392,7 +392,7 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
         ) : (
           <MessageList>
             {messages.map((message, index) => {
-              const isMyMessage = message.senderId === selectedUser.currentUserAccountId;
+              const isMyMessage = message.senderId === selectedUser.senderId;
               const showDate = index === 0 || 
                 formatDate(messages[index - 1].sentAt) !== formatDate(message.sentAt);
               
