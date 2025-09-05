@@ -5,9 +5,10 @@ interface SettingsProps {
   activeButton: 'user' | 'admin';
   setActiveButton: (button: 'user' | 'admin') => void;
   forceExpanded?: boolean;
+  onMyRequestClick?: () => void;
 }
 
-const Settings: React.FC<SettingsProps> = ({ activeButton, setActiveButton, forceExpanded }) => {
+const Settings: React.FC<SettingsProps> = ({ activeButton, setActiveButton, forceExpanded, onMyRequestClick }) => {
   const { language, changeLanguage } = useLanguage();
   const [settingsExpanded, setSettingsExpanded] = React.useState(false);
 
@@ -246,6 +247,45 @@ const Settings: React.FC<SettingsProps> = ({ activeButton, setActiveButton, forc
           </div>
         </div>
       </div>
+
+      {/* MyRequest Button */}
+      {onMyRequestClick && (
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          marginBottom: '20px'
+        }}>
+          <div
+            onClick={onMyRequestClick}
+            style={{
+              cursor: 'pointer',
+              minWidth: '80px',
+              height: '35px',
+              backgroundColor: '#2ea5f7',
+              borderRadius: '7px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '0.8em',
+              fontFamily: 'IRANSansX, sans-serif',
+              fontWeight: '600',
+              color: '#ffffff',
+              transition: 'all 0.3s ease',
+              boxShadow: '0 2px 8px rgba(46, 165, 247, 0.3)'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = '#1e90d4';
+              e.currentTarget.style.transform = 'translateY(-2px)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = '#2ea5f7';
+              e.currentTarget.style.transform = 'translateY(0)';
+            }}
+          >
+            📋 My Requests
+          </div>
+        </div>
+      )}
 
       {/* CSS Animation for Settings Icon */}
       <style>

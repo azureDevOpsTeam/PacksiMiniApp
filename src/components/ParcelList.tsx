@@ -9,6 +9,7 @@ import AddPreferredLocation from './AddPreferredLocation';
 import Logo from './Logo';
 import Settings from './Settings';
 import SkeletonLoader from './SkeletonLoader';
+import MyRequest from './MyRequest';
 
 // Add CSS animations for flight cards
 const accordionStyles = `
@@ -119,6 +120,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
   const [flightsError, setFlightsError] = useState<string | null>(null);
   const [activeMenu, setActiveMenu] = useState<number | null>(null);
   const [apiResult, setApiResult] = useState<{success: boolean, message: string} | null>(null);
+  const [showMyRequest, setShowMyRequest] = useState(false);
 
   const [searchQuery, setSearchQuery] = useState<string>('');
   
@@ -447,6 +449,34 @@ const ParcelList: React.FC<ParcelListProps> = () => {
     );
   }
 
+  if (showMyRequest) {
+    return (
+      <div>
+        <MyRequest />
+        <button
+          onClick={() => setShowMyRequest(false)}
+          style={{
+            position: 'fixed',
+            top: '20px',
+            left: '20px',
+            padding: '10px 15px',
+            backgroundColor: '#2ea5f7',
+            color: '#ffffff',
+            border: 'none',
+            borderRadius: '8px',
+            fontSize: '14px',
+            fontWeight: '600',
+            cursor: 'pointer',
+            fontFamily: 'IRANSansX, sans-serif',
+            zIndex: 1000
+          }}
+        >
+          ← Back
+        </button>
+      </div>
+    );
+  }
+
   // Show parcel list if setPreferredLocation is true
   return (
     <div style={{
@@ -460,7 +490,11 @@ const ParcelList: React.FC<ParcelListProps> = () => {
       position: 'relative'
     }}>
       {/* Settings Component */}
-      <Settings activeButton={activeButton} setActiveButton={setActiveButton} />
+      <Settings 
+        activeButton={activeButton} 
+        setActiveButton={setActiveButton}
+        onMyRequestClick={() => setShowMyRequest(true)}
+      />
 
       {/* Fixed Header */}
       <div style={{

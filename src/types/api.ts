@@ -278,3 +278,45 @@ export interface SelectRequestResponse {
     value: number;
   };
 }
+
+// My Request Types
+export interface MyRequestTrip {
+  id: number;
+  userAccountId: number;
+  originCity: string;
+  originCityFa?: string;
+  destinationCity: string;
+  destinationCityFa?: string;
+  departureDate: string;
+  arrivalDate: string;
+  recordType: string; // 'Passenger' or 'Sender'
+  status: string;
+  description?: string;
+  maxWeightKg?: number;
+  maxLengthCm?: number;
+  maxWidthCm?: number;
+  maxHeightCm?: number;
+  itemTypes?: string[];
+  itemTypesFa?: string[];
+  createdAt?: string;
+}
+
+export interface MyRequestTripsResponse {
+  validationResult: any;
+  requestStatus: {
+    name: string;
+    value: number;
+  };
+  message: string;
+  objectResult: MyRequestTrip[];
+  notificationType: {
+    name: string;
+    value: number;
+  };
+}
+
+export interface GetMyRequestTripsResponse {
+  success: boolean;
+  data: MyRequestTrip[];
+  message?: string;
+}
