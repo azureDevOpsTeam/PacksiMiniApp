@@ -33,32 +33,19 @@ const ChatContainer = styled.div`
 
 
 
-const ChatThread = styled.ul`
-  height: 100vh;
+const ChatThread = styled.div`
+  height: calc(100vh - 80px);
   margin: 0 auto;
-  padding: 20px;
+  padding: 20px 20px 80px 20px;
+  overflow-y: auto;
+  max-width: 800px;
+  width: 100%;
+`;
+
+const MessageList = styled.ul`
   list-style: none;
-  overflow-y: scroll;
-  overflow-x: hidden;
-  width: 90%;
-  
-  @media (min-width: 768px) {
-    width: 50%;
-  }
-  
-  &::-webkit-scrollbar {
-    width: 10px;
-  }
-  
-  &::-webkit-scrollbar-track {
-    border-radius: 10px;
-    background-color: rgba(25, 147, 147, 0.1);
-  }
-  
-  &::-webkit-scrollbar-thumb {
-    border-radius: 10px;
-    background-color: rgba(25, 147, 147, 0.2);
-  }
+  padding: 0;
+  margin: 0;
 `;
 
 const MessageItem = styled.li<{ isOdd: boolean }>`
@@ -130,6 +117,62 @@ const MessageItem = styled.li<{ isOdd: boolean }>`
 
 
 
+const ChatInputForm = styled.form`
+  position: fixed;
+  bottom: 18px;
+  left: 5%;
+  width: 90%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  
+  @media (min-width: 768px) {
+    left: 25%;
+    width: 50%;
+  }
+`;
+
+const ChatInput = styled.input`
+  flex: 1;
+  height: 48px;
+  font: 32px/48px 'IRANSansX', sans-serif;
+  background: none;
+  color: #0AD5C1;
+  border: 0;
+  border-bottom: 1px solid rgba(25, 147, 147, 0.2);
+  outline: none;
+  
+  &::placeholder {
+    color: rgba(10, 213, 193, 0.5);
+  }
+`;
+
+const SendButton = styled.button`
+  background: linear-gradient(45deg, #0AD5C1, #0EC879);
+  border: none;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(10, 213, 193, 0.3);
+  }
+  
+  &:disabled {
+    background: rgba(25, 147, 147, 0.2);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+`;
+
 const EmptyState = styled.div`
   display: flex;
   flex-direction: column;
@@ -185,7 +228,9 @@ interface ChatWindowProps {
 
 const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(true);
+  const [sending, setSending] = useState(false);
   const [conversation, setConversation] = useState<Conversation | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
@@ -193,6 +238,43 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleSendMessage = async () => {
+    if (!newMessage.trim() || sending || !selectedUser) return;
+
+    setSending(true);
+    try {
+      const messageData = {
+        model: {
+          receiverId: selectedUser.requestCreatorId,
+          content: newMessage.trim()
+        }
+      };
+
+      const response = await apiService.sendMessage(messageData);
+      
+      if (response.objectResult) {
+        setNewMessage('');
+        await fetchMessages();
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
+
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    handleSendMessage();
   };
 
   useEffect(() => {
@@ -252,6 +334,17 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
     }
   };
 
+  const fetchMessages = async () => {
+    if (conversation?.id) {
+      try {
+        const messagesResponse = await apiService.getMessages(conversation.id);
+        setMessages(messagesResponse.objectResult);
+      } catch (error) {
+        console.error('Error fetching messages:', error);
+      }
+    }
+  };
+
 
 
   const formatTime = (dateString: string) => {
@@ -297,47 +390,61 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
             <p>اولین پیام خود را ارسال کنید</p>
           </EmptyState>
         ) : (
-          messages.map((message, index) => {
-            const isMyMessage = message.senderId !== selectedUser.requestCreatorId;
-            const showDate = index === 0 || 
-              formatDate(messages[index - 1].sentAt) !== formatDate(message.sentAt);
-            
-            return (
-              <React.Fragment key={message.id}>
-                {showDate && (
-                  <li style={{
-                    textAlign: 'center',
-                    margin: '20px 0',
-                    color: 'rgba(10, 213, 193, 0.6)',
-                    fontSize: '12px',
-                    listStyle: 'none',
-                    clear: 'both'
-                  }}>
-                    {formatDate(message.sentAt)}
-                  </li>
-                )}
-                
-                <MessageItem isOdd={isMyMessage}>
-                  {message.content}
-                  <div style={{
-                    fontSize: '12px',
-                    marginTop: '4px',
-                    opacity: 0.7
-                  }}>
-                    {formatTime(message.sentAt)}
-                    {isMyMessage && message.isRead && (
-                      <span style={{ marginRight: '4px' }}>✓✓</span>
-                    )}
-                  </div>
-                </MessageItem>
-              </React.Fragment>
-            );
-          })
+          <MessageList>
+            {messages.map((message, index) => {
+              const isMyMessage = message.senderId !== selectedUser.requestCreatorId;
+              const showDate = index === 0 || 
+                formatDate(messages[index - 1].sentAt) !== formatDate(message.sentAt);
+              
+              return (
+                <React.Fragment key={message.id}>
+                  {showDate && (
+                    <li style={{
+                      textAlign: 'center',
+                      margin: '20px 0',
+                      color: 'rgba(10, 213, 193, 0.6)',
+                      fontSize: '12px',
+                      listStyle: 'none',
+                      clear: 'both'
+                    }}>
+                      {formatDate(message.sentAt)}
+                    </li>
+                  )}
+                  
+                  <MessageItem isOdd={isMyMessage}>
+                    {message.content}
+                    <div style={{
+                      fontSize: '12px',
+                      marginTop: '4px',
+                      opacity: 0.7
+                    }}>
+                      {formatTime(message.sentAt)}
+                      {isMyMessage && message.isRead && (
+                        <span style={{ marginRight: '4px' }}>✓✓</span>
+                      )}
+                    </div>
+                  </MessageItem>
+                </React.Fragment>
+              );
+            })}
+          </MessageList>
         )}
         <div ref={messagesEndRef} />
       </ChatThread>
-
-
+      
+      <ChatInputForm onSubmit={handleFormSubmit}>
+        <ChatInput
+          type="text"
+          value={newMessage}
+          onChange={(e) => setNewMessage(e.target.value)}
+          onKeyPress={handleKeyPress}
+          placeholder="پیام خود را بنویسید..."
+          disabled={sending}
+        />
+        <SendButton type="submit" disabled={sending || !newMessage.trim()}>
+          {sending ? '...' : '→'}
+        </SendButton>
+      </ChatInputForm>
     </ChatContainer>
   );
 };
