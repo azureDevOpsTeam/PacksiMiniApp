@@ -26,9 +26,10 @@ class SignalRService {
 
     this.connection = new HubConnectionBuilder()
       .withUrl('https://api.packsi.net/chatHub', {
-        headers: {
+        withCredentials: false,
+        headers: telegramInitData ? {
           'X-Telegram-Init-Data': telegramInitData
-        }
+        } : {}
       })
       .withAutomaticReconnect({
         nextRetryDelayInMilliseconds: (retryContext) => {
@@ -46,6 +47,21 @@ class SignalRService {
 
   private setupEventHandlers() {
     if (!this.connection) return;
+
+    // Add generic event listener for debugging
+    this.connection.onclose((error) => {
+      console.log('🔌 SignalR connection closed:', error);
+    });
+
+    // Log all incoming events for debugging
+    const originalOn = this.connection.on.bind(this.connection);
+    this.connection.on = function(methodName: string, newMethod: (...args: any[]) => void) {
+      console.log(`🎯 Registering handler for event: ${methodName}`);
+      return originalOn(methodName, (...args: any[]) => {
+        console.log(`📡 Received event '${methodName}' with args:`, args);
+        return newMethod(...args);
+      });
+    };
 
     // Handle connection state changes
     this.connection.onclose(() => {
@@ -66,9 +82,19 @@ class SignalRService {
       console.log('SignalR reconnected');
     });
 
-    // Handle incoming messages
+    // Handle incoming messages - try multiple event names
     this.connection.on('MessageReceived', (message: ChatMessage) => {
-      console.log('📨 Received message via SignalR:', message);
+      console.log('📨 Received message via SignalR (MessageReceived):', message);
+      this.onMessageReceivedCallbacks.forEach(callback => callback(message));
+    });
+
+    this.connection.on('ReceiveMessage', (message: ChatMessage) => {
+      console.log('📨 Received message via SignalR (ReceiveMessage):', message);
+      this.onMessageReceivedCallbacks.forEach(callback => callback(message));
+    });
+
+    this.connection.on('NewMessage', (message: ChatMessage) => {
+      console.log('📨 Received message via SignalR (NewMessage):', message);
       this.onMessageReceivedCallbacks.forEach(callback => callback(message));
     });
 
@@ -76,6 +102,23 @@ class SignalRService {
     this.connection.on('MessageSent', (message: ChatMessage) => {
       console.log('📤 Message sent confirmation via SignalR:', message);
       this.onMessageReceivedCallbacks.forEach(callback => callback(message));
+    });
+
+    // Add generic message handler for debugging
+    this.connection.on('ReceiveTestMessage', (connectionId: string, message: string) => {
+      console.log('📨 Test message received:', { connectionId, message });
+      // Convert to ChatMessage format if needed
+      const chatMessage: ChatMessage = {
+        id: Date.now(),
+        content: message,
+        senderId: 0,
+        receiverId: 0,
+        conversationId: 0,
+        sentAt: new Date().toISOString(),
+        isRead: false,
+        messageType: 'text'
+      };
+      this.onMessageReceivedCallbacks.forEach(callback => callback(chatMessage));
     });
 
     // Handle typing indicators
@@ -130,12 +173,37 @@ class SignalRService {
     }
 
     try {
-      await this.connection.invoke('SendMessage', {
-        conversationId,
-        content,
-        receiverId
-      });
-      return true;
+      console.log('📤 Attempting to send message via SignalR:', { conversationId, content, receiverId });
+      
+      // Try different method names that might be used by backend
+      try {
+        await this.connection.invoke('SendMessage', {
+          conversationId,
+          content,
+          receiverId
+        });
+        console.log('✅ Message sent via SendMessage method');
+        return true;
+      } catch (error1) {
+        console.log('❌ SendMessage failed, trying SendChatMessage:', error1);
+        
+        try {
+          await this.connection.invoke('SendChatMessage', conversationId, content, receiverId);
+          console.log('✅ Message sent via SendChatMessage method');
+          return true;
+        } catch (error2) {
+          console.log('❌ SendChatMessage failed, trying SendTestMessage:', error2);
+          
+          try {
+            await this.connection.invoke('SendTestMessage', content);
+            console.log('✅ Message sent via SendTestMessage method');
+            return true;
+          } catch (error3) {
+            console.error('❌ All send methods failed:', { error1, error2, error3 });
+            return false;
+          }
+        }
+      }
     } catch (error) {
       console.error('Error sending message via SignalR:', error);
       return false;
