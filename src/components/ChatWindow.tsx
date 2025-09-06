@@ -361,6 +361,22 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
     setNewMessage('');
     setSending(true);
 
+    // Create temporary message to show immediately
+    const tempMessage: ChatMessage = {
+      id: Date.now(), // Temporary ID
+      content: messageContent,
+      senderId: selectedUser.senderId,
+      receiverId: selectedUser.reciverId,
+      conversationId: selectedUser.conversationId,
+      sentAt: new Date().toISOString(),
+      isRead: false,
+      messageType: 'text'
+    };
+
+    // Add message immediately to UI
+    setMessages(prev => [...prev, tempMessage]);
+    console.log('✅ Message added to UI immediately');
+
     try {
       let messageSent = false;
       
@@ -376,21 +392,6 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
         if (success) {
           console.log('✅ Message sent via SignalR successfully');
           messageSent = true;
-          
-          // Wait a bit to see if we receive the message back via SignalR
-          // If not, fallback to REST API
-          await new Promise(resolve => setTimeout(resolve, 2000));
-          
-          // Check if we received the message back
-          const latestMessage = messages[messages.length - 1];
-          if (latestMessage && latestMessage.content === messageContent && 
-              latestMessage.senderId === selectedUser.senderId) {
-            console.log('✅ Message confirmed via SignalR');
-            return;
-          } else {
-            console.log('⚠️ Message not received back via SignalR, falling back to REST API');
-            messageSent = false;
-          }
         } else {
           console.log('❌ Failed to send message via SignalR');
         }
@@ -398,7 +399,7 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
         console.log('⚠️ SignalR not connected, using REST API');
       }
       
-      // Use REST API if SignalR failed or message not confirmed
+      // Use REST API if SignalR failed
       if (!messageSent) {
         console.log('📤 Sending message via REST API...');
         const messageData = {
@@ -412,12 +413,19 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
         
         if (response.objectResult) {
           console.log('✅ Message sent via REST API successfully');
+          // Remove temp message and reload to get real message with proper ID
+          setMessages(prev => prev.filter(m => m.id !== tempMessage.id));
           await fetchMessages();
+        } else {
+          // Remove temp message on failure
+          setMessages(prev => prev.filter(m => m.id !== tempMessage.id));
+          throw new Error('Failed to send message via REST API');
         }
       }
     } catch (error) {
       console.error('❌ Error sending message:', error);
-      // Restore message on error
+      // Remove temp message and restore input on error
+      setMessages(prev => prev.filter(m => m.id !== tempMessage.id));
       setNewMessage(messageContent);
     } finally {
       setSending(false);
@@ -509,24 +517,42 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
     joinConversation();
     
     // Set up message handler with current selectedUser
-    signalRService.onMessage((message: ChatMessage) => {
-      console.log('📨 Received message via SignalR:', message);
-      // Only add message if it belongs to current conversation
-      setMessages(prev => {
-        // Only process message if it belongs to current conversation
-        if (message.conversationId === selectedUser.conversationId) {
-          // Check if message already exists to avoid duplicates
-          const exists = prev.some(m => m.id === message.id);
-          if (!exists) {
-            console.log('✅ Adding new message to current conversation');
-            return [...prev, message];
+      signalRService.onMessage((message: ChatMessage) => {
+        console.log('📨 Received message via SignalR:', message);
+        // Only add message if it belongs to current conversation
+        setMessages(prev => {
+          // Only process message if it belongs to current conversation
+          if (message.conversationId === selectedUser.conversationId) {
+            // Check if message already exists (by ID or by content+sender for temp messages)
+            const existsById = prev.some(m => m.id === message.id);
+            const existsByContent = prev.some(m => 
+               m.content === message.content && 
+               m.senderId === message.senderId && 
+               Math.abs(new Date(m.sentAt).getTime() - new Date(message.sentAt).getTime()) < 5000
+             );
+            
+            if (!existsById && !existsByContent) {
+              console.log('✅ Adding new message to current conversation');
+              return [...prev, message];
+            } else {
+              // If this is a real message replacing a temp message, replace it
+              if (existsByContent && !existsById) {
+                console.log('🔄 Replacing temporary message with real message');
+                return prev.map(m => 
+                   m.content === message.content && 
+                   m.senderId === message.senderId && 
+                   Math.abs(new Date(m.sentAt).getTime() - new Date(message.sentAt).getTime()) < 5000
+                     ? message : m
+                 );
+              }
+              console.log('🚫 Message already exists, ignoring');
+            }
+          } else {
+            console.log('🚫 Message belongs to different conversation, ignoring');
           }
-        } else {
-          console.log('🚫 Message belongs to different conversation, ignoring');
-        }
-        return prev;
+          return prev;
+        });
       });
-    });
 
     // Set up typing handler with current selectedUser
     signalRService.onTyping((userId: number, typing: boolean) => {
