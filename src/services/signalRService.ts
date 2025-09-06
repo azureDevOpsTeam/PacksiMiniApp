@@ -21,11 +21,24 @@ class SignalRService {
   private initializeConnection() {
     // Get Telegram init data for authentication
     const telegramInitData = (window as any).Telegram?.WebApp?.initData || '';
+    
+    // For testing: Allow switching between different test users via URL parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const testUserId = urlParams.get('testUser') || '1';
+    
+    // Test user configurations
+    const testUsers = {
+      '1': 'user=%7B%22id%22%3A5933914644%2C%22first_name%22%3A%22Shahram%22%2C%22last_name%22%3A%22%22%2C%22language_code%22%3A%22en%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Ft.me%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2FQGwtYapyXkY4-jZJkczPeUb_XKfimJozOKy8lZzBhtQc4cO4xBQzwdPwcb_QSNih.svg%22%7D&chat_instance=-2675852455221065738&chat_type=sender&auth_date=1757080096&signature=testSignature1&hash=testhash1',
+      '2': 'user=%7B%22id%22%3A1234567890%2C%22first_name%22%3A%22TestUser2%22%2C%22last_name%22%3A%22%22%2C%22language_code%22%3A%22en%22%2C%22allows_write_to_pm%22%3Atrue%7D&chat_instance=-2675852455221065738&chat_type=sender&auth_date=1757080096&signature=testSignature2&hash=testhash2',
+      '3': 'user=%7B%22id%22%3A9876543210%2C%22first_name%22%3A%22TestUser3%22%2C%22last_name%22%3A%22%22%2C%22language_code%22%3A%22en%22%2C%22allows_write_to_pm%22%3Atrue%7D&chat_instance=-2675852455221065738&chat_type=sender&auth_date=1757080096&signature=testSignature3&hash=testhash3'
+    };
+    
+    const selectedTestData = testUsers[testUserId as keyof typeof testUsers] || testUsers['1'];
 
     this.connection = new HubConnectionBuilder()
       .withUrl('https://api.packsi.net/chatHub', {
         headers: {
-          'X-Telegram-Init-Data': telegramInitData || 'user=%7B%22id%22%3A5933914644%2C%22first_name%22%3A%22Shahram%22%2C%22last_name%22%3A%22%22%2C%22language_code%22%3A%22en%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Ft.me%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2FQGwtYapyXkY4-jZJkczPeUb_XKfimJozOKy8lZzBhtQc4cO4xBQzwdPwcb_QSNih.svg%22%7D&chat_instance=-2675852455221065738&chat_type=sender&auth_date=1757080096&signature=aQwFSYCv7hl42G0l0JJwhgbEyluQyTbBcI83UwnTYWprJ9tK_ki3inQ92JtpdMm8kYN5b9FAx5Jzdu6OelmRBw&hash=01902d3255aba73e70ff387e58237fd65d420adaee9f03862198bc36133b5fc3'
+          'X-Telegram-Init-Data': telegramInitData || selectedTestData
         }
       })
       .withAutomaticReconnect({
@@ -65,8 +78,14 @@ class SignalRService {
     });
 
     // Handle incoming messages
-    this.connection.on('ReceiveMessage', (message: ChatMessage) => {
+    this.connection.on('MessageReceived', (message: ChatMessage) => {
       console.log('📨 Received message via SignalR:', message);
+      this.onMessageReceivedCallbacks.forEach(callback => callback(message));
+    });
+
+    // Handle sent messages (for sender confirmation)
+    this.connection.on('MessageSent', (message: ChatMessage) => {
+      console.log('📤 Message sent confirmation via SignalR:', message);
       this.onMessageReceivedCallbacks.forEach(callback => callback(message));
     });
 
