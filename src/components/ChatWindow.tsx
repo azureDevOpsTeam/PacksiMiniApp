@@ -280,8 +280,11 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
     setSending(true);
 
     try {
+      let messageSent = false;
+      
       // Try to send via SignalR first
       if (signalRService.connected && selectedUser.conversationId) {
+        console.log('📤 Attempting to send message via SignalR...');
         const success = await signalRService.sendMessage(
           selectedUser.conversationId,
           messageContent,
@@ -289,26 +292,49 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
         );
         
         if (success) {
-          // Message sent via SignalR, it will be received via the SignalR event
-          return;
+          console.log('✅ Message sent via SignalR successfully');
+          messageSent = true;
+          
+          // Wait a bit to see if we receive the message back via SignalR
+          // If not, fallback to REST API
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          
+          // Check if we received the message back
+          const latestMessage = messages[messages.length - 1];
+          if (latestMessage && latestMessage.content === messageContent && 
+              latestMessage.senderId === selectedUser.senderId) {
+            console.log('✅ Message confirmed via SignalR');
+            return;
+          } else {
+            console.log('⚠️ Message not received back via SignalR, falling back to REST API');
+            messageSent = false;
+          }
+        } else {
+          console.log('❌ Failed to send message via SignalR');
         }
+      } else {
+        console.log('⚠️ SignalR not connected, using REST API');
       }
       
-      // Fallback to REST API if SignalR fails
-      const messageData = {
-        model: {
-          receiverId: selectedUser.reciverId,
-          content: messageContent
-        }
-      };
+      // Use REST API if SignalR failed or message not confirmed
+      if (!messageSent) {
+        console.log('📤 Sending message via REST API...');
+        const messageData = {
+          model: {
+            receiverId: selectedUser.reciverId,
+            content: messageContent
+          }
+        };
 
-      const response = await apiService.sendMessage(messageData);
-      
-      if (response.objectResult) {
-        await fetchMessages();
+        const response = await apiService.sendMessage(messageData);
+        
+        if (response.objectResult) {
+          console.log('✅ Message sent via REST API successfully');
+          await fetchMessages();
+        }
       }
     } catch (error) {
-      console.error('Error sending message:', error);
+      console.error('❌ Error sending message:', error);
       // Restore message on error
       setNewMessage(messageContent);
     } finally {
@@ -350,51 +376,64 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
     scrollToBottom();
   }, [messages]);
 
-  // Initialize SignalR connection
+  // Initialize SignalR connection once
   useEffect(() => {
     const initializeSignalR = async () => {
-      // Set up event handlers
+      // Set up event handlers only once
       signalRService.onMessage((message: ChatMessage) => {
+        console.log('📨 Received message via SignalR:', message);
         // Only add message if it belongs to current conversation
-        if (message.conversationId === selectedUser.conversationId) {
-          setMessages(prev => {
+        setMessages(prev => {
+          // Get current conversation ID from the latest state
+          const currentConversationId = selectedUser.conversationId;
+          
+          // Only process message if it belongs to current conversation
+          if (message.conversationId === currentConversationId) {
             // Check if message already exists to avoid duplicates
             const exists = prev.some(m => m.id === message.id);
             if (!exists) {
+              console.log('✅ Adding new message to current conversation');
               return [...prev, message];
             }
-            return prev;
-          });
-        }
+          } else {
+            console.log('🚫 Message belongs to different conversation, ignoring');
+          }
+          return prev;
+        });
       });
 
       signalRService.onConnectionStateChange((connected: boolean) => {
+        console.log('🔗 SignalR connection state changed:', connected);
         setIsSignalRConnected(connected);
       });
 
       signalRService.onTyping((userId: number, typing: boolean) => {
-        // Show typing indicator if it's from the other user in current conversation
-        if (userId === selectedUser.reciverId) {
-          setIsTyping(typing);
-        }
+        console.log('⌨️ User typing:', userId, typing);
+        // Show typing indicator only for current conversation partner
+        setIsTyping(prev => {
+          // Get current selectedUser from the latest state
+          const currentSelectedUser = selectedUser;
+          if (userId === currentSelectedUser.reciverId) {
+            return typing;
+          }
+          return prev;
+        });
       });
 
       // Connect to SignalR
+      console.log('🔄 Connecting to SignalR...');
       const connected = await signalRService.connect();
-      if (connected && selectedUser.conversationId) {
-        await signalRService.joinConversation(selectedUser.conversationId);
-      }
+      console.log('✅ SignalR connected:', connected);
     };
 
     initializeSignalR();
 
     // Cleanup on unmount
     return () => {
-      if (selectedUser.conversationId) {
-        signalRService.leaveConversation(selectedUser.conversationId);
-      }
+      console.log('🧹 Cleaning up SignalR connection');
+      signalRService.disconnect();
     };
-  }, [selectedUser.conversationId, selectedUser.reciverId]);
+  }, []); // Only run once on mount
 
 
 
@@ -404,9 +443,31 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
     loadConversationAndMessages();
     
     // Join the new conversation via SignalR
-    if (signalRService.connected && selectedUser.conversationId) {
-      signalRService.joinConversation(selectedUser.conversationId);
-    }
+    const joinConversation = async () => {
+      if (signalRService.connected && selectedUser.conversationId) {
+        console.log('🚪 Joining conversation:', selectedUser.conversationId);
+        await signalRService.joinConversation(selectedUser.conversationId);
+      } else if (selectedUser.conversationId) {
+        // If SignalR is not connected yet, wait and try again
+        console.log('⏳ Waiting for SignalR connection to join conversation...');
+        setTimeout(async () => {
+          if (signalRService.connected) {
+            console.log('🚪 Joining conversation after delay:', selectedUser.conversationId);
+            await signalRService.joinConversation(selectedUser.conversationId);
+          }
+        }, 1000);
+      }
+    };
+    
+    joinConversation();
+    
+    // Leave previous conversation when switching
+    return () => {
+      if (selectedUser.conversationId && signalRService.connected) {
+        console.log('🚪 Leaving conversation:', selectedUser.conversationId);
+        signalRService.leaveConversation(selectedUser.conversationId);
+      }
+    };
   }, [selectedUser.conversationId, selectedUser.reciverId]);
 
   useEffect(() => {

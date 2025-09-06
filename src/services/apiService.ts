@@ -1,7 +1,7 @@
 import type { CreateRequestPayload, ApiResponse, CreateRequestResponse, CitiesTreeResponse, ItemTypeResponse, CountriesResponse, UserInfoResponse, VerifyPhoneNumberPayload, VerifyPhoneNumberResponse, ValidateResponse, AddUserPreferredLocationRequest, AddUserPreferredLocationResponse, UpdateProfileRequest, UpdateProfileResponse, OutboundTripsResponse, SelectRequestPayload, SelectRequestResponse, GetMyRequestTripsResponse, LiveChatUsersResponse, ConversationsResponse, MessagesResponse, SendMessagePayload, SendMessageResponse, BlockUserPayload, BlockUserResponse, MarkReadResponse } from '../types/api';
 
-const API_BASE_URL = 'https://api.packsi.net/api/miniapp';
-//const API_BASE_URL = 'http://localhost:5005/api/miniapp';
+const API_BASE_URL = 'https://api.packsi.net/api';
+//const API_BASE_URL = 'http://localhost:5005/api';
 
 class ApiService {
 
