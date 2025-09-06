@@ -488,15 +488,24 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
         // Get current selectedUser from the ref to avoid stale closure
         const currentUser = selectedUserRef.current;
         const currentConversationId = currentUser?.conversationId;
+        const currentUserId = currentUser?.senderId;
         
         console.log('📨 Message conversationId:', message.conversationId);
         console.log('📨 Current conversationId:', currentConversationId);
+        console.log('📨 Message senderId:', message.senderId, 'receiverId:', message.receiverId);
+        console.log('📨 Current userId:', currentUserId);
         
-        // Only process message if it belongs to current conversation OR if no conversation is set yet
-        if (message.conversationId === currentConversationId || 
-            (currentConversationId === null && 
-             (message.senderId === currentUser?.senderId || message.receiverId === currentUser?.senderId))) {
-          
+        // Check if message belongs to current conversation:
+        // 1. Same conversationId, OR
+        // 2. Message is between current user and selected user (for new conversations)
+        const belongsToConversation = 
+          message.conversationId === currentConversationId ||
+          (currentUserId && (
+            (message.senderId === currentUserId && message.receiverId === currentUser?.senderId) ||
+            (message.receiverId === currentUserId && message.senderId === currentUser?.senderId)
+          ));
+        
+        if (belongsToConversation) {
           // Check if message already exists (by ID or by content+sender for temp messages)
           const existsById = prev.some(m => m.id === message.id);
           const existsByContent = prev.some(m => 
