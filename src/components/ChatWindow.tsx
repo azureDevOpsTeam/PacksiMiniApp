@@ -481,14 +481,22 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
 
     const messageHandler = (message: ChatMessage) => {
       console.log('📨 Received message via SignalR:', message);
+      console.log('📨 Current selectedUser:', selectedUserRef.current);
+      
       // Only add message if it belongs to current conversation
       setMessages(prev => {
         // Get current selectedUser from the ref to avoid stale closure
         const currentUser = selectedUserRef.current;
         const currentConversationId = currentUser?.conversationId;
         
-        // Only process message if it belongs to current conversation
-        if (message.conversationId === currentConversationId) {
+        console.log('📨 Message conversationId:', message.conversationId);
+        console.log('📨 Current conversationId:', currentConversationId);
+        
+        // Only process message if it belongs to current conversation OR if no conversation is set yet
+        if (message.conversationId === currentConversationId || 
+            (currentConversationId === null && 
+             (message.senderId === currentUser?.senderId || message.receiverId === currentUser?.senderId))) {
+          
           // Check if message already exists (by ID or by content+sender for temp messages)
           const existsById = prev.some(m => m.id === message.id);
           const existsByContent = prev.some(m => 
@@ -553,10 +561,6 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
       signalRService.disconnect();
     };
   }, []); // Only run once on mount
-
-
-
-
 
   useEffect(() => {
     loadConversationAndMessages();

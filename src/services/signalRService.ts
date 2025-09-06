@@ -13,13 +13,15 @@ class SignalRService {
   private onUserTypingCallbacks: ((userId: number, isTyping: boolean) => void)[] = [];
 
   constructor() {
-    this.initializeConnection();
+    if (!this.connection) {
+      this.initializeConnection();
+    }
   }
 
   private initializeConnection() {
     // Get Telegram init data for authentication
     const telegramInitData = (window as any).Telegram?.WebApp?.initData || '';
-    
+
     this.connection = new HubConnectionBuilder()
       .withUrl('https://api.packsi.net/chatHub', {
         headers: {
