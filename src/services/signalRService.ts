@@ -7,10 +7,10 @@ class SignalRService {
   private maxReconnectAttempts = 5;
   private reconnectDelay = 3000; // 3 seconds
 
-  // Event handlers
-  private onMessageReceived: ((message: ChatMessage) => void) | null = null;
-  private onConnectionStateChanged: ((isConnected: boolean) => void) | null = null;
-  private onUserTyping: ((userId: number, isTyping: boolean) => void) | null = null;
+  // Event handlers - support multiple callbacks
+  private onMessageReceivedCallbacks: ((message: ChatMessage) => void)[] = [];
+  private onConnectionStateChangedCallbacks: ((isConnected: boolean) => void)[] = [];
+  private onUserTypingCallbacks: ((userId: number, isTyping: boolean) => void)[] = [];
 
   constructor() {
     this.initializeConnection();
@@ -46,31 +46,31 @@ class SignalRService {
     // Handle connection state changes
     this.connection.onclose(() => {
       this.isConnected = false;
-      this.onConnectionStateChanged?.(false);
+      this.onConnectionStateChangedCallbacks.forEach(callback => callback(false));
       console.log('SignalR connection closed');
     });
 
     this.connection.onreconnecting(() => {
       this.isConnected = false;
-      this.onConnectionStateChanged?.(false);
+      this.onConnectionStateChangedCallbacks.forEach(callback => callback(false));
       console.log('SignalR reconnecting...');
     });
 
     this.connection.onreconnected(() => {
       this.isConnected = true;
-      this.onConnectionStateChanged?.(true);
+      this.onConnectionStateChangedCallbacks.forEach(callback => callback(true));
       console.log('SignalR reconnected');
     });
 
     // Handle incoming messages
     this.connection.on('ReceiveMessage', (message: ChatMessage) => {
       console.log('📨 Received message via SignalR:', message);
-      this.onMessageReceived?.(message);
+      this.onMessageReceivedCallbacks.forEach(callback => callback(message));
     });
 
     // Handle typing indicators
     this.connection.on('UserTyping', (userId: number, isTyping: boolean) => {
-      this.onUserTyping?.(userId, isTyping);
+      this.onUserTypingCallbacks.forEach(callback => callback(userId, isTyping));
     });
 
     // Handle message status updates (read, delivered, etc.)
@@ -89,13 +89,13 @@ class SignalRService {
     try {
       await this.connection.start();
       this.isConnected = true;
-      this.onConnectionStateChanged?.(true);
+      this.onConnectionStateChangedCallbacks.forEach(callback => callback(true));
       console.log('✅ SignalR connected successfully');
       return true;
     } catch (error) {
       console.error('❌ Error connecting to SignalR:', error);
       this.isConnected = false;
-      this.onConnectionStateChanged?.(false);
+      this.onConnectionStateChangedCallbacks.forEach(callback => callback(false));
       return false;
     }
   }
@@ -105,7 +105,7 @@ class SignalRService {
       try {
         await this.connection.stop();
         this.isConnected = false;
-        this.onConnectionStateChanged?.(false);
+        this.onConnectionStateChangedCallbacks.forEach(callback => callback(false));
         console.log('SignalR disconnected');
       } catch (error) {
         console.error('Error disconnecting from SignalR:', error);
@@ -177,15 +177,49 @@ class SignalRService {
 
   // Event subscription methods
   onMessage(callback: (message: ChatMessage) => void): void {
-    this.onMessageReceived = callback;
+    // Remove existing callback if it exists to prevent duplicates
+    const existingIndex = this.onMessageReceivedCallbacks.indexOf(callback);
+    if (existingIndex === -1) {
+      this.onMessageReceivedCallbacks.push(callback);
+    }
   }
 
   onConnectionStateChange(callback: (isConnected: boolean) => void): void {
-    this.onConnectionStateChanged = callback;
+    // Remove existing callback if it exists to prevent duplicates
+    const existingIndex = this.onConnectionStateChangedCallbacks.indexOf(callback);
+    if (existingIndex === -1) {
+      this.onConnectionStateChangedCallbacks.push(callback);
+    }
   }
 
   onTyping(callback: (userId: number, isTyping: boolean) => void): void {
-    this.onUserTyping = callback;
+    // Remove existing callback if it exists to prevent duplicates
+    const existingIndex = this.onUserTypingCallbacks.indexOf(callback);
+    if (existingIndex === -1) {
+      this.onUserTypingCallbacks.push(callback);
+    }
+  }
+
+  // Methods to remove event listeners
+  offMessage(callback: (message: ChatMessage) => void): void {
+    const index = this.onMessageReceivedCallbacks.indexOf(callback);
+    if (index > -1) {
+      this.onMessageReceivedCallbacks.splice(index, 1);
+    }
+  }
+
+  offConnectionStateChange(callback: (isConnected: boolean) => void): void {
+    const index = this.onConnectionStateChangedCallbacks.indexOf(callback);
+    if (index > -1) {
+      this.onConnectionStateChangedCallbacks.splice(index, 1);
+    }
+  }
+
+  offTyping(callback: (userId: number, isTyping: boolean) => void): void {
+    const index = this.onUserTypingCallbacks.indexOf(callback);
+    if (index > -1) {
+      this.onUserTypingCallbacks.splice(index, 1);
+    }
   }
 
   // Getters

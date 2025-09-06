@@ -474,65 +474,67 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
 
   // Initialize SignalR connection once
   useEffect(() => {
-    const initializeSignalR = async () => {
-      // Set up connection state handler only once
-      signalRService.onConnectionStateChange((connected: boolean) => {
-        console.log('🔗 SignalR connection state changed:', connected);
-        setIsSignalRConnected(connected);
-      });
+    const connectionStateHandler = (connected: boolean) => {
+      console.log('🔗 SignalR connection state changed:', connected);
+      setIsSignalRConnected(connected);
+    };
 
-      // Set up message handler - this should be global and filter by conversation
-      signalRService.onMessage((message: ChatMessage) => {
-        console.log('📨 Received message via SignalR:', message);
-        // Only add message if it belongs to current conversation
-        setMessages(prev => {
-          // Get current selectedUser from the ref to avoid stale closure
-          const currentUser = selectedUserRef.current;
-          const currentConversationId = currentUser.conversationId;
-          
-          // Only process message if it belongs to current conversation
-          if (message.conversationId === currentConversationId) {
-            // Check if message already exists (by ID or by content+sender for temp messages)
-            const existsById = prev.some(m => m.id === message.id);
-            const existsByContent = prev.some(m => 
-               m.content === message.content && 
-               m.senderId === message.senderId && 
-               Math.abs(new Date(m.sentAt).getTime() - new Date(message.sentAt).getTime()) < 5000
-             );
-            
-            if (!existsById && !existsByContent) {
-              console.log('✅ Adding new message to current conversation');
-              return [...prev, message];
-            } else {
-              // If this is a real message replacing a temp message, replace it
-              if (existsByContent && !existsById) {
-                console.log('🔄 Replacing temporary message with real message');
-                return prev.map(m => 
-                   m.content === message.content && 
-                   m.senderId === message.senderId && 
-                   Math.abs(new Date(m.sentAt).getTime() - new Date(message.sentAt).getTime()) < 5000
-                     ? message : m
-                 );
-              }
-              console.log('🚫 Message already exists, ignoring');
-            }
-          } else {
-            console.log('🚫 Message belongs to different conversation, ignoring');
-          }
-          return prev;
-        });
-      });
-
-      // Set up typing handler - this should be global and filter by user
-      signalRService.onTyping((userId: number, typing: boolean) => {
-        console.log('⌨️ User typing:', userId, typing);
+    const messageHandler = (message: ChatMessage) => {
+      console.log('📨 Received message via SignalR:', message);
+      // Only add message if it belongs to current conversation
+      setMessages(prev => {
         // Get current selectedUser from the ref to avoid stale closure
         const currentUser = selectedUserRef.current;
-        // Show typing indicator only for current conversation partner
-        if (userId === currentUser.reciverId) {
-          setIsTyping(typing);
+        const currentConversationId = currentUser?.conversationId;
+        
+        // Only process message if it belongs to current conversation
+        if (message.conversationId === currentConversationId) {
+          // Check if message already exists (by ID or by content+sender for temp messages)
+          const existsById = prev.some(m => m.id === message.id);
+          const existsByContent = prev.some(m => 
+             m.content === message.content && 
+             m.senderId === message.senderId && 
+             Math.abs(new Date(m.sentAt).getTime() - new Date(message.sentAt).getTime()) < 5000
+           );
+          
+          if (!existsById && !existsByContent) {
+            console.log('✅ Adding new message to current conversation');
+            return [...prev, message];
+          } else {
+            // If this is a real message replacing a temp message, replace it
+            if (existsByContent && !existsById) {
+              console.log('🔄 Replacing temporary message with real message');
+              return prev.map(m => 
+                 m.content === message.content && 
+                 m.senderId === message.senderId && 
+                 Math.abs(new Date(m.sentAt).getTime() - new Date(message.sentAt).getTime()) < 5000
+                   ? message : m
+               );
+            }
+            console.log('🚫 Message already exists, ignoring');
+          }
+        } else {
+          console.log('🚫 Message belongs to different conversation, ignoring');
         }
+        return prev;
       });
+    };
+
+    const typingHandler = (userId: number, typing: boolean) => {
+      console.log('⌨️ User typing:', userId, typing);
+      // Get current selectedUser from the ref to avoid stale closure
+      const currentUser = selectedUserRef.current;
+      // Show typing indicator only for current conversation partner
+      if (userId === currentUser?.reciverId) {
+        setIsTyping(typing);
+      }
+    };
+
+    const initializeSignalR = async () => {
+      // Set up event handlers
+      signalRService.onConnectionStateChange(connectionStateHandler);
+      signalRService.onMessage(messageHandler);
+      signalRService.onTyping(typingHandler);
 
       // Connect to SignalR
       console.log('🔄 Connecting to SignalR...');
@@ -544,7 +546,10 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
 
     // Cleanup on unmount
     return () => {
-      console.log('🧹 Cleaning up SignalR connection');
+      console.log('🧹 Cleaning up SignalR event handlers');
+      signalRService.offConnectionStateChange(connectionStateHandler);
+      signalRService.offMessage(messageHandler);
+      signalRService.offTyping(typingHandler);
       signalRService.disconnect();
     };
   }, []); // Only run once on mount
