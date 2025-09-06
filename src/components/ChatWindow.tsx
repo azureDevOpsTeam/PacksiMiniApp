@@ -461,45 +461,10 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
   // Initialize SignalR connection once
   useEffect(() => {
     const initializeSignalR = async () => {
-      // Set up event handlers only once
-      signalRService.onMessage((message: ChatMessage) => {
-        console.log('📨 Received message via SignalR:', message);
-        // Only add message if it belongs to current conversation
-        setMessages(prev => {
-          // Get current conversation ID from the latest state
-          const currentConversationId = selectedUser.conversationId;
-          
-          // Only process message if it belongs to current conversation
-          if (message.conversationId === currentConversationId) {
-            // Check if message already exists to avoid duplicates
-            const exists = prev.some(m => m.id === message.id);
-            if (!exists) {
-              console.log('✅ Adding new message to current conversation');
-              return [...prev, message];
-            }
-          } else {
-            console.log('🚫 Message belongs to different conversation, ignoring');
-          }
-          return prev;
-        });
-      });
-
+      // Set up connection state handler only once
       signalRService.onConnectionStateChange((connected: boolean) => {
         console.log('🔗 SignalR connection state changed:', connected);
         setIsSignalRConnected(connected);
-      });
-
-      signalRService.onTyping((userId: number, typing: boolean) => {
-        console.log('⌨️ User typing:', userId, typing);
-        // Show typing indicator only for current conversation partner
-        setIsTyping(prev => {
-          // Get current selectedUser from the latest state
-          const currentSelectedUser = selectedUser;
-          if (userId === currentSelectedUser.reciverId) {
-            return typing;
-          }
-          return prev;
-        });
       });
 
       // Connect to SignalR
@@ -542,6 +507,35 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
     };
     
     joinConversation();
+    
+    // Set up message handler with current selectedUser
+    signalRService.onMessage((message: ChatMessage) => {
+      console.log('📨 Received message via SignalR:', message);
+      // Only add message if it belongs to current conversation
+      setMessages(prev => {
+        // Only process message if it belongs to current conversation
+        if (message.conversationId === selectedUser.conversationId) {
+          // Check if message already exists to avoid duplicates
+          const exists = prev.some(m => m.id === message.id);
+          if (!exists) {
+            console.log('✅ Adding new message to current conversation');
+            return [...prev, message];
+          }
+        } else {
+          console.log('🚫 Message belongs to different conversation, ignoring');
+        }
+        return prev;
+      });
+    });
+
+    // Set up typing handler with current selectedUser
+    signalRService.onTyping((userId: number, typing: boolean) => {
+      console.log('⌨️ User typing:', userId, typing);
+      // Show typing indicator only for current conversation partner
+      if (userId === selectedUser.reciverId) {
+        setIsTyping(typing);
+      }
+    });
     
     // Leave previous conversation when switching
     return () => {
