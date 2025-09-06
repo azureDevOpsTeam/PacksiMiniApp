@@ -289,50 +289,60 @@ const LoadingSpinner = styled.div`
   }
 `;
 
-const ConnectionStatus = styled.div<{ $connected: boolean }>`
-  position: absolute;
-  top: 90px;
-  right: 15px;
+const ConnectionStatus = styled.div<{ $isConnected: boolean }>`
+  position: fixed;
+  top: 10px;
+  right: 10px;
   padding: 6px 12px;
-  border-radius: 15px;
+  border-radius: 12px;
   font-size: 10px;
   font-weight: 600;
   font-family: 'IRANSansX', sans-serif;
-  background: ${props => props.$connected ? 
-    'linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%)' : 
-    'linear-gradient(135deg, #f44336 0%, #EF5350 100%)'};
-  color: white;
-  z-index: 10;
   backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   transition: all 0.3s ease;
+  z-index: 1000;
   
-  &:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-  }
+  ${props => props.$isConnected ? css`
+    background: linear-gradient(135deg, rgba(14, 200, 121, 0.2) 0%, rgba(14, 200, 121, 0.3) 100%);
+    color: #0EC879;
+    border-color: rgba(14, 200, 121, 0.3);
+    box-shadow: 0 2px 8px rgba(14, 200, 121, 0.2);
+  ` : css`
+    background: linear-gradient(135deg, rgba(255, 107, 107, 0.2) 0%, rgba(255, 107, 107, 0.3) 100%);
+    color: #FF6B6B;
+    border-color: rgba(255, 107, 107, 0.3);
+    box-shadow: 0 2px 8px rgba(255, 107, 107, 0.2);
+  `}
 `;
 
 const TypingIndicator = styled.div`
-  padding: 6px 12px;
-  font-size: 10px;
+  padding: 8px 16px;
+  margin: 8px 0;
+  font-size: 11px;
+  color: rgba(10, 213, 193, 0.7);
   font-family: 'IRANSansX', sans-serif;
-  color: rgba(10, 213, 193, 0.8);
   font-style: italic;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.12) 100%);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  margin: 6px 0;
-  animation: pulse 1.5s ease-in-out infinite;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  
+  &::before {
+    content: '';
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #0AD5C1;
+    animation: pulse 1.5s infinite;
+  }
+  
   @keyframes pulse {
-    0%, 100% { opacity: 0.6; }
+    0%, 100% { opacity: 0.3; }
     50% { opacity: 1; }
   }
 `;
+
+
 
 interface ChatWindowProps {
   selectedUser: LiveChatUser;
@@ -345,9 +355,9 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
   const [sending, setSending] = useState(false);
   const [isSignalRConnected, setIsSignalRConnected] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
+  // const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<number | null>(null);
-  const selectedUserRef = useRef(selectedUser);
   
 
 
@@ -362,71 +372,39 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
     setNewMessage('');
     setSending(true);
 
-    // Create temporary message to show immediately
-    const tempMessage: ChatMessage = {
-      id: Date.now(), // Temporary ID
-      content: messageContent,
-      senderId: selectedUser.senderId,
-      receiverId: selectedUser.reciverId,
-      conversationId: selectedUser.conversationId,
-      sentAt: new Date().toISOString(),
-      isRead: false,
-      messageType: 'text'
-    };
-
-    // Add message immediately to UI
-    setMessages(prev => [...prev, tempMessage]);
-    console.log('✅ Message added to UI immediately');
-
     try {
-      let messageSent = false;
-      
-      // Try to send via SignalR first
-      if (signalRService.connected && selectedUser.conversationId) {
-        console.log('📤 Attempting to send message via SignalR...');
-        const success = await signalRService.sendMessage(
-          selectedUser.conversationId,
-          messageContent,
-          selectedUser.reciverId
-        );
-        
-        if (success) {
+      // Try SignalR first if connected
+      if (isSignalRConnected && selectedUser.conversationId) {
+        console.log('🚀 Sending message via SignalR...');
+        try {
+          await signalRService.sendMessage(selectedUser.conversationId.toString(), messageContent);
           console.log('✅ Message sent via SignalR successfully');
-          messageSent = true;
-        } else {
-          console.log('❌ Failed to send message via SignalR');
+          // Message will be received via SignalR event handler
+          return;
+        } catch (signalRError) {
+          console.warn('⚠️ SignalR send failed, falling back to REST API:', signalRError);
         }
-      } else {
-        console.log('⚠️ SignalR not connected, using REST API');
       }
-      
-      // Use REST API if SignalR failed
-      if (!messageSent) {
-        console.log('📤 Sending message via REST API...');
-        const messageData = {
-          model: {
-            receiverId: selectedUser.reciverId,
-            content: messageContent
-          }
-        };
 
-        const response = await apiService.sendMessage(messageData);
-        
-        if (response.objectResult) {
-          console.log('✅ Message sent via REST API successfully');
-          // Remove temp message and reload to get real message with proper ID
-          setMessages(prev => prev.filter(m => m.id !== tempMessage.id));
-          await fetchMessages();
-        } else {
-          // Remove temp message on failure
-          setMessages(prev => prev.filter(m => m.id !== tempMessage.id));
-          throw new Error('Failed to send message via REST API');
+      // Fallback to REST API
+      console.log('📡 Sending message via REST API...');
+      const messageData = {
+        model: {
+          receiverId: selectedUser.reciverId,
+          content: messageContent
         }
+      };
+
+      const response = await apiService.sendMessage(messageData);
+      
+      if (response.objectResult) {
+        console.log('✅ Message sent via REST API successfully');
+        await fetchMessages();
+      } else {
+        throw new Error('Failed to send message via REST API');
       }
     } catch (error) {
       console.error('❌ Error sending message:', error);
-      // Remove temp message and restore input on error
-      setMessages(prev => prev.filter(m => m.id !== tempMessage.id));
       setNewMessage(messageContent);
     } finally {
       setSending(false);
@@ -434,21 +412,20 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
   };
 
   const handleTyping = () => {
-    if (signalRService.connected && selectedUser.conversationId) {
-      signalRService.sendTypingIndicator(selectedUser.conversationId, true);
-      
-      // Clear previous timeout
-      if (typingTimeoutRef.current) {
-        clearTimeout(typingTimeoutRef.current);
-      }
-      
-      // Set timeout to stop typing indicator
-      typingTimeoutRef.current = setTimeout(() => {
-        if (signalRService.connected && selectedUser.conversationId) {
-          signalRService.sendTypingIndicator(selectedUser.conversationId, false);
-        }
-      }, 2000);
+    if (!isSignalRConnected || !selectedUser.conversationId) return;
+
+    // Clear existing timeout
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
     }
+
+    // Send typing indicator
+    signalRService.sendTypingIndicator(selectedUser.conversationId.toString(), true);
+
+    // Set timeout to stop typing indicator
+    typingTimeoutRef.current = setTimeout(() => {
+      signalRService.sendTypingIndicator(selectedUser.conversationId!.toString(), false);
+    }, 2000);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -467,132 +444,8 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
     scrollToBottom();
   }, [messages]);
 
-  // Update selectedUser ref whenever selectedUser changes
-  useEffect(() => {
-    selectedUserRef.current = selectedUser;
-  }, [selectedUser]);
-
-  // Initialize SignalR connection once
-  useEffect(() => {
-    const connectionStateHandler = (connected: boolean) => {
-      console.log('🔗 SignalR connection state changed:', connected);
-      setIsSignalRConnected(connected);
-    };
-
-    const messageHandler = (message: ChatMessage) => {
-      console.log('📨 Received message via SignalR:', message);
-      console.log('📨 Current selectedUser:', selectedUserRef.current);
-      
-      // Only add message if it belongs to current conversation
-      setMessages(prev => {
-        // Get current selectedUser from the ref to avoid stale closure
-        const currentUser = selectedUserRef.current;
-        const currentConversationId = currentUser?.conversationId;
-        
-        console.log('📨 Message conversationId:', message.conversationId);
-        console.log('📨 Current conversationId:', currentConversationId);
-        
-        // Only process message if it belongs to current conversation OR if no conversation is set yet
-        if (message.conversationId === currentConversationId || 
-            (currentConversationId === null && 
-             (message.senderId === currentUser?.senderId || message.receiverId === currentUser?.senderId))) {
-          
-          // Check if message already exists (by ID or by content+sender for temp messages)
-          const existsById = prev.some(m => m.id === message.id);
-          const existsByContent = prev.some(m => 
-             m.content === message.content && 
-             m.senderId === message.senderId && 
-             Math.abs(new Date(m.sentAt).getTime() - new Date(message.sentAt).getTime()) < 5000
-           );
-          
-          if (!existsById && !existsByContent) {
-            console.log('✅ Adding new message to current conversation');
-            return [...prev, message];
-          } else {
-            // If this is a real message replacing a temp message, replace it
-            if (existsByContent && !existsById) {
-              console.log('🔄 Replacing temporary message with real message');
-              return prev.map(m => 
-                 m.content === message.content && 
-                 m.senderId === message.senderId && 
-                 Math.abs(new Date(m.sentAt).getTime() - new Date(message.sentAt).getTime()) < 5000
-                   ? message : m
-               );
-            }
-            console.log('🚫 Message already exists, ignoring');
-          }
-        } else {
-          console.log('🚫 Message belongs to different conversation, ignoring');
-        }
-        return prev;
-      });
-    };
-
-    const typingHandler = (userId: number, typing: boolean) => {
-      console.log('⌨️ User typing:', userId, typing);
-      // Get current selectedUser from the ref to avoid stale closure
-      const currentUser = selectedUserRef.current;
-      // Show typing indicator only for current conversation partner
-      if (userId === currentUser?.reciverId) {
-        setIsTyping(typing);
-      }
-    };
-
-    const initializeSignalR = async () => {
-      // Set up event handlers
-      signalRService.onConnectionStateChange(connectionStateHandler);
-      signalRService.onMessage(messageHandler);
-      signalRService.onTyping(typingHandler);
-
-      // Connect to SignalR
-      console.log('🔄 Connecting to SignalR...');
-      const connected = await signalRService.connect();
-      console.log('✅ SignalR connected:', connected);
-    };
-
-    initializeSignalR();
-
-    // Cleanup on unmount
-    return () => {
-      console.log('🧹 Cleaning up SignalR event handlers');
-      signalRService.offConnectionStateChange(connectionStateHandler);
-      signalRService.offMessage(messageHandler);
-      signalRService.offTyping(typingHandler);
-      signalRService.disconnect();
-    };
-  }, []); // Only run once on mount
-
   useEffect(() => {
     loadConversationAndMessages();
-    
-    // Join the new conversation via SignalR
-    const joinConversation = async () => {
-      if (signalRService.connected && selectedUser.conversationId) {
-        console.log('🚪 Joining conversation:', selectedUser.conversationId);
-        await signalRService.joinConversation(selectedUser.conversationId);
-      } else if (selectedUser.conversationId) {
-        // If SignalR is not connected yet, wait and try again
-        console.log('⏳ Waiting for SignalR connection to join conversation...');
-        setTimeout(async () => {
-          if (signalRService.connected) {
-            console.log('🚪 Joining conversation after delay:', selectedUser.conversationId);
-            await signalRService.joinConversation(selectedUser.conversationId);
-          }
-        }, 1000);
-      }
-    };
-    
-    joinConversation();
-    
-    // Event handlers are now set up globally in the first useEffect
-    
-    // Leave previous conversation when switching
-    return () => {
-      if (selectedUser.conversationId && signalRService.connected) {
-        console.log('🚪 Leaving conversation:', selectedUser.conversationId);
-        signalRService.leaveConversation(selectedUser.conversationId);
-      }
-    };
   }, [selectedUser.conversationId, selectedUser.reciverId]);
 
   useEffect(() => {
@@ -609,6 +462,72 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
 
     markMessagesAsRead();
   }, [selectedUser.conversationId]);
+
+  // SignalR connection management
+  useEffect(() => {
+    const initializeSignalR = async () => {
+      try {
+        // Set up event handlers
+        signalRService.setOnMessageReceived((message) => {
+          if (message.conversationId === selectedUser?.conversationId) {
+            setMessages(prev => [...prev, message]);
+            scrollToBottom();
+          }
+        });
+
+        signalRService.setOnConnectionStateChanged((isConnected) => {
+          setIsSignalRConnected(isConnected);
+          console.log('SignalR connection status:', isConnected ? 'Connected' : 'Disconnected');
+        });
+
+        signalRService.setOnTypingReceived((userId, isTyping) => {
+          if (userId !== selectedUser.reciverId?.toString()) {
+            setIsTyping(isTyping);
+          }
+        });
+
+        // signalRService.setOnUserOnlineStatusChanged((userId, isOnline) => {
+        //   setOnlineUsers(prev => {
+        //     const updated = new Set(prev);
+        //     if (isOnline) {
+        //       updated.add(userId);
+        //     } else {
+        //       updated.delete(userId);
+        //     }
+        //     return updated;
+        //   });
+        // });
+
+        // Start connection
+        await signalRService.start();
+      } catch (error) {
+        console.error('Failed to initialize SignalR:', error);
+      }
+    };
+
+    initializeSignalR();
+
+    // Cleanup on unmount
+    return () => {
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+      signalRService.stop();
+    };
+  }, []);
+
+  // Join/Leave conversation when selectedUser changes
+  useEffect(() => {
+    if (isSignalRConnected && selectedUser.conversationId) {
+      signalRService.joinConversation(selectedUser.conversationId.toString());
+      
+      return () => {
+        if (selectedUser.conversationId) {
+          signalRService.leaveConversation(selectedUser.conversationId.toString());
+        }
+      };
+    }
+  }, [isSignalRConnected, selectedUser.conversationId]);
 
   const loadConversationAndMessages = async () => {
     try {
@@ -675,10 +594,10 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
 
   return (
     <ChatContainer>
-      <TopSpacer />
-      <ConnectionStatus $connected={isSignalRConnected}>
+      <ConnectionStatus $isConnected={isSignalRConnected}>
         {isSignalRConnected ? 'متصل' : 'قطع شده'}
       </ConnectionStatus>
+      <TopSpacer />
 
       {/* Messages */}
       <ChatThread>
@@ -736,7 +655,7 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
             })}
             {isTyping && (
               <TypingIndicator>
-                {selectedUser.requestCreatorDisplayName} در حال تایپ...
+                در حال تایپ...
               </TypingIndicator>
             )}
           </MessageList>

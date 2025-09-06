@@ -3,313 +3,327 @@ import type { ChatMessage } from '../types/api';
 
 class SignalRService {
   private connection: HubConnection | null = null;
-  private isConnected = false;
+  private isConnecting = false;
+  private reconnectAttempts = 0;
   private maxReconnectAttempts = 5;
-  private reconnectDelay = 3000; // 3 seconds
+  private reconnectDelay = 3000;
+  private connectionPromise: Promise<void> | null = null;
 
-  // Event handlers - support multiple callbacks
-  private onMessageReceivedCallbacks: ((message: ChatMessage) => void)[] = [];
-  private onConnectionStateChangedCallbacks: ((isConnected: boolean) => void)[] = [];
-  private onUserTypingCallbacks: ((userId: number, isTyping: boolean) => void)[] = [];
+  // Event handlers
+  private onMessageReceived: ((message: ChatMessage) => void) | null = null;
+  private onConnectionStateChanged: ((connected: boolean) => void) | null = null;
+  private onTypingReceived: ((userId: string, isTyping: boolean) => void) | null = null;
+  private onUserOnlineStatusChanged: ((userId: string, isOnline: boolean) => void) | null = null;
 
   constructor() {
+    this.initializeConnection();
+  }
+
+  private initializeConnection(): void {
+    try {
+      this.connection = new HubConnectionBuilder()
+        .withUrl('/chatHub', {
+          withCredentials: false,
+          headers: {
+            // Add Telegram init data if available
+            ...(window.Telegram?.WebApp?.initData && {
+              'X-Telegram-Init-Data': window.Telegram.WebApp.initData
+            })
+          }
+        })
+        .withAutomaticReconnect({
+          nextRetryDelayInMilliseconds: (retryContext) => {
+            if (retryContext.previousRetryCount < 3) {
+              return 2000; // 2 seconds for first 3 attempts
+            } else if (retryContext.previousRetryCount < 6) {
+              return 5000; // 5 seconds for next 3 attempts
+            } else {
+              return 10000; // 10 seconds for subsequent attempts
+            }
+          }
+        })
+        .configureLogging(LogLevel.Information)
+        .build();
+
+      this.setupEventHandlers();
+    } catch (error) {
+      console.error('خطا در ایجاد اتصال SignalR:', error);
+    }
+  }
+
+  private setupEventHandlers(): void {
+    if (!this.connection) return;
+
+    // Connection state events
+    this.connection.onclose((error) => {
+      console.log('اتصال SignalR قطع شد:', error);
+      this.onConnectionStateChanged?.(false);
+      this.handleReconnection();
+    });
+
+    this.connection.onreconnecting((error) => {
+      console.log('در حال تلاش برای اتصال مجدد SignalR:', error);
+      this.onConnectionStateChanged?.(false);
+    });
+
+    this.connection.onreconnected((connectionId) => {
+      console.log('اتصال مجدد SignalR برقرار شد:', connectionId);
+      this.onConnectionStateChanged?.(true);
+      this.reconnectAttempts = 0;
+    });
+
+    // Message events
+    this.connection.on('ReceiveMessage', (message: ChatMessage) => {
+      console.log('پیام جدید دریافت شد:', message);
+      this.onMessageReceived?.(message);
+    });
+
+    this.connection.on('MessageReceived', (message: ChatMessage) => {
+      console.log('پیام جدید دریافت شد (MessageReceived):', message);
+      this.onMessageReceived?.(message);
+    });
+
+    // Typing events
+    this.connection.on('UserTyping', (userId: string, isTyping: boolean) => {
+      console.log(`کاربر ${userId} در حال تایپ: ${isTyping}`);
+      this.onTypingReceived?.(userId, isTyping);
+    });
+
+    this.connection.on('ReceiveTyping', (userId: string, isTyping: boolean) => {
+      console.log(`کاربر ${userId} در حال تایپ (ReceiveTyping): ${isTyping}`);
+      this.onTypingReceived?.(userId, isTyping);
+    });
+
+    // User online status events
+    this.connection.on('UserOnlineStatusChanged', (userId: string, isOnline: boolean) => {
+      console.log(`وضعیت آنلاین کاربر ${userId} تغییر کرد: ${isOnline}`);
+      this.onUserOnlineStatusChanged?.(userId, isOnline);
+    });
+
+    this.connection.on('UserConnected', (userId: string) => {
+      console.log(`کاربر ${userId} متصل شد`);
+      this.onUserOnlineStatusChanged?.(userId, true);
+    });
+
+    this.connection.on('UserDisconnected', (userId: string) => {
+      console.log(`کاربر ${userId} قطع شد`);
+      this.onUserOnlineStatusChanged?.(userId, false);
+    });
+  }
+
+  private async handleReconnection(): Promise<void> {
+    if (this.reconnectAttempts >= this.maxReconnectAttempts) {
+      console.error('حداکثر تعداد تلاش برای اتصال مجدد به پایان رسید');
+      return;
+    }
+
+    this.reconnectAttempts++;
+    console.log(`تلاش ${this.reconnectAttempts} برای اتصال مجدد...`);
+
+    setTimeout(async () => {
+      try {
+        await this.connect();
+      } catch (error) {
+        console.error('خطا در اتصال مجدد:', error);
+        this.handleReconnection();
+      }
+    }, this.reconnectDelay);
+  }
+
+  async connect(): Promise<void> {
     if (!this.connection) {
       this.initializeConnection();
     }
-  }
 
-  private initializeConnection() {
-    // Get Telegram init data for authentication
-    const telegramInitData = (window as any).Telegram?.WebApp?.initData || '';
-    console.log('🔑 Telegram init data:', telegramInitData ? 'Available' : 'Not available');
-    console.log('🔑 Telegram WebApp object:', (window as any).Telegram?.WebApp ? 'Available' : 'Not available');
-
-    this.connection = new HubConnectionBuilder()
-      .withUrl('https://api.packsi.net/chatHub', {
-        withCredentials: false,
-        headers: telegramInitData ? {
-          'X-Telegram-Init-Data': telegramInitData
-        } : {}
-      })
-      .withAutomaticReconnect({
-        nextRetryDelayInMilliseconds: (retryContext) => {
-          if (retryContext.previousRetryCount < this.maxReconnectAttempts) {
-            return this.reconnectDelay;
-          }
-          return null; // Stop reconnecting
-        }
-      })
-      .configureLogging(LogLevel.Information)
-      .build();
-
-    this.setupEventHandlers();
-  }
-
-  private setupEventHandlers() {
-    if (!this.connection) return;
-
-    // Add generic event listener for debugging
-    this.connection.onclose((error) => {
-      console.log('🔌 SignalR connection closed:', error);
-    });
-
-    // Log all incoming events for debugging
-    const originalOn = this.connection.on.bind(this.connection);
-    this.connection.on = function(methodName: string, newMethod: (...args: any[]) => void) {
-      console.log(`🎯 Registering handler for event: ${methodName}`);
-      return originalOn(methodName, (...args: any[]) => {
-        console.log(`📡 Received event '${methodName}' with args:`, args);
-        return newMethod(...args);
-      });
-    };
-
-    // Handle connection state changes
-    this.connection.onclose(() => {
-      this.isConnected = false;
-      this.onConnectionStateChangedCallbacks.forEach(callback => callback(false));
-      console.log('SignalR connection closed');
-    });
-
-    this.connection.onreconnecting(() => {
-      this.isConnected = false;
-      this.onConnectionStateChangedCallbacks.forEach(callback => callback(false));
-      console.log('SignalR reconnecting...');
-    });
-
-    this.connection.onreconnected(() => {
-      this.isConnected = true;
-      this.onConnectionStateChangedCallbacks.forEach(callback => callback(true));
-      console.log('SignalR reconnected');
-    });
-
-    // Handle incoming messages - try multiple event names
-    this.connection.on('MessageReceived', (message: ChatMessage) => {
-      console.log('📨 Received message via SignalR (MessageReceived):', message);
-      this.onMessageReceivedCallbacks.forEach(callback => callback(message));
-    });
-
-    this.connection.on('ReceiveMessage', (message: ChatMessage) => {
-      console.log('📨 Received message via SignalR (ReceiveMessage):', message);
-      this.onMessageReceivedCallbacks.forEach(callback => callback(message));
-    });
-
-    this.connection.on('NewMessage', (message: ChatMessage) => {
-      console.log('📨 Received message via SignalR (NewMessage):', message);
-      this.onMessageReceivedCallbacks.forEach(callback => callback(message));
-    });
-
-    // Handle sent messages (for sender confirmation)
-    this.connection.on('MessageSent', (message: ChatMessage) => {
-      console.log('📤 Message sent confirmation via SignalR:', message);
-      this.onMessageReceivedCallbacks.forEach(callback => callback(message));
-    });
-
-    // Add generic message handler for debugging
-    this.connection.on('ReceiveTestMessage', (connectionId: string, message: string) => {
-      console.log('📨 Test message received:', { connectionId, message });
-      // Convert to ChatMessage format if needed
-      const chatMessage: ChatMessage = {
-        id: Date.now(),
-        content: message,
-        senderId: 0,
-        receiverId: 0,
-        conversationId: 0,
-        sentAt: new Date().toISOString(),
-        isRead: false,
-        messageType: 'text'
-      };
-      this.onMessageReceivedCallbacks.forEach(callback => callback(chatMessage));
-    });
-
-    // Handle typing indicators
-    this.connection.on('UserTyping', (userId: number, isTyping: boolean) => {
-      this.onUserTypingCallbacks.forEach(callback => callback(userId, isTyping));
-    });
-
-    // Handle message status updates (read, delivered, etc.)
-    this.connection.on('MessageStatusUpdated', (messageId: number, status: string) => {
-      console.log(`Message ${messageId} status updated to: ${status}`);
-    });
-  }
-
-  async connect(): Promise<boolean> {
-    if (!this.connection || this.isConnected) {
-      console.log('SignalR already connected or no connection object');
-      return this.isConnected;
+    if (this.connection?.state === 'Connected') {
+      console.log('اتصال SignalR از قبل برقرار است');
+      this.onConnectionStateChanged?.(true);
+      return;
     }
 
-    console.log('Attempting to connect to SignalR...');
+    if (this.isConnecting || this.connectionPromise) {
+      console.log('در حال اتصال به SignalR...');
+      return this.connectionPromise || Promise.resolve();
+    }
+
+    this.isConnecting = true;
+    this.connectionPromise = this.performConnection();
+
     try {
+      await this.connectionPromise;
+    } finally {
+      this.isConnecting = false;
+      this.connectionPromise = null;
+    }
+  }
+
+  async start(): Promise<void> {
+    return this.connect();
+  }
+
+  async stop(): Promise<void> {
+    return this.disconnect();
+  }
+
+  private async performConnection(): Promise<void> {
+    if (!this.connection) {
+      throw new Error('اتصال SignalR مقداردهی نشده است');
+    }
+
+    try {
+      console.log('شروع اتصال به SignalR...');
       await this.connection.start();
-      this.isConnected = true;
-      this.onConnectionStateChangedCallbacks.forEach(callback => callback(true));
-      console.log('✅ SignalR connected successfully');
-      return true;
+      console.log('اتصال SignalR با موفقیت برقرار شد');
+      this.onConnectionStateChanged?.(true);
+      this.reconnectAttempts = 0;
     } catch (error) {
-      console.error('❌ Error connecting to SignalR:', error);
-      this.isConnected = false;
-      this.onConnectionStateChangedCallbacks.forEach(callback => callback(false));
-      return false;
+      console.error('خطا در اتصال به SignalR:', error);
+      this.onConnectionStateChanged?.(false);
+      throw error;
     }
   }
 
   async disconnect(): Promise<void> {
-    if (this.connection && this.isConnected) {
+    if (this.connection) {
       try {
+        console.log('قطع اتصال SignalR...');
         await this.connection.stop();
-        this.isConnected = false;
-        this.onConnectionStateChangedCallbacks.forEach(callback => callback(false));
-        console.log('SignalR disconnected');
+        console.log('اتصال SignalR قطع شد');
+        this.onConnectionStateChanged?.(false);
       } catch (error) {
-        console.error('Error disconnecting from SignalR:', error);
+        console.error('خطا در قطع اتصال SignalR:', error);
       }
     }
   }
 
-  async sendMessage(conversationId: number, content: string, receiverId: number): Promise<boolean> {
-    if (!this.connection || !this.isConnected) {
-      console.error('SignalR not connected');
-      return false;
+  async joinConversation(conversationId: string): Promise<void> {
+    if (!this.isConnected()) {
+      console.warn('اتصال SignalR برقرار نیست - تلاش برای اتصال...');
+      await this.connect();
     }
 
     try {
-      console.log('📤 Attempting to send message via SignalR:', { conversationId, content, receiverId });
-      
-      // Try different method names that might be used by backend
-      try {
-        await this.connection.invoke('SendMessage', {
-          conversationId,
-          content,
-          receiverId
-        });
-        console.log('✅ Message sent via SendMessage method');
-        return true;
-      } catch (error1) {
-        console.log('❌ SendMessage failed, trying SendChatMessage:', error1);
-        
-        try {
-          await this.connection.invoke('SendChatMessage', conversationId, content, receiverId);
-          console.log('✅ Message sent via SendChatMessage method');
-          return true;
-        } catch (error2) {
-          console.log('❌ SendChatMessage failed, trying SendTestMessage:', error2);
-          
-          try {
-            await this.connection.invoke('SendTestMessage', content);
-            console.log('✅ Message sent via SendTestMessage method');
-            return true;
-          } catch (error3) {
-            console.error('❌ All send methods failed:', { error1, error2, error3 });
-            return false;
-          }
-        }
-      }
+      console.log(`پیوستن به مکالمه: ${conversationId}`);
+      await this.connection?.invoke('JoinConversation', conversationId);
+      console.log(`با موفقیت به مکالمه ${conversationId} پیوستید`);
     } catch (error) {
-      console.error('Error sending message via SignalR:', error);
-      return false;
+      console.error('خطا در پیوستن به مکالمه:', error);
+      throw error;
     }
   }
 
-  async joinConversation(conversationId: number): Promise<boolean> {
-    if (!this.connection || !this.isConnected) {
-      console.error('❌ SignalR not connected for joining conversation');
-      return false;
-    }
-
-    try {
-      await this.connection.invoke('JoinConversation', conversationId);
-      console.log(`✅ Joined conversation ${conversationId}`);
-      return true;
-    } catch (error) {
-      console.error('❌ Error joining conversation:', error);
-      return false;
-    }
-  }
-
-  async leaveConversation(conversationId: number): Promise<boolean> {
-    if (!this.connection || !this.isConnected) {
-      return true; // Already disconnected
-    }
-
-    try {
-      await this.connection.invoke('LeaveConversation', conversationId);
-      console.log(`Left conversation ${conversationId}`);
-      return true;
-    } catch (error) {
-      console.error('Error leaving conversation:', error);
-      return false;
-    }
-  }
-
-  async sendTypingIndicator(conversationId: number, isTyping: boolean): Promise<void> {
-    if (!this.connection || !this.isConnected) {
+  async leaveConversation(conversationId: string): Promise<void> {
+    if (!this.isConnected()) {
+      console.warn('اتصال SignalR برقرار نیست');
       return;
     }
 
     try {
-      await this.connection.invoke('SendTypingIndicator', conversationId, isTyping);
+      console.log(`خروج از مکالمه: ${conversationId}`);
+      await this.connection?.invoke('LeaveConversation', conversationId);
+      console.log(`با موفقیت از مکالمه ${conversationId} خارج شدید`);
     } catch (error) {
-      console.error('Error sending typing indicator:', error);
+      console.error('خطا در خروج از مکالمه:', error);
     }
   }
 
-  // Event subscription methods
-  onMessage(callback: (message: ChatMessage) => void): void {
-    // Remove existing callback if it exists to prevent duplicates
-    const existingIndex = this.onMessageReceivedCallbacks.indexOf(callback);
-    if (existingIndex === -1) {
-      this.onMessageReceivedCallbacks.push(callback);
+  async sendMessage(conversationId: string, content: string): Promise<void> {
+    if (!this.isConnected()) {
+      throw new Error('اتصال SignalR برقرار نیست');
+    }
+
+    try {
+      console.log(`ارسال پیام به مکالمه ${conversationId}:`, content);
+      
+      // Try different method names for compatibility
+      const methods = ['SendMessage', 'SendChatMessage', 'SendMessageToConversation'];
+      
+      for (const method of methods) {
+        try {
+          await this.connection?.invoke(method, conversationId, content);
+          console.log(`پیام با موفقیت از طریق ${method} ارسال شد`);
+          return;
+        } catch (error) {
+          console.warn(`خطا در ارسال پیام با ${method}:`, error);
+          if (method === methods[methods.length - 1]) {
+            throw error; // Re-throw if it's the last method
+          }
+        }
+      }
+    } catch (error) {
+      console.error('خطا در ارسال پیام:', error);
+      throw error;
     }
   }
 
-  onConnectionStateChange(callback: (isConnected: boolean) => void): void {
-    // Remove existing callback if it exists to prevent duplicates
-    const existingIndex = this.onConnectionStateChangedCallbacks.indexOf(callback);
-    if (existingIndex === -1) {
-      this.onConnectionStateChangedCallbacks.push(callback);
+  async sendTypingIndicator(conversationId: string, isTyping: boolean): Promise<void> {
+    if (!this.isConnected()) {
+      console.warn('اتصال SignalR برقرار نیست - نمی‌توان نشانگر تایپ ارسال کرد');
+      return;
+    }
+
+    try {
+      console.log(`ارسال نشانگر تایپ به مکالمه ${conversationId}: ${isTyping}`);
+      
+      // Try different method names for compatibility
+      const methods = ['SendTyping', 'SendTypingIndicator', 'NotifyTyping'];
+      
+      for (const method of methods) {
+        try {
+          await this.connection?.invoke(method, conversationId, isTyping);
+          console.log(`نشانگر تایپ با موفقیت از طریق ${method} ارسال شد`);
+          return;
+        } catch (error) {
+          console.warn(`خطا در ارسال نشانگر تایپ با ${method}:`, error);
+          if (method === methods[methods.length - 1]) {
+            // Don't throw for typing indicator failures
+            console.error('خطا در ارسال نشانگر تایپ:', error);
+            return;
+          }
+        }
+      }
+    } catch (error) {
+      console.error('خطا در ارسال نشانگر تایپ:', error);
     }
   }
 
-  onTyping(callback: (userId: number, isTyping: boolean) => void): void {
-    // Remove existing callback if it exists to prevent duplicates
-    const existingIndex = this.onUserTypingCallbacks.indexOf(callback);
-    if (existingIndex === -1) {
-      this.onUserTypingCallbacks.push(callback);
-    }
+  isConnected(): boolean {
+    return this.connection?.state === 'Connected';
   }
 
-  // Methods to remove event listeners
-  offMessage(callback: (message: ChatMessage) => void): void {
-    const index = this.onMessageReceivedCallbacks.indexOf(callback);
-    if (index > -1) {
-      this.onMessageReceivedCallbacks.splice(index, 1);
-    }
-  }
-
-  offConnectionStateChange(callback: (isConnected: boolean) => void): void {
-    const index = this.onConnectionStateChangedCallbacks.indexOf(callback);
-    if (index > -1) {
-      this.onConnectionStateChangedCallbacks.splice(index, 1);
-    }
-  }
-
-  offTyping(callback: (userId: number, isTyping: boolean) => void): void {
-    const index = this.onUserTypingCallbacks.indexOf(callback);
-    if (index > -1) {
-      this.onUserTypingCallbacks.splice(index, 1);
-    }
-  }
-
-  // Getters
-  get connected(): boolean {
-    return this.isConnected;
-  }
-
-  get connectionState(): string {
+  getConnectionState(): string {
     return this.connection?.state || 'Disconnected';
+  }
+
+  // Event handler setters
+  // Removed duplicate methods - using setOnMessageReceived, setOnConnectionStateChanged, etc. instead
+
+  setOnMessageReceived(handler: (message: ChatMessage) => void): void {
+    this.onMessageReceived = handler;
+  }
+
+  setOnConnectionStateChanged(handler: (connected: boolean) => void): void {
+    this.onConnectionStateChanged = handler;
+  }
+
+  setOnTypingReceived(handler: (userId: string, isTyping: boolean) => void): void {
+    this.onTypingReceived = handler;
+  }
+
+  setOnUserOnlineStatusChanged(handler: (userId: string, isOnline: boolean) => void): void {
+    this.onUserOnlineStatusChanged = handler;
+  }
+
+  // Cleanup
+  dispose(): void {
+    this.disconnect();
+    this.onMessageReceived = null;
+    this.onConnectionStateChanged = null;
+    this.onTypingReceived = null;
+    this.onUserOnlineStatusChanged = null;
   }
 }
 
-// Export singleton instance
+// Create and export a singleton instance
 export const signalRService = new SignalRService();
 export default signalRService;
