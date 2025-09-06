@@ -347,6 +347,7 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<number | null>(null);
+  const selectedUserRef = useRef(selectedUser);
   
 
 
@@ -466,6 +467,11 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
     scrollToBottom();
   }, [messages]);
 
+  // Update selectedUser ref whenever selectedUser changes
+  useEffect(() => {
+    selectedUserRef.current = selectedUser;
+  }, [selectedUser]);
+
   // Initialize SignalR connection once
   useEffect(() => {
     const initializeSignalR = async () => {
@@ -473,6 +479,59 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
       signalRService.onConnectionStateChange((connected: boolean) => {
         console.log('🔗 SignalR connection state changed:', connected);
         setIsSignalRConnected(connected);
+      });
+
+      // Set up message handler - this should be global and filter by conversation
+      signalRService.onMessage((message: ChatMessage) => {
+        console.log('📨 Received message via SignalR:', message);
+        // Only add message if it belongs to current conversation
+        setMessages(prev => {
+          // Get current selectedUser from the ref to avoid stale closure
+          const currentUser = selectedUserRef.current;
+          const currentConversationId = currentUser.conversationId;
+          
+          // Only process message if it belongs to current conversation
+          if (message.conversationId === currentConversationId) {
+            // Check if message already exists (by ID or by content+sender for temp messages)
+            const existsById = prev.some(m => m.id === message.id);
+            const existsByContent = prev.some(m => 
+               m.content === message.content && 
+               m.senderId === message.senderId && 
+               Math.abs(new Date(m.sentAt).getTime() - new Date(message.sentAt).getTime()) < 5000
+             );
+            
+            if (!existsById && !existsByContent) {
+              console.log('✅ Adding new message to current conversation');
+              return [...prev, message];
+            } else {
+              // If this is a real message replacing a temp message, replace it
+              if (existsByContent && !existsById) {
+                console.log('🔄 Replacing temporary message with real message');
+                return prev.map(m => 
+                   m.content === message.content && 
+                   m.senderId === message.senderId && 
+                   Math.abs(new Date(m.sentAt).getTime() - new Date(message.sentAt).getTime()) < 5000
+                     ? message : m
+                 );
+              }
+              console.log('🚫 Message already exists, ignoring');
+            }
+          } else {
+            console.log('🚫 Message belongs to different conversation, ignoring');
+          }
+          return prev;
+        });
+      });
+
+      // Set up typing handler - this should be global and filter by user
+      signalRService.onTyping((userId: number, typing: boolean) => {
+        console.log('⌨️ User typing:', userId, typing);
+        // Get current selectedUser from the ref to avoid stale closure
+        const currentUser = selectedUserRef.current;
+        // Show typing indicator only for current conversation partner
+        if (userId === currentUser.reciverId) {
+          setIsTyping(typing);
+        }
       });
 
       // Connect to SignalR
@@ -516,52 +575,7 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
     
     joinConversation();
     
-    // Set up message handler with current selectedUser
-      signalRService.onMessage((message: ChatMessage) => {
-        console.log('📨 Received message via SignalR:', message);
-        // Only add message if it belongs to current conversation
-        setMessages(prev => {
-          // Only process message if it belongs to current conversation
-          if (message.conversationId === selectedUser.conversationId) {
-            // Check if message already exists (by ID or by content+sender for temp messages)
-            const existsById = prev.some(m => m.id === message.id);
-            const existsByContent = prev.some(m => 
-               m.content === message.content && 
-               m.senderId === message.senderId && 
-               Math.abs(new Date(m.sentAt).getTime() - new Date(message.sentAt).getTime()) < 5000
-             );
-            
-            if (!existsById && !existsByContent) {
-              console.log('✅ Adding new message to current conversation');
-              return [...prev, message];
-            } else {
-              // If this is a real message replacing a temp message, replace it
-              if (existsByContent && !existsById) {
-                console.log('🔄 Replacing temporary message with real message');
-                return prev.map(m => 
-                   m.content === message.content && 
-                   m.senderId === message.senderId && 
-                   Math.abs(new Date(m.sentAt).getTime() - new Date(message.sentAt).getTime()) < 5000
-                     ? message : m
-                 );
-              }
-              console.log('🚫 Message already exists, ignoring');
-            }
-          } else {
-            console.log('🚫 Message belongs to different conversation, ignoring');
-          }
-          return prev;
-        });
-      });
-
-    // Set up typing handler with current selectedUser
-    signalRService.onTyping((userId: number, typing: boolean) => {
-      console.log('⌨️ User typing:', userId, typing);
-      // Show typing indicator only for current conversation partner
-      if (userId === selectedUser.reciverId) {
-        setIsTyping(typing);
-      }
-    });
+    // Event handlers are now set up globally in the first useEffect
     
     // Leave previous conversation when switching
     return () => {
