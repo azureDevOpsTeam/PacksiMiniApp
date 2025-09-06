@@ -21,10 +21,14 @@ class SignalRService {
   private initializeConnection() {
     // Get Telegram init data for authentication
     const telegramInitData = (window as any).Telegram?.WebApp?.initData || '';
+    console.log('🔑 Telegram init data:', telegramInitData ? 'Available' : 'Not available');
+    console.log('🔑 Telegram WebApp object:', (window as any).Telegram?.WebApp ? 'Available' : 'Not available');
 
     this.connection = new HubConnectionBuilder()
       .withUrl('https://api.packsi.net/chatHub', {
-        accessTokenFactory: () => telegramInitData
+        headers: {
+          'X-Telegram-Init-Data': telegramInitData
+        }
       })
       .withAutomaticReconnect({
         nextRetryDelayInMilliseconds: (retryContext) => {
