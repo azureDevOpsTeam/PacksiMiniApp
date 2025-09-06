@@ -30,17 +30,40 @@ const ChatContainer = styled.div`
   background-repeat: no-repeat;
   background-attachment: fixed;
   font-family: 'IRANSansX', sans-serif;
+  position: relative;
+`;
+
+const TopSpacer = styled.div`
+  height: 80px;
+  background: linear-gradient(135deg, #0f1419 0%, #1a2332 50%, #0f1419 100%);
+  width: 100%;
+  position: relative;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, rgba(10, 213, 193, 0.3) 50%, transparent 100%);
+  }
 `;
 
 
 
 const ChatThread = styled.div`
-  height: calc(100vh - 80px);
+  height: calc(100vh - 160px);
   margin: 0 auto;
-  padding: 20px 20px 80px 20px;
+  padding: 15px 15px 80px 15px;
   overflow-y: auto;
   max-width: 800px;
   width: 100%;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 20px 20px 0 0;
+  backdrop-filter: blur(10px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
 `;
 
 const MessageList = styled.ul`
@@ -53,65 +76,82 @@ const MessageItem = styled.li<{ $isOdd: boolean }>`
   position: relative;
   clear: both;
   display: inline-block;
-  padding: 16px 40px 16px 20px;
-  margin: 0 0 20px 0;
-  font: 16px/20px 'IRANSansX', sans-serif;
-  border-radius: 10px;
-  background-color: rgba(25, 147, 147, 0.2);
+  padding: 10px 30px 10px 12px;
+  margin: 0 0 12px 0;
+  font: 12px/16px 'IRANSansX', sans-serif;
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(25, 147, 147, 0.15) 0%, rgba(25, 147, 147, 0.25) 100%);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
   
   ${props => props.$isOdd ? css`
-    animation: ${showChatOdd} 0.15s 1 ease-in;
+    animation: ${showChatOdd} 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     float: right;
-    margin-right: 80px;
+    margin-right: 50px;
     color: #0AD5C1;
+    background: linear-gradient(135deg, rgba(10, 213, 193, 0.15) 0%, rgba(10, 213, 193, 0.25) 100%);
     
     &:before {
       position: absolute;
-      top: 0;
-      right: -80px;
-      width: 50px;
-      height: 50px;
-      border-radius: 50px;
+      top: 2px;
+      right: -45px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
       content: '';
-      background-image: url(data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/4QBoRXhpZgAATU0AKgAAAAgABAEaAAUAAAABAAAAPgEbAAUAAAABAAAARgEoAAMAAAABAAIAAAExAAIAAAASAAAATgAAAAAAAABgAAAAAQAAAGAAAAABUGFpbnQuTkVUIHYzLjUuMTAA/9sAQwAHBQUGBQQHBgUGCAcHCAoRCwoJCQoVDxAMERgVGhkYFRgXGx4nIRsdJR0XGCIuIiUoKSssKxogLzMvKjInKisq/9sAQwEHCAgKCQoUCwsUKhwYHCoqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq/8AAEQgAMgAyAwEiAAIRAQMRAf/EAB8AAAEFAQEBAQEBAAAAAAAAAAABAgMEBQYHCAkKC//EALUQAAIBAwMCBAMFBQQEAAABfQECAwAEEQUSITFBBhNRYQcicRQygZGhCCNCscEVUtHwJDNicoIJChYXGBkaJSYnKCkqNDU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6g4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2drh4uPk5ebn6Onq8fLz9PX29/j5+v/EAB8BAAMBAQEBAQEBAQEAAAAAAAABAgMEBQYHCAkKC//EALURAAIBAgQEAwQHBQQEAAECdwABAgMRBAUhMQYSQVEHYXETIjKBCBRCkaGxwQkjM1LwFWJy0QoWJDThJfEXGBkaJicoKSo1Njc4OTpDREVGR0hJSlNUVVZXWFlaY2RlZmdoaWpzdHV2d3h5eoKDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uLj5OXm5+jp6vLz9PX29/j5+v/aAAwDAQACEQMRAD8A8wre0/w55qLLqM62ysMrEWAdh+PSl8M6fFLMbu5K7YziNT3b1/CqniRLq98UA2SlhHGobnA55FdbajHmZwxTnLlRtm78NabDGhs/tEwchmVfMGD0znvn0pqahoN3fCH+z0RcHcWiKY4745/KuUVtTtdSFtJCvmxHmN+317Gp5dTthGZXUSXPJJVsh1PUH1rP2rZt7GKOi1LwxHIv2jRg20jPks4b64b+h/OuZZWRyrqVZTggjBBrZ0PWftFwkA8xImTpu7gVJr1kpX7UhzJ0cZ5I9a0umtDJxcWYVFFFBJ1WlKkOmQASYyoYjZnk81aukuLHTP7YFtDeW6zJEFmyu4555H8PQemaz9NmR9PhO45C7T+HFa1rrk9iwSZ3vLJU+WyaVUCsDncMjJI64H41riYRVHmS7E4KbliOWT7nPePtPvbm8j1trWSyF3GpkgkYEbl4BBHTjHBrn49GkfRLnUpn2tBgtFj76k4GD/e749K63xb4gtdTtp4LeRismGVyOmDnpWBq2pXd74ZsdPjG2GCTdHDEnzSN/ebHLH+VeXBuyR7E4wu35EXhKKObVCRnMKMwY+hwAPz5rrJ7bzYXTfu3Ag5yKwfC+nNZvcPPJHvdQDGnJjOehPTPsOlb0zLFA8m/hVJ/SvXo0oundnhV6slU5UcjRRRXPY3Luk3giYwSHCscqfetfULXOlR3TXIhZ2ZYfLILHHDkjsO3PJPSuXqeC5aPzd5ZjIQdxOcEDFa+0fJyEKmvac5myyQWJlRZnkkTHytjoeuPepLaa9vi4ib7LbOMyFG5KjtnrVMabPd30gcrCjMSZGPQf1NbF0i29pHBAUlbABVT8pPqSOwrljDW53c+lrl/RWxvymyDAWPjsPSpdVnVF8iNsk8tz0HpVFLloowEYvJjBkIwB7AdhUGSxJJyT1JrpU2o8py1IwlJS6hRS0VAiKiiikUKKUUUUxC0ooooAKKKKQH/2Q==);
+      background: linear-gradient(135deg, #0AD5C1 0%, #0EC879 100%);
+      box-shadow: 0 2px 8px rgba(10, 213, 193, 0.3);
+      border: 2px solid rgba(255, 255, 255, 0.2);
     }
     
     &:after {
       position: absolute;
-      top: 15px;
-      right: -15px;
+      top: 12px;
+      right: -12px;
       content: '';
       width: 0;
       height: 0;
-      border-top: 15px solid rgba(25, 147, 147, 0.2);
-      border-right: 15px solid transparent;
+      border-top: 8px solid rgba(10, 213, 193, 0.25);
+      border-right: 8px solid transparent;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
     }
   ` : css`
-    animation: ${showChatEven} 0.15s 1 ease-in;
+    animation: ${showChatEven} 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     float: left;
-    margin-left: 80px;
+    margin-left: 50px;
     color: #0EC879;
+    background: linear-gradient(135deg, rgba(14, 200, 121, 0.15) 0%, rgba(14, 200, 121, 0.25) 100%);
     
     &:before {
       position: absolute;
-      top: 0;
-      left: -80px;
-      width: 50px;
-      height: 50px;
-      border-radius: 50px;
+      top: 2px;
+      left: -45px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
       content: '';
-      background-image: url(data:image/jpeg;base64,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);
+      background: linear-gradient(135deg, #0EC879 0%, #0AD5C1 100%);
+      box-shadow: 0 2px 8px rgba(14, 200, 121, 0.3);
+      border: 2px solid rgba(255, 255, 255, 0.2);
     }
     
     &:after {
       position: absolute;
-      top: 15px;
-      left: -15px;
+      top: 12px;
+      left: -12px;
       content: '';
       width: 0;
       height: 0;
-      border-top: 15px solid rgba(25, 147, 147, 0.2);
-      border-left: 15px solid transparent;
+      border-top: 8px solid rgba(14, 200, 121, 0.25);
+      border-left: 8px solid transparent;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
     }
   `}
 `;
@@ -135,42 +175,65 @@ const ChatInputForm = styled.form`
 
 const ChatInput = styled.input`
   flex: 1;
-  height: 48px;
-  font: 32px/48px 'IRANSansX', sans-serif;
-  background: none;
-  color: #0AD5C1;
-  border: 0;
-  border-bottom: 1px solid rgba(25, 147, 147, 0.2);
+  padding: 10px 16px;
+  border: none;
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.12) 100%);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #fff;
+  font-size: 13px;
+  font-family: 'IRANSansX', sans-serif;
   outline: none;
+  transition: all 0.3s ease;
   
   &::placeholder {
-    color: rgba(10, 213, 193, 0.5);
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 12px;
+  }
+  
+  &:focus {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.18) 100%);
+    border-color: rgba(10, 213, 193, 0.4);
+    box-shadow: 0 0 20px rgba(10, 213, 193, 0.2);
+    transform: scale(1.02);
   }
 `;
 
 const SendButton = styled.button`
-  background: linear-gradient(45deg, #0AD5C1, #0EC879);
+  margin-left: 8px;
+  padding: 10px 16px;
   border: none;
-  border-radius: 50%;
-  width: 48px;
-  height: 48px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #0AD5C1 0%, #0EC879 100%);
   color: white;
   cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: 'IRANSansX', sans-serif;
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 15px rgba(10, 213, 193, 0.3);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
   
   &:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 12px rgba(10, 213, 193, 0.3);
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(10, 213, 193, 0.5);
+    background: linear-gradient(135deg, #0EC879 0%, #0AD5C1 100%);
+  }
+  
+  &:active {
+    transform: translateY(-1px) scale(1.02);
   }
   
   &:disabled {
-    background: rgba(25, 147, 147, 0.2);
+    opacity: 0.5;
     cursor: not-allowed;
     transform: none;
-    box-shadow: none;
+    box-shadow: 0 2px 8px rgba(10, 213, 193, 0.2);
   }
 `;
 
@@ -182,23 +245,26 @@ const EmptyState = styled.div`
   height: 100%;
   color: rgba(10, 213, 193, 0.6);
   text-align: center;
-  
+  font-family: 'IRANSansX', sans-serif;
+
   svg {
-    width: 64px;
-    height: 64px;
-    margin-bottom: 16px;
-    opacity: 0.5;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 12px;
+    opacity: 0.4;
+    filter: drop-shadow(0 2px 4px rgba(10, 213, 193, 0.2));
   }
-  
+
   h3 {
-    margin: 0 0 8px 0;
-    font-size: 18px;
+    margin: 0 0 6px 0;
+    font-size: 14px;
+    font-weight: 600;
   }
-  
+
   p {
     margin: 0;
-    font-size: 14px;
-    opacity: 0.8;
+    font-size: 11px;
+    opacity: 0.7;
   }
 `;
 
@@ -225,27 +291,43 @@ const LoadingSpinner = styled.div`
 
 const ConnectionStatus = styled.div<{ $connected: boolean }>`
   position: absolute;
-  top: 10px;
-  right: 10px;
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 500;
-  background: ${props => props.$connected ? '#4CAF50' : '#f44336'};
+  top: 90px;
+  right: 15px;
+  padding: 6px 12px;
+  border-radius: 15px;
+  font-size: 10px;
+  font-weight: 600;
+  font-family: 'IRANSansX', sans-serif;
+  background: ${props => props.$connected ? 
+    'linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%)' : 
+    'linear-gradient(135deg, #f44336 0%, #EF5350 100%)'};
   color: white;
   z-index: 10;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  }
 `;
 
 const TypingIndicator = styled.div`
-  padding: 8px 16px;
-  font-size: 12px;
-  color: #666;
+  padding: 6px 12px;
+  font-size: 10px;
+  font-family: 'IRANSansX', sans-serif;
+  color: rgba(10, 213, 193, 0.8);
   font-style: italic;
-  background: #f5f5f5;
-  border-radius: 8px;
-  margin: 4px 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.12) 100%);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  margin: 6px 0;
   animation: pulse 1.5s ease-in-out infinite;
-  
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
   @keyframes pulse {
     0%, 100% { opacity: 0.6; }
     50% { opacity: 1; }
@@ -550,6 +632,7 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
 
   return (
     <ChatContainer>
+      <TopSpacer />
       <ConnectionStatus $connected={isSignalRConnected}>
         {isSignalRConnected ? 'متصل' : 'قطع شده'}
       </ConnectionStatus>
@@ -580,11 +663,13 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
                   {showDate && (
                     <li key={`date-${message.id}-${index}`} style={{
                       textAlign: 'center',
-                      margin: '20px 0',
-                      color: 'rgba(10, 213, 193, 0.6)',
-                      fontSize: '12px',
+                      margin: '15px 0',
+                      color: 'rgba(10, 213, 193, 0.5)',
+                      fontSize: '10px',
                       listStyle: 'none',
-                      clear: 'both'
+                      clear: 'both',
+                      fontFamily: 'IRANSansX, sans-serif',
+                      fontWeight: '500'
                     }}>
                       {formatDate(message.sentAt)}
                     </li>
@@ -593,9 +678,9 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
                   <MessageItem key={`msg-${message.id}-${index}`} $isOdd={isMyMessage}>
                     {message.content}
                     <div style={{
-                      fontSize: '12px',
-                      marginTop: '4px',
-                      opacity: 0.7
+                      fontSize: '9px',
+                      marginTop: '3px',
+                      opacity: 0.6
                     }}>
                       {formatTime(message.sentAt)}
                       {isMyMessage && message.isRead && (
