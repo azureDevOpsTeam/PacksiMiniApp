@@ -234,22 +234,11 @@ class SignalRService {
 
     try {
       console.log(`ارسال پیام به مکالمه ${conversationId}:`, content);
-      
-      // Try different method names for compatibility
-      const methods = ['SendMessage', 'SendChatMessage', 'SendMessageToConversation'];
-      
-      for (const method of methods) {
-        try {
-          await this.connection?.invoke(method, conversationId, content);
-          console.log(`پیام با موفقیت از طریق ${method} ارسال شد`);
-          return;
-        } catch (error) {
-          console.warn(`خطا در ارسال پیام با ${method}:`, error);
-          if (method === methods[methods.length - 1]) {
-            throw error; // Re-throw if it's the last method
-          }
-        }
-      }
+      // دریافت receiverId از پارامتر conversationId یا به صورت جداگانه
+      const receiverId = conversationId;
+      await this.connection?.invoke('SendMessage', { receiverId, content });
+      console.log(`پیام با موفقیت ارسال شد`);
+      return;
     } catch (error) {
       console.error('خطا در ارسال پیام:', error);
       throw error;
