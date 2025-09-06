@@ -73,7 +73,6 @@ const ChatPersonList: React.FC = () => {
 
       if (response?.requestStatus?.value === 0) {
         const users = response.objectResult || [];
-        // Add realistic test data if API doesn't return lastSeen fields
         const usersWithLastSeen = users.map(user => ({
           ...user,
           lastSeenEn: user.lastSeenEn || 'Recently',
