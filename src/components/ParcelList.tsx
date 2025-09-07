@@ -562,37 +562,51 @@ const ParcelList: React.FC<ParcelListProps> = () => {
               { key: 'favorites' as TabType, labelFa: 'مورد علاقه', labelEn: 'Favorites' },
               { key: 'selected' as TabType, labelFa: 'منتخب', labelEn: 'Selected' }
             ].map((tab) => (
-              <button
-                key={tab.key}
-                onClick={() => setActiveTab(tab.key)}
-                style={{
-                  padding: '8px 16px',
-                  borderRadius: '8px',
-                  border: 'none',
-                  backgroundColor: activeTab === tab.key ? '#50b4ff' : 'transparent',
-                  color: activeTab === tab.key ? '#ffffff' : '#848d96',
-                  fontSize: '12px',
-                  fontFamily: 'IRANSansX, sans-serif',
-                  fontWeight: activeTab === tab.key ? '600' : '400',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s ease',
-                  whiteSpace: 'nowrap'
-                }}
-                onMouseEnter={(e) => {
-                  if (activeTab !== tab.key) {
-                    e.currentTarget.style.backgroundColor = 'rgba(80, 180, 255, 0.1)';
-                    e.currentTarget.style.color = '#50b4ff';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (activeTab !== tab.key) {
-                    e.currentTarget.style.backgroundColor = 'transparent';
-                    e.currentTarget.style.color = '#848d96';
-                  }
-                }}
-              >
-                {isRTL ? tab.labelFa : tab.labelEn}
-              </button>
+              <div style={{ position: 'relative' }}>
+                {tab.key === 'selected' && filteredFlights.length > 0 && (
+                  <div style={{
+                    position: 'absolute',
+                    top: '-5px',
+                    right: '-5px',
+                    width: '10px',
+                    height: '10px',
+                    backgroundColor: 'red',
+                    borderRadius: '50%',
+                    zIndex: 10
+                  }} />
+                )}
+                <button
+                  key={tab.key}
+                  onClick={() => setActiveTab(tab.key)}
+                  style={{
+                    padding: '8px 16px',
+                    borderRadius: '8px',
+                    border: 'none',
+                    backgroundColor: activeTab === tab.key ? '#50b4ff' : 'transparent',
+                    color: activeTab === tab.key ? '#ffffff' : '#848d96',
+                    fontSize: '12px',
+                    fontFamily: 'IRANSansX, sans-serif',
+                    fontWeight: activeTab === tab.key ? '600' : '400',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease',
+                    whiteSpace: 'nowrap'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (activeTab !== tab.key) {
+                      e.currentTarget.style.backgroundColor = 'rgba(80, 180, 255, 0.1)';
+                      e.currentTarget.style.color = '#50b4ff';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (activeTab !== tab.key) {
+                      e.currentTarget.style.backgroundColor = 'transparent';
+                      e.currentTarget.style.color = '#848d96';
+                    }
+                  }}
+                >
+                  {isRTL ? tab.labelFa : tab.labelEn}
+                </button>
+              </div>
             ))}
           </div>
         </div>
