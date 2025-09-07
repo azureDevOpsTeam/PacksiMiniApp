@@ -22,7 +22,7 @@ class SignalRService {
   private initializeConnection(): void {
     try {
       this.connection = new HubConnectionBuilder()
-        .withUrl('/chatHub', {
+        .withUrl('/chathub', {
           withCredentials: false,
           headers: {
             // Add Telegram init data if available
