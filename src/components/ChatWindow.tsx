@@ -33,11 +33,20 @@ const ChatContainer = styled.div`
   position: relative;
 `;
 
-const TopSpacer = styled.div`
-  height: 80px;
-  background: linear-gradient(135deg, #0f1419 0%, #1a2332 50%, #0f1419 100%);
+const UserNameDisplay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
-  position: relative;
+  height: 60px; /* Adjust height as needed */
+  background: linear-gradient(135deg, #0f1419 0%, #1a2332 50%, #0f1419 100%);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2em;
+  font-weight: bold;
+  z-index: 1000;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   
   &::after {
@@ -51,14 +60,25 @@ const TopSpacer = styled.div`
   }
 `;
 
+const TopSpacer = styled.div`
+  height: 60px; /* Adjusted to match UserNameDisplay height */
+  width: 100%;
+  position: relative;
+`;
+
 
 
 const ChatThread = styled.div`
   scroll-behavior: smooth; /* Add smooth scrolling */
-  height: calc(100vh - 160px);
+  height: calc(100vh - 120px); /* Adjusted for new UserNameDisplay */
   margin: 0 auto;
   padding: 15px 15px 80px 15px;
-  overflow-y: auto;
+  overflow-y: scroll; /* Changed to scroll to ensure functionality */
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+  &::-webkit-scrollbar { /* Chrome, Safari, Opera */
+    display: none;
+  }
   max-width: 800px;
   width: 100%;
   background: rgba(0, 0, 0, 0.05);
@@ -95,22 +115,9 @@ const MessageItem = styled.li<{ $isOdd: boolean }>`
   ${props => props.$isOdd ? css`
     animation: ${showChatOdd} 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     float: right;
-    margin-right: 50px;
-    color: #0AD5C1;
-    background: linear-gradient(135deg, rgba(10, 213, 193, 0.15) 0%, rgba(10, 213, 193, 0.25) 100%);
-    
-    &:before {
-      position: absolute;
-      top: 2px;
-      right: -45px;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      content: '';
-      background: linear-gradient(135deg, #0AD5C1 0%, #0EC879 100%);
-      box-shadow: 0 2px 8px rgba(10, 213, 193, 0.3);
-      border: 2px solid rgba(255, 255, 255, 0.2);
-    }
+    margin-right: 10px; /* Adjusted margin */
+    color: #E0F7FA; /* Light blue for text */
+    background: linear-gradient(135deg, #00796B 0%, #004D40 100%); /* Darker teal for background */
     
     &:after {
       position: absolute;
@@ -126,22 +133,9 @@ const MessageItem = styled.li<{ $isOdd: boolean }>`
   ` : css`
     animation: ${showChatEven} 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     float: left;
-    margin-left: 50px;
-    color: #0EC879;
-    background: linear-gradient(135deg, rgba(14, 200, 121, 0.15) 0%, rgba(14, 200, 121, 0.25) 100%);
-    
-    &:before {
-      position: absolute;
-      top: 2px;
-      left: -45px;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      content: '';
-      background: linear-gradient(135deg, #0EC879 0%, #0AD5C1 100%);
-      box-shadow: 0 2px 8px rgba(14, 200, 121, 0.3);
-      border: 2px solid rgba(255, 255, 255, 0.2);
-    }
+    margin-left: 10px; /* Adjusted margin */
+    color: #E8F5E9; /* Light green for text */
+    background: linear-gradient(135deg, #33691E 0%, #1B5E20 100%); /* Darker green for background */
     
     &:after {
       position: absolute;
@@ -620,6 +614,9 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
       <ConnectionStatus $isConnected={isSignalRConnected}>
         {isSignalRConnected ? 'متصل' : 'قطع شده'}
       </ConnectionStatus>
+      <UserNameDisplay>
+        {selectedUser?.userName || 'کاربر ناشناس'}
+      </UserNameDisplay>
       <TopSpacer />
 
       {/* Messages */}
