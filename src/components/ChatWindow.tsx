@@ -35,16 +35,17 @@ const ChatContainer = styled.div`
 
 const UserNameDisplay = styled.div`
   position: fixed;
+  padding: 20px 0 0 0;
   top: 0;
   left: 0;
   width: 100%;
-  height: 60px; /* Adjust height as needed */
+  height: 80px; /* Adjust height as needed */
   background: linear-gradient(135deg, #0f1419 0%, #1a2332 50%, #0f1419 100%);
   color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.2em;
+  font-size: 0.8em;
   font-weight: bold;
   z-index: 1000;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
@@ -70,7 +71,7 @@ const TopSpacer = styled.div`
 
 const ChatThread = styled.div`
   scroll-behavior: smooth; /* Add smooth scrolling */
-  height: calc(100vh - 120px); /* Adjusted for new UserNameDisplay */
+  height: calc(100vh - 130px); /* Adjusted for new UserNameDisplay */
   margin: 0 auto;
   padding: 15px 15px 80px 15px;
   overflow-y: scroll; /* Changed to scroll to ensure functionality */
@@ -628,9 +629,9 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
 
   return (
     <ChatContainer>
-      <ConnectionStatus $isConnected={isSignalRConnected}>
+      {/* <ConnectionStatus $isConnected={isSignalRConnected}>
         {isSignalRConnected ? 'متصل' : 'قطع شده'}
-      </ConnectionStatus>
+      </ConnectionStatus> */}
       <UserNameDisplay>
         {selectedUser?.requestId || 'کاربر ناشناس'}
       </UserNameDisplay>
