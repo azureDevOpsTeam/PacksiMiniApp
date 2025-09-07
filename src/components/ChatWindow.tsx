@@ -366,11 +366,10 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
   // const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<number | null>(null);
-  
 
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   const handleSendMessage = async () => {
@@ -404,7 +403,7 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
       };
 
       const response = await apiService.sendMessage(messageData);
-      
+
       if (response.objectResult) {
         console.log('✅ Message sent via REST API successfully');
         await fetchMessages();
@@ -455,6 +454,11 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
   useEffect(() => {
     loadConversationAndMessages();
   }, [selectedUser.conversationId, selectedUser.reciverId]);
+  useEffect(() => {
+    if (!loading) {
+      scrollToBottom();
+    }
+  }, [loading]);
 
   useEffect(() => {
     // Mark messages as read when chat window opens
@@ -528,7 +532,7 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
   useEffect(() => {
     if (isSignalRConnected && selectedUser.conversationId) {
       signalRService.joinConversation(selectedUser.conversationId.toString());
-      
+
       return () => {
         if (selectedUser.conversationId) {
           signalRService.leaveConversation(selectedUser.conversationId.toString());
@@ -540,16 +544,16 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
   const loadConversationAndMessages = async () => {
     try {
       setLoading(true);
-      
+
       // Use conversationId directly from selectedUser
       if (selectedUser.conversationId) {
         // Load messages for this conversation
         const messagesResponse = await apiService.getMessages(selectedUser.conversationId);
         setMessages(messagesResponse.objectResult);
-        
+
         // Mark conversation as read
         await apiService.markConversationAsRead(selectedUser.conversationId);
-        
+
         // Conversation loaded successfully
       } else {
         // No existing conversation, start with empty messages
@@ -577,9 +581,9 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
 
   const formatTime = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleTimeString('fa-IR', { 
-      hour: '2-digit', 
-      minute: '2-digit' 
+    return date.toLocaleTimeString('fa-IR', {
+      hour: '2-digit',
+      minute: '2-digit'
     });
   };
 
@@ -625,9 +629,9 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
           <MessageList>
             {messages.map((message, index) => {
               const isMyMessage = message.senderId === selectedUser.senderId;
-              const showDate = index === 0 || 
+              const showDate = index === 0 ||
                 formatDate(messages[index - 1].sentAt) !== formatDate(message.sentAt);
-              
+
               return (
                 <React.Fragment key={`message-fragment-${message.id}-${index}`}>
                   {showDate && (
@@ -644,7 +648,7 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
                       {formatDate(message.sentAt)}
                     </li>
                   )}
-                  
+
                   <MessageItem key={`msg-${message.id}-${index}`} $isOdd={isMyMessage}>
                     {message.content}
                     <div style={{
@@ -661,16 +665,12 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
                 </React.Fragment>
               );
             })}
-            {isTyping && (
-              <TypingIndicator>
-                در حال تایپ...
-              </TypingIndicator>
-            )}
+            {isTyping && <TypingIndicator>در حال تایپ...</TypingIndicator>}
           </MessageList>
         )}
         <div ref={messagesEndRef} />
       </ChatThread>
-      
+
       <ChatInputForm onSubmit={handleFormSubmit}>
         <ChatInput
           type="text"
