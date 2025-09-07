@@ -12,7 +12,7 @@ const ChatPanel: React.FC = () => {
         style={{
           position: 'fixed',
           left: '10px',
-          bottom: '40px',
+          bottom: '10px',
           width: '50px',
           height: '50px',
           backgroundColor: 'rgba(0, 0, 0, 0.85)',

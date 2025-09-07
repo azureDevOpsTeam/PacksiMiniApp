@@ -110,7 +110,13 @@ const MessageItem = styled.li<{
   padding: 10px 30px 10px 12px;
   margin: 0 0 12px 0;
   font: 12px/16px 'IRANSansX', sans-serif;
-  border-radius: 18px;
+  border-radius: 8px 8px 8px 8px; /* Default for all corners */
+
+  ${props => props.$isOdd ? css`
+    border-bottom-right-radius: 2px; /* Smaller radius for the bottom-right corner of sent messages */
+  ` : css`
+    border-bottom-left-radius: 2px; /* Smaller radius for the bottom-left corner of received messages */
+  `}
   background: linear-gradient(135deg, rgba(25, 147, 147, 0.15) 0%, rgba(25, 147, 147, 0.25) 100%);
   backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -126,38 +132,18 @@ const MessageItem = styled.li<{
     animation: ${showChatOdd} 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     float: right;
     margin-right: 10px; /* Adjusted margin */
-    color: #E0F7FA; /* Light blue for text */
-    background: linear-gradient(135deg, #00796B 0%, #004D40 100%); /* Darker teal for background */
+    color: #FFFFFF; /* White text for sent messages */
+    background: #2B5278; /* Dark blue for sent messages */
     
-    &:after {
-      position: absolute;
-      top: 12px;
-      right: -12px;
-      content: '';
-      width: 0;
-      height: 0;
-      border-top: 8px solid rgba(10, 213, 193, 0.25);
-      border-right: 8px solid transparent;
-      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
-    }
+
   ` : css`
     animation: ${showChatEven} 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     float: left;
     margin-left: 10px; /* Adjusted margin */
-    color: #E8F5E9; /* Light green for text */
-    background: linear-gradient(135deg, #33691E 0%, #1B5E20 100%); /* Darker green for background */
+    color: #FFFFFF; /* White text for received messages */
+    background: #182533; /* Dark grey for received messages */
     
-    &:after {
-      position: absolute;
-      top: 12px;
-      left: -12px;
-      content: '';
-      width: 0;
-      height: 0;
-      border-top: 8px solid rgba(14, 200, 121, 0.25);
-      border-left: 8px solid transparent;
-      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
-    }
+
   `}
   
   ${props => props.$isPersian ? css`
