@@ -54,6 +54,7 @@ const TopSpacer = styled.div`
 
 
 const ChatThread = styled.div`
+  scroll-behavior: smooth; /* Add smooth scrolling */
   height: calc(100vh - 160px);
   margin: 0 auto;
   padding: 15px 15px 80px 15px;
@@ -350,6 +351,13 @@ interface ChatWindowProps {
 
 const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const chatThreadRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (chatThreadRef.current) {
+      chatThreadRef.current.scrollTop = chatThreadRef.current.scrollHeight;
+    }
+  }, [messages]);
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
@@ -600,7 +608,7 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
       <TopSpacer />
 
       {/* Messages */}
-      <ChatThread>
+      <ChatThread ref={chatThreadRef}>
         {loading ? (
           <LoadingSpinner>
             <div></div>
