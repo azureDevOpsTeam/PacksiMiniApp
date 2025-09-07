@@ -382,7 +382,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
     }
     
     return {
-      text: statusText || (isRTL ? 'نامشخص' : 'Unknown'),
+      text: statusText || (isRTL ? 'نامشخصص' : 'Unknown'),
       color,
       bgColor
     };
