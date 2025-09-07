@@ -541,6 +541,17 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
     }
   }, [isSignalRConnected, selectedUser.conversationId]);
 
+  useEffect(() => {
+    const scrollAfterRender = () => {
+      if (chatThreadRef.current) {
+        chatThreadRef.current.scrollTop = chatThreadRef.current.scrollHeight;
+      }
+    };
+
+    // از requestAnimationFrame استفاده کن تا مطمئن بشیم DOM آماده است
+    requestAnimationFrame(scrollAfterRender);
+  }, [messages, loading]);
+  
   const loadConversationAndMessages = async () => {
     try {
       setLoading(true);
