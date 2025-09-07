@@ -49,10 +49,10 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
   });
 
   const [isAccordionOpen, setIsAccordionOpen] = useState(false);
-  const [ticketFile, setTicketFile] = useState<File | null>(null);
+  //const [ticketFile, setTicketFile] = useState<File | null>(null);
   const [files, setFiles] = useState<File[]>([]); // برایل‌های عمومی
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  //const fileInputRef = useRef<HTMLInputElement>(null);
   const generalFileInputRef = useRef<HTMLInputElement>(null); // برایل‌های عمومی
 
   const [activeButton, setActiveButton] = useState<'user' | 'admin'>('user');
@@ -241,9 +241,9 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
 
       // Prepare files array for API
       const apiFiles: File[] = [];
-      if (ticketFile) {
-        apiFiles.push(ticketFile);
-      }
+      // if (ticketFile) {
+      //   apiFiles.push(ticketFile);
+      // }
       
       // اضافه کردن فایل‌های عمومی
       if (files.length > 0) {
@@ -267,29 +267,10 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
       if (response.success) {
         setSuccess(true);
         // Request created successfully
-        
-        // Reset form after successful submission
+        // Redirect to home page after success
         setTimeout(() => {
-          setFormData({
-            originCityId: 0,
-            destinationCityId: 0,
-            departureDate: '',
-            arrivalDate: '',
-            requestType: -1,
-            description: '',
-            maxWeightKg: 0,
-            maxLengthCm: 0,
-            maxWidthCm: 0,
-            maxHeightCm: 0,
-            itemTypeIds: [],
-            files: []
-          });
-          setTicketFile(null);
-          if (fileInputRef.current) {
-            fileInputRef.current.value = '';
-          }
-          setSuccess(false);
-        }, 3000);
+          window.location.href = '/'; // Assuming '/' is your home page
+        }, 1500); // Wait a bit longer to ensure success message is seen
       } else {
         throw new Error(response.message || t('createRequest.error.general') || 'خطا در ارسال درخواست');
       }

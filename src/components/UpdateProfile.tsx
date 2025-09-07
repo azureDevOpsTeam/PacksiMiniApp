@@ -161,6 +161,10 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ onProfileUpdated }) => {
             onProfileUpdated();
           }, 1000); // Wait 1 second to show success message
         }
+        // Redirect to home page after success
+        setTimeout(() => {
+          window.location.href = '/'; // Assuming '/' is your home page
+        }, 1500); // Wait a bit longer to ensure success message is seen
       } else {
         throw new Error(response.message || 'Profile update failed');
       }
