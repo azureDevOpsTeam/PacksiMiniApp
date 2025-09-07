@@ -93,7 +93,16 @@ const MessageList = styled.ul`
   margin: 0;
 `;
 
-const MessageItem = styled.li<{ $isOdd: boolean }>`
+const containsPersian = (text: string): boolean => {
+  // Regular expression to match common Persian characters
+  const persianRegex = /[\u0600-\u06FF\uFB80-\uFBFB\uFE70-\uFEFF]/;
+  return persianRegex.test(text);
+};
+
+const MessageItem = styled.li<{
+  $isOdd: boolean;
+  $isPersian: boolean;
+}>`
   position: relative;
   clear: both;
   display: inline-block;
@@ -149,7 +158,15 @@ const MessageItem = styled.li<{ $isOdd: boolean }>`
       filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
     }
   `}
-`;
+  
+  ${props => props.$isPersian ? css`
+    direction: rtl;
+    text-align: right;
+  ` : css`
+    direction: ltr;
+    text-align: left;
+  `}
+`
 
 
 
@@ -615,7 +632,7 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
         {isSignalRConnected ? 'متصل' : 'قطع شده'}
       </ConnectionStatus>
       <UserNameDisplay>
-        {selectedUser?.userName || 'کاربر ناشناس'}
+        {selectedUser?.requestId || 'کاربر ناشناس'}
       </UserNameDisplay>
       <TopSpacer />
 
@@ -657,7 +674,11 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
                     </li>
                   )}
 
-                  <MessageItem key={`msg-${message.id}-${index}`} $isOdd={isMyMessage}>
+                  <MessageItem 
+                    key={`msg-${message.id}-${index}`} 
+                    $isOdd={isMyMessage}
+                    $isPersian={containsPersian(message.content)}
+                  >
                     {message.content}
                     <div style={{
                       fontSize: '9px',
