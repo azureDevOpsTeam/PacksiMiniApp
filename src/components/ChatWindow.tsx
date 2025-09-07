@@ -563,7 +563,7 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
     // از requestAnimationFrame استفاده کن تا مطمئن بشیم DOM آماده است
     requestAnimationFrame(scrollAfterRender);
   }, [messages, loading]);
-  
+
   const loadConversationAndMessages = async () => {
     try {
       setLoading(true);
@@ -625,13 +625,11 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
     }
   };
 
-
-
   return (
     <ChatContainer>
-      {/* <ConnectionStatus $isConnected={isSignalRConnected}>
-        {isSignalRConnected ? 'متصل' : 'قطع شده'}
-      </ConnectionStatus> */}
+      {<ConnectionStatus $isConnected={isSignalRConnected}>
+        {isSignalRConnected ? '*' : '*'}
+      </ConnectionStatus>}
       <UserNameDisplay>
         {selectedUser?.requestId || 'کاربر ناشناس'}
       </UserNameDisplay>
@@ -675,8 +673,8 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
                     </li>
                   )}
 
-                  <MessageItem 
-                    key={`msg-${message.id}-${index}`} 
+                  <MessageItem
+                    key={`msg-${message.id}-${index}`}
                     $isOdd={isMyMessage}
                     $isPersian={containsPersian(message.content)}
                   >
