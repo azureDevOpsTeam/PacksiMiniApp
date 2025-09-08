@@ -297,7 +297,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
       if (response.requestStatus.value === 0) {
         setApiResult({
           success: true,
-          message: response.message || (isRTL ? 'درخواست با موفقیت ثبت شد' : 'Request submitted successfully')
+          message: response.message || t('submitSuggestion.success')
         });
         
         // Update local state
@@ -322,12 +322,16 @@ const ParcelList: React.FC<ParcelListProps> = () => {
         setCurrency('-1');
         setDescription('');
         
-        // Show success message and redirect to ParcelList after 2 seconds
+        // Show success message and redirect after 1.5 seconds
         setTimeout(() => {
           setApiResult(null);
-          // Refresh the page to show updated ParcelList
-          window.location.reload();
-        }, 2000);
+          // Navigate back to previous page or home
+          if (window.history.length > 1) {
+            window.history.back();
+          } else {
+            window.location.href = '/';
+          }
+        }, 1500);
         
         await fetchFlights();
       } else {
@@ -559,7 +563,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
           textAlign: 'center',
           margin: '0 0 12px 0'
         }}>
-          موفقیت آمیز
+          {t('submitSuggestion.successTitle')}
         </h2>
         <p style={{
           fontSize: '16px',
