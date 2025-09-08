@@ -136,7 +136,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
   const [selectedFlightForTrip, setSelectedFlightForTrip] = useState<OutboundTrip | null>(null);
   const [selectedTripOption, setSelectedTripOption] = useState<string>('agree_with_site_prices');
   const [suggestionPrice, setSuggestionPrice] = useState<string>('');
-  const [currency, setCurrency] = useState<string>('0'); // 0 for USD, 1 for IRR
+  const [currency, setCurrency] = useState<string>('-1'); // -1 for select, 1 for USD, 2 for IRR
   const [description, setDescription] = useState<string>('');
 
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -254,7 +254,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
         return;
       }
       
-      if (!currency || (currency !== '0' && currency !== '1')) {
+      if (!currency || currency === '-1') {
         setApiResult({
           success: false,
           message: isRTL ? 'لطفا نوع ارز را انتخاب کنید' : 'Please select currency type'
@@ -314,12 +314,12 @@ const ParcelList: React.FC<ParcelListProps> = () => {
           )
         );
         
-        // Close modal and refresh
+        // Close modal immediately after success
         setShowSelectTripModal(false);
         setSelectedFlightForTrip(null);
         setSelectedTripOption('agree_with_site_prices');
         setSuggestionPrice('');
-        setCurrency('0');
+        setCurrency('-1');
         setDescription('');
         
         // Show success message and redirect to ParcelList after 2 seconds
@@ -361,7 +361,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
     setSelectedFlightForTrip(null);
     setSelectedTripOption('agree_with_site_prices');
     setSuggestionPrice('');
-    setCurrency('0');
+    setCurrency('-1');
     setDescription('');
   };
 
@@ -1563,10 +1563,13 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                       e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
                     }}
                   >
-                    <option value="0" style={{ background: '#1a202c', color: '#ffffff' }}>
-                      {isRTL ? 'دلار' : 'Dollar'}
+                    <option value="-1" style={{ background: '#1a202c', color: '#ffffff' }}>
+                      {isRTL ? 'نوع ارز را انتخاب کنید' : 'Select Currency'}
                     </option>
                     <option value="1" style={{ background: '#1a202c', color: '#ffffff' }}>
+                      {isRTL ? 'دلار' : 'Dollar'}
+                    </option>
+                    <option value="2" style={{ background: '#1a202c', color: '#ffffff' }}>
                       {isRTL ? 'ریال' : 'Rial'}
                     </option>
                   </select>
