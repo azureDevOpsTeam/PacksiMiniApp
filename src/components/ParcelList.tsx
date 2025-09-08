@@ -590,7 +590,6 @@ const ParcelList: React.FC<ParcelListProps> = () => {
       <Settings 
         activeButton={activeButton} 
         setActiveButton={setActiveButton}
-        onMyRequestClick={() => setShowMyRequest(true)}
       />
 
       {/* Fixed Header */}
@@ -663,8 +662,8 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                 {tab.key === 'selected' && filteredFlights.length > 0 && (
                   <div style={{
                     position: 'absolute',
-                    top: '-5px',
-                    right: '-5px',
+                    top: '0',
+                    right: '33px',
                     width: '10px',
                     height: '10px',
                     backgroundColor: 'red',
@@ -871,16 +870,6 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                         alignItems: 'center',
                         gap: '10px'
                       }}>
-                        <div style={{
-                          width: '40px',
-                          height: '40px',
-                          background: 'rgba(255,255,255,0.2)',
-                          borderRadius: '50%',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontSize: '20px'
-                        }}>✈️</div>
                         <div>
                           <div style={{
                             fontSize: '16px',
@@ -903,15 +892,6 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                         <div style={{
                         textAlign: isRTL ? 'left' : 'right'
                       }}>
-                        <div style={{
-                          fontSize: '12px',
-                          opacity: 0.8,
-                          marginBottom: '2px'
-                        }}>{isRTL ? 'شماره درخواست' : 'REQUEST ID'}</div>
-                        <div style={{
-                          fontSize: '14px',
-                          fontWeight: 'bold'
-                        }}>#{flight.requestId}</div>
                         {/* Submit Suggestion Button */}
                         <button
                           type="button"
@@ -922,7 +902,6 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                             setShowSelectTripModal(true);
                           }}
                           style={{
-                            marginTop: '8px',
                             padding: '6px 12px',
                             borderRadius: '16px',
                             fontSize: '10px',
@@ -1015,32 +994,15 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                                 zIndex: 100000,
                                 overflow: 'hidden',
                                 backdropFilter: 'blur(20px)',
-                                border: '1px solid rgba(255, 255, 255, 0.1)',
+                                border: '1px solid rgba(73, 88, 82, 0.1)',
                                 animation: 'fadeInScale 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
                               }}>
                                 {/* Menu Header */}
                                 <div style={{
-                                  padding: '20px 20px 16px 20px',
-                                  borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+                                  padding: '10px 10px 8px 10px',
+                                  borderBottom: '1px solid rgba(0, 245, 212, 0.1)',
                                   textAlign: 'center'
                                 }}>
-                                  <h3 style={{
-                                    margin: 0,
-                                    fontSize: '16px',
-                                    fontWeight: '600',
-                                    color: '#ffffff',
-                                    fontFamily: 'IRANSansX, sans-serif'
-                                  }}>
-                                    {isRTL ? 'عملیات' : 'Actions'}
-                                  </h3>
-                                  <p style={{
-                                    margin: '4px 0 0 0',
-                                    fontSize: '12px',
-                                    color: '#a0a8b0',
-                                    fontFamily: 'IRANSansX, sans-serif'
-                                  }}>
-                                    {isRTL ? `درخواست #${flight.requestId}` : `Request #${flight.requestId}`}
-                                  </p>
                                 </div>
                                 
                                 {/* Menu Items */}
@@ -1075,37 +1037,6 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                                   >
                                     <span style={{ fontSize: '16px' }}>📋</span>
                                     {t('flights.menu.details')}
-                                  </div>
-                                  <div
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      handleMenuAction('selectTrip', flight);
-                                    }}
-                                    style={{
-                                      padding: '16px 20px',
-                                      cursor: 'pointer',
-                                      fontSize: '14px',
-                                      color: '#ffffff',
-                                      borderRadius: '12px',
-                                      transition: 'all 0.3s ease',
-                                      textAlign: isRTL ? 'right' : 'left',
-                                      fontFamily: 'IRANSansX, sans-serif',
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                      gap: '12px',
-                                      marginBottom: '4px'
-                                    }}
-                                    onMouseEnter={(e) => {
-                                      e.currentTarget.style.backgroundColor = 'rgba(46, 213, 115, 0.2)';
-                                      e.currentTarget.style.transform = 'translateX(' + (isRTL ? '-4px' : '4px') + ')';
-                                    }}
-                                    onMouseLeave={(e) => {
-                                      e.currentTarget.style.backgroundColor = 'transparent';
-                                      e.currentTarget.style.transform = 'translateX(0)';
-                                    }}
-                                  >
-                                    <span style={{ fontSize: '16px' }}>✈️</span>
-                                    {t('flights.menu.selectTrip')}
                                   </div>
                                   <div
                                     onClick={(e) => {

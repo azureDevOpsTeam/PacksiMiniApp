@@ -119,7 +119,9 @@
     "selectCity": "Select City",
     "selectRequestType": "Select Request Type",
     "selectItemTypes": "Select Item Types",
-    "submit": "Create Request"
+    "submit": "Create Request",
+    "success": "Your request has been submitted successfully!",
+    "sending": "Sending..."
   },
   "updateProfile": {
     "title": "Please complete your profile information below.",
@@ -147,7 +149,8 @@
     "female": "Female",
     "single": "Single",
     "married": "Married",
-    "submit": "Update Profile"
+    "submit": "Update Profile",
+    "successMessage": "Your profile has been updated successfully!"
   },
   "preferredLocation": {
     "title": "Set Your Preferred Location",

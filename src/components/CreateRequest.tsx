@@ -269,7 +269,11 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
         // Request created successfully
         // Redirect to home page after success
         setTimeout(() => {
-          window.location.href = '/'; // Assuming '/' is your home page
+          if (window.history.length > 1) {
+            window.history.back();
+          } else {
+            window.location.href = '/';
+          }
         }, 1500); // Wait a bit longer to ensure success message is seen
       } else {
         throw new Error(response.message || t('createRequest.error.general') || 'خطا در ارسال درخواست');
