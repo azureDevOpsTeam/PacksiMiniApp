@@ -134,7 +134,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
   const [showMyRequest, setShowMyRequest] = useState(false);
   const [showSelectTripModal, setShowSelectTripModal] = useState(false);
   const [selectedFlightForTrip, setSelectedFlightForTrip] = useState<OutboundTrip | null>(null);
-  const [selectedTripOption, setSelectedTripOption] = useState<string>('agree_with_site_prices');
+  const [selectedTripOption, setSelectedTripOption] = useState<string>('');
   const [suggestionPrice, setSuggestionPrice] = useState<string>('');
   const [currency, setCurrency] = useState<string>('-1'); // -1 for select, 1 for USD, 2 for IRR
   const [description, setDescription] = useState<string>('');
@@ -317,7 +317,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
         // Close modal immediately after success
         setShowSelectTripModal(false);
         setSelectedFlightForTrip(null);
-        setSelectedTripOption('agree_with_site_prices');
+        setSelectedTripOption('');
         setSuggestionPrice('');
         setCurrency('-1');
         setDescription('');
@@ -359,7 +359,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
   const handleSelectTripCancel = () => {
     setShowSelectTripModal(false);
     setSelectedFlightForTrip(null);
-    setSelectedTripOption('agree_with_site_prices');
+    setSelectedTripOption('');
     setSuggestionPrice('');
     setCurrency('-1');
     setDescription('');
@@ -948,22 +948,42 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                           fontSize: '14px',
                           fontWeight: 'bold'
                         }}>#{flight.requestId}</div>
-                        {/* Status Badge */}
-                        {flight.currentUserStatus !== undefined && (
-                          <div style={{
+                        {/* Submit Suggestion Button */}
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedFlightForTrip(flight);
+                            setSelectedTripOption('');
+                            setShowSelectTripModal(true);
+                          }}
+                          style={{
                             marginTop: '8px',
-                            padding: '4px 8px',
-                            borderRadius: '12px',
+                            padding: '6px 12px',
+                            borderRadius: '16px',
                             fontSize: '10px',
                             fontWeight: 'bold',
-                            backgroundColor: getStatusDisplay(flight).bgColor,
-                            color: getStatusDisplay(flight).color,
-                            border: `1px solid ${getStatusDisplay(flight).color}`,
-                            textAlign: 'center'
-                          }}>
-                            {getStatusDisplay(flight).text}
-                          </div>
-                        )}
+                            backgroundColor: '#10b981',
+                            color: 'white',
+                            border: 'none',
+                            cursor: 'pointer',
+                            transition: 'all 0.3s ease',
+                            textAlign: 'center',
+                            boxShadow: '0 2px 4px rgba(16, 185, 129, 0.3)'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.backgroundColor = '#059669';
+                            e.currentTarget.style.transform = 'translateY(-1px)';
+                            e.currentTarget.style.boxShadow = '0 4px 8px rgba(16, 185, 129, 0.4)';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.backgroundColor = '#10b981';
+                            e.currentTarget.style.transform = 'translateY(0)';
+                            e.currentTarget.style.boxShadow = '0 2px 4px rgba(16, 185, 129, 0.3)';
+                          }}
+                        >
+                          {isRTL ? 'پیشنهاد قیمت' : 'Suggest Price'}
+                        </button>
                       </div>
                         
                         {/* Three Dots Menu */}
@@ -1435,8 +1455,43 @@ const ParcelList: React.FC<ParcelListProps> = () => {
           <div style={{
             padding: '20px 20px 16px 20px',
             borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-            textAlign: 'center'
+            textAlign: 'center',
+            position: 'relative'
           }}>
+            {/* Close Button */}
+            <button
+              type="button"
+              onClick={handleSelectTripCancel}
+              style={{
+                position: 'absolute',
+                top: '16px',
+                right: isRTL ? 'auto' : '16px',
+                left: isRTL ? '16px' : 'auto',
+                background: 'rgba(255, 255, 255, 0.1)',
+                border: 'none',
+                borderRadius: '50%',
+                width: '32px',
+                height: '32px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                color: '#ffffff',
+                fontSize: '16px',
+                transition: 'all 0.3s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
+                e.currentTarget.style.transform = 'scale(1.1)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+                e.currentTarget.style.transform = 'scale(1)';
+              }}
+            >
+              ×
+            </button>
+            
             <h3 style={{
               margin: 0,
               fontSize: '18px',
@@ -1444,7 +1499,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
               color: '#ffffff',
               fontFamily: 'IRANSansX, sans-serif'
             }}>
-              {isRTL ? 'انتخاب سفر' : 'Select Trip'}
+              {isRTL ? 'پیشنهاد قیمت' : 'Price Suggestion'}
             </h3>
             <p style={{
               margin: '4px 0 0 0',
@@ -1458,6 +1513,45 @@ const ParcelList: React.FC<ParcelListProps> = () => {
           
           {/* Modal Body */}
           <div style={{ padding: '20px' }}>
+            {/* Flight Info Card */}
+            <div style={{
+              background: 'rgba(16, 185, 129, 0.1)',
+              border: '1px solid rgba(16, 185, 129, 0.3)',
+              borderRadius: '12px',
+              padding: '16px',
+              marginBottom: '20px'
+            }}>
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '8px'
+              }}>
+                <span style={{
+                  fontSize: '14px',
+                  color: '#10b981',
+                  fontWeight: '600',
+                  fontFamily: 'IRANSansX, sans-serif'
+                }}>
+                  {selectedFlightForTrip.originCity} → {selectedFlightForTrip.destinationCity}
+                </span>
+                <span style={{
+                  fontSize: '12px',
+                  color: '#a0a8b0',
+                  fontFamily: 'IRANSansX, sans-serif'
+                }}>
+                  {selectedFlightForTrip.fullName}
+                </span>
+              </div>
+              <div style={{
+                fontSize: '12px',
+                color: '#ffffff',
+                fontFamily: 'IRANSansX, sans-serif'
+              }}>
+                {isRTL ? 'لطفاً قیمت پیشنهادی خود را وارد کنید' : 'Please enter your suggested price'}
+              </div>
+            </div>
+            
             {/* Trip Options Dropdown */}
             <div style={{ marginBottom: '20px' }}>
               <label style={{
@@ -1468,7 +1562,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                 fontFamily: 'IRANSansX, sans-serif',
                 fontWeight: '500'
               }}>
-                {isRTL ? 'گزینه سفر را انتخاب کنید:' : 'Select Trip Option:'}
+                {isRTL ? 'نوع درخواست:' : 'Request Type:'} <span style={{ color: '#ef4444' }}>*</span>
               </label>
               <select
                 value={selectedTripOption}
@@ -1494,16 +1588,19 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                   e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
                 }}
               >
-                <option value="agree_with_site_prices" style={{ background: '#1a202c', color: '#ffffff' }}>
-                  {isRTL ? 'با قیمت‌های سایت موافقم' : 'I agree with site prices'}
+                <option value="" style={{ background: '#1a202c', color: '#ffffff' }}>
+                  {isRTL ? 'نوع درخواست را انتخاب کنید' : 'Select request type'}
+                </option>
+                <option value="accept_price" style={{ background: '#1a202c', color: '#ffffff' }}>
+                  {isRTL ? 'قبول قیمت‌های موجود' : 'Accept existing prices'}
                 </option>
                 <option value="suggest_price" style={{ background: '#1a202c', color: '#ffffff' }}>
-                  {isRTL ? 'پیشنهاد قیمت' : 'Suggest Price'}
+                  {isRTL ? 'پیشنهاد قیمت جدید' : 'Suggest new price'}
                 </option>
               </select>
             </div>
             
-            {/* Price Suggestion Fields - Show only when suggest_price is selected */}
+            {/* Price Suggestion Fields */}
             {selectedTripOption === 'suggest_price' && (
               <>
                 {/* Suggested Price Input */}
@@ -1646,6 +1743,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
             }}>
               {/* Cancel Button */}
               <button
+                type="button"
                 onClick={handleSelectTripCancel}
                 disabled={isLoading}
                 style={{
@@ -1658,16 +1756,19 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                   fontFamily: 'IRANSansX, sans-serif',
                   cursor: isLoading ? 'not-allowed' : 'pointer',
                   transition: 'all 0.3s ease',
-                  opacity: isLoading ? 0.5 : 1
+                  opacity: isLoading ? 0.5 : 1,
+                  fontWeight: '500'
                 }}
                 onMouseEnter={(e) => {
                   if (!isLoading) {
                     e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+                    e.currentTarget.style.transform = 'translateY(-1px)';
                   }
                 }}
                 onMouseLeave={(e) => {
                   if (!isLoading) {
                     e.currentTarget.style.background = 'transparent';
+                    e.currentTarget.style.transform = 'translateY(0)';
                   }
                 }}
               >
@@ -1676,50 +1777,93 @@ const ParcelList: React.FC<ParcelListProps> = () => {
               
               {/* Submit Button */}
               <button
+                type="button"
                 onClick={handleSelectTripSubmit}
-                disabled={isLoading || !selectedTripOption}
+                disabled={isLoading || !selectedTripOption || (selectedTripOption === 'suggest_price' && (!suggestionPrice || currency === '-1'))}
                 style={{
-                  padding: '12px 24px',
-                  borderRadius: '12px',
+                  padding: '14px 28px',
+                  borderRadius: '16px',
                   border: 'none',
-                  background: (!selectedTripOption || isLoading) 
-                    ? 'rgba(107, 114, 128, 0.5)' 
-                    : 'linear-gradient(135deg, #10b981, #059669)',
+                  background: (isLoading || !selectedTripOption || (selectedTripOption === 'suggest_price' && (!suggestionPrice || currency === '-1'))) 
+                    ? 'linear-gradient(135deg, rgba(107, 114, 128, 0.6), rgba(75, 85, 99, 0.6))' 
+                    : selectedTripOption === 'suggest_price'
+                      ? 'linear-gradient(135deg, #f59e0b, #d97706, #b45309)'
+                      : 'linear-gradient(135deg, #10b981, #059669, #047857)',
                   color: '#ffffff',
-                  fontSize: '14px',
+                  fontSize: '15px',
                   fontFamily: 'IRANSansX, sans-serif',
-                  cursor: (!selectedTripOption || isLoading) ? 'not-allowed' : 'pointer',
-                  transition: 'all 0.3s ease',
-                  opacity: (!selectedTripOption || isLoading) ? 0.5 : 1,
+                  cursor: (isLoading || !selectedTripOption || (selectedTripOption === 'suggest_price' && (!suggestionPrice || currency === '-1'))) ? 'not-allowed' : 'pointer',
+                  transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                  opacity: (isLoading || !selectedTripOption || (selectedTripOption === 'suggest_price' && (!suggestionPrice || currency === '-1'))) ? 0.6 : 1,
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '8px'
+                  justifyContent: 'center',
+                  gap: '10px',
+                  fontWeight: '700',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  boxShadow: (isLoading || !selectedTripOption || (selectedTripOption === 'suggest_price' && (!suggestionPrice || currency === '-1'))) 
+                    ? 'none' 
+                    : selectedTripOption === 'suggest_price'
+                      ? '0 8px 25px rgba(245, 158, 11, 0.4), 0 4px 12px rgba(245, 158, 11, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
+                      : '0 8px 25px rgba(16, 185, 129, 0.4), 0 4px 12px rgba(16, 185, 129, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
                 }}
                 onMouseEnter={(e) => {
-                  if (selectedTripOption && !isLoading) {
-                    e.currentTarget.style.background = 'linear-gradient(135deg, #059669, #047857)';
+                  if (!isLoading && selectedTripOption && !(selectedTripOption === 'suggest_price' && (!suggestionPrice || currency === '-1'))) {
+                    if (selectedTripOption === 'suggest_price') {
+                      e.currentTarget.style.background = 'linear-gradient(135deg, #d97706, #b45309, #92400e)';
+                      e.currentTarget.style.transform = 'translateY(-3px) scale(1.02)';
+                      e.currentTarget.style.boxShadow = '0 12px 35px rgba(245, 158, 11, 0.5), 0 6px 20px rgba(245, 158, 11, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3)';
+                    } else {
+                      e.currentTarget.style.background = 'linear-gradient(135deg, #059669, #047857, #065f46)';
+                      e.currentTarget.style.transform = 'translateY(-3px) scale(1.02)';
+                      e.currentTarget.style.boxShadow = '0 12px 35px rgba(16, 185, 129, 0.5), 0 6px 20px rgba(16, 185, 129, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3)';
+                    }
                   }
                 }}
                 onMouseLeave={(e) => {
-                  if (selectedTripOption && !isLoading) {
-                    e.currentTarget.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+                  if (!isLoading && selectedTripOption && !(selectedTripOption === 'suggest_price' && (!suggestionPrice || currency === '-1'))) {
+                    if (selectedTripOption === 'suggest_price') {
+                      e.currentTarget.style.background = 'linear-gradient(135deg, #f59e0b, #d97706, #b45309)';
+                      e.currentTarget.style.transform = 'translateY(0) scale(1)';
+                      e.currentTarget.style.boxShadow = '0 8px 25px rgba(245, 158, 11, 0.4), 0 4px 12px rgba(245, 158, 11, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)';
+                    } else {
+                      e.currentTarget.style.background = 'linear-gradient(135deg, #10b981, #059669, #047857)';
+                      e.currentTarget.style.transform = 'translateY(0) scale(1)';
+                      e.currentTarget.style.boxShadow = '0 8px 25px rgba(16, 185, 129, 0.4), 0 4px 12px rgba(16, 185, 129, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)';
+                    }
                   }
                 }}
               >
-                {isLoading && (
+                {isLoading ? (
                   <div style={{
-                    width: '16px',
-                    height: '16px',
+                    width: '18px',
+                    height: '18px',
                     border: '2px solid rgba(255, 255, 255, 0.3)',
                     borderTop: '2px solid #ffffff',
                     borderRadius: '50%',
                     animation: 'spin 1s linear infinite'
                   }} />
+                ) : (
+                  <span style={{
+                    fontSize: '18px',
+                    filter: 'drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3))',
+                    animation: selectedTripOption === 'suggest_price' ? 'pulse 2s infinite' : 'none'
+                  }}>
+                    {selectedTripOption === 'suggest_price' ? '💡' : '✈️'}
+                  </span>
                 )}
-                {selectedTripOption === 'suggest_price' 
-                  ? (isRTL ? 'ثبت پیشنهاد' : 'Submit Suggestion')
-                  : (isRTL ? 'ثبت' : 'Submit')
-                }
+                <span style={{
+                  textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)',
+                  fontWeight: '700'
+                }}>
+                  {selectedTripOption === 'suggest_price' 
+                    ? (isRTL ? 'ثبت پیشنهاد' : 'Submit Suggestion')
+                    : (isRTL ? 'ثبت درخواست' : 'Submit Request')
+                  }
+                </span>
               </button>
             </div>
           </div>
