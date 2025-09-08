@@ -352,6 +352,52 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
 
 
 
+  // Show success message
+  if (success) {
+    return (
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '100vh',
+        padding: '80px 20px 0 20px',
+        backgroundColor: theme.colors.background,
+        textAlign: 'center'
+      }}>
+        <div style={{
+          backgroundColor: '#4CAF50',
+          borderRadius: '50%',
+          width: '80px',
+          height: '80px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginBottom: '20px'
+        }}>
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+            <path d="M9 12L11 14L15 10" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </div>
+        <h2 style={{
+          color: theme.colors.text.primary,
+          marginBottom: '10px',
+          fontSize: '20px',
+          fontWeight: 'bold'
+        }}>
+          {t('common.success')}
+        </h2>
+        <p style={{
+          color: theme.colors.text.secondary,
+          fontSize: '16px',
+          lineHeight: '1.5'
+        }}>
+          {t('createRequest.success') || 'درخواست شما با موفقیت ارسال شد!'}
+        </p>
+      </div>
+    );
+  }
+
   if (isInitialLoading) {
     return (
       <div style={{
@@ -904,22 +950,7 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
             </div>
           )}
 
-          {/* Success Message */}
-          {success && (
-            <div style={{
-              marginTop: '15px',
-              padding: '12px',
-              backgroundColor: '#4CAF50',
-              color: 'white',
-              borderRadius: '5px',
-              fontSize: '14px',
-              fontFamily: 'IRANSansX, sans-serif',
-              textAlign: 'center',
-              animation: 'fadeIn 0.3s ease'
-            }}>
-              {t('createRequest.success') || 'درخواست شما با موفقیت ارسال شد!'}
-            </div>
-          )}
+
         </div>
       </div>
     </div>

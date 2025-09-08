@@ -557,6 +557,59 @@ const ParcelList: React.FC<ParcelListProps> = () => {
     );
   }
 
+  // Show success message if apiResult is success
+  if (apiResult && apiResult.success) {
+    return (
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: '#22c55e',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 9999,
+        color: '#ffffff',
+        fontFamily: 'IRANSansX, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+      }}>
+        <div style={{
+          width: '80px',
+          height: '80px',
+          backgroundColor: '#ffffff',
+          borderRadius: '50%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginBottom: '24px',
+          fontSize: '40px'
+        }}>
+          ✅
+        </div>
+        <h2 style={{
+          fontSize: '24px',
+          fontWeight: 'bold',
+          marginBottom: '12px',
+          textAlign: 'center',
+          margin: '0 0 12px 0'
+        }}>
+          موفقیت آمیز
+        </h2>
+        <p style={{
+          fontSize: '16px',
+          textAlign: 'center',
+          lineHeight: '1.5',
+          margin: '0',
+          padding: '0 20px'
+        }}>
+          {apiResult.message}
+        </p>
+      </div>
+    );
+  }
+
   // Show parcel list if setPreferredLocation is true
   return (
     <div style={{
@@ -1159,41 +1212,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                                   </div>
                                 )}
                                 
-                                {/* API Result Display */}
-                                {apiResult && (
-                                  <div style={{
-                                    position: 'absolute',
-                                    top: 0,
-                                    left: 0,
-                                    right: 0,
-                                    bottom: 0,
-                                    backgroundColor: apiResult.success ? 'rgba(34, 197, 94, 0.95)' : 'rgba(239, 68, 68, 0.95)',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    borderRadius: '16px',
-                                    zIndex: 1001,
-                                    padding: '20px',
-                                    textAlign: 'center'
-                                  }}>
-                                    <div>
-                                      <div style={{
-                                        fontSize: '24px',
-                                        marginBottom: '8px'
-                                      }}>
-                                        {apiResult.success ? '✅' : '❌'}
-                                      </div>
-                                      <div style={{
-                                        color: '#ffffff',
-                                        fontSize: '14px',
-                                        fontFamily: 'IRANSansX, sans-serif',
-                                        lineHeight: '1.4'
-                                      }}>
-                                        {apiResult.message}
-                                      </div>
-                                    </div>
-                                  </div>
-                                )}
+
                               </div>
                             </>,
                             document.body
