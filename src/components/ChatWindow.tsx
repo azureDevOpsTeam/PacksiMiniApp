@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import styled, { keyframes, css } from 'styled-components';
 import { apiService } from '../services/apiService';
 import { signalRService } from '../services/signalRService';
@@ -418,7 +418,7 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
     } finally {
       setSending(false);
     }
-  }, [newMessage, sending, selectedUser, isSignalRConnected, fetchMessages]);
+  }, [newMessage, sending, selectedUser, isSignalRConnected]);
 
   const handleTyping = useCallback(() => {
     if (!isSignalRConnected || !selectedUser.conversationId) return;
@@ -552,8 +552,8 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
         clearTimeout(typingTimeoutRef.current);
       }
       // Clear event handlers to prevent memory leaks
-      signalRService.setOnMessageReceived(null);
-      signalRService.setOnTypingReceived(null);
+      signalRService.setOnMessageReceived(() => {});
+      signalRService.setOnTypingReceived(() => {});
       console.log('Event handlers پاک شدند');
     };
   }, [selectedUser?.conversationId, selectedUser?.reciverId, selectedUser?.senderId]);
