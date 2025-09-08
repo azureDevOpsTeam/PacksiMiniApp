@@ -134,7 +134,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
   const [showMyRequest, setShowMyRequest] = useState(false);
   const [showSelectTripModal, setShowSelectTripModal] = useState(false);
   const [selectedFlightForTrip, setSelectedFlightForTrip] = useState<OutboundTrip | null>(null);
-  const [selectedTripOption, setSelectedTripOption] = useState<string>('');
+  const [selectedTripOption, setSelectedTripOption] = useState<string>('agree_with_site_prices');
   const [suggestionPrice, setSuggestionPrice] = useState<string>('');
   const [currency, setCurrency] = useState<string>('0'); // 0 for USD, 1 for IRR
   const [description, setDescription] = useState<string>('');
@@ -242,10 +242,22 @@ const ParcelList: React.FC<ParcelListProps> = () => {
 
     // Validate price suggestion fields if price suggestion is selected
     if (selectedTripOption === 'suggest_price') {
-      if (!suggestionPrice || !description) {
+      if (!suggestionPrice || suggestionPrice.trim() === '' || parseFloat(suggestionPrice) <= 0) {
         setApiResult({
           success: false,
-          message: isRTL ? 'لطفا قیمت پیشنهادی و توضیحات را وارد کنید' : 'Please enter suggested price and description'
+          message: isRTL ? 'لطفا قیمت پیشنهادی معتبر وارد کنید' : 'Please enter a valid suggested price'
+        });
+        
+        setTimeout(() => {
+          setApiResult(null);
+        }, 3000);
+        return;
+      }
+      
+      if (!currency || (currency !== '0' && currency !== '1')) {
+        setApiResult({
+          success: false,
+          message: isRTL ? 'لطفا نوع ارز را انتخاب کنید' : 'Please select currency type'
         });
         
         setTimeout(() => {
@@ -305,14 +317,17 @@ const ParcelList: React.FC<ParcelListProps> = () => {
         // Close modal and refresh
         setShowSelectTripModal(false);
         setSelectedFlightForTrip(null);
-        setSelectedTripOption('');
+        setSelectedTripOption('agree_with_site_prices');
         setSuggestionPrice('');
         setCurrency('0');
         setDescription('');
         
+        // Show success message and redirect to ParcelList after 2 seconds
         setTimeout(() => {
           setApiResult(null);
-        }, 3000);
+          // Refresh the page to show updated ParcelList
+          window.location.reload();
+        }, 2000);
         
         await fetchFlights();
       } else {
@@ -344,7 +359,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
   const handleSelectTripCancel = () => {
     setShowSelectTripModal(false);
     setSelectedFlightForTrip(null);
-    setSelectedTripOption('');
+    setSelectedTripOption('agree_with_site_prices');
     setSuggestionPrice('');
     setCurrency('0');
     setDescription('');
@@ -1460,9 +1475,6 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                   e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
                 }}
               >
-                <option value="" style={{ background: '#1a202c', color: '#ffffff' }}>
-                  {isRTL ? 'گزینه‌ای را انتخاب کنید' : 'Select an option'}
-                </option>
                 <option value="agree_with_site_prices" style={{ background: '#1a202c', color: '#ffffff' }}>
                   {isRTL ? 'با قیمت‌های سایت موافقم' : 'I agree with site prices'}
                 </option>
@@ -1485,7 +1497,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                     fontFamily: 'IRANSansX, sans-serif',
                     fontWeight: '500'
                   }}>
-                    {isRTL ? 'قیمت پیشنهادی:' : 'Suggested Price:'}
+                    {isRTL ? 'قیمت پیشنهادی:' : 'Suggested Price:'} <span style={{ color: '#ef4444' }}>*</span>
                   </label>
                   <input
                     type="number"
@@ -1525,7 +1537,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                     fontFamily: 'IRANSansX, sans-serif',
                     fontWeight: '500'
                   }}>
-                    {isRTL ? 'نوع ارز:' : 'Currency Type:'}
+                    {isRTL ? 'نوع ارز:' : 'Currency Type:'} <span style={{ color: '#ef4444' }}>*</span>
                   </label>
                   <select
                     value={currency}
