@@ -227,18 +227,36 @@ class SignalRService {
     }
   }
 
-  async sendMessage(conversationId: string, content: string): Promise<void> {
+  async sendMessage(conversationId: string, content: string, receiverId?: string): Promise<void> {
     if (!this.isConnected()) {
       throw new Error('اتصال SignalR برقرار نیست');
     }
 
     try {
       console.log(`ارسال پیام به مکالمه ${conversationId}:`, content);
-      // دریافت receiverId از پارامتر conversationId یا به صورت جداگانه
-      const receiverId = conversationId;
-      await this.connection?.invoke('SendMessage', { receiverId, content });
-      console.log(`پیام با موفقیت ارسال شد`);
-      return;
+      
+      // Try different message sending methods
+      const messageData = {
+        conversationId: conversationId,
+        content: content,
+        ...(receiverId && { receiverId: receiverId })
+      };
+      
+      // Try multiple method names for compatibility
+      const methods = ['SendMessage', 'SendMessageToConversation', 'SendChatMessage'];
+      
+      for (const method of methods) {
+        try {
+          await this.connection?.invoke(method, messageData);
+          console.log(`پیام با موفقیت از طریق ${method} ارسال شد`);
+          return;
+        } catch (error) {
+          console.warn(`خطا در ارسال پیام با ${method}:`, error);
+          if (method === methods[methods.length - 1]) {
+            throw error;
+          }
+        }
+      }
     } catch (error) {
       console.error('خطا در ارسال پیام:', error);
       throw error;

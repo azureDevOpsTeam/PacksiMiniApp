@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import styled, { keyframes, css } from 'styled-components';
 import { apiService } from '../services/apiService';
-import signalRService from '../services/signalRService';
+import { signalRService } from '../services/signalRService';
 import type { ChatMessage, LiveChatUser } from '../types/api';
 
 // Animations
@@ -370,7 +370,7 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const handleSendMessage = async () => {
+  const handleSendMessage = useCallback(async () => {
     if (!newMessage.trim() || sending || !selectedUser) return;
 
     const messageContent = newMessage.trim();
@@ -382,7 +382,11 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
       if (isSignalRConnected && selectedUser.conversationId) {
         console.log('🚀 Sending message via SignalR...');
         try {
-          await signalRService.sendMessage(selectedUser.conversationId.toString(), messageContent);
+          await signalRService.sendMessage(
+            selectedUser.conversationId.toString(), 
+            messageContent,
+            selectedUser.reciverId?.toString()
+          );
           console.log('✅ Message sent via SignalR successfully');
           // Message will be received via SignalR event handler
           return;
@@ -414,9 +418,9 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
     } finally {
       setSending(false);
     }
-  };
+  }, [newMessage, sending, selectedUser, isSignalRConnected, fetchMessages]);
 
-  const handleTyping = () => {
+  const handleTyping = useCallback(() => {
     if (!isSignalRConnected || !selectedUser.conversationId) return;
 
     // Clear existing timeout
@@ -431,19 +435,19 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
     typingTimeoutRef.current = setTimeout(() => {
       signalRService.sendTypingIndicator(selectedUser.conversationId!.toString(), false);
     }, 2000);
-  };
+  }, [isSignalRConnected, selectedUser.conversationId]);
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyPress = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
     }
-  };
+  }, [handleSendMessage]);
 
-  const handleFormSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    handleSendMessage();
-  };
+  const handleSubmit = useCallback((e: React.FormEvent) => {
+     e.preventDefault();
+     handleSendMessage();
+   }, [handleSendMessage]);
 
   useEffect(() => {
     scrollToBottom();
@@ -477,24 +481,49 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
   useEffect(() => {
     const initializeSignalR = async () => {
       try {
-        // Set up event handlers
-        signalRService.setOnMessageReceived((message) => {
-          if (message.conversationId === selectedUser?.conversationId) {
-            setMessages(prev => [...prev, message]);
+        // Set up event handlers with current selectedUser reference
+        const messageHandler = (message: ChatMessage) => {
+          console.log('پیام دریافت شد:', message, 'conversationId فعلی:', selectedUser?.conversationId);
+          // بررسی conversationId یا receiverId/senderId
+          const isForThisConversation = 
+            message.conversationId === selectedUser?.conversationId ||
+            (message.senderId === selectedUser?.reciverId && message.receiverId === selectedUser?.senderId) ||
+            (message.senderId === selectedUser?.senderId && message.receiverId === selectedUser?.reciverId);
+          
+          if (isForThisConversation) {
+            console.log('پیام برای این مکالمه است، اضافه می‌شود');
+            setMessages(prev => {
+              // جلوگیری از duplicate پیام‌ها
+              const exists = prev.some(m => m.id === message.id);
+              if (exists) {
+                console.log('پیام تکراری، اضافه نمی‌شود');
+                return prev;
+              }
+              return [...prev, message];
+            });
             scrollToBottom();
+          } else {
+            console.log('پیام برای این مکالمه نیست، نادیده گرفته می‌شود');
           }
-        });
+        };
+        
+        signalRService.setOnMessageReceived(messageHandler);
 
         signalRService.setOnConnectionStateChanged((isConnected) => {
           setIsSignalRConnected(isConnected);
           console.log('SignalR connection status:', isConnected ? 'Connected' : 'Disconnected');
         });
 
-        signalRService.setOnTypingReceived((userId, isTyping) => {
-          if (userId !== selectedUser.reciverId?.toString()) {
+        const typingHandler = (userId: string, isTyping: boolean) => {
+          console.log('نشانگر تایپ دریافت شد:', userId, isTyping, 'کاربر فعلی:', selectedUser?.reciverId);
+          // بررسی اینکه آیا نشانگر تایپ از طرف مقابل است
+          if (userId === selectedUser?.reciverId?.toString()) {
+            console.log('نشانگر تایپ برای این مکالمه است');
             setIsTyping(isTyping);
           }
-        });
+        };
+        
+        signalRService.setOnTypingReceived(typingHandler);
 
         // signalRService.setOnUserOnlineStatusChanged((userId, isOnline) => {
         //   setOnlineUsers(prev => {
@@ -517,14 +546,17 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
 
     initializeSignalR();
 
-    // Cleanup on unmount
+    // Cleanup on unmount or selectedUser change
     return () => {
       if (typingTimeoutRef.current) {
         clearTimeout(typingTimeoutRef.current);
       }
-      signalRService.stop();
+      // Clear event handlers to prevent memory leaks
+      signalRService.setOnMessageReceived(null);
+      signalRService.setOnTypingReceived(null);
+      console.log('Event handlers پاک شدند');
     };
-  }, []);
+  }, [selectedUser?.conversationId, selectedUser?.reciverId, selectedUser?.senderId]);
 
   // Join/Leave conversation when selectedUser changes
   useEffect(() => {
@@ -685,7 +717,7 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
         <div ref={messagesEndRef} />
       </ChatThread>
 
-      <ChatInputForm onSubmit={handleFormSubmit}>
+      <ChatInputForm onSubmit={handleSubmit}>
         <ChatInput
           type="text"
           value={newMessage}
