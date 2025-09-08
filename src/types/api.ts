@@ -259,6 +259,10 @@ export interface OutboundTripsResponse {
 // Select Request API Types
 export interface SelectRequestModel {
   requestId: number;
+  tripOption?: string;
+  suggestionPrice?: number;
+  currency?: number;
+  description?: string;
 }
 
 export interface SelectRequestPayload {
