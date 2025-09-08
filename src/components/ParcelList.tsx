@@ -896,41 +896,60 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                         <div style={{
                         textAlign: isRTL ? 'left' : 'right'
                       }}>
-                        {/* Submit Suggestion Button */}
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedFlightForTrip(flight);
-                            setSelectedTripOption('');
-                            setShowSelectTripModal(true);
-                          }}
-                          style={{
-                            padding: '6px 12px',
-                            borderRadius: '16px',
-                            fontSize: '10px',
-                            fontWeight: 'bold',
-                            backgroundColor: '#10b981',
-                            color: 'white',
-                            border: 'none',
-                            cursor: 'pointer',
-                            transition: 'all 0.3s ease',
-                            textAlign: 'center',
-                            boxShadow: '0 2px 4px rgba(16, 185, 129, 0.3)'
-                          }}
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.backgroundColor = '#059669';
-                            e.currentTarget.style.transform = 'translateY(-1px)';
-                            e.currentTarget.style.boxShadow = '0 4px 8px rgba(16, 185, 129, 0.4)';
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.backgroundColor = '#10b981';
-                            e.currentTarget.style.transform = 'translateY(0)';
-                            e.currentTarget.style.boxShadow = '0 2px 4px rgba(16, 185, 129, 0.3)';
-                          }}
-                        >
-                          {isRTL ? 'پیشنهاد قیمت' : 'Suggest Price'}
-                        </button>
+                        {/* Submit Suggestion Button or Selected Status */}
+                        {flight.currentUserStatus === 1 ? (
+                          <div
+                            style={{
+                              padding: '6px 12px',
+                              borderRadius: '16px',
+                              fontSize: '10px',
+                              fontWeight: 'bold',
+                              backgroundColor: '#6b7280',
+                              color: 'white',
+                              border: 'none',
+                              textAlign: 'center',
+                              boxShadow: '0 2px 4px rgba(107, 114, 128, 0.3)',
+                              opacity: 0.7
+                            }}
+                          >
+                            {isRTL ? 'انتخاب شده' : 'Selected'}
+                          </div>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedFlightForTrip(flight);
+                              setSelectedTripOption('');
+                              setShowSelectTripModal(true);
+                            }}
+                            style={{
+                              padding: '6px 12px',
+                              borderRadius: '16px',
+                              fontSize: '10px',
+                              fontWeight: 'bold',
+                              backgroundColor: '#10b981',
+                              color: 'white',
+                              border: 'none',
+                              cursor: 'pointer',
+                              transition: 'all 0.3s ease',
+                              textAlign: 'center',
+                              boxShadow: '0 2px 4px rgba(16, 185, 129, 0.3)'
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.backgroundColor = '#059669';
+                              e.currentTarget.style.transform = 'translateY(-1px)';
+                              e.currentTarget.style.boxShadow = '0 4px 8px rgba(16, 185, 129, 0.4)';
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.backgroundColor = '#10b981';
+                              e.currentTarget.style.transform = 'translateY(0)';
+                              e.currentTarget.style.boxShadow = '0 2px 4px rgba(16, 185, 129, 0.3)';
+                            }}
+                          >
+                            {isRTL ? 'پیشنهاد قیمت' : 'Suggest Price'}
+                          </button>
+                        )}
                       </div>
                         
                         {/* Three Dots Menu */}
