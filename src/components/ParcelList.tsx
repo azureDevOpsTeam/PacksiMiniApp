@@ -65,6 +65,17 @@ const accordionStyles = `
     }
   }
   
+  @keyframes fadeInScale {
+    0% {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.9);
+    }
+    100% {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+  }
+  
   .flight-card {
     position: relative;
     overflow: hidden;
@@ -121,6 +132,12 @@ const ParcelList: React.FC<ParcelListProps> = () => {
   const [activeMenu, setActiveMenu] = useState<number | null>(null);
   const [apiResult, setApiResult] = useState<{success: boolean, message: string} | null>(null);
   const [showMyRequest, setShowMyRequest] = useState(false);
+  const [showSelectTripModal, setShowSelectTripModal] = useState(false);
+  const [selectedFlightForTrip, setSelectedFlightForTrip] = useState<OutboundTrip | null>(null);
+  const [selectedTripOption, setSelectedTripOption] = useState<string>('');
+  const [suggestionPrice, setSuggestionPrice] = useState<string>('');
+  const [currency, setCurrency] = useState<string>('0'); // 0 for USD, 1 for IRR
+  const [description, setDescription] = useState<string>('');
 
   const [searchQuery, setSearchQuery] = useState<string>('');
   
@@ -192,8 +209,9 @@ const ParcelList: React.FC<ParcelListProps> = () => {
         console.log('Show details for flight:', flight.requestId);
         break;
       case 'selectTrip':
-        // Handle trip selection
-        await handleSelectTrip(flight.requestId);
+        // Open modal instead of direct API call
+        setSelectedFlightForTrip(flight);
+        setShowSelectTripModal(true);
         break;
       case 'saveToFavorites':
         // Handle save to favorites
@@ -208,7 +226,131 @@ const ParcelList: React.FC<ParcelListProps> = () => {
     }
   };
 
-  // Handle select trip API call
+  // Handle select trip modal submission
+  const handleSelectTripSubmit = async () => {
+    if (!selectedFlightForTrip || !selectedTripOption) {
+      setApiResult({
+        success: false,
+        message: isRTL ? 'لطفا گزینه سفر را انتخاب کنید' : 'Please select a trip option'
+      });
+      
+      setTimeout(() => {
+        setApiResult(null);
+      }, 3000);
+      return;
+    }
+
+    // Validate price suggestion fields if price suggestion is selected
+    if (selectedTripOption === 'suggest_price') {
+      if (!suggestionPrice || !description) {
+        setApiResult({
+          success: false,
+          message: isRTL ? 'لطفا قیمت پیشنهادی و توضیحات را وارد کنید' : 'Please enter suggested price and description'
+        });
+        
+        setTimeout(() => {
+          setApiResult(null);
+        }, 3000);
+        return;
+      }
+    }
+
+    try {
+      setIsLoading(true);
+      
+      let requestData;
+      
+      if (selectedTripOption === 'suggest_price') {
+        // For price suggestion, use the new API structure
+        requestData = {
+          model: {
+            requestId: selectedFlightForTrip.requestId,
+            suggestionPrice: parseFloat(suggestionPrice) || 0,
+            currency: parseInt(currency) || 0,
+            description: description
+          }
+        };
+      } else {
+        // For regular trip selection, use the old structure
+        requestData = {
+          model: {
+            requestId: selectedFlightForTrip.requestId,
+            tripOption: selectedTripOption
+          }
+        };
+      }
+      
+      const response = await apiService.selectRequest(requestData);
+
+      if (response.requestStatus.value === 0) {
+        setApiResult({
+          success: true,
+          message: response.message || (isRTL ? 'درخواست با موفقیت ثبت شد' : 'Request submitted successfully')
+        });
+        
+        // Update local state
+        setFlights(prevFlights => 
+          prevFlights.map(flight => 
+            flight.requestId === selectedFlightForTrip.requestId 
+              ? {
+                  ...flight,
+                  currentUserStatus: 1,
+                  currentUserStatusEn: 'Selected',
+                  currentUserStatusFa: 'انتخاب شده'
+                }
+              : flight
+          )
+        );
+        
+        // Close modal and refresh
+        setShowSelectTripModal(false);
+        setSelectedFlightForTrip(null);
+        setSelectedTripOption('');
+        setSuggestionPrice('');
+        setCurrency('0');
+        setDescription('');
+        
+        setTimeout(() => {
+          setApiResult(null);
+        }, 3000);
+        
+        await fetchFlights();
+      } else {
+        setApiResult({
+          success: false,
+          message: response.message || (isRTL ? 'خطا در ثبت درخواست' : 'Error submitting request')
+        });
+        
+        setTimeout(() => {
+          setApiResult(null);
+        }, 3000);
+      }
+    } catch (error) {
+      console.error('Error submitting request:', error);
+      setApiResult({
+        success: false,
+        message: isRTL ? 'خطا در ارتباط با سرور' : 'Server connection error'
+      });
+      
+      setTimeout(() => {
+        setApiResult(null);
+      }, 3000);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Handle select trip modal cancel
+  const handleSelectTripCancel = () => {
+    setShowSelectTripModal(false);
+    setSelectedFlightForTrip(null);
+    setSelectedTripOption('');
+    setSuggestionPrice('');
+    setCurrency('0');
+    setDescription('');
+  };
+
+  // Handle select trip API call (keep for backward compatibility)
   const handleSelectTrip = async (requestId: number) => {
     try {
       console.log('handleSelectTrip called with requestId:', requestId);
@@ -1297,6 +1439,337 @@ const ParcelList: React.FC<ParcelListProps> = () => {
         </div>
       </div>
     </div>
+
+    {/* Select Trip Modal */}
+    {showSelectTripModal && selectedFlightForTrip && createPortal(
+      <>
+        {/* Background Overlay */}
+        <div 
+          onClick={handleSelectTripCancel}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            zIndex: 99999,
+            backdropFilter: 'blur(4px)'
+          }}
+        />
+        
+        <div style={{
+          position: 'fixed',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          background: 'linear-gradient(135deg, rgba(26, 32, 38, 0.95) 0%, rgba(36, 43, 53, 0.95) 100%)',
+          borderRadius: '20px',
+          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1)',
+          minWidth: '320px',
+          maxWidth: '400px',
+          zIndex: 100000,
+          overflow: 'hidden',
+          backdropFilter: 'blur(20px)',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          animation: 'fadeInScale 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+        }}>
+          {/* Modal Header */}
+          <div style={{
+            padding: '20px 20px 16px 20px',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+            textAlign: 'center'
+          }}>
+            <h3 style={{
+              margin: 0,
+              fontSize: '18px',
+              fontWeight: '600',
+              color: '#ffffff',
+              fontFamily: 'IRANSansX, sans-serif'
+            }}>
+              {isRTL ? 'انتخاب سفر' : 'Select Trip'}
+            </h3>
+            <p style={{
+              margin: '4px 0 0 0',
+              fontSize: '12px',
+              color: '#a0a8b0',
+              fontFamily: 'IRANSansX, sans-serif'
+            }}>
+              {isRTL ? `درخواست #${selectedFlightForTrip.requestId}` : `Request #${selectedFlightForTrip.requestId}`}
+            </p>
+          </div>
+          
+          {/* Modal Body */}
+          <div style={{ padding: '20px' }}>
+            {/* Trip Options Dropdown */}
+            <div style={{ marginBottom: '20px' }}>
+              <label style={{
+                display: 'block',
+                fontSize: '14px',
+                color: '#ffffff',
+                marginBottom: '8px',
+                fontFamily: 'IRANSansX, sans-serif',
+                fontWeight: '500'
+              }}>
+                {isRTL ? 'گزینه سفر را انتخاب کنید:' : 'Select Trip Option:'}
+              </label>
+              <select
+                value={selectedTripOption}
+                onChange={(e) => setSelectedTripOption(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '12px 16px',
+                  borderRadius: '12px',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  color: '#ffffff',
+                  fontSize: '14px',
+                  fontFamily: 'IRANSansX, sans-serif',
+                  outline: 'none',
+                  transition: 'all 0.3s ease'
+                }}
+                onFocus={(e) => {
+                  e.currentTarget.style.borderColor = 'rgba(80, 180, 255, 0.5)';
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+                }}
+              >
+                <option value="" style={{ background: '#1a202c', color: '#ffffff' }}>
+                  {isRTL ? 'گزینه‌ای را انتخاب کنید' : 'Select an option'}
+                </option>
+                <option value="agree_with_site_prices" style={{ background: '#1a202c', color: '#ffffff' }}>
+                  {isRTL ? 'با قیمت‌های سایت موافقم' : 'I agree with site prices'}
+                </option>
+                <option value="suggest_price" style={{ background: '#1a202c', color: '#ffffff' }}>
+                  {isRTL ? 'پیشنهاد قیمت' : 'Suggest Price'}
+                </option>
+              </select>
+            </div>
+            
+            {/* Price Suggestion Fields - Show only when suggest_price is selected */}
+            {selectedTripOption === 'suggest_price' && (
+              <>
+                {/* Suggested Price Input */}
+                <div style={{ marginBottom: '16px' }}>
+                  <label style={{
+                    display: 'block',
+                    fontSize: '14px',
+                    color: '#ffffff',
+                    marginBottom: '8px',
+                    fontFamily: 'IRANSansX, sans-serif',
+                    fontWeight: '500'
+                  }}>
+                    {isRTL ? 'قیمت پیشنهادی:' : 'Suggested Price:'}
+                  </label>
+                  <input
+                    type="number"
+                    value={suggestionPrice}
+                    onChange={(e) => setSuggestionPrice(e.target.value)}
+                    placeholder={isRTL ? 'قیمت پیشنهادی را وارد کنید' : 'Enter suggested price'}
+                    style={{
+                      width: '100%',
+                      padding: '12px 16px',
+                      borderRadius: '12px',
+                      border: '1px solid rgba(255, 255, 255, 0.2)',
+                      background: 'rgba(255, 255, 255, 0.1)',
+                      color: '#ffffff',
+                      fontSize: '14px',
+                      fontFamily: 'IRANSansX, sans-serif',
+                      outline: 'none',
+                      transition: 'all 0.3s ease'
+                    }}
+                    onFocus={(e) => {
+                      e.currentTarget.style.borderColor = 'rgba(80, 180, 255, 0.5)';
+                      e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
+                    }}
+                    onBlur={(e) => {
+                      e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                      e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+                    }}
+                  />
+                </div>
+                
+                {/* Currency Selection */}
+                <div style={{ marginBottom: '16px' }}>
+                  <label style={{
+                    display: 'block',
+                    fontSize: '14px',
+                    color: '#ffffff',
+                    marginBottom: '8px',
+                    fontFamily: 'IRANSansX, sans-serif',
+                    fontWeight: '500'
+                  }}>
+                    {isRTL ? 'نوع ارز:' : 'Currency Type:'}
+                  </label>
+                  <select
+                    value={currency}
+                    onChange={(e) => setCurrency(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '12px 16px',
+                      borderRadius: '12px',
+                      border: '1px solid rgba(255, 255, 255, 0.2)',
+                      background: 'rgba(255, 255, 255, 0.1)',
+                      color: '#ffffff',
+                      fontSize: '14px',
+                      fontFamily: 'IRANSansX, sans-serif',
+                      outline: 'none',
+                      transition: 'all 0.3s ease'
+                    }}
+                    onFocus={(e) => {
+                      e.currentTarget.style.borderColor = 'rgba(80, 180, 255, 0.5)';
+                      e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
+                    }}
+                    onBlur={(e) => {
+                      e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                      e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+                    }}
+                  >
+                    <option value="0" style={{ background: '#1a202c', color: '#ffffff' }}>
+                      {isRTL ? 'دلار' : 'Dollar'}
+                    </option>
+                    <option value="1" style={{ background: '#1a202c', color: '#ffffff' }}>
+                      {isRTL ? 'ریال' : 'Rial'}
+                    </option>
+                  </select>
+                </div>
+                
+                {/* Description Textarea */}
+                <div style={{ marginBottom: '20px' }}>
+                  <label style={{
+                    display: 'block',
+                    fontSize: '14px',
+                    color: '#ffffff',
+                    marginBottom: '8px',
+                    fontFamily: 'IRANSansX, sans-serif',
+                    fontWeight: '500'
+                  }}>
+                    {isRTL ? 'توضیحات:' : 'Description:'}
+                  </label>
+                  <textarea
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder={isRTL ? 'توضیحات خود را وارد کنید' : 'Enter your description'}
+                    rows={3}
+                    style={{
+                      width: '100%',
+                      padding: '12px 16px',
+                      borderRadius: '12px',
+                      border: '1px solid rgba(255, 255, 255, 0.2)',
+                      background: 'rgba(255, 255, 255, 0.1)',
+                      color: '#ffffff',
+                      fontSize: '14px',
+                      fontFamily: 'IRANSansX, sans-serif',
+                      outline: 'none',
+                      transition: 'all 0.3s ease',
+                      resize: 'vertical',
+                      minHeight: '80px'
+                    }}
+                    onFocus={(e) => {
+                      e.currentTarget.style.borderColor = 'rgba(80, 180, 255, 0.5)';
+                      e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
+                    }}
+                    onBlur={(e) => {
+                      e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                      e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+                    }}
+                  />
+                </div>
+              </>
+            )}
+            
+            {/* Action Buttons */}
+            <div style={{
+              display: 'flex',
+              gap: '12px',
+              justifyContent: 'flex-end'
+            }}>
+              {/* Cancel Button */}
+              <button
+                onClick={handleSelectTripCancel}
+                disabled={isLoading}
+                style={{
+                  padding: '12px 24px',
+                  borderRadius: '12px',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  background: 'transparent',
+                  color: '#ffffff',
+                  fontSize: '14px',
+                  fontFamily: 'IRANSansX, sans-serif',
+                  cursor: isLoading ? 'not-allowed' : 'pointer',
+                  transition: 'all 0.3s ease',
+                  opacity: isLoading ? 0.5 : 1
+                }}
+                onMouseEnter={(e) => {
+                  if (!isLoading) {
+                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isLoading) {
+                    e.currentTarget.style.background = 'transparent';
+                  }
+                }}
+              >
+                {isRTL ? 'انصراف' : 'Cancel'}
+              </button>
+              
+              {/* Submit Button */}
+              <button
+                onClick={handleSelectTripSubmit}
+                disabled={isLoading || !selectedTripOption}
+                style={{
+                  padding: '12px 24px',
+                  borderRadius: '12px',
+                  border: 'none',
+                  background: (!selectedTripOption || isLoading) 
+                    ? 'rgba(107, 114, 128, 0.5)' 
+                    : 'linear-gradient(135deg, #10b981, #059669)',
+                  color: '#ffffff',
+                  fontSize: '14px',
+                  fontFamily: 'IRANSansX, sans-serif',
+                  cursor: (!selectedTripOption || isLoading) ? 'not-allowed' : 'pointer',
+                  transition: 'all 0.3s ease',
+                  opacity: (!selectedTripOption || isLoading) ? 0.5 : 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px'
+                }}
+                onMouseEnter={(e) => {
+                  if (selectedTripOption && !isLoading) {
+                    e.currentTarget.style.background = 'linear-gradient(135deg, #059669, #047857)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (selectedTripOption && !isLoading) {
+                    e.currentTarget.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+                  }
+                }}
+              >
+                {isLoading && (
+                  <div style={{
+                    width: '16px',
+                    height: '16px',
+                    border: '2px solid rgba(255, 255, 255, 0.3)',
+                    borderTop: '2px solid #ffffff',
+                    borderRadius: '50%',
+                    animation: 'spin 1s linear infinite'
+                  }} />
+                )}
+                {selectedTripOption === 'suggest_price' 
+                  ? (isRTL ? 'ثبت پیشنهاد' : 'Submit Suggestion')
+                  : (isRTL ? 'ثبت' : 'Submit')
+                }
+              </button>
+            </div>
+          </div>
+        </div>
+      </>,
+      document.body
+    )}
     </div>
   );
 };
