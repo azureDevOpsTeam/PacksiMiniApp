@@ -72,7 +72,7 @@ const Settings: React.FC<SettingsProps> = ({ activeButton, setActiveButton, forc
           color: '#fff',
           transition: 'transform 0.3s ease-in-out',
         }}>
-          <path d="M4 12H20M4 8H20M4 16H12" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="#fff" />
+          <path d="M4 12H20M4 8H20M4 16H12" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="#fff" />
         </svg>
       </div>
 
