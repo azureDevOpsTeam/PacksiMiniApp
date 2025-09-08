@@ -434,42 +434,6 @@ const ParcelList: React.FC<ParcelListProps> = () => {
     }
   };
 
-  // Function to get status display based on currentUserStatus
-  const getStatusDisplay = (flight: OutboundTrip) => {
-    const statusText = isRTL ? flight.currentUserStatusFa : flight.currentUserStatusEn;
-    
-    // Determine color based on status value
-    let color = '#6b7280';
-    let bgColor = 'rgba(107, 114, 128, 0.1)';
-    
-    switch (flight.currentUserStatus) {
-      case 0:
-        color = '#f59e0b';
-        bgColor = 'rgba(245, 158, 11, 0.1)';
-        break;
-      case 1:
-        color = '#10b981';
-        bgColor = 'rgba(16, 185, 129, 0.1)';
-        break;
-      case 2:
-        color = '#ef4444';
-        bgColor = 'rgba(239, 68, 68, 0.1)';
-        break;
-      case 3:
-        color = '#8b5cf6';
-        bgColor = 'rgba(139, 92, 246, 0.1)';
-        break;
-    }
-    
-    return {
-      text: statusText || (isRTL ? 'نامشخصص' : 'Unknown'),
-      color,
-      bgColor
-    };
-  };
-
-
-
   // Setup back button
   useEffect(() => {
     if (!webApp) return;
