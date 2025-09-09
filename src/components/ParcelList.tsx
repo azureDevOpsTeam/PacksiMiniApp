@@ -142,25 +142,25 @@ const ParcelList: React.FC<ParcelListProps> = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   
   // Tab system
-  type TabType = 'incoming' | 'outgoing' | 'favorites' | 'selected';
+  type TabType = 'incoming' | 'outgoing' | 'ipicked' | 'pickedme';
   const [activeTab, setActiveTab] = useState<TabType>('outgoing');
 
-  // Filter flights based on search query and active tab using recordType
+  // Filter flights based on search query and active tab using TripType
   const filteredFlights = flights.filter(flight => {
-    // Tab filter based on recordType
+    // Tab filter based on TripType
     let matchesTab = true;
     switch (activeTab) {
       case 'incoming':
-        matchesTab = flight.recordType === 'inbound';
+        matchesTab = flight.tripType === 'inbound';
         break;
       case 'outgoing':
-        matchesTab = flight.recordType === 'outbound';
+        matchesTab = flight.tripType === 'outbound';
         break;
-      case 'favorites':
-        matchesTab = flight.recordType === 'favorite';
+      case 'ipicked':
+        matchesTab = flight.selectStatus === 'ipicked';
         break;
-      case 'selected':
-        matchesTab = flight.recordType === 'selected';
+      case 'pickedme':
+        matchesTab = flight.selectStatus === 'pickedme';
         break;
       default:
         matchesTab = true;
@@ -307,7 +307,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
               ? {
                   ...flight,
                   currentUserStatus: 1,
-                  currentUserStatusEn: 'Selected',
+                  currentUserStatusEn: 'pickedme',
                   currentUserStatusFa: 'انتخاب شده'
                 }
               : flight
@@ -413,7 +413,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
   }, []);
 
   // No need to fetch flights when activeTab changes since we get all data at once
-  // Filtering is now done client-side based on recordType
+  // Filtering is now done client-side based on tripType
 
   // Handle form completion
   const handleFormComplete = () => {
@@ -631,10 +631,10 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                 return isRTL ? 'لیست پروازهای ورودی' : 'Incoming Flights List';
               case 'outgoing':
                 return isRTL ? 'لیست پروازهای خروجی' : 'Outgoing Flights List';
-              case 'favorites':
-                return isRTL ? 'لیست مورد علاقه‌ها' : 'Favorites List';
-              case 'selected':
-                return isRTL ? 'لیست منتخب‌ها' : 'Selected List';
+              case 'ipicked':
+                return isRTL ? 'من انتخاب کرده ام' : 'I Picked List';
+              case 'pickedme':
+                return isRTL ? 'انتخاب شده ام' : 'Picked Me List';
               default:
                 return isRTL ? 'لیست پروازها' : 'Flights List';
             }
@@ -659,11 +659,11 @@ const ParcelList: React.FC<ParcelListProps> = () => {
             {[
               { key: 'incoming' as TabType, labelFa: 'ورودی', labelEn: 'Incoming' },
               { key: 'outgoing' as TabType, labelFa: 'خروجی', labelEn: 'Outgoing' },
-              { key: 'favorites' as TabType, labelFa: 'مورد علاقه', labelEn: 'Favorites' },
-              { key: 'selected' as TabType, labelFa: 'منتخب', labelEn: 'Selected' }
+              { key: 'ipicked' as TabType, labelFa: 'منتخب من', labelEn: 'ipicked' },
+              { key: 'pickedme' as TabType, labelFa: 'انتخاب شدم', labelEn: 'pickedme' }
             ].map((tab) => (
               <div style={{ position: 'relative' }}>
-                {tab.key === 'selected' && filteredFlights.length > 0 && (
+                {tab.key === 'pickedme' && filteredFlights.length > 0 && (
                   <div style={{
                     position: 'absolute',
                     top: '0',
@@ -912,7 +912,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                               opacity: 0.7
                             }}
                           >
-                            {isRTL ? 'انتخاب شده' : 'Selected'}
+                            {isRTL ? 'انتخاب شده' : 'pickedme'}
                           </div>
                         ) : (
                           <button

@@ -239,7 +239,8 @@ export interface OutboundTrip {
   currentUserStatusEn: string;
   currentUserStatusFa: string;
   isFavorite?: boolean;
-  recordType: string;
+  tripType: string;
+  selectStatus: string;
 }
 
 export interface OutboundTripsResponse {
