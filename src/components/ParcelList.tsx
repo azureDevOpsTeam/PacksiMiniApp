@@ -694,10 +694,10 @@ const ParcelList: React.FC<ParcelListProps> = () => {
             justifyContent: 'space-between'
           }}>
             {[
-              { key: 'incoming' as TabType, labelFa: 'ورودی', labelEn: 'Incoming', icon: '📥' },
-              { key: 'outgoing' as TabType, labelFa: 'خروجی', labelEn: 'Outgoing', icon: '📤' },
-              { key: 'ipicked' as TabType, labelFa: 'منتخب من', labelEn: 'ipicked', icon: '👆' },
-              { key: 'pickedme' as TabType, labelFa: 'انتخاب شدم', labelEn: 'pickedme', icon: '✅' }
+              { key: 'incoming' as TabType, labelFa: 'ورودی', labelEn: 'Incoming', icon: '⬇️' },
+              { key: 'outgoing' as TabType, labelFa: 'خروجی', labelEn: 'Outgoing', icon: '⬆️' },
+              { key: 'ipicked' as TabType, labelFa: 'منتخب من', labelEn: 'ipicked', icon: '🎯' },
+              { key: 'pickedme' as TabType, labelFa: 'انتخاب شدم', labelEn: 'pickedme', icon: '⭐' }
             ].map((tab) => {
               const tabCount = getTabCount(tab.key);
               return (
