@@ -184,6 +184,24 @@ const ParcelList: React.FC<ParcelListProps> = () => {
     return matchesTab;
   });
 
+  // Get count for each tab
+  const getTabCount = (tabType: TabType) => {
+    return flights.filter(flight => {
+      switch (tabType) {
+        case 'incoming':
+          return flight.tripType === 'inbound';
+        case 'outgoing':
+          return flight.tripType === 'outbound';
+        case 'ipicked':
+          return flight.selectStatus === 'ipicked';
+        case 'pickedme':
+          return flight.selectStatus === 'pickedme';
+        default:
+          return false;
+      }
+    }).length;
+  };
+
   // Close menu when clicking outside
   useEffect(() => {
     const handleClickOutside = () => {
@@ -661,22 +679,33 @@ const ParcelList: React.FC<ParcelListProps> = () => {
               { key: 'outgoing' as TabType, labelFa: 'خروجی', labelEn: 'Outgoing' },
               { key: 'ipicked' as TabType, labelFa: 'منتخب من', labelEn: 'ipicked' },
               { key: 'pickedme' as TabType, labelFa: 'انتخاب شدم', labelEn: 'pickedme' }
-            ].map((tab) => (
-              <div style={{ position: 'relative' }}>
-                {tab.key === 'pickedme' && filteredFlights.length > 0 && (
+            ].map((tab) => {
+              const tabCount = getTabCount(tab.key);
+              return (
+              <div key={tab.key} style={{ position: 'relative' }}>
+                {(tab.key === 'ipicked' || tab.key === 'pickedme') && tabCount > 0 && (
                   <div style={{
                     position: 'absolute',
-                    top: '0',
-                    right: '33px',
-                    width: '10px',
-                    height: '10px',
-                    backgroundColor: 'red',
-                    borderRadius: '50%',
-                    zIndex: 10
-                  }} />
+                    top: '-8px',
+                    right: '-8px',
+                    minWidth: '18px',
+                    height: '18px',
+                    backgroundColor: '#ef4444',
+                    borderRadius: '9px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '10px',
+                    fontWeight: 'bold',
+                    color: '#ffffff',
+                    zIndex: 10,
+                    padding: '0 4px'
+                  }}>
+                    {tabCount}
+                  </div>
                 )}
                 <button
-                  key={tab.key}
+
                   onClick={() => setActiveTab(tab.key)}
                   style={{
                     padding: '8px 16px',
@@ -707,7 +736,8 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                   {isRTL ? tab.labelFa : tab.labelEn}
                 </button>
               </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>
