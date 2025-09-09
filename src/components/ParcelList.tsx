@@ -75,6 +75,10 @@ const accordionStyles = `
       transform: translate(-50%, -50%) scale(1);
     }
   }
+
+  .suggestions-modal::-webkit-scrollbar {
+    display: none;
+  }
   
   .flight-card {
     position: relative;
@@ -807,8 +811,8 @@ const ParcelList: React.FC<ParcelListProps> = () => {
             {[
               { key: 'incoming' as TabType, labelFa: 'ورودی', labelEn: 'Incoming', icon: '⬇️' },
               { key: 'outgoing' as TabType, labelFa: 'خروجی', labelEn: 'Outgoing', icon: '⬆️' },
-              { key: 'ipicked' as TabType, labelFa: 'منتخب من', labelEn: 'ipicked', icon: '🎯' },
-              { key: 'pickedme' as TabType, labelFa: 'انتخاب شدم', labelEn: 'pickedme', icon: '⭐' }
+              { key: 'ipicked' as TabType, labelFa: 'منتخب من', labelEn: 'i picked', icon: '🎯' },
+              { key: 'pickedme' as TabType, labelFa: 'انتخاب شدم', labelEn: 'picked Me', icon: '⭐' }
             ].map((tab) => {
               const tabCount = getTabCount(tab.key);
               return (
@@ -2006,10 +2010,9 @@ const ParcelList: React.FC<ParcelListProps> = () => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          padding: '20px',
-          animation: 'fadeInScale 0.3s ease-out'
+          padding: '20px'
         }}>
-          <div style={{
+          <div className="suggestions-modal" style={{
             background: 'linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%)',
             borderRadius: '16px',
             padding: '24px',
@@ -2017,9 +2020,12 @@ const ParcelList: React.FC<ParcelListProps> = () => {
             width: '100%',
             maxHeight: '80vh',
             overflowY: 'auto',
+            overflowX: 'hidden',
             border: '1px solid rgba(255, 255, 255, 0.1)',
             boxShadow: '0 25px 50px rgba(0, 0, 0, 0.5)',
-            position: 'relative'
+            position: 'relative',
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none'
           }}>
             {/* Header */}
             <div style={{

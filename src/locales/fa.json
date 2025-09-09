@@ -51,6 +51,7 @@
     "showSuggestions": "نمایش پیشنهادات",
     "suggestions": "پیشنهادات",
     "suggestionsModal": {
+      "suggestionsReceived": "شناسه پیشنهاد",
       "title": "پیشنهادات قیمت",
       "noSuggestions": "هیچ پیشنهادی یافت نشد",
       "price": "قیمت",
