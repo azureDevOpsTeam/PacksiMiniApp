@@ -139,7 +139,10 @@ class ApiService {
           }
       }
 
-      throw new Error(errorMessage);
+      return {
+        success: false,
+        message: errorMessage
+      };
     }
 
     try {
