@@ -1,5 +1,17 @@
 // API Types for MiniApp Create Request
 
+// Suggestion interface for price suggestions
+export interface Suggestion {
+  suggestionId: number;
+  userAccountId: number;
+  fullName: string;
+  price: number;
+  currency: number; // 1 = Dollar, 2 = Rial
+  description: string | null;
+  lastStatusEn: string;
+  lastStatusFa: string;
+}
+
 export interface CreateRequestModel {
   originCityId: number;
   destinationCityId: number;
@@ -241,6 +253,7 @@ export interface OutboundTrip {
   isFavorite?: boolean;
   tripType: string;
   selectStatus: string;
+  suggestions?: Suggestion[];
 }
 
 export interface OutboundTripsResponse {
@@ -465,4 +478,16 @@ export interface MarkReadResponse {
     name: string;
     value: number;
   };
+}
+
+// Suggestion Action Types
+export interface SuggestionActionPayload {
+  suggestionId: number;
+  action: 'accept' | 'reject';
+}
+
+export interface SuggestionActionResponse {
+  success: boolean;
+  message: string;
+  data?: any;
 }

@@ -138,6 +138,14 @@ const ParcelList: React.FC<ParcelListProps> = () => {
   const [suggestionPrice, setSuggestionPrice] = useState<string>('');
   const [currency, setCurrency] = useState<string>('-1'); // -1 for select, 1 for USD, 2 for IRR
   const [description, setDescription] = useState<string>('');
+  
+  // Suggestions modal state
+  const [showSuggestionsModal, setShowSuggestionsModal] = useState(false);
+  const [selectedFlightForSuggestions, setSelectedFlightForSuggestions] = useState<OutboundTrip | null>(null);
+  const [selectedSuggestion, setSelectedSuggestion] = useState<any>(null);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [confirmAction, setConfirmAction] = useState<'accept' | 'reject' | null>(null);
+  const [actionLoading, setActionLoading] = useState(false);
 
   const [searchQuery, setSearchQuery] = useState<string>('');
   
@@ -401,6 +409,109 @@ const ParcelList: React.FC<ParcelListProps> = () => {
     setSuggestionPrice('');
     setCurrency('-1');
     setDescription('');
+  };
+
+  // Suggestions modal handlers
+  const handleShowSuggestions = (flight: OutboundTrip) => {
+    setSelectedFlightForSuggestions(flight);
+    setShowSuggestionsModal(true);
+  };
+
+  const handleCloseSuggestionsModal = () => {
+    setShowSuggestionsModal(false);
+    setSelectedFlightForSuggestions(null);
+    setSelectedSuggestion(null);
+    setShowConfirmDialog(false);
+    setConfirmAction(null);
+  };
+
+  const handleSuggestionAction = (suggestion: any, action: 'accept' | 'reject') => {
+    setSelectedSuggestion(suggestion);
+    setConfirmAction(action);
+    setShowConfirmDialog(true);
+  };
+
+  const handleConfirmSuggestionAction = async () => {
+    if (!selectedSuggestion || !confirmAction) return;
+
+    setActionLoading(true);
+    try {
+      const response = await apiService.handleSuggestionAction({
+        suggestionId: selectedSuggestion.suggestionId,
+        action: confirmAction
+      });
+      
+      if (response.success) {
+        // Update the suggestion status in the local state
+        if (selectedFlightForSuggestions && selectedFlightForSuggestions.suggestions) {
+          const updatedSuggestions = selectedFlightForSuggestions.suggestions.map(suggestion => {
+            if (suggestion.suggestionId === selectedSuggestion.suggestionId) {
+              return {
+                ...suggestion,
+                lastStatusEn: confirmAction === 'accept' ? 'accept' : 'rejected',
+                lastStatusFa: confirmAction === 'accept' ? 'تایید شده' : 'رد شده'
+              };
+            }
+            return suggestion;
+          });
+          
+          setSelectedFlightForSuggestions({
+            ...selectedFlightForSuggestions,
+            suggestions: updatedSuggestions
+          });
+          
+          // Also update the main flights list
+          setFlights(prevFlights => 
+            prevFlights.map((flight: OutboundTrip) => {
+              if (flight.requestId === selectedFlightForSuggestions.requestId) {
+                return {
+                  ...flight,
+                  suggestions: updatedSuggestions
+                };
+              }
+              return flight;
+            })
+          );
+        }
+        
+        setApiResult({
+          success: true,
+          message: isRTL 
+            ? `پیشنهاد با موفقیت ${confirmAction === 'accept' ? 'تایید' : 'رد'} شد`
+            : `Suggestion ${confirmAction === 'accept' ? 'accepted' : 'rejected'} successfully`
+        });
+        
+        // Close confirmation dialog
+        setShowConfirmDialog(false);
+        setSelectedSuggestion(null);
+        setConfirmAction(null);
+      } else {
+        throw new Error(response.message || 'Failed to process suggestion');
+      }
+      
+      setTimeout(() => {
+        setApiResult(null);
+      }, 3000);
+      
+    } catch (error) {
+      console.error('Error handling suggestion action:', error);
+      setApiResult({
+        success: false,
+        message: isRTL ? 'خطا در انجام عملیات' : 'Error performing action'
+      });
+      
+      setTimeout(() => {
+        setApiResult(null);
+      }, 3000);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleCancelConfirmAction = () => {
+    setShowConfirmDialog(false);
+    setSelectedSuggestion(null);
+    setConfirmAction(null);
   };
 
 
@@ -969,6 +1080,39 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                           >
                             {isRTL ? 'انتخاب شده' : 'picked'}
                           </div>
+                        ) : flight.selectStatus === "pickedme" ? (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleShowSuggestions(flight);
+                            }}
+                            style={{
+                              padding: '6px 12px',
+                              borderRadius: '16px',
+                              fontSize: '10px',
+                              fontWeight: 'bold',
+                              backgroundColor: '#3b82f6',
+                              color: 'white',
+                              border: 'none',
+                              cursor: 'pointer',
+                              transition: 'all 0.3s ease',
+                              textAlign: 'center',
+                              boxShadow: '0 2px 4px rgba(59, 130, 246, 0.3)'
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.backgroundColor = '#2563eb';
+                              e.currentTarget.style.transform = 'translateY(-1px)';
+                              e.currentTarget.style.boxShadow = '0 4px 8px rgba(59, 130, 246, 0.4)';
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.backgroundColor = '#3b82f6';
+                              e.currentTarget.style.transform = 'translateY(0)';
+                              e.currentTarget.style.boxShadow = '0 2px 4px rgba(59, 130, 246, 0.3)';
+                            }}
+                          >
+                            {isRTL ? t('flights.showSuggestions') : t('flights.showSuggestions')}
+                          </button>
                         ) : (
                           <button
                             type="button"
@@ -1845,6 +1989,472 @@ const ParcelList: React.FC<ParcelListProps> = () => {
         </div>
       </>,
       document.body
+    )}
+
+    {/* Suggestions Modal */}
+    {showSuggestionsModal && selectedFlightForSuggestions && createPortal(
+      <>
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.7)',
+          backdropFilter: 'blur(8px)',
+          zIndex: 10000,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '20px',
+          animation: 'fadeInScale 0.3s ease-out'
+        }}>
+          <div style={{
+            background: 'linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%)',
+            borderRadius: '16px',
+            padding: '24px',
+            maxWidth: '400px',
+            width: '100%',
+            maxHeight: '80vh',
+            overflowY: 'auto',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            boxShadow: '0 25px 50px rgba(0, 0, 0, 0.5)',
+            position: 'relative'
+          }}>
+            {/* Header */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginBottom: '20px',
+              paddingBottom: '16px',
+              borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
+            }}>
+              <h3 style={{
+                margin: 0,
+                color: '#ffffff',
+                fontSize: '18px',
+                fontFamily: 'IRANSansX, sans-serif',
+                fontWeight: '700',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px'
+              }}>
+                <span style={{ fontSize: '20px' }}>💡</span>
+                {t('flights.suggestionsModal.title')}
+              </h3>
+              <button
+                onClick={handleCloseSuggestionsModal}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#ffffff',
+                  fontSize: '24px',
+                  cursor: 'pointer',
+                  padding: '4px',
+                  borderRadius: '8px',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+                  e.currentTarget.style.transform = 'scale(1.1)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'none';
+                  e.currentTarget.style.transform = 'scale(1)';
+                }}
+              >
+                ×
+              </button>
+            </div>
+
+            {/* Flight Info */}
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.05)',
+              borderRadius: '12px',
+              padding: '16px',
+              marginBottom: '20px',
+              border: '1px solid rgba(255, 255, 255, 0.1)'
+            }}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                marginBottom: '8px'
+              }}>
+                <span style={{ fontSize: '16px' }}>✈️</span>
+                <span style={{
+                  color: '#ffffff',
+                  fontSize: '14px',
+                  fontFamily: 'IRANSansX, sans-serif',
+                  fontWeight: '600'
+                }}>
+                  {selectedFlightForSuggestions.originCity} → {selectedFlightForSuggestions.destinationCity}
+                </span>
+              </div>
+              <div style={{
+                color: 'rgba(255, 255, 255, 0.7)',
+                fontSize: '12px',
+                fontFamily: 'IRANSansX, sans-serif'
+              }}>
+                {selectedFlightForSuggestions.departureDate}
+              </div>
+            </div>
+
+            {/* Suggestions List */}
+            <div style={{
+              marginBottom: '20px'
+            }}>
+              <h4 style={{
+                margin: '0 0 16px 0',
+                color: '#ffffff',
+                fontSize: '16px',
+                fontFamily: 'IRANSansX, sans-serif',
+                fontWeight: '600'
+              }}>
+                {t('flights.suggestionsModal.suggestionsReceived')}
+              </h4>
+              
+              {selectedFlightForSuggestions.suggestions && selectedFlightForSuggestions.suggestions.length > 0 ? (
+                <div style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '12px',
+                  maxHeight: '300px',
+                  overflowY: 'auto'
+                }}>
+                  {selectedFlightForSuggestions.suggestions.map((suggestion) => (
+                    <div
+                      key={suggestion.suggestionId}
+                      style={{
+                        background: suggestion.lastStatusEn === 'accept' 
+                          ? 'rgba(34, 197, 94, 0.1)' 
+                          : suggestion.lastStatusEn === 'rejected'
+                          ? 'rgba(239, 68, 68, 0.1)'
+                          : 'rgba(255, 255, 255, 0.05)',
+                        border: `1px solid ${
+                          suggestion.lastStatusEn === 'accept' 
+                            ? 'rgba(34, 197, 94, 0.3)' 
+                            : suggestion.lastStatusEn === 'rejected'
+                            ? 'rgba(239, 68, 68, 0.3)'
+                            : 'rgba(255, 255, 255, 0.1)'
+                        }`,
+                        borderRadius: '12px',
+                        padding: '16px',
+                        transition: 'all 0.2s ease'
+                      }}
+                    >
+                      <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'flex-start',
+                        marginBottom: '12px'
+                      }}>
+                        <div>
+                          <div style={{
+                            color: '#ffffff',
+                            fontSize: '14px',
+                            fontFamily: 'IRANSansX, sans-serif',
+                            fontWeight: '600',
+                            marginBottom: '4px'
+                          }}>
+                            {suggestion.fullName}
+                          </div>
+                          <div style={{
+                            color: '#ffffff',
+                            fontSize: '16px',
+                            fontFamily: 'IRANSansX, sans-serif',
+                            fontWeight: '700'
+                          }}>
+                            {suggestion.price.toLocaleString()} {suggestion.currency === 1 ? t('flights.suggestionsModal.dollar') : t('flights.suggestionsModal.rial')}
+                          </div>
+                        </div>
+                        <div style={{
+                          background: suggestion.lastStatusEn === 'accept' 
+                            ? 'rgba(34, 197, 94, 0.2)' 
+                            : suggestion.lastStatusEn === 'rejected'
+                            ? 'rgba(239, 68, 68, 0.2)'
+                            : 'rgba(156, 163, 175, 0.2)',
+                          color: suggestion.lastStatusEn === 'accept' 
+                            ? '#22c55e' 
+                            : suggestion.lastStatusEn === 'rejected'
+                            ? '#ef4444'
+                            : '#9ca3af',
+                          padding: '4px 8px',
+                          borderRadius: '6px',
+                          fontSize: '12px',
+                          fontFamily: 'IRANSansX, sans-serif',
+                          fontWeight: '500'
+                        }}>
+                          {isRTL ? suggestion.lastStatusFa : suggestion.lastStatusEn}
+                        </div>
+                      </div>
+                      
+                      {suggestion.description && (
+                        <div style={{
+                          color: 'rgba(255, 255, 255, 0.7)',
+                          fontSize: '12px',
+                          fontFamily: 'IRANSansX, sans-serif',
+                          marginBottom: '12px',
+                          fontStyle: 'italic'
+                        }}>
+                          {suggestion.description}
+                        </div>
+                      )}
+                      
+                      {suggestion.lastStatusEn !== 'accept' && suggestion.lastStatusEn !== 'rejected' && (
+                        <div style={{
+                          display: 'flex',
+                          gap: '8px',
+                          justifyContent: 'flex-end'
+                        }}>
+                          <button
+                            onClick={() => handleSuggestionAction(suggestion.suggestionId, 'reject')}
+                            disabled={actionLoading}
+                            style={{
+                              padding: '6px 12px',
+                              borderRadius: '8px',
+                              border: '1px solid rgba(239, 68, 68, 0.3)',
+                              background: 'rgba(239, 68, 68, 0.1)',
+                              color: '#ef4444',
+                              fontSize: '12px',
+                              fontFamily: 'IRANSansX, sans-serif',
+                              cursor: actionLoading ? 'not-allowed' : 'pointer',
+                              transition: 'all 0.2s ease',
+                              opacity: actionLoading ? 0.5 : 1,
+                              fontWeight: '500'
+                            }}
+                            onMouseEnter={(e) => {
+                              if (!actionLoading) {
+                                e.currentTarget.style.background = 'rgba(239, 68, 68, 0.2)';
+                                e.currentTarget.style.transform = 'translateY(-1px)';
+                              }
+                            }}
+                            onMouseLeave={(e) => {
+                              if (!actionLoading) {
+                                e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)';
+                                e.currentTarget.style.transform = 'translateY(0)';
+                              }
+                            }}
+                          >
+                            {t('flights.suggestionsModal.reject')}
+                          </button>
+                          <button
+                            onClick={() => handleSuggestionAction(suggestion.suggestionId, 'accept')}
+                            disabled={actionLoading}
+                            style={{
+                              padding: '6px 12px',
+                              borderRadius: '8px',
+                              border: '1px solid rgba(34, 197, 94, 0.3)',
+                              background: 'rgba(34, 197, 94, 0.1)',
+                              color: '#22c55e',
+                              fontSize: '12px',
+                              fontFamily: 'IRANSansX, sans-serif',
+                              cursor: actionLoading ? 'not-allowed' : 'pointer',
+                              transition: 'all 0.2s ease',
+                              opacity: actionLoading ? 0.5 : 1,
+                              fontWeight: '500'
+                            }}
+                            onMouseEnter={(e) => {
+                              if (!actionLoading) {
+                                e.currentTarget.style.background = 'rgba(34, 197, 94, 0.2)';
+                                e.currentTarget.style.transform = 'translateY(-1px)';
+                              }
+                            }}
+                            onMouseLeave={(e) => {
+                              if (!actionLoading) {
+                                e.currentTarget.style.background = 'rgba(34, 197, 94, 0.1)';
+                                e.currentTarget.style.transform = 'translateY(0)';
+                              }
+                            }}
+                          >
+                            {t('flights.suggestionsModal.accept')}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div style={{
+                  textAlign: 'center',
+                  padding: '40px 20px',
+                  color: 'rgba(255, 255, 255, 0.6)',
+                  fontSize: '14px',
+                  fontFamily: 'IRANSansX, sans-serif'
+                }}>
+                  <div style={{ fontSize: '48px', marginBottom: '16px' }}>📭</div>
+                  {t('flights.suggestionsModal.noSuggestions')}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </>,
+      document.body
+    )}
+
+    {/* Confirmation Modal */}
+    {showConfirmDialog && (
+      createPortal(
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          backdropFilter: 'blur(8px)',
+          zIndex: 10001,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '20px',
+          animation: 'fadeInScale 0.3s ease-out'
+        }}>
+          <div style={{
+            background: 'linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%)',
+            borderRadius: '16px',
+            padding: '24px',
+            maxWidth: '400px',
+            width: '100%',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            boxShadow: '0 25px 50px rgba(0, 0, 0, 0.5)'
+          }}>
+            <div style={{
+              textAlign: 'center',
+              marginBottom: '20px'
+            }}>
+              <div style={{
+                fontSize: '48px',
+                marginBottom: '16px'
+              }}>
+                {confirmAction === 'accept' ? '✅' : '❌'}
+              </div>
+              <h3 style={{
+                margin: '0 0 8px 0',
+                color: '#ffffff',
+                fontSize: '18px',
+                fontFamily: 'IRANSansX, sans-serif',
+                fontWeight: '700'
+              }}>
+                {confirmAction === 'accept' 
+                  ? t('flights.suggestionsModal.confirmAccept')
+                  : t('flights.suggestionsModal.confirmReject')
+                }
+              </h3>
+              <p style={{
+                margin: 0,
+                color: 'rgba(255, 255, 255, 0.7)',
+                fontSize: '14px',
+                fontFamily: 'IRANSansX, sans-serif'
+              }}>
+                {t('flights.suggestionsModal.confirmMessage')}
+              </p>
+            </div>
+            
+            <div style={{
+              display: 'flex',
+              gap: '12px',
+              justifyContent: 'center'
+            }}>
+              <button
+                onClick={handleCancelConfirmAction}
+                disabled={actionLoading}
+                style={{
+                  padding: '12px 24px',
+                  borderRadius: '12px',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  background: 'transparent',
+                  color: '#ffffff',
+                  fontSize: '14px',
+                  fontFamily: 'IRANSansX, sans-serif',
+                  cursor: actionLoading ? 'not-allowed' : 'pointer',
+                  transition: 'all 0.3s ease',
+                  opacity: actionLoading ? 0.5 : 1,
+                  fontWeight: '500'
+                }}
+                onMouseEnter={(e) => {
+                  if (!actionLoading) {
+                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+                    e.currentTarget.style.transform = 'translateY(-1px)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!actionLoading) {
+                    e.currentTarget.style.background = 'transparent';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                  }
+                }}
+              >
+                {t('flights.suggestionsModal.cancel')}
+              </button>
+              
+              <button
+                onClick={handleConfirmSuggestionAction}
+                disabled={actionLoading}
+                style={{
+                  padding: '12px 24px',
+                  borderRadius: '12px',
+                  border: 'none',
+                  background: confirmAction === 'accept'
+                    ? 'linear-gradient(135deg, #22c55e, #16a34a, #15803d)'
+                    : 'linear-gradient(135deg, #ef4444, #dc2626, #b91c1c)',
+                  color: '#ffffff',
+                  fontSize: '14px',
+                  fontFamily: 'IRANSansX, sans-serif',
+                  cursor: actionLoading ? 'not-allowed' : 'pointer',
+                  transition: 'all 0.3s ease',
+                  opacity: actionLoading ? 0.5 : 1,
+                  fontWeight: '600',
+                  boxShadow: confirmAction === 'accept'
+                    ? '0 8px 25px rgba(34, 197, 94, 0.4)'
+                    : '0 8px 25px rgba(239, 68, 68, 0.4)'
+                }}
+                onMouseEnter={(e) => {
+                  if (!actionLoading) {
+                    e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)';
+                    e.currentTarget.style.boxShadow = confirmAction === 'accept'
+                      ? '0 12px 35px rgba(34, 197, 94, 0.5)'
+                      : '0 12px 35px rgba(239, 68, 68, 0.5)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!actionLoading) {
+                    e.currentTarget.style.transform = 'translateY(0) scale(1)';
+                    e.currentTarget.style.boxShadow = confirmAction === 'accept'
+                      ? '0 8px 25px rgba(34, 197, 94, 0.4)'
+                      : '0 8px 25px rgba(239, 68, 68, 0.4)';
+                  }
+                }}
+              >
+                {actionLoading ? (
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px'
+                  }}>
+                    <div style={{
+                      width: '16px',
+                      height: '16px',
+                      border: '2px solid rgba(255, 255, 255, 0.3)',
+                      borderTop: '2px solid #ffffff',
+                      borderRadius: '50%',
+                      animation: 'spin 1s linear infinite'
+                    }} />
+                    {t('flights.suggestionsModal.processing')}
+                  </div>
+                ) : (
+                  confirmAction === 'accept' 
+                    ? t('flights.suggestionsModal.confirmAcceptButton')
+                    : t('flights.suggestionsModal.confirmRejectButton')
+                )}
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )
     )}
     </div>
   );
