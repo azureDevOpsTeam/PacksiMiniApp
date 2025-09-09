@@ -151,10 +151,10 @@ const ParcelList: React.FC<ParcelListProps> = () => {
     let matchesTab = true;
     switch (activeTab) {
       case 'incoming':
-        matchesTab = flight.tripType === 'inbound';
+        matchesTab = flight.tripType === 'inbound' && !flight.selectStatus;
         break;
       case 'outgoing':
-        matchesTab = flight.tripType === 'outbound';
+        matchesTab = flight.tripType === 'outbound' && !flight.selectStatus;
         break;
       case 'ipicked':
         matchesTab = flight.selectStatus === 'ipicked';
