@@ -571,6 +571,32 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
     }
   }, [isSignalRConnected, selectedUser.conversationId]);
 
+  // Handle page visibility changes for Android
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && selectedUser.conversationId) {
+        console.log('صفحه مرئی شد - بارگذاری مجدد پیام‌ها');
+        // Refresh messages when page becomes visible
+        fetchMessages();
+      }
+    };
+
+    const handleFocus = () => {
+      if (selectedUser.conversationId) {
+        console.log('اپلیکیشن فوکوس یافت - بارگذاری مجدد پیام‌ها');
+        fetchMessages();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleFocus);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, [selectedUser.conversationId]);
+
   useEffect(() => {
     const scrollAfterRender = () => {
       if (chatThreadRef.current) {

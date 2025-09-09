@@ -8,6 +8,8 @@ class SignalRService {
   private maxReconnectAttempts = 5;
   private reconnectDelay = 3000;
   private connectionPromise: Promise<void> | null = null;
+  private heartbeatInterval: number | null = null;
+  private isAndroid = /Android/i.test(navigator.userAgent);
 
   // Event handlers
   private onMessageReceived: ((message: ChatMessage) => void) | null = null;
@@ -17,28 +19,115 @@ class SignalRService {
 
   constructor() {
     this.initializeConnection();
+    this.setupVisibilityHandlers();
+  }
+
+  private setupVisibilityHandlers(): void {
+    // Handle page visibility changes for better Android support
+    if (typeof document !== 'undefined') {
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+          console.log('صفحه مرئی شد - بررسی اتصال SignalR');
+          this.handlePageVisible();
+        } else {
+          console.log('صفحه مخفی شد');
+          this.handlePageHidden();
+        }
+      });
+    }
+
+    // Handle app resume/pause for Android WebView
+    if (this.isAndroid) {
+      window.addEventListener('focus', () => {
+        console.log('اپلیکیشن فوکوس یافت - بررسی اتصال');
+        this.handlePageVisible();
+      });
+      
+      window.addEventListener('blur', () => {
+        console.log('اپلیکیشن فوکوس از دست داد');
+        this.handlePageHidden();
+      });
+    }
+  }
+
+  private async handlePageVisible(): Promise<void> {
+    // Check connection when page becomes visible
+    if (!this.isConnected()) {
+      console.log('اتصال قطع است - تلاش برای اتصال مجدد');
+      try {
+        await this.connect();
+      } catch (error) {
+        console.error('خطا در اتصال مجدد هنگام مرئی شدن صفحه:', error);
+      }
+    }
+    this.startHeartbeat();
+  }
+
+  private handlePageHidden(): void {
+    // Stop heartbeat when page is hidden to save resources
+    this.stopHeartbeat();
+  }
+
+  private startHeartbeat(): void {
+    if (this.heartbeatInterval || !this.isAndroid) return;
+    
+    // Send ping every 30 seconds on Android to keep connection alive
+    this.heartbeatInterval = setInterval(async () => {
+      if (this.isConnected()) {
+        try {
+          await this.connection?.invoke('Ping');
+          console.log('Heartbeat ping ارسال شد');
+        } catch (error) {
+          console.warn('خطا در ارسال heartbeat ping:', error);
+          // Try to reconnect if ping fails
+          this.connect().catch(e => console.error('خطا در اتصال مجدد:', e));
+        }
+      }
+    }, 30000);
+  }
+
+  private stopHeartbeat(): void {
+    if (this.heartbeatInterval) {
+      clearInterval(this.heartbeatInterval);
+      this.heartbeatInterval = null;
+    }
   }
 
   private initializeConnection(): void {
     try {
+      // Detect if running on Android WebView
+      const isAndroid = /Android/i.test(navigator.userAgent);
+      const isWebView = /wv/i.test(navigator.userAgent);
+      
+      const connectionOptions: any = {
+        withCredentials: false,
+        headers: {
+          // Add Telegram init data if available
+          ...(window.Telegram?.WebApp?.initData && {
+            'X-Telegram-Init-Data': window.Telegram.WebApp.initData
+          })
+        },
+        // Add timeout settings for better Android compatibility
+        timeout: 30000
+      };
+
+      // Use different transport for Android WebView
+      if (isAndroid && isWebView) {
+        connectionOptions.transport = 1; // LongPolling
+      }
+
       this.connection = new HubConnectionBuilder()
-        .withUrl('https://api.packsi.net/chathub', {
-          withCredentials: false,
-          headers: {
-            // Add Telegram init data if available
-            ...(window.Telegram?.WebApp?.initData && {
-              'X-Telegram-Init-Data': window.Telegram.WebApp.initData
-            })
-          }
-        })
+        .withUrl('https://api.packsi.net/chathub', connectionOptions)
         .withAutomaticReconnect({
           nextRetryDelayInMilliseconds: (retryContext) => {
+            // Shorter delays for Android
+            const baseDelay = isAndroid ? 1000 : 2000;
             if (retryContext.previousRetryCount < 3) {
-              return 2000; // 2 seconds for first 3 attempts
+              return baseDelay; 
             } else if (retryContext.previousRetryCount < 6) {
-              return 5000; // 5 seconds for next 3 attempts
+              return baseDelay * 2.5; 
             } else {
-              return 10000; // 10 seconds for subsequent attempts
+              return baseDelay * 5; 
             }
           }
         })
@@ -176,6 +265,11 @@ class SignalRService {
       console.log('اتصال SignalR با موفقیت برقرار شد');
       this.onConnectionStateChanged?.(true);
       this.reconnectAttempts = 0;
+      
+      // Start heartbeat for Android devices
+      if (this.isAndroid) {
+        this.startHeartbeat();
+      }
     } catch (error) {
       console.error('خطا در اتصال به SignalR:', error);
       this.onConnectionStateChanged?.(false);
@@ -323,6 +417,7 @@ class SignalRService {
 
   // Cleanup
   dispose(): void {
+    this.stopHeartbeat();
     this.disconnect();
     this.onMessageReceived = null;
     this.onConnectionStateChanged = null;
