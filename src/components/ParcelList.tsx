@@ -952,7 +952,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                         textAlign: isRTL ? 'left' : 'right'
                       }}>
                         {/* Submit Suggestion Button or Selected Status */}
-                        {flight.currentUserStatus === 1 ? (
+                        {flight.selectStatus === "ipicked" ? (
                           <div
                             style={{
                               padding: '6px 12px',
