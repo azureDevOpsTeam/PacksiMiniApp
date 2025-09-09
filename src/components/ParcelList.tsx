@@ -144,6 +144,22 @@ const ParcelList: React.FC<ParcelListProps> = () => {
   // Tab system
   type TabType = 'incoming' | 'outgoing' | 'ipicked' | 'pickedme';
   const [activeTab, setActiveTab] = useState<TabType>('outgoing');
+  
+  // Responsive state for small screens
+  const [isSmallScreen, setIsSmallScreen] = useState<boolean>(false);
+  
+  // Handle screen resize
+  useEffect(() => {
+    const handleResize = () => {
+      setIsSmallScreen(window.innerWidth <= 380);
+    };
+    
+    // Set initial value
+    handleResize();
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Filter flights based on search query and active tab using TripType
   const filteredFlights = flights.filter(flight => {
@@ -667,18 +683,21 @@ const ParcelList: React.FC<ParcelListProps> = () => {
           padding: '0 20px'
         }}>
           <div style={{
+          maxWidth: '400px',
+          width: '100%',
             display: 'flex',
             backgroundColor: '#212a33',
             borderRadius: '12px',
             padding: '4px',
             gap: '2px',
-            border: '1px solid #3a4a5c'
+            border: '1px solid #3a4a5c',
+            justifyContent: 'space-between'
           }}>
             {[
-              { key: 'incoming' as TabType, labelFa: 'ورودی', labelEn: 'Incoming' },
-              { key: 'outgoing' as TabType, labelFa: 'خروجی', labelEn: 'Outgoing' },
-              { key: 'ipicked' as TabType, labelFa: 'منتخب من', labelEn: 'ipicked' },
-              { key: 'pickedme' as TabType, labelFa: 'انتخاب شدم', labelEn: 'pickedme' }
+              { key: 'incoming' as TabType, labelFa: 'ورودی', labelEn: 'Incoming', icon: '📥' },
+              { key: 'outgoing' as TabType, labelFa: 'خروجی', labelEn: 'Outgoing', icon: '📤' },
+              { key: 'ipicked' as TabType, labelFa: 'منتخب من', labelEn: 'ipicked', icon: '👆' },
+              { key: 'pickedme' as TabType, labelFa: 'انتخاب شدم', labelEn: 'pickedme', icon: '✅' }
             ].map((tab) => {
               const tabCount = getTabCount(tab.key);
               return (
@@ -705,20 +724,26 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                   </div>
                 )}
                 <button
-
                   onClick={() => setActiveTab(tab.key)}
                   style={{
-                    padding: '8px 16px',
+                    padding: isSmallScreen ? '8px 12px' : '8px 16px',
                     borderRadius: '8px',
                     border: 'none',
                     backgroundColor: activeTab === tab.key ? '#50b4ff' : 'transparent',
                     color: activeTab === tab.key ? '#ffffff' : '#848d96',
-                    fontSize: '12px',
+                    fontSize: isSmallScreen ? '16px' : '12px',
                     fontFamily: 'IRANSansX, sans-serif',
                     fontWeight: activeTab === tab.key ? '600' : '400',
                     cursor: 'pointer',
                     transition: 'all 0.3s ease',
-                    whiteSpace: 'nowrap'
+                    whiteSpace: 'nowrap',
+                    minWidth: isSmallScreen ? '40px' : 'auto',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    maxWidth: isSmallScreen ? '400px' : 'auto',
+                    width: isSmallScreen ? '100%' : 'auto',
+                    flex: isSmallScreen ? '1' : 'auto'
                   }}
                   onMouseEnter={(e) => {
                     if (activeTab !== tab.key) {
@@ -733,7 +758,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                     }
                   }}
                 >
-                  {isRTL ? tab.labelFa : tab.labelEn}
+                  {isSmallScreen ? tab.icon : (isRTL ? tab.labelFa : tab.labelEn)}
                 </button>
               </div>
               );
