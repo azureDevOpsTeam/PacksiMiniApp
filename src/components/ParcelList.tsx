@@ -967,7 +967,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                               opacity: 0.7
                             }}
                           >
-                            {isRTL ? 'انتخاب شده' : 'pickedme'}
+                            {isRTL ? 'انتخاب شده' : 'picked'}
                           </div>
                         ) : (
                           <button
@@ -1285,7 +1285,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                     alignItems: 'center',
                     borderBottom: '2px dashed #cbd5e1'
                   }}>
-                    <div>
+                    <div style={{ flex: 1 }}>
                       <div style={{
                         fontSize: '10px',
                         color: '#64748b',
@@ -1294,8 +1294,50 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                       <div style={{
                         fontSize: '14px',
                         fontWeight: 'bold',
-                        color: '#1e293b'
+                        color: '#1e293b',
+                        marginBottom: '8px'
                       }}>{formatDate(flight.departureDate)}</div>
+                      
+                      {/* Item Types in Ticket Bar */}
+                      {((isRTL && flight.itemTypesFa && flight.itemTypesFa.length > 0) ||
+                        (!isRTL && flight.itemTypes && flight.itemTypes.length > 0)) && (
+                        <div>
+                          <div style={{
+                            fontSize: '8px',
+                            color: '#64748b',
+                            marginBottom: '4px'
+                          }}>{isRTL ? 'اقلام مجاز' : 'ALLOWED ITEMS'}</div>
+                          <div style={{
+                            display: 'flex',
+                            flexWrap: 'wrap',
+                            gap: '4px'
+                          }}>
+                            {(isRTL ? flight.itemTypesFa : flight.itemTypes)?.slice(0, 3).map((itemType: string, index: number) => (
+                              <span
+                                key={index}
+                                style={{
+                                  fontSize: '8px',
+                                  padding: '2px 6px',
+                                  borderRadius: '4px',
+                                  background: '#dbeafe',
+                                  color: '#1e40af',
+                                  fontWeight: '500',
+                                  border: '1px solid #93c5fd'
+                                }}
+                              >
+                                {itemType}
+                              </span>
+                            ))}
+                            {(isRTL ? flight.itemTypesFa : flight.itemTypes)?.length > 3 && (
+                              <span style={{
+                                fontSize: '8px',
+                                color: '#64748b',
+                                fontWeight: '500'
+                              }}>+{(isRTL ? flight.itemTypesFa : flight.itemTypes).length - 3}</span>
+                            )}
+                          </div>
+                        </div>
+                      )}
                     </div>
                     <div style={{
                       width: '60px',
@@ -1315,47 +1357,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                     </div>
                   </div>
 
-                  {/* Item Types Section */}
-                  {((isRTL && flight.itemTypesFa && flight.itemTypesFa.length > 0) ||
-                    (!isRTL && flight.itemTypes && flight.itemTypes.length > 0)) && (
-                    <div style={{
-                      padding: '20px',
-                      background: 'white',
-                      borderTop: '2px dashed #cbd5e1'
-                    }}>
-                      <div style={{
-                        fontSize: '12px',
-                        color: '#64748b',
-                        marginBottom: '12px',
-                        fontWeight: '500',
-                        textAlign: 'center'
-                      }}>{isRTL ? 'انواع اقلام مجاز' : 'ALLOWED ITEM TYPES'}</div>
-                      <div style={{
-                        display: 'flex',
-                        flexWrap: 'wrap',
-                        gap: '8px',
-                        justifyContent: 'center'
-                      }}>
-                        {(isRTL ? flight.itemTypesFa : flight.itemTypes)?.map((itemType: string, index: number) => (
-                          <span
-                            key={index}
-                            style={{
-                              fontSize: '11px',
-                              padding: '6px 12px',
-                              borderRadius: '8px',
-                              background: 'linear-gradient(135deg, #dbeafe, #bfdbfe)',
-                              color: '#1e40af',
-                              fontWeight: '600',
-                              border: '1px solid #93c5fd',
-                              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
-                            }}
-                          >
-                            {itemType}
-                          </span>
-                        ))}
-                       </div>
-                     </div>
-                   )}
+
 
                   {/* Compact Description */}
                   {flight.description && (
