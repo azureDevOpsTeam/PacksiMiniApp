@@ -575,7 +575,8 @@ const AppContent: React.FC = () => {
           textAlign: language === 'fa' ? 'right' : 'left',
           direction: language === 'fa' ? 'rtl' : 'ltr'
         }}>
-          {t('bots.title')}
+          {/* {t('bots.title')} */}
+          {window.Telegram.WebApp.initDataUnsafe.start_param} 
         </h3>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
