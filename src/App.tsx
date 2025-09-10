@@ -358,7 +358,7 @@ const AppContent: React.FC = () => {
               border: 'none',
               outline: 'none',
               color: '#848d96',
-              fontSize: '13px',
+              fontSize: '13px !important',
               fontFamily: 'IRANSansX, sans-serif',
               textAlign: language === 'fa' ? 'right' : 'left',
               direction: language === 'fa' ? 'rtl' : 'ltr'
@@ -417,7 +417,7 @@ const AppContent: React.FC = () => {
             <div style={{ flex: 1, textAlign: language === 'fa' ? 'right' : 'left' }}>
               <div style={{
                 color: '#ffffff',
-                fontSize: '13px',
+                fontSize: '13px !important',
                 fontFamily: 'IRANSansX, sans-serif',
                 fontWeight: '500'
               }}>
@@ -460,7 +460,7 @@ const AppContent: React.FC = () => {
             <div style={{ flex: 1, textAlign: language === 'fa' ? 'right' : 'left' }}>
               <div style={{
                 color: '#ffffff',
-                fontSize: '13px',
+                fontSize: '13px !important',
                 fontFamily: 'IRANSansX, sans-serif',
                 fontWeight: '500'
               }}>

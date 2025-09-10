@@ -440,12 +440,17 @@ const ParcelList: React.FC<ParcelListProps> = () => {
 
     setActionLoading(true);
     try {
-      const response = await apiService.handleSuggestionAction({
-        suggestionId: selectedSuggestion.suggestionId,
-        action: confirmAction
-      });
+      const payload = {
+        model: {
+          requestSuggestionId: selectedSuggestion.suggestionId
+        }
+      };
       
-      if (response.success) {
+      const response = confirmAction === 'accept' 
+        ? await apiService.confirmSuggestion(payload)
+        : await apiService.rejectSuggestion(payload);
+      
+      if (response.requestStatus.value === 0) {
         // Update the suggestion status in the local state
         if (selectedFlightForSuggestions && selectedFlightForSuggestions.suggestions) {
           const updatedSuggestions = selectedFlightForSuggestions.suggestions.map(suggestion => {

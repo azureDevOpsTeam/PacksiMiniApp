@@ -626,9 +626,9 @@ class ApiService {
   }
 
   // Suggestion Action API Methods
-  async handleSuggestionAction(payload: SuggestionActionPayload): Promise<SuggestionActionResponse> {
+  async confirmSuggestion(payload: SuggestionActionPayload): Promise<SuggestionActionResponse> {
     try {
-      const response = await fetch(`${API_BASE_URL}/Request/suggestion-action`, {
+      const response = await fetch(`${API_BASE_URL}/Request/ConfirmedBySender`, {
         method: 'POST',
         headers: this.getHeaders(),
         body: JSON.stringify(payload)
@@ -641,7 +641,27 @@ class ApiService {
       const data = await response.json();
       return data;
     } catch (error) {
-      console.error('Error handling suggestion action:', error);
+      console.error('Error confirming suggestion:', error);
+      throw error;
+    }
+  }
+
+  async rejectSuggestion(payload: SuggestionActionPayload): Promise<SuggestionActionResponse> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/Request/RejectSelection`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error rejecting suggestion:', error);
       throw error;
     }
   }

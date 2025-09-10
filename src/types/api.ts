@@ -481,13 +481,24 @@ export interface MarkReadResponse {
 }
 
 // Suggestion Action Types
+export interface SuggestionActionModel {
+  requestSuggestionId: number;
+}
+
 export interface SuggestionActionPayload {
-  suggestionId: number;
-  action: 'accept' | 'reject';
+  model: SuggestionActionModel;
 }
 
 export interface SuggestionActionResponse {
-  success: boolean;
+  validationResult: any;
+  requestStatus: {
+    name: string;
+    value: number;
+  };
   message: string;
-  data?: any;
+  objectResult: any;
+  notificationType: {
+    name: string;
+    value: number;
+  };
 }

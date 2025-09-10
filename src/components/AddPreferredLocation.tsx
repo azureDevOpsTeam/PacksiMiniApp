@@ -155,7 +155,7 @@ const AddPreferredLocation: React.FC<AddPreferredLocationProps> = ({ onComplete 
     border: '1px solid #3a4a5c',
     backgroundColor: '#212a33',
     color: '#848d96',
-    fontSize: '13px',
+    fontSize: '13px !important',
     fontFamily: 'IRANSansX, sans-serif',
     direction: isRTL ? 'rtl' as const : 'ltr' as const,
     textAlign: isRTL ? 'right' as const : 'left' as const,
