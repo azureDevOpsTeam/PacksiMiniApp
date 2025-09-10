@@ -67,13 +67,12 @@ export const GlobalStyles = createGlobalStyle`
     background: ${({ theme }) => theme.colors.text.primary};
   }
 
-  /* Focus styles */
+  /* Focus styles - Remove outline */
   button:focus,
   input:focus,
   textarea:focus,
   select:focus {
-    outline: 2px solid ${({ theme }) => theme.colors.primary};
-    outline-offset: 2px;
+    outline: none;
   }
 
   /* Remove default button styles */

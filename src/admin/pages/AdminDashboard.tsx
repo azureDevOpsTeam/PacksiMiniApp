@@ -2,6 +2,7 @@ import React from 'react';
 import { useLanguage } from '../../hooks/useLanguage';
 import { useTelegram } from '../../hooks/useTelegram';
 import AdminLayout from '../components/AdminLayout';
+import AdminPanel from '../components/AdminPanel';
 import DashboardCard from '../components/DashboardCard';
 import Logo from '../../components/Logo';
 
@@ -120,6 +121,11 @@ const AdminDashboard: React.FC = () => {
           subtitle={isRTL ? 'بسته در حال ارسال' : 'Packages in Transit'}
           gradient="linear-gradient(135deg, #fa709a 0%, #fee140 100%)"
         />
+      </div>
+      
+      {/* Admin Panel Links */}
+      <div style={{ marginBottom: '24px' }}>
+        <AdminPanel />
       </div>
       
       {/* Development Notice */}

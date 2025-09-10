@@ -398,6 +398,59 @@ const AppContent: React.FC = () => {
         </div>
       </div>
 
+      {/* Advertisement Banner - Only visible when Unlimited section is hidden */}
+      {!showVerifyPhone && !showUpdateProfile && (
+        <div style={{
+          marginTop: '30px',
+          width: '100%',
+          maxWidth: '400px',
+          backgroundColor: '#212a33',
+          borderRadius: '8px',
+          border: '1px solid #3a4a5c',
+          padding: '2px',
+          textAlign: 'center',
+          direction: language === 'fa' ? 'rtl' : 'ltr'
+        }}>
+          <div style={{
+            color: '#50b4ff',
+            fontSize: '14px',
+            fontFamily: 'IRANSansX, sans-serif',
+            fontWeight: '600'
+          }}>
+            {/* {language === 'fa' ? 'تبلیغات' : 'Advertisement'} */}
+          </div>
+          <div style={{
+            color: '#848d96',
+            fontSize: '12px',
+            fontFamily: 'IRANSansX, sans-serif',
+            lineHeight: '1.5'
+          }}>
+            {/* {language === 'fa' ? 'محل نمایش تبلیغات شما' : 'Your advertisement space'} */}
+          </div>
+          <div style={{
+             height: '60px',
+             backgroundColor: '#1a1f26',
+             borderRadius: '4px',
+             display: 'flex',
+             alignItems: 'center',
+             justifyContent: 'center',
+             border: '1px solid #3a4a5c',
+             overflow: 'hidden'
+           }}>
+             <img 
+               src="/src/assets/ads/AdsLink.gif" 
+               alt={language === 'fa' ? 'تبلیغات' : 'Advertisement'}
+               style={{
+                 width: '100%',
+                 height: '100%',
+                 objectFit: 'cover',
+                 borderRadius: '4px'
+               }}
+             />
+           </div>
+        </div>
+      )}
+
       {/* Unlimited Access Section */}
       {(showVerifyPhone || showUpdateProfile) && (
         <div style={{
