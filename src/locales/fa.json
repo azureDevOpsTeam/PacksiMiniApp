@@ -69,7 +69,11 @@
       "acceptSuggestion": "تایید پیشنهاد",
       "rejectSuggestion": "رد پیشنهاد",
       "confirmAccept": "آیا از تایید این پیشنهاد اطمینان دارید؟",
-      "confirmReject": "آیا از رد این پیشنهاد اطمینان دارید؟"
+      "confirmReject": "آیا از رد این پیشنهاد اطمینان دارید؟",
+      "confirmAcceptButton": "قبول پیشنهاد",
+      "confirmRejectButton": "رد پیشنهاد",
+      "confirmMessage": "",
+      "cancel": "لغو عملیات"
     },
     "menu": {
       "details": "جزئیات",

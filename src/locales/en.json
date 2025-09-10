@@ -69,7 +69,11 @@
       "acceptSuggestion": "Accept Suggestion",
       "rejectSuggestion": "Reject Suggestion",
       "confirmAccept": "Are you sure you want to accept this suggestion?",
-      "confirmReject": "Are you sure you want to reject this suggestion?"
+      "confirmReject": "Are you sure you want to reject this suggestion?",
+      "confirmAcceptButton": "Confirm",
+      "confirmRejectButton": "Reject",
+      "confirmMessage": "",
+      "cancel": "Cancel"
     },
     "menu": {
       "details": "Details",
