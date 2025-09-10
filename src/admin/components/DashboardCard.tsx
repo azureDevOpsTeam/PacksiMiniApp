@@ -25,7 +25,7 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
       overflow: 'hidden',
       borderRadius: '16px',
       background: gradient,
-      minHeight: '120px',
+      minHeight: '90px',
       direction: isRTL ? 'rtl' : 'ltr',
       boxShadow: '0 10px 25px rgba(0, 0, 0, 0.15)',
       transition: 'all 0.3s ease',
@@ -40,107 +40,110 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
       e.currentTarget.style.boxShadow = '0 10px 25px rgba(0, 0, 0, 0.15)';
     }}>
       {/* Background Pattern */}
-      <div style={{
-        position: 'absolute',
-        top: 0,
-        right: 0,
-        width: '128px',
-        height: '128px',
-        borderRadius: '50%',
-        backgroundColor: 'rgba(255, 255, 255, 0.1)',
-        transform: 'translate(32px, -32px)'
-      }}></div>
-      <div style={{
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        width: '96px',
-        height: '96px',
-        borderRadius: '50%',
-        backgroundColor: 'rgba(255, 255, 255, 0.1)',
-        transform: 'translate(-16px, 16px)'
-      }}></div>
+       <div style={{
+         position: 'absolute',
+         top: 0,
+         right: 0,
+         width: '60px',
+         height: '60px',
+         borderRadius: '50%',
+         backgroundColor: 'rgba(255, 255, 255, 0.08)',
+         transform: 'translate(20px, -20px)'
+       }}></div>
+       <div style={{
+         position: 'absolute',
+         bottom: 0,
+         left: 0,
+         width: '40px',
+         height: '40px',
+         borderRadius: '50%',
+         backgroundColor: 'rgba(255, 255, 255, 0.06)',
+         transform: 'translate(-10px, 10px)'
+       }}></div>
       
       {/* Content */}
       <div style={{
         position: 'relative',
-        padding: '16px',
+        padding: '12px',
         color: 'white'
       }}>
         <div style={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          marginBottom: '16px'
+          marginBottom: '8px'
         }}>
           <div style={{
-            width: '40px',
-            height: '40px',
-            borderRadius: '12px',
-            backgroundColor: 'rgba(255, 255, 255, 0.2)',
-            backdropFilter: 'blur(10px)',
+            width: '32px',
+            height: '32px',
+            borderRadius: '10px',
+            backgroundColor: 'rgba(255, 255, 255, 0.25)',
+            backdropFilter: 'blur(8px)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontSize: '18px',
-            transition: 'transform 0.3s ease'
+            fontSize: '16px',
+            transition: 'transform 0.3s ease',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
           }}>
             {icon}
           </div>
           <div style={{
-            textAlign: 'right'
+            display: 'flex',
+            gap: '3px'
           }}>
             <div style={{
-              width: '8px',
-              height: '8px',
-              backgroundColor: 'rgba(255, 255, 255, 0.6)',
-              borderRadius: '50%',
-              marginBottom: '4px'
+              width: '4px',
+              height: '4px',
+              backgroundColor: 'rgba(255, 255, 255, 0.8)',
+              borderRadius: '50%'
             }}></div>
             <div style={{
-              width: '8px',
-              height: '8px',
-              backgroundColor: 'rgba(255, 255, 255, 0.4)',
-              borderRadius: '50%',
-              marginBottom: '4px'
+              width: '4px',
+              height: '4px',
+              backgroundColor: 'rgba(255, 255, 255, 0.5)',
+              borderRadius: '50%'
             }}></div>
             <div style={{
-              width: '8px',
-              height: '8px',
-              backgroundColor: 'rgba(255, 255, 255, 0.2)',
+              width: '4px',
+              height: '4px',
+              backgroundColor: 'rgba(255, 255, 255, 0.3)',
               borderRadius: '50%'
             }}></div>
           </div>
         </div>
         
         <h3 style={{
-          fontSize: '14px',
-          fontWeight: '500',
-          color: 'rgba(255, 255, 255, 0.9)',
-          marginBottom: '8px',
-          fontFamily: 'IRANSansX, sans-serif',
-          textAlign: isRTL ? 'right' : 'left'
-        }}>{title}</h3>
-        
-        <div style={{
-          fontSize: '24px',
-          fontWeight: '700',
+          fontSize: '11px',
+          fontWeight: '600',
+          color: 'rgba(255, 255, 255, 0.85)',
           marginBottom: '4px',
           fontFamily: 'IRANSansX, sans-serif',
           textAlign: isRTL ? 'right' : 'left',
-          transition: 'transform 0.3s ease'
+          letterSpacing: '0.5px'
+        }}>{title}</h3>
+        
+        <div style={{
+          fontSize: '18px',
+          fontWeight: '800',
+          marginBottom: '2px',
+          fontFamily: 'IRANSansX, sans-serif',
+          textAlign: isRTL ? 'right' : 'left',
+          transition: 'transform 0.3s ease',
+          lineHeight: '1.2'
         }}>
           {value}
         </div>
         
         {subtitle && (
           <p style={{
-            fontSize: '12px',
-            color: 'rgba(255, 255, 255, 0.7)',
-            fontWeight: '500',
+            fontSize: '9px',
+            color: 'rgba(255, 255, 255, 0.75)',
+            fontWeight: '600',
             fontFamily: 'IRANSansX, sans-serif',
             textAlign: isRTL ? 'right' : 'left',
-            margin: 0
+            margin: 0,
+            letterSpacing: '0.3px'
           }}>
             {subtitle}
           </p>

@@ -2,15 +2,22 @@ import React from 'react';
 import { useLanguage } from '../../hooks/useLanguage';
 import AdminLayout from '../components/AdminLayout';
 import DashboardCard from '../components/DashboardCard';
+import Logo from '../../components/Logo';
 
 const AdminDashboard: React.FC = () => {
   const { language } = useLanguage();
   const isRTL = language === 'fa';
 
-  const title = isRTL ? 'داشبورد مدیریت' : 'Admin Dashboard';
-
   return (
-    <AdminLayout title={title}>
+    <AdminLayout>
+      {/* Logo Header */}
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        marginBottom: '20px'
+      }}>
+        <Logo style={{ width: '120px' }} />
+      </div>
       {/* Dashboard Cards */}
       <div style={{
         display: 'grid',
