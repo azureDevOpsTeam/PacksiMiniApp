@@ -17,6 +17,7 @@ import ChatPanel from './components/ChatPanel';
 import NotFound from './components/NotFound';
 import ChatPersonList from './components/ChatPersonList';
 import { AdminRoutes } from './admin';
+import TermsOfServiceModal from './components/TermsOfServiceModal';
 
 import ErrorBoundary from './components/ErrorBoundary';
 import SkeletonLoader from './components/SkeletonLoader';
@@ -35,6 +36,7 @@ const AppContent: React.FC = () => {
   const [authenticationFailed, setAuthenticationFailed] = React.useState<boolean>(false);
   const [forceSettingsExpanded, setForceSettingsExpanded] = React.useState<boolean>(false);
   const [hasShownAutoSettings, setHasShownAutoSettings] = React.useState<boolean>(false);
+  const [showTermsModal, setShowTermsModal] = React.useState<boolean>(false);
 
   // Handle Telegram BackButton
   React.useEffect(() => {
@@ -140,6 +142,21 @@ const AppContent: React.FC = () => {
       return () => clearTimeout(openTimer);
     }
   }, [hasShownAutoSettings, isValidating, isReady]);
+
+  // Check if user has accepted terms of service
+  React.useEffect(() => {
+    const hasAcceptedTerms = localStorage.getItem('hasAcceptedTerms');
+    
+    if (!hasAcceptedTerms && isReady && !isValidating) {
+      setShowTermsModal(true);
+    }
+  }, [isReady, isValidating]);
+
+  // Handle terms of service acceptance
+  const handleAcceptTerms = React.useCallback(() => {
+    localStorage.setItem('hasAcceptedTerms', 'true');
+    setShowTermsModal(false);
+  }, []);
 
   // Handle phone number verification
   const handleVerifyPhoneNumber = React.useCallback(async () => {
@@ -896,6 +913,12 @@ const AppContent: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Terms of Service Modal */}
+      <TermsOfServiceModal 
+        isOpen={showTermsModal}
+        onAccept={handleAcceptTerms}
+      />
 
       {/* Chat Panel - Only on Home page */}
       <ChatPanel />

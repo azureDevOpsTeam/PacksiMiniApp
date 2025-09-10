@@ -201,5 +201,49 @@
   "parcelList": {
     "title": "Airport List",
     "flightsNotFound": "No flights found."
+  },
+  "termsOfService": {
+    "title": "Terms and Conditions",
+    "welcome": {
+      "title": "Welcome to Packsi",
+      "description1": "Welcome to Packsi platform! We are a reliable and trustworthy service for sending and receiving parcels through travelers.",
+      "description2": "Before getting started, please read our terms and conditions of service."
+    },
+    "generalRules": {
+      "title": "General Rules",
+      "identity": "Identity Verification:",
+      "identityDesc": "All users must verify their identity",
+      "responsibility": "Responsibility:",
+      "responsibilityDesc": "Users are responsible for the contents of their parcels",
+      "prohibitions": "Prohibitions:",
+      "prohibitionsDesc": "Sending dangerous, illegal or prohibited materials is strictly forbidden"
+    },
+    "privacy": {
+      "title": "Privacy Policy",
+      "protection": "Personal Information Protection:",
+      "confidential": "Your personal information is kept confidential",
+      "noSharing": "We never share your information with third parties",
+      "encrypted": "All communications are encrypted and secure"
+    },
+    "howToUse": {
+      "title": "How to Use",
+      "steps": "Service Usage Steps:",
+      "step1": "1. Complete profile and verify phone number",
+      "step2": "2. Register send or receive parcel request",
+      "step3": "3. Find suitable traveler or offer transport services",
+      "step4": "4. Coordination and parcel delivery",
+      "step5": "5. Delivery confirmation and rating"
+    },
+    "accept": {
+      "title": "Accept Terms",
+      "question": "Having read the complete terms and conditions above, do you agree?",
+      "commitment": "By checking the option below, you accept all terms and conditions and commit to follow them.",
+      "checkbox": "I have read and accept all terms and conditions",
+      "acceptButton": "Accept & Continue"
+    },
+    "navigation": {
+      "previous": "Previous",
+      "next": "Next"
+    }
   }
 }
