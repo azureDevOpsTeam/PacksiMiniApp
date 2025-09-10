@@ -37,18 +37,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title }) => {
           </h3>
         </div>
       )}
-      
-      <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '1px',
-        backgroundColor: '#212a33',
-        borderRadius: '8px',
-        padding: '20px',
-        border: '1px solid #3a4a5c'
-      }}>
         {children}
-      </div>
     </div>
   );
 };
