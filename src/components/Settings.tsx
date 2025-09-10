@@ -6,9 +6,10 @@ interface SettingsProps {
   setActiveButton: (button: 'user' | 'admin') => void;
   forceExpanded?: boolean;
   onMyRequestClick?: () => void;
+  onMenuItemClick?: () => void;
 }
 
-const Settings: React.FC<SettingsProps> = ({ activeButton, setActiveButton, forceExpanded, onMyRequestClick }) => {
+const Settings: React.FC<SettingsProps> = ({ activeButton, setActiveButton, forceExpanded, onMyRequestClick, onMenuItemClick }) => {
   const { language, changeLanguage } = useLanguage();
   const [settingsExpanded, setSettingsExpanded] = React.useState(false);
 
@@ -93,7 +94,11 @@ const Settings: React.FC<SettingsProps> = ({ activeButton, setActiveButton, forc
           padding: '2px'
         }}>
           <div
-            onClick={() => setActiveButton('user')}
+            onClick={() => {
+              setActiveButton('user');
+              setSettingsExpanded(false);
+              onMenuItemClick?.();
+            }}
             style={{
               cursor: 'pointer',
               flex: 1,
@@ -125,7 +130,11 @@ const Settings: React.FC<SettingsProps> = ({ activeButton, setActiveButton, forc
             </svg>
           </div>
           <div
-            onClick={() => setActiveButton('admin')}
+            onClick={() => {
+              setActiveButton('admin');
+              setSettingsExpanded(false);
+              onMenuItemClick?.();
+            }}
             style={{
               cursor: 'pointer',
               flex: 1,
@@ -186,7 +195,11 @@ const Settings: React.FC<SettingsProps> = ({ activeButton, setActiveButton, forc
           padding: '2px'
         }}>
           <div
-            onClick={() => handleLanguageChange('fa')}
+            onClick={() => {
+              handleLanguageChange('fa');
+              setSettingsExpanded(false);
+              onMenuItemClick?.();
+            }}
             style={{
               cursor: 'pointer',
               flex: 1,
@@ -211,7 +224,11 @@ const Settings: React.FC<SettingsProps> = ({ activeButton, setActiveButton, forc
             FA
           </div>
           <div
-            onClick={() => handleLanguageChange('en')}
+            onClick={() => {
+              handleLanguageChange('en');
+              setSettingsExpanded(false);
+              onMenuItemClick?.();
+            }}
             style={{
               cursor: 'pointer',
               flex: 1,
@@ -246,7 +263,11 @@ const Settings: React.FC<SettingsProps> = ({ activeButton, setActiveButton, forc
           marginBottom: '20px'
         }}>
           <div
-            onClick={onMyRequestClick}
+            onClick={() => {
+              onMyRequestClick?.();
+              setSettingsExpanded(false);
+              onMenuItemClick?.();
+            }}
             style={{
               cursor: 'pointer',
               minWidth: '80px',

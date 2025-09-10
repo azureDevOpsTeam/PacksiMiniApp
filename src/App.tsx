@@ -311,7 +311,12 @@ const AppContent: React.FC = () => {
         position: 'relative'
       }}>
         {/* Settings Component */}
-        <Settings activeButton={activeButton} setActiveButton={setActiveButton} forceExpanded={forceSettingsExpanded} />
+        <Settings 
+          activeButton={activeButton} 
+          setActiveButton={setActiveButton} 
+          forceExpanded={forceSettingsExpanded}
+          onMenuItemClick={() => setForceSettingsExpanded(false)}
+        />
         <AdminRoutes currentPage="dashboard" />
       </div>
     );
@@ -330,7 +335,12 @@ const AppContent: React.FC = () => {
       position: 'relative'
     }}>
       {/* Settings Component */}
-      <Settings activeButton={activeButton} setActiveButton={setActiveButton} forceExpanded={forceSettingsExpanded} />
+      <Settings 
+        activeButton={activeButton} 
+        setActiveButton={setActiveButton} 
+        forceExpanded={forceSettingsExpanded}
+        onMenuItemClick={() => setForceSettingsExpanded(false)}
+      />
       <div style={{
         display: 'flex',
         flexDirection: 'column',
