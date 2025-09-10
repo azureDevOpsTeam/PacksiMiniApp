@@ -2404,39 +2404,6 @@ const ParcelList: React.FC<ParcelListProps> = () => {
               </button>
             </div>
 
-            {/* Flight Info */}
-            <div style={{
-              background: 'rgba(255, 255, 255, 0.05)',
-              borderRadius: '12px',
-              padding: '16px',
-              marginBottom: '20px',
-              border: '1px solid rgba(255, 255, 255, 0.1)'
-            }}>
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px',
-                marginBottom: '8px'
-              }}>
-                <span style={{ fontSize: '16px' }}>✈️</span>
-                <span style={{
-                  color: '#ffffff',
-                  fontSize: '14px',
-                  fontFamily: 'IRANSansX, sans-serif',
-                  fontWeight: '600'
-                }}>
-                  {selectedFlightForSuggestions.originCity} → {selectedFlightForSuggestions.destinationCity}
-                </span>
-              </div>
-              <div style={{
-                color: 'rgba(255, 255, 255, 0.7)',
-                fontSize: '12px',
-                fontFamily: 'IRANSansX, sans-serif'
-              }}>
-                {selectedFlightForSuggestions.departureDate}
-              </div>
-            </div>
-
             {/* Suggestions List */}
             <div style={{
               marginBottom: '20px'
