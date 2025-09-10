@@ -349,6 +349,8 @@ const AddPreferredLocation: React.FC<AddPreferredLocationProps> = ({ onComplete 
             isRTL={isRTL}
             style={getFieldStyle({}, 'cityIds')}
             onBlur={() => markFieldTouched('cityIds')}
+            disabled={!formData.countryOfResidenceId}
+            excludeCountryId={formData.countryOfResidenceId || undefined}
           />
         </div>
         </div>

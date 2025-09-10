@@ -463,6 +463,8 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ onProfileUpdated }) => {
                 onSelectionChange={handleCitySelectionChange}
                 theme={theme}
                 isRTL={isRTL}
+                disabled={!formData.countryOfResidenceId}
+                excludeCountryId={formData.countryOfResidenceId || undefined}
               />
             </div>
           </div>
@@ -486,7 +488,7 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ onProfileUpdated }) => {
           <div style={{ marginBottom: '20px' }}>
             <label style={labelStyle}>{t('updateProfile.gender')}</label>
             <select
-              value={formData.gender || -1}
+              value={formData.gender !== undefined && formData.gender !== null ? formData.gender : -1}
               onChange={(e) => handleInputChange('gender', parseInt(e.target.value))}
               style={inputStyle}
             >

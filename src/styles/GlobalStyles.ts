@@ -181,7 +181,7 @@ export const GlobalStyles = createGlobalStyle`
   input[type="time"],
   textarea,
   select {
-    font-size: 16px !important;
+    font-size: 13px !important;
     -webkit-appearance: none;
     border-radius: 0;
   }

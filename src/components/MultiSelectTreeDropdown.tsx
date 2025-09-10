@@ -11,6 +11,8 @@ interface MultiSelectTreeDropdownProps {
   isRTL: boolean;
   style?: React.CSSProperties;
   onBlur?: () => void;
+  disabled?: boolean;
+  excludeCountryId?: number;
 }
 
 interface FlattenedItem {
@@ -31,7 +33,9 @@ const MultiSelectTreeDropdown: React.FC<MultiSelectTreeDropdownProps> = ({
   onSelectionChange,
   isRTL,
   style,
-  onBlur
+  onBlur,
+  disabled = false,
+  excludeCountryId
 }) => {
   // CSS for hiding scrollbar in all browsers
   const hideScrollbarStyle = `
@@ -66,14 +70,21 @@ const MultiSelectTreeDropdown: React.FC<MultiSelectTreeDropdownProps> = ({
     const flattened: FlattenedItem[] = [];
     
     data.forEach(country => {
+      const countryId = parseInt(country.value);
+      
+      // Skip this country entirely if it's the excluded country
+      if (excludeCountryId && countryId === excludeCountryId) {
+        return;
+      }
+      
       // Add country as a selectable item
       flattened.push({
-        value: parseInt(country.value),
+        value: countryId,
         text: country.text || country.label,
         label: country.label,
         countryText: country.text || country.label,
         countryLabel: country.label,
-        countryValue: parseInt(country.value),
+        countryValue: countryId,
         isCountry: true
       });
       
@@ -85,7 +96,7 @@ const MultiSelectTreeDropdown: React.FC<MultiSelectTreeDropdownProps> = ({
           label: city.label,
           countryText: country.text || country.label,
           countryLabel: country.label,
-          countryValue: parseInt(country.value),
+          countryValue: countryId,
           isCountry: false
         });
       });
@@ -325,8 +336,12 @@ const MultiSelectTreeDropdown: React.FC<MultiSelectTreeDropdownProps> = ({
   return (
     <div ref={dropdownRef} style={{ position: 'relative', width: '100%' }} onBlur={onBlur} tabIndex={0}>
       <div
-        style={inputStyle}
-        onClick={() => !loading && setIsOpen(!isOpen)}
+        style={{
+          ...inputStyle,
+          opacity: disabled ? 0.5 : 1,
+          cursor: disabled ? 'not-allowed' : 'pointer'
+        }}
+        onClick={() => !loading && !disabled && setIsOpen(!isOpen)}
       >
         {loading ? (
           <span style={{ color: '#848d96' }}>در حال بارگذاری...</span>

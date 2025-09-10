@@ -550,14 +550,21 @@ const ParcelList: React.FC<ParcelListProps> = () => {
     const checkPreferredLocation = async () => {
       try {
         setIsLoading(true);
-        // Always show list instead of form
-        setShowForm(false);
-        fetchFlights();
+        // Call validate API to check setPreferredLocation
+        const validateResult = await apiService.validate();
+        
+        if (validateResult.objectResult.setPreferredLocation) {
+          // User has set preferred location, show list
+          setShowForm(false);
+          fetchFlights();
+        } else {
+          // User hasn't set preferred location, show form
+          setShowForm(true);
+        }
       } catch (error) {
         console.error('Error checking preferred location:', error);
-        // Even on error, show list
-        setShowForm(false);
-        fetchFlights();
+        // On error, show form to be safe
+        setShowForm(true);
       } finally {
         setIsLoading(false);
       }
