@@ -16,7 +16,7 @@ import Settings from './components/Settings';
 import ChatPanel from './components/ChatPanel';
 import NotFound from './components/NotFound';
 import ChatPersonList from './components/ChatPersonList';
-import AdminPanel from './components/AdminPanel';
+import { AdminRoutes } from './admin';
 
 import ErrorBoundary from './components/ErrorBoundary';
 import SkeletonLoader from './components/SkeletonLoader';
@@ -312,7 +312,7 @@ const AppContent: React.FC = () => {
       }}>
         {/* Settings Component */}
         <Settings activeButton={activeButton} setActiveButton={setActiveButton} forceExpanded={forceSettingsExpanded} />
-        <AdminPanel />
+        <AdminRoutes currentPage="dashboard" />
       </div>
     );
   }

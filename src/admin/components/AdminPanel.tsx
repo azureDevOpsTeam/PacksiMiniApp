@@ -1,5 +1,5 @@
 import React from 'react';
-import { useLanguage } from '../hooks/useLanguage';
+import { useLanguage } from '../../hooks/useLanguage';
 
 const AdminPanel: React.FC = () => {
   const { language } = useLanguage();
