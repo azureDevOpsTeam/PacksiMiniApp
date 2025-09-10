@@ -492,7 +492,7 @@ const CheckboxLabel = styled.label`
 `;
 
 const TermsOfServiceModal: React.FC<TermsOfServiceModalProps> = ({ isOpen, onAccept }) => {
-  const { t, language } = useLanguage();
+  const { language } = useLanguage();
   const [isAccepted, setIsAccepted] = useState(false);
   
   const handleAccept = () => {
