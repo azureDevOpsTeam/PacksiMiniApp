@@ -135,7 +135,7 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
       setIsInitialLoading(false);
     }
   }, [citiesLoading, itemTypesLoading]);
-  
+
 
 
   const requestTypes = [
@@ -172,7 +172,7 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
 
     // محاسبه حجم کل فایل‌های موجود
     const currentTotalSize = files.reduce((sum, file) => sum + file.size, 0);
-    
+
     // اضافه کردن فایل‌های جدید که از حد مجاز کمتر هستند
     const newFiles: File[] = [];
     let errorShown = false;
@@ -244,7 +244,7 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
       // if (ticketFile) {
       //   apiFiles.push(ticketFile);
       // }
-      
+
       // اضافه کردن فایل‌های عمومی
       if (files.length > 0) {
         apiFiles.push(...files);
@@ -269,11 +269,11 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
         // Request created successfully
         // Redirect to home page after success
         setTimeout(() => {
-          if (window.history.length > 1) {
-            window.history.back();
-          } else {
+         // if (window.history.length > 1) {
+         //   window.history.back();
+         // } else {
             window.location.href = '/';
-          }
+         // }
         }, 1500); // Wait a bit longer to ensure success message is seen
       } else {
         throw new Error(response.message || t('createRequest.error.general') || 'خطا در ارسال درخواست');
@@ -281,7 +281,7 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
     } catch (err) {
       // Handle different types of errors
       let errorMessage = t('createRequest.error.unknown') || 'خطای نامشخصص';
-      
+
       if (err instanceof Error) {
         // Check for specific error types
         if (err.message.includes('اتصال به اینترنت')) {
@@ -294,9 +294,9 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
           errorMessage = err.message;
         }
       }
-      
+
       setError(errorMessage);
-      
+
       // Log error in development mode
       if (import.meta.env.DEV) {
         // Error handled by user feedback
@@ -417,20 +417,20 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
         <div style={{ marginBottom: '20px', width: '100%', maxWidth: '400px' }}>
           <SkeletonLoader type="profile" height="60px" />
         </div>
-        
+
         {/* Logo Skeleton */}
         <div style={{ marginBottom: '30px' }}>
           <SkeletonLoader type="text" width="120px" height="40px" />
         </div>
-        
+
         {/* Form Fields Skeleton */}
         <div style={{ width: '100%', maxWidth: '400px', gap: '20px', display: 'flex', flexDirection: 'column' }}>
           <SkeletonLoader type="text" width="80px" height="16px" />
           <SkeletonLoader type="search" height="40px" />
-          
+
           <SkeletonLoader type="text" width="100px" height="16px" />
           <SkeletonLoader type="search" height="40px" />
-          
+
           <div style={{ display: 'flex', gap: '10px' }}>
             <div style={{ flex: 1 }}>
               <SkeletonLoader type="text" width="80px" height="16px" />
@@ -441,10 +441,10 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
               <SkeletonLoader type="search" height="40px" />
             </div>
           </div>
-          
+
           <SkeletonLoader type="text" width="90px" height="16px" />
           <SkeletonLoader type="button" count={2} height="40px" />
-          
+
           <SkeletonLoader type="text" width="70px" height="16px" />
           <SkeletonLoader type="search" height="80px" />
         </div>
@@ -601,10 +601,6 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
             </select>
           </div>
 
-
-
-
-          
           {/* فایل‌های عمومی */}
           <div style={{ marginBottom: '20px' }}>
             <label style={{
@@ -635,8 +631,8 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
               />
               <div style={{ color: '#50b4ff', marginBottom: '5px' }}>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 16V8M12 8L9 11M12 8L15 11" stroke="#50b4ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M3 15V16C3 17.6569 4.34315 19 6 19H18C19.6569 19 21 17.6569 21 16V15" stroke="#50b4ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M12 16V8M12 8L9 11M12 8L15 11" stroke="#50b4ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M3 15V16C3 17.6569 4.34315 19 6 19H18C19.6569 19 21 17.6569 21 16V15" stroke="#50b4ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </div>
               <div style={{ fontSize: '14px', color: '#848d96' }}>

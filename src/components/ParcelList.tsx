@@ -981,7 +981,331 @@ const ParcelList: React.FC<ParcelListProps> = () => {
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-              {filteredFlights.map((flight) => (
+              {filteredFlights.map((flight) => {
+                // Compact card for pickedme tab
+                if (activeTab === 'pickedme') {
+                  return (
+                    <div
+                      key={flight.requestId}
+                      className="flight-card"
+                      style={{
+                        background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #ffffff 100%)',
+                        borderRadius: '16px',
+                        padding: '16px',
+                        border: '2px solid #e2e8f0',
+                        direction: isRTL ? 'rtl' : 'ltr',
+                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                        transition: 'all 0.3s ease',
+                        position: 'relative',
+                        cursor: 'pointer',
+                        overflow: 'hidden',
+                        fontFamily: 'IRANSansX, sans-serif',
+                        minHeight: 'auto'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                        e.currentTarget.style.boxShadow = '0 8px 20px rgba(0, 0, 0, 0.15)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'translateY(0)';
+                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
+                      }}
+                    >
+                      {/* Compact Header */}
+                      <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        marginBottom: '12px'
+                      }}>
+                        <div style={{
+                          fontSize: '14px',
+                          fontWeight: 'bold',
+                          color: '#1e293b'
+                        }}>{flight.fullName}</div>
+                        
+                        <div style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px'
+                        }}>
+                          {/* Show Suggestions Button */}
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleShowSuggestions(flight);
+                            }}
+                            style={{
+                              padding: '4px 8px',
+                              borderRadius: '12px',
+                              fontSize: '10px',
+                              fontWeight: 'bold',
+                              backgroundColor: '#3b82f6',
+                              color: 'white',
+                              border: 'none',
+                              cursor: 'pointer',
+                              transition: 'all 0.3s ease'
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.backgroundColor = '#2563eb';
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.backgroundColor = '#3b82f6';
+                            }}
+                          >
+                            {isRTL ? 'پیشنهادات' : 'Suggestions'}
+                          </button>
+                          
+                          {/* Three Dots Menu */}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setActiveMenu(activeMenu === flight.requestId ? null : flight.requestId);
+                            }}
+                            style={{
+                              background: 'rgba(107, 114, 128, 0.1)',
+                              border: 'none',
+                              borderRadius: '50%',
+                              width: '24px',
+                              height: '24px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              cursor: 'pointer',
+                              fontSize: '12px',
+                              color: '#6b7280'
+                            }}
+                          >
+                            ⋮
+                          </button>
+                        </div>
+                      </div>
+                      
+                      {/* Flight Route - Compact */}
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        marginBottom: '12px'
+                      }}>
+                        <div style={{
+                          textAlign: 'center',
+                          flex: 1
+                        }}>
+                          <div style={{
+                            fontSize: '16px',
+                            fontWeight: 'bold',
+                            color: '#1e293b'
+                          }}>{flight.originCity}</div>
+                        </div>
+                        
+                        <div style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          margin: '0 12px'
+                        }}>
+                          <div style={{
+                            width: '20px',
+                            height: '1px',
+                            background: '#cbd5e1'
+                          }} />
+                          <div style={{
+                            fontSize: '12px'
+                          }}>✈️</div>
+                          <div style={{
+                            width: '20px',
+                            height: '1px',
+                            background: '#cbd5e1'
+                          }} />
+                        </div>
+                        
+                        <div style={{
+                          textAlign: 'center',
+                          flex: 1
+                        }}>
+                          <div style={{
+                            fontSize: '16px',
+                            fontWeight: 'bold',
+                            color: '#1e293b'
+                          }}>{flight.destinationCity}</div>
+                        </div>
+                      </div>
+                      
+                      {/* Flight Date and Item Types - Compact */}
+                      <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        padding: '8px 12px',
+                        background: '#f8fafc',
+                        borderRadius: '8px',
+                        border: '1px solid #e2e8f0'
+                      }}>
+                        <div>
+                          <div style={{
+                            fontSize: '10px',
+                            color: '#64748b',
+                            marginBottom: '2px'
+                          }}>{isRTL ? 'تاریخ پرواز' : 'FLIGHT DATE'}</div>
+                          <div style={{
+                            fontSize: '12px',
+                            fontWeight: 'bold',
+                            color: '#1e293b'
+                          }}>{formatDate(flight.departureDate)}</div>
+                        </div>
+                        
+                        {/* Item Types - Compact */}
+                        {((isRTL && flight.itemTypesFa && flight.itemTypesFa.length > 0) ||
+                          (!isRTL && flight.itemTypes && flight.itemTypes.length > 0)) && (
+                          <div style={{
+                            display: 'flex',
+                            flexWrap: 'wrap',
+                            gap: '4px',
+                            maxWidth: '150px'
+                          }}>
+                            {(isRTL ? flight.itemTypesFa : flight.itemTypes)?.slice(0, 2).map((itemType: string, index: number) => (
+                              <span
+                                key={index}
+                                style={{
+                                  fontSize: '8px',
+                                  padding: '2px 4px',
+                                  borderRadius: '4px',
+                                  background: '#dbeafe',
+                                  color: '#1e40af',
+                                  fontWeight: '500'
+                                }}
+                              >
+                                {itemType}
+                              </span>
+                            ))}
+                            {(isRTL ? flight.itemTypesFa : flight.itemTypes)?.length > 2 && (
+                              <span style={{
+                                fontSize: '8px',
+                                color: '#64748b',
+                                fontWeight: '500'
+                              }}>+{(isRTL ? flight.itemTypesFa : flight.itemTypes).length - 2}</span>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* Menu Popup for compact cards */}
+                      {activeMenu === flight.requestId && createPortal(
+                        <>
+                          <div 
+                            onClick={() => setActiveMenu(null)}
+                            style={{
+                              position: 'fixed',
+                              top: 0,
+                              left: 0,
+                              right: 0,
+                              bottom: 0,
+                              backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                              zIndex: 99998,
+                              backdropFilter: 'blur(2px)'
+                            }}
+                          />
+                          <div style={{
+                            position: 'fixed',
+                            top: '50%',
+                            left: '50%',
+                            transform: 'translate(-50%, -50%)',
+                            background: 'linear-gradient(135deg, #1a202c 0%, #2d3748 100%)',
+                            borderRadius: '16px',
+                            padding: '16px',
+                            minWidth: '200px',
+                            zIndex: 99999,
+                            boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)'
+                          }}>
+                            <div
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleMenuAction('details', flight);
+                              }}
+                              style={{
+                                padding: '12px 16px',
+                                cursor: 'pointer',
+                                fontSize: '14px',
+                                color: '#ffffff',
+                                borderRadius: '8px',
+                                marginBottom: '8px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px'
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.backgroundColor = 'rgba(59, 130, 246, 0.2)';
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.backgroundColor = 'transparent';
+                              }}
+                            >
+                              <span>📋</span>
+                              {t('flights.menu.details')}
+                            </div>
+                            <div
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleMenuAction('saveToFavorites', flight);
+                              }}
+                              style={{
+                                padding: '12px 16px',
+                                cursor: 'pointer',
+                                fontSize: '14px',
+                                color: '#ffffff',
+                                borderRadius: '8px',
+                                marginBottom: '8px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px'
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.backgroundColor = 'rgba(16, 185, 129, 0.2)';
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.backgroundColor = 'transparent';
+                              }}
+                            >
+                              <span>⭐</span>
+                              {t('flights.menu.saveToFavorites')}
+                            </div>
+                            <div
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleMenuAction('report', flight);
+                              }}
+                              style={{
+                                padding: '12px 16px',
+                                cursor: 'pointer',
+                                fontSize: '14px',
+                                color: '#ffffff',
+                                borderRadius: '8px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px'
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.2)';
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.backgroundColor = 'transparent';
+                              }}
+                            >
+                              <span>🚨</span>
+                              {t('flights.menu.report')}
+                            </div>
+                          </div>
+                        </>,
+                        document.body
+                      )}
+                    </div>
+                  );
+                }
+                
+                // Full card for other tabs
+                return (
                 <div
                   key={flight.requestId}
                   className="flight-card"
@@ -1533,9 +1857,10 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                     </div>
                   )}
                 </div>
-              ))}
-            </div>
-          )}
+              );
+            })}
+          </div>
+        )}
         </div>
       </div>
     </div>
