@@ -16,6 +16,7 @@ import Settings from './components/Settings';
 import ChatPanel from './components/ChatPanel';
 import NotFound from './components/NotFound';
 import ChatPersonList from './components/ChatPersonList';
+import AdminPanel from './components/AdminPanel';
 
 import ErrorBoundary from './components/ErrorBoundary';
 import SkeletonLoader from './components/SkeletonLoader';
@@ -294,6 +295,26 @@ const AppContent: React.FC = () => {
   // Render ChatPersonList page
   if (currentPage === 'chatPersonList') {
     return <ChatPersonList />;
+  }
+
+  // Render AdminPanel if admin is selected
+  if (activeButton === 'admin') {
+    return (
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        minHeight: '100vh',
+        padding: '80px 20px 0 20px',
+        textAlign: 'center',
+        position: 'relative'
+      }}>
+        {/* Settings Component */}
+        <Settings activeButton={activeButton} setActiveButton={setActiveButton} forceExpanded={forceSettingsExpanded} />
+        <AdminPanel />
+      </div>
+    );
   }
 
   // Render Home page

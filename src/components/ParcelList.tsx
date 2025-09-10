@@ -2388,16 +2388,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                   fontSize: '24px',
                   cursor: 'pointer',
                   padding: '4px',
-                  borderRadius: '8px',
-                  transition: 'all 0.2s ease'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
-                  e.currentTarget.style.transform = 'scale(1.1)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'none';
-                  e.currentTarget.style.transform = 'scale(1)';
+                  borderRadius: '8px'
                 }}
               >
                 ×
@@ -2523,21 +2514,8 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                               fontSize: '12px',
                               fontFamily: 'IRANSansX, sans-serif',
                               cursor: actionLoading ? 'not-allowed' : 'pointer',
-                              transition: 'all 0.2s ease',
                               opacity: actionLoading ? 0.5 : 1,
                               fontWeight: '500'
-                            }}
-                            onMouseEnter={(e) => {
-                              if (!actionLoading) {
-                                e.currentTarget.style.background = 'rgba(239, 68, 68, 0.2)';
-                                e.currentTarget.style.transform = 'translateY(-1px)';
-                              }
-                            }}
-                            onMouseLeave={(e) => {
-                              if (!actionLoading) {
-                                e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)';
-                                e.currentTarget.style.transform = 'translateY(0)';
-                              }
                             }}
                           >
                             {t('flights.suggestionsModal.reject')}
@@ -2554,21 +2532,8 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                               fontSize: '12px',
                               fontFamily: 'IRANSansX, sans-serif',
                               cursor: actionLoading ? 'not-allowed' : 'pointer',
-                              transition: 'all 0.2s ease',
                               opacity: actionLoading ? 0.5 : 1,
                               fontWeight: '500'
-                            }}
-                            onMouseEnter={(e) => {
-                              if (!actionLoading) {
-                                e.currentTarget.style.background = 'rgba(34, 197, 94, 0.2)';
-                                e.currentTarget.style.transform = 'translateY(-1px)';
-                              }
-                            }}
-                            onMouseLeave={(e) => {
-                              if (!actionLoading) {
-                                e.currentTarget.style.background = 'rgba(34, 197, 94, 0.1)';
-                                e.currentTarget.style.transform = 'translateY(0)';
-                              }
                             }}
                           >
                             {t('flights.suggestionsModal.accept')}
@@ -2607,13 +2572,11 @@ const ParcelList: React.FC<ParcelListProps> = () => {
           right: 0,
           bottom: 0,
           backgroundColor: 'rgba(0, 0, 0, 0.8)',
-          backdropFilter: 'blur(8px)',
           zIndex: 10001,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          padding: '20px',
-          animation: 'fadeInScale 0.3s ease-out'
+          padding: '20px'
         }}>
           <div style={{
             background: 'linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%)',
@@ -2621,8 +2584,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
             padding: '24px',
             maxWidth: '400px',
             width: '100%',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            boxShadow: '0 25px 50px rgba(0, 0, 0, 0.5)'
+            border: '1px solid rgba(255, 255, 255, 0.1)'
           }}>
             <div style={{
               textAlign: 'center',
@@ -2673,21 +2635,8 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                   fontSize: '14px',
                   fontFamily: 'IRANSansX, sans-serif',
                   cursor: actionLoading ? 'not-allowed' : 'pointer',
-                  transition: 'all 0.3s ease',
                   opacity: actionLoading ? 0.5 : 1,
                   fontWeight: '500'
-                }}
-                onMouseEnter={(e) => {
-                  if (!actionLoading) {
-                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
-                    e.currentTarget.style.transform = 'translateY(-1px)';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!actionLoading) {
-                    e.currentTarget.style.background = 'transparent';
-                    e.currentTarget.style.transform = 'translateY(0)';
-                  }
                 }}
               >
                 {t('flights.suggestionsModal.cancel')}
@@ -2707,28 +2656,8 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                   fontSize: '14px',
                   fontFamily: 'IRANSansX, sans-serif',
                   cursor: actionLoading ? 'not-allowed' : 'pointer',
-                  transition: 'all 0.3s ease',
                   opacity: actionLoading ? 0.5 : 1,
-                  fontWeight: '600',
-                  boxShadow: confirmAction === 'accept'
-                    ? '0 8px 25px rgba(34, 197, 94, 0.4)'
-                    : '0 8px 25px rgba(239, 68, 68, 0.4)'
-                }}
-                onMouseEnter={(e) => {
-                  if (!actionLoading) {
-                    e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)';
-                    e.currentTarget.style.boxShadow = confirmAction === 'accept'
-                      ? '0 12px 35px rgba(34, 197, 94, 0.5)'
-                      : '0 12px 35px rgba(239, 68, 68, 0.5)';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!actionLoading) {
-                    e.currentTarget.style.transform = 'translateY(0) scale(1)';
-                    e.currentTarget.style.boxShadow = confirmAction === 'accept'
-                      ? '0 8px 25px rgba(34, 197, 94, 0.4)'
-                      : '0 8px 25px rgba(239, 68, 68, 0.4)';
-                  }
+                  fontWeight: '600'
                 }}
               >
                 {actionLoading ? (
@@ -2742,8 +2671,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                       height: '16px',
                       border: '2px solid rgba(255, 255, 255, 0.3)',
                       borderTop: '2px solid #ffffff',
-                      borderRadius: '50%',
-                      animation: 'spin 1s linear infinite'
+                      borderRadius: '50%'
                     }} />
                     {t('flights.suggestionsModal.processing')}
                   </div>
