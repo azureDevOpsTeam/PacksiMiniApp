@@ -2,7 +2,7 @@ import React from 'react';
 import { useLanguage } from '../hooks/useLanguage';
 
 const AdminPanel: React.FC = () => {
-  const { t, language } = useLanguage();
+  const { language } = useLanguage();
   const isRTL = language === 'fa';
 
   return (
