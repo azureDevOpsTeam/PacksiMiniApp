@@ -2512,7 +2512,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                           justifyContent: 'flex-end'
                         }}>
                           <button
-                            onClick={() => handleSuggestionAction(suggestion.suggestionId, 'reject')}
+                            onClick={() => handleSuggestionAction(suggestion, 'reject')}
                             disabled={actionLoading}
                             style={{
                               padding: '6px 12px',
@@ -2543,7 +2543,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                             {t('flights.suggestionsModal.reject')}
                           </button>
                           <button
-                            onClick={() => handleSuggestionAction(suggestion.suggestionId, 'accept')}
+                            onClick={() => handleSuggestionAction(suggestion, 'accept')}
                             disabled={actionLoading}
                             style={{
                               padding: '6px 12px',
