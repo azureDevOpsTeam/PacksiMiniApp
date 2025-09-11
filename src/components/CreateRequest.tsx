@@ -234,7 +234,7 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
       setError(isRTL ? 'میتوانید از لیست مسافران سفر منتخب خود را برای ارسال بار انتخاب کنید' : 'You can select your preferred traveler from the list to send your package');
       return;
     }
-    
+
     if (!validateForm(formData)) {
       setError(t('createRequest.validation.fillRequired') || 'لطفاً تمام فیلدهای الزامی را پر کنید');
       return;
@@ -276,11 +276,11 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
         // Request created successfully
         // Redirect to home page after success
         setTimeout(() => {
-         // if (window.history.length > 1) {
-         //   window.history.back();
-         // } else {
-            window.location.href = '/';
-         // }
+          // if (window.history.length > 1) {
+          //   window.history.back();
+          // } else {
+          window.location.href = '/';
+          // }
         }, 1500); // Wait a bit longer to ensure success message is seen
       } else {
         throw new Error(response.message || t('createRequest.error.general') || 'خطا در ارسال درخواست');
@@ -920,64 +920,54 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
                   {t('loading')}
                 </div>
               ) : (
-                itemTypes.map(itemType => (
-                  <div
-                    key={itemType.itemTypeId}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleItemTypeToggle(itemType.itemTypeId);
-                    }}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      padding: '12px',
-                      borderRadius: '8px',
-                      border: formData.itemTypeIds.includes(itemType.itemTypeId)
-                        ? '2px solid #50b4ff'
-                        : '1px solid #3a4a5c',
-                      backgroundColor: formData.itemTypeIds.includes(itemType.itemTypeId)
-                        ? '#50b4ff15'
-                        : '#212a33',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s ease',
-                      boxShadow: formData.itemTypeIds.includes(itemType.itemTypeId)
-                        ? '0 0 0 1px #50b4ff40'
-                        : 'none',
-                      userSelect: 'none'
-                    }}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={formData.itemTypeIds.includes(itemType.itemTypeId)}
-                      onChange={() => {}}
-                      onClick={(e) => e.stopPropagation()}
+                itemTypes.map(itemType => {
+                  const isSelected = formData.itemTypeIds.includes(itemType.itemTypeId);
+
+                  return (
+                    <div
+                      key={itemType.itemTypeId}
                       style={{
-                        marginRight: isRTL ? '0' : '8px',
-                        marginLeft: isRTL ? '8px' : '0',
-                        width: '18px',
-                        height: '18px',
-                        accentColor: '#50b4ff',
+                        display: 'flex',
+                        alignItems: 'center',
+                        padding: '12px',
+                        borderRadius: '8px',
+                        border: isSelected ? '2px solid #50b4ff' : '1px solid #3a4a5c',
+                        backgroundColor: isSelected ? '#50b4ff15' : '#212a33',
                         cursor: 'pointer',
-                        pointerEvents: 'none'
+                        transition: 'all 0.2s ease',
+                        boxShadow: isSelected ? '0 0 0 1px #50b4ff40' : 'none',
+                        userSelect: 'none'
                       }}
-                    />
-                    <span style={{
-                      fontSize: '14px',
-                      color: formData.itemTypeIds.includes(itemType.itemTypeId)
-                        ? '#ffffff'
-                        : '#848d96',
-                      fontFamily: 'IRANSansX, sans-serif',
-                      fontWeight: formData.itemTypeIds.includes(itemType.itemTypeId)
-                        ? '600'
-                        : '400'
-                    }}>
-                      {isRTL ? itemType.persianName : itemType.itemType}
-                    </span>
-                  </div>
-                ))
+                      onClick={() => handleItemTypeToggle(itemType.itemTypeId)}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => handleItemTypeToggle(itemType.itemTypeId)}
+                        style={{
+                          marginRight: isRTL ? '0' : '8px',
+                          marginLeft: isRTL ? '8px' : '0',
+                          width: '18px',
+                          height: '18px',
+                          accentColor: '#50b4ff',
+                          cursor: 'pointer'
+                        }}
+                      />
+                      <span style={{
+                        fontSize: '14px',
+                        color: isSelected ? '#ffffff' : '#848d96',
+                        fontFamily: 'IRANSansX, sans-serif',
+                        fontWeight: isSelected ? '600' : '400'
+                      }}>
+                        {isRTL ? itemType.persianName : itemType.itemType}
+                      </span>
+                    </div>
+                  );
+                })
               )}
             </div>
           </div>
+
 
           {/* Note: Submit button is now handled by Telegram's MainButton in the bottom bar */}
 
