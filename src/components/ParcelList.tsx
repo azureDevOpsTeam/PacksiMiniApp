@@ -134,7 +134,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
   const [flightsLoading, setFlightsLoading] = useState(true);
   const [flightsError, setFlightsError] = useState<string | null>(null);
   const [activeMenu, setActiveMenu] = useState<number | null>(null);
-  const [apiResult, setApiResult] = useState<{success: boolean, message: string} | null>(null);
+  const [apiResult, setApiResult] = useState<{ success: boolean, message: string } | null>(null);
   const [showMyRequest, setShowMyRequest] = useState(false);
   const [showSelectTripModal, setShowSelectTripModal] = useState(false);
   const [selectedFlightForTrip, setSelectedFlightForTrip] = useState<OutboundTrip | null>(null);
@@ -142,7 +142,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
   const [suggestionPrice, setSuggestionPrice] = useState<string>('');
   const [currency, setCurrency] = useState<string>('-1'); // -1 for select, 1 for USD, 2 for IRR
   const [description, setDescription] = useState<string>('');
-  
+
   // Suggestions modal state
   const [showSuggestionsModal, setShowSuggestionsModal] = useState(false);
   const [selectedFlightForSuggestions, setSelectedFlightForSuggestions] = useState<OutboundTrip | null>(null);
@@ -152,23 +152,23 @@ const ParcelList: React.FC<ParcelListProps> = () => {
   const [actionLoading, setActionLoading] = useState(false);
 
   const [searchQuery, setSearchQuery] = useState<string>('');
-  
+
   // Tab system
   type TabType = 'incoming' | 'outgoing' | 'ipicked' | 'pickedme';
   const [activeTab, setActiveTab] = useState<TabType>('outgoing');
-  
+
   // Responsive state for small screens
   const [isSmallScreen, setIsSmallScreen] = useState<boolean>(false);
-  
+
   // Handle screen resize
   useEffect(() => {
     const handleResize = () => {
       setIsSmallScreen(window.innerWidth <= 380);
     };
-    
+
     // Set initial value
     handleResize();
-    
+
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
@@ -193,7 +193,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
       default:
         matchesTab = true;
     }
-    
+
     // Search filter
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase().trim();
@@ -248,7 +248,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
   const handleMenuAction = async (action: string, flight: OutboundTrip) => {
     console.log('handleMenuAction called with action:', action, 'requestId:', flight.requestId);
     setActiveMenu(null);
-    
+
     switch (action) {
       case 'details':
         // Handle flight details view
@@ -279,7 +279,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
         success: false,
         message: isRTL ? 'لطفا گزینه سفر را انتخاب کنید' : 'Please select a trip option'
       });
-      
+
       setTimeout(() => {
         setApiResult(null);
       }, 3000);
@@ -293,19 +293,19 @@ const ParcelList: React.FC<ParcelListProps> = () => {
           success: false,
           message: isRTL ? 'لطفا قیمت پیشنهادی معتبر وارد کنید' : 'Please enter a valid suggested price'
         });
-        
+
         setTimeout(() => {
           setApiResult(null);
         }, 3000);
         return;
       }
-      
+
       if (!currency || currency === '-1') {
         setApiResult({
           success: false,
           message: isRTL ? 'لطفا نوع ارز را انتخاب کنید' : 'Please select currency type'
         });
-        
+
         setTimeout(() => {
           setApiResult(null);
         }, 3000);
@@ -315,9 +315,9 @@ const ParcelList: React.FC<ParcelListProps> = () => {
 
     try {
       setIsLoading(true);
-      
+
       let requestData;
-      
+
       if (selectedTripOption === 'suggest_price') {
         // For price suggestion, use the new API structure
         requestData = {
@@ -337,7 +337,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
           }
         };
       }
-      
+
       const response = await apiService.selectRequest(requestData);
 
       if (response.requestStatus.value === 0) {
@@ -345,21 +345,21 @@ const ParcelList: React.FC<ParcelListProps> = () => {
           success: true,
           message: response.message || t('submitSuggestion.success')
         });
-        
+
         // Update local state
-        setFlights(prevFlights => 
-          prevFlights.map(flight => 
-            flight.requestId === selectedFlightForTrip.requestId 
+        setFlights(prevFlights =>
+          prevFlights.map(flight =>
+            flight.requestId === selectedFlightForTrip.requestId
               ? {
-                  ...flight,
-                  currentUserStatus: 1,
-                  currentUserStatusEn: 'pickedme',
-                  currentUserStatusFa: 'انتخاب شده'
-                }
+                ...flight,
+                currentUserStatus: 1,
+                currentUserStatusEn: 'pickedme',
+                currentUserStatusFa: 'انتخاب شده'
+              }
               : flight
           )
         );
-        
+
         // Close modal immediately after success
         setShowSelectTripModal(false);
         setSelectedFlightForTrip(null);
@@ -367,7 +367,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
         setSuggestionPrice('');
         setCurrency('-1');
         setDescription('');
-        
+
         // Show success message and redirect after 1.5 seconds
         setTimeout(() => {
           setApiResult(null);
@@ -378,14 +378,14 @@ const ParcelList: React.FC<ParcelListProps> = () => {
             window.location.href = '/';
           }
         }, 1500);
-        
+
         await fetchFlights();
       } else {
         setApiResult({
           success: false,
           message: response.message || (isRTL ? 'خطا در ثبت درخواست' : 'Error submitting request')
         });
-        
+
         setTimeout(() => {
           setApiResult(null);
         }, 3000);
@@ -396,7 +396,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
         success: false,
         message: isRTL ? 'خطا در ارتباط با سرور' : 'Server connection error'
       });
-      
+
       setTimeout(() => {
         setApiResult(null);
       }, 3000);
@@ -445,11 +445,11 @@ const ParcelList: React.FC<ParcelListProps> = () => {
           requestSuggestionId: selectedSuggestion.suggestionId
         }
       };
-      
-      const response = confirmAction === 'accept' 
+
+      const response = confirmAction === 'accept'
         ? await apiService.confirmSuggestion(payload)
         : await apiService.rejectSuggestion(payload);
-      
+
       if (response.requestStatus.value === 0) {
         // Update the suggestion status in the local state
         if (selectedFlightForSuggestions && selectedFlightForSuggestions.suggestions) {
@@ -463,14 +463,14 @@ const ParcelList: React.FC<ParcelListProps> = () => {
             }
             return suggestion;
           });
-          
+
           setSelectedFlightForSuggestions({
             ...selectedFlightForSuggestions,
             suggestions: updatedSuggestions
           });
-          
+
           // Also update the main flights list
-          setFlights(prevFlights => 
+          setFlights(prevFlights =>
             prevFlights.map((flight: OutboundTrip) => {
               if (flight.requestId === selectedFlightForSuggestions.requestId) {
                 return {
@@ -482,14 +482,14 @@ const ParcelList: React.FC<ParcelListProps> = () => {
             })
           );
         }
-        
+
         setApiResult({
           success: true,
-          message: isRTL 
+          message: isRTL
             ? `پیشنهاد با موفقیت ${confirmAction === 'accept' ? 'تایید' : 'رد'} شد`
             : `Suggestion ${confirmAction === 'accept' ? 'accepted' : 'rejected'} successfully`
         });
-        
+
         // Close confirmation dialog
         setShowConfirmDialog(false);
         setSelectedSuggestion(null);
@@ -497,18 +497,18 @@ const ParcelList: React.FC<ParcelListProps> = () => {
       } else {
         throw new Error(response.message || 'Failed to process suggestion');
       }
-      
+
       setTimeout(() => {
         setApiResult(null);
       }, 3000);
-      
+
     } catch (error) {
       console.error('Error handling suggestion action:', error);
       setApiResult({
         success: false,
         message: isRTL ? 'خطا در انجام عملیات' : 'Error performing action'
       });
-      
+
       setTimeout(() => {
         setApiResult(null);
       }, 3000);
@@ -552,7 +552,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
         setIsLoading(true);
         // Call validate API to check setPreferredLocation
         const validateResult = await apiService.validate();
-        
+
         if (validateResult.objectResult.setPreferredLocation) {
           // User has set preferred location, show list
           setShowForm(false);
@@ -752,8 +752,8 @@ const ParcelList: React.FC<ParcelListProps> = () => {
       position: 'relative'
     }}>
       {/* Settings Component */}
-      <Settings 
-        activeButton={activeButton} 
+      <Settings
+        activeButton={activeButton}
         setActiveButton={setActiveButton}
       />
 
@@ -810,8 +810,8 @@ const ParcelList: React.FC<ParcelListProps> = () => {
           padding: '0 20px'
         }}>
           <div style={{
-          maxWidth: '400px',
-          width: '100%',
+            maxWidth: '400px',
+            width: '100%',
             display: 'flex',
             backgroundColor: '#212a33',
             borderRadius: '12px',
@@ -828,66 +828,66 @@ const ParcelList: React.FC<ParcelListProps> = () => {
             ].map((tab) => {
               const tabCount = getTabCount(tab.key);
               return (
-              <div key={tab.key} style={{ position: 'relative' }}>
-                {(tab.key === 'ipicked' || tab.key === 'pickedme') && tabCount > 0 && (
-                  <div style={{
-                    position: 'absolute',
-                    top: '-8px',
-                    right: '-8px',
-                    minWidth: '18px',
-                    height: '18px',
-                    backgroundColor: '#ef4444',
-                    borderRadius: '9px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '10px',
-                    fontWeight: 'bold',
-                    color: '#ffffff',
-                    zIndex: 10,
-                    padding: '0 4px'
-                  }}>
-                    {tabCount}
-                  </div>
-                )}
-                <button
-                  onClick={() => setActiveTab(tab.key)}
-                  style={{
-                    padding: isSmallScreen ? '8px 12px' : '8px 16px',
-                    borderRadius: '8px',
-                    border: 'none',
-                    backgroundColor: activeTab === tab.key ? '#50b4ff' : 'transparent',
-                    color: activeTab === tab.key ? '#ffffff' : '#848d96',
-                    fontSize: isSmallScreen ? '16px' : '12px',
-                    fontFamily: 'IRANSansX, sans-serif',
-                    fontWeight: activeTab === tab.key ? '600' : '400',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s ease',
-                    whiteSpace: 'nowrap',
-                    minWidth: isSmallScreen ? '40px' : 'auto',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    maxWidth: isSmallScreen ? '400px' : 'auto',
-                    width: isSmallScreen ? '100%' : 'auto',
-                    flex: isSmallScreen ? '1' : 'auto'
-                  }}
-                  onMouseEnter={(e) => {
-                    if (activeTab !== tab.key) {
-                      e.currentTarget.style.backgroundColor = 'rgba(80, 180, 255, 0.1)';
-                      e.currentTarget.style.color = '#50b4ff';
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (activeTab !== tab.key) {
-                      e.currentTarget.style.backgroundColor = 'transparent';
-                      e.currentTarget.style.color = '#848d96';
-                    }
-                  }}
-                >
-                  {isSmallScreen ? tab.icon : (isRTL ? tab.labelFa : tab.labelEn)}
-                </button>
-              </div>
+                <div key={tab.key} style={{ position: 'relative' }}>
+                  {(tab.key === 'ipicked' || tab.key === 'pickedme') && tabCount > 0 && (
+                    <div style={{
+                      position: 'absolute',
+                      top: '-8px',
+                      right: '-8px',
+                      minWidth: '18px',
+                      height: '18px',
+                      backgroundColor: '#ef4444',
+                      borderRadius: '9px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '10px',
+                      fontWeight: 'bold',
+                      color: '#ffffff',
+                      zIndex: 10,
+                      padding: '0 4px'
+                    }}>
+                      {tabCount}
+                    </div>
+                  )}
+                  <button
+                    onClick={() => setActiveTab(tab.key)}
+                    style={{
+                      padding: isSmallScreen ? '8px 12px' : '8px 16px',
+                      borderRadius: '8px',
+                      border: 'none',
+                      backgroundColor: activeTab === tab.key ? '#50b4ff' : 'transparent',
+                      color: activeTab === tab.key ? '#ffffff' : '#848d96',
+                      fontSize: isSmallScreen ? '16px' : '12px',
+                      fontFamily: 'IRANSansX, sans-serif',
+                      fontWeight: activeTab === tab.key ? '600' : '400',
+                      cursor: 'pointer',
+                      transition: 'all 0.3s ease',
+                      whiteSpace: 'nowrap',
+                      minWidth: isSmallScreen ? '40px' : 'auto',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      maxWidth: isSmallScreen ? '400px' : 'auto',
+                      width: isSmallScreen ? '100%' : 'auto',
+                      flex: isSmallScreen ? '1' : 'auto'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (activeTab !== tab.key) {
+                        e.currentTarget.style.backgroundColor = 'rgba(80, 180, 255, 0.1)';
+                        e.currentTarget.style.color = '#50b4ff';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (activeTab !== tab.key) {
+                        e.currentTarget.style.backgroundColor = 'transparent';
+                        e.currentTarget.style.color = '#848d96';
+                      }
+                    }}
+                  >
+                    {isSmallScreen ? tab.icon : (isRTL ? tab.labelFa : tab.labelEn)}
+                  </button>
+                </div>
               );
             })}
           </div>
@@ -951,1749 +951,1748 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                 ✕
               </button>
             )}
-        </div>
+          </div>
 
-        {/* Flights List */}
-        <div style={{ width: '100%', margin: '0 auto', maxWidth: '400px', padding: '20px 0' }}>
-          {flightsLoading ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {[1, 2, 3].map((i) => (
-                <SkeletonLoader key={i} type="search" height="80px" />
-              ))}
-            </div>
-          ) : flightsError ? (
-            <div style={{
-              padding: '20px',
-              textAlign: 'center',
-              color: '#ef4444',
-              fontSize: '14px',
-              fontFamily: 'IRANSansX, sans-serif'
-            }}>
-              {flightsError}
-            </div>
-          ) : flights.length === 0 ? (
-            <div style={{
-              padding: '20px',
-              textAlign: 'center',
-              color: '#848d96',
-              fontSize: '14px',
-              fontFamily: 'IRANSansX, sans-serif'
-            }}>
-              {t('parcelList.flightsNotFound')}
-            </div>
-          ) : filteredFlights.length === 0 ? (
-            <div style={{
-              padding: '20px',
-              textAlign: 'center',
-              color: '#848d96',
-              fontSize: '14px',
-              fontFamily: 'IRANSansX, sans-serif'
-            }}>
-              {isRTL ? 'هیچ نتیجه‌ای برای جستجوی شما یافت نشد' : 'No results found for your search'}
-            </div>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-              {filteredFlights.map((flight) => {
-                // Compact card for pickedme tab
-                if (activeTab === 'pickedme') {
+          {/* Flights List */}
+          <div style={{ width: '100%', margin: '0 auto', maxWidth: '400px', padding: '20px 0' }}>
+            {flightsLoading ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {[1, 2, 3].map((i) => (
+                  <SkeletonLoader key={i} type="search" height="80px" />
+                ))}
+              </div>
+            ) : flightsError ? (
+              <div style={{
+                padding: '20px',
+                textAlign: 'center',
+                color: '#ef4444',
+                fontSize: '14px',
+                fontFamily: 'IRANSansX, sans-serif'
+              }}>
+                {flightsError}
+              </div>
+            ) : flights.length === 0 ? (
+              <div style={{
+                padding: '20px',
+                textAlign: 'center',
+                color: '#848d96',
+                fontSize: '14px',
+                fontFamily: 'IRANSansX, sans-serif'
+              }}>
+                {t('parcelList.flightsNotFound')}
+              </div>
+            ) : filteredFlights.length === 0 ? (
+              <div style={{
+                padding: '20px',
+                textAlign: 'center',
+                color: '#848d96',
+                fontSize: '14px',
+                fontFamily: 'IRANSansX, sans-serif'
+              }}>
+                {isRTL ? 'هیچ نتیجه‌ای برای جستجوی شما یافت نشد' : 'No results found for your search'}
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                {filteredFlights.map((flight) => {
+                  // Compact card for pickedme tab
+                  if (activeTab === 'pickedme') {
+                    return (
+                      <div
+                        key={flight.requestId}
+                        className="flight-card"
+                        style={{
+                          background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #ffffff 100%)',
+                          borderRadius: '16px',
+                          padding: '16px',
+                          border: '2px solid #e2e8f0',
+                          direction: isRTL ? 'rtl' : 'ltr',
+                          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                          transition: 'all 0.3s ease',
+                          position: 'relative',
+                          cursor: 'pointer',
+                          overflow: 'hidden',
+                          fontFamily: 'IRANSansX, sans-serif',
+                          minHeight: 'auto'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.transform = 'translateY(-2px)';
+                          e.currentTarget.style.boxShadow = '0 8px 20px rgba(0, 0, 0, 0.15)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.transform = 'translateY(0)';
+                          e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
+                        }}
+                      >
+                        {/* Compact Header */}
+                        <div style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          marginBottom: '12px'
+                        }}>
+                          <div style={{
+                            fontSize: '14px',
+                            fontWeight: 'bold',
+                            color: '#1e293b'
+                          }}>{flight.fullName}</div>
+
+                          <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px'
+                          }}>
+                            {/* Show Suggestions Button */}
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleShowSuggestions(flight);
+                              }}
+                              style={{
+                                padding: '4px 8px',
+                                borderRadius: '12px',
+                                fontSize: '10px',
+                                fontWeight: 'bold',
+                                backgroundColor: '#3b82f6',
+                                color: 'white',
+                                border: 'none',
+                                cursor: 'pointer',
+                                transition: 'all 0.3s ease'
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.backgroundColor = '#2563eb';
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.backgroundColor = '#3b82f6';
+                              }}
+                            >
+                              {isRTL ? 'پیشنهادات' : 'Suggestions'}
+                            </button>
+
+                            {/* Three Dots Menu */}
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setActiveMenu(activeMenu === flight.requestId ? null : flight.requestId);
+                              }}
+                              style={{
+                                background: 'rgba(107, 114, 128, 0.1)',
+                                border: 'none',
+                                borderRadius: '50%',
+                                width: '24px',
+                                height: '24px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                cursor: 'pointer',
+                                fontSize: '12px',
+                                color: '#6b7280'
+                              }}
+                            >
+                              ⋮
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Flight Route - Compact */}
+                        <div style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          marginBottom: '12px'
+                        }}>
+                          <div style={{
+                            textAlign: 'center',
+                            flex: 1
+                          }}>
+                            <div style={{
+                              fontSize: '16px',
+                              fontWeight: 'bold',
+                              color: '#1e293b'
+                            }}>{flight.originCity}</div>
+                          </div>
+
+                          <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            margin: '0 12px'
+                          }}>
+                            <div style={{
+                              width: '20px',
+                              height: '1px',
+                              background: '#cbd5e1'
+                            }} />
+                            <div style={{
+                              fontSize: '12px'
+                            }}>✈️</div>
+                            <div style={{
+                              width: '20px',
+                              height: '1px',
+                              background: '#cbd5e1'
+                            }} />
+                          </div>
+
+                          <div style={{
+                            textAlign: 'center',
+                            flex: 1
+                          }}>
+                            <div style={{
+                              fontSize: '16px',
+                              fontWeight: 'bold',
+                              color: '#1e293b'
+                            }}>{flight.destinationCity}</div>
+                          </div>
+                        </div>
+
+                        {/* Flight Date and Item Types - Compact */}
+                        <div style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          padding: '8px 12px',
+                          background: '#f8fafc',
+                          borderRadius: '8px',
+                          border: '1px solid #e2e8f0'
+                        }}>
+                          <div>
+                            <div style={{
+                              fontSize: '10px',
+                              color: '#64748b',
+                              marginBottom: '2px'
+                            }}>{isRTL ? 'تاریخ پرواز' : 'FLIGHT DATE'}</div>
+                            <div style={{
+                              fontSize: '12px',
+                              fontWeight: 'bold',
+                              color: '#1e293b'
+                            }}>{formatDate(flight.departureDate)}</div>
+                          </div>
+
+                          {/* Item Types - Compact */}
+                          {((isRTL && flight.itemTypesFa && flight.itemTypesFa.length > 0) ||
+                            (!isRTL && flight.itemTypes && flight.itemTypes.length > 0)) && (
+                              <div style={{
+                                display: 'flex',
+                                flexWrap: 'wrap',
+                                gap: '4px',
+                                maxWidth: '150px'
+                              }}>
+                                {(isRTL ? flight.itemTypesFa : flight.itemTypes)?.slice(0, 2).map((itemType: string, index: number) => (
+                                  <span
+                                    key={index}
+                                    style={{
+                                      fontSize: '8px',
+                                      padding: '2px 4px',
+                                      borderRadius: '4px',
+                                      background: '#dbeafe',
+                                      color: '#1e40af',
+                                      fontWeight: '500'
+                                    }}
+                                  >
+                                    {itemType}
+                                  </span>
+                                ))}
+                                {(isRTL ? flight.itemTypesFa : flight.itemTypes)?.length > 2 && (
+                                  <span style={{
+                                    fontSize: '8px',
+                                    color: '#64748b',
+                                    fontWeight: '500'
+                                  }}>+{(isRTL ? flight.itemTypesFa : flight.itemTypes).length - 2}</span>
+                                )}
+                              </div>
+                            )}
+                        </div>
+
+                        {/* Menu Popup for compact cards */}
+                        {activeMenu === flight.requestId && createPortal(
+                          <>
+                            <div
+                              onClick={() => setActiveMenu(null)}
+                              style={{
+                                position: 'fixed',
+                                top: 0,
+                                left: 0,
+                                right: 0,
+                                bottom: 0,
+                                backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                                zIndex: 99998,
+                                backdropFilter: 'blur(2px)'
+                              }}
+                            />
+                            <div style={{
+                              position: 'fixed',
+                              top: '50%',
+                              left: '50%',
+                              transform: 'translate(-50%, -50%)',
+                              background: 'linear-gradient(135deg, #1a202c 0%, #2d3748 100%)',
+                              borderRadius: '16px',
+                              padding: '16px',
+                              minWidth: '200px',
+                              zIndex: 99999,
+                              boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)'
+                            }}>
+                              <div
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleMenuAction('details', flight);
+                                }}
+                                style={{
+                                  padding: '12px 16px',
+                                  cursor: 'pointer',
+                                  fontSize: '14px',
+                                  color: '#ffffff',
+                                  borderRadius: '8px',
+                                  marginBottom: '8px',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '8px'
+                                }}
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.backgroundColor = 'rgba(59, 130, 246, 0.2)';
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.backgroundColor = 'transparent';
+                                }}
+                              >
+                                <span>📋</span>
+                                {t('flights.menu.details')}
+                              </div>
+                              <div
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleMenuAction('saveToFavorites', flight);
+                                }}
+                                style={{
+                                  padding: '12px 16px',
+                                  cursor: 'pointer',
+                                  fontSize: '14px',
+                                  color: '#ffffff',
+                                  borderRadius: '8px',
+                                  marginBottom: '8px',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '8px'
+                                }}
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.backgroundColor = 'rgba(16, 185, 129, 0.2)';
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.backgroundColor = 'transparent';
+                                }}
+                              >
+                                <span>⭐</span>
+                                {t('flights.menu.saveToFavorites')}
+                              </div>
+                              <div
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleMenuAction('report', flight);
+                                }}
+                                style={{
+                                  padding: '12px 16px',
+                                  cursor: 'pointer',
+                                  fontSize: '14px',
+                                  color: '#ffffff',
+                                  borderRadius: '8px',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '8px'
+                                }}
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.2)';
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.backgroundColor = 'transparent';
+                                }}
+                              >
+                                <span>🚨</span>
+                                {t('flights.menu.report')}
+                              </div>
+                            </div>
+                          </>,
+                          document.body
+                        )}
+                      </div>
+                    );
+                  }
+
+                  // Full card for other tabs
                   return (
                     <div
                       key={flight.requestId}
                       className="flight-card"
                       style={{
                         background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #ffffff 100%)',
-                        borderRadius: '16px',
-                        padding: '16px',
+                        borderRadius: '20px',
+                        padding: '0',
                         border: '2px solid #e2e8f0',
                         direction: isRTL ? 'rtl' : 'ltr',
-                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                        boxShadow: '0 10px 30px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1)',
                         transition: 'all 0.3s ease',
                         position: 'relative',
                         cursor: 'pointer',
                         overflow: 'hidden',
                         fontFamily: 'IRANSansX, sans-serif',
-                        minHeight: 'auto'
+                        minHeight: '200px'
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.transform = 'translateY(-2px)';
-                        e.currentTarget.style.boxShadow = '0 8px 20px rgba(0, 0, 0, 0.15)';
+                        e.currentTarget.style.transform = 'translateY(-5px) scale(1.02)';
+                        e.currentTarget.style.boxShadow = '0 20px 40px rgba(0, 0, 0, 0.2), 0 8px 16px rgba(0, 0, 0, 0.15)';
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.transform = 'translateY(0)';
-                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
+                        e.currentTarget.style.transform = 'translateY(0) scale(1)';
+                        e.currentTarget.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1)';
                       }}
                     >
-                      {/* Compact Header */}
+                      {/* Airline Header */}
                       <div style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        marginBottom: '12px'
+                        background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+                        padding: '20px',
+                        color: 'white',
+                        position: 'relative',
+                        overflow: 'hidden'
                       }}>
+                        {/* Background Pattern */}
                         <div style={{
-                          fontSize: '14px',
-                          fontWeight: 'bold',
-                          color: '#1e293b'
-                        }}>{flight.fullName}</div>
-                        
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          bottom: 0,
+                          backgroundImage: `
+                        radial-gradient(circle at 20% 20%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(255,255,255,0.05) 0%, transparent 50%)
+                      `,
+                          pointerEvents: 'none'
+                        }} />
+
+                        {/* Airline Info */}
+                        <div style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          marginBottom: '15px',
+                          position: 'relative',
+                          zIndex: 1
+                        }}>
+                          <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '10px'
+                          }}>
+                            <div>
+                              <div style={{
+                                fontSize: '16px',
+                                fontWeight: 'bold',
+                                marginBottom: '2px'
+                              }}>{flight.fullName}</div>
+                              <div style={{
+                                fontSize: '10px',
+                                opacity: 0.8
+                              }}>{isRTL ? 'بلیط بار' : 'CARGO TICKET'}</div>
+                            </div>
+                          </div>
+
+                          <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '15px'
+                          }}>
+                            {/* Request ID */}
+                            <div style={{
+                              textAlign: isRTL ? 'left' : 'right'
+                            }}>
+                              {/* Submit Suggestion Button or Selected Status */}
+                              {flight.selectStatus === "ipicked" ? (
+                                <div
+                                  style={{
+                                    padding: '6px 12px',
+                                    borderRadius: '16px',
+                                    fontSize: '10px',
+                                    fontWeight: 'bold',
+                                    backgroundColor: '#6b7280',
+                                    color: 'white',
+                                    border: 'none',
+                                    textAlign: 'center',
+                                    boxShadow: '0 2px 4px rgba(107, 114, 128, 0.3)',
+                                    opacity: 0.7
+                                  }}
+                                >
+                                  {isRTL ? 'انتخاب شده' : 'picked'}
+                                </div>
+                              ) : flight.selectStatus === "pickedme" ? (
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleShowSuggestions(flight);
+                                  }}
+                                  style={{
+                                    padding: '6px 12px',
+                                    borderRadius: '16px',
+                                    fontSize: '10px',
+                                    fontWeight: 'bold',
+                                    backgroundColor: '#3b82f6',
+                                    color: 'white',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.3s ease',
+                                    textAlign: 'center',
+                                    boxShadow: '0 2px 4px rgba(59, 130, 246, 0.3)'
+                                  }}
+                                  onMouseEnter={(e) => {
+                                    e.currentTarget.style.backgroundColor = '#2563eb';
+                                    e.currentTarget.style.transform = 'translateY(-1px)';
+                                    e.currentTarget.style.boxShadow = '0 4px 8px rgba(59, 130, 246, 0.4)';
+                                  }}
+                                  onMouseLeave={(e) => {
+                                    e.currentTarget.style.backgroundColor = '#3b82f6';
+                                    e.currentTarget.style.transform = 'translateY(0)';
+                                    e.currentTarget.style.boxShadow = '0 2px 4px rgba(59, 130, 246, 0.3)';
+                                  }}
+                                >
+                                  {isRTL ? t('flights.showSuggestions') : t('flights.showSuggestions')}
+                                </button>
+                              ) : (
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setSelectedFlightForTrip(flight);
+                                    setSelectedTripOption('');
+                                    setShowSelectTripModal(true);
+                                  }}
+                                  style={{
+                                    padding: '6px 12px',
+                                    borderRadius: '16px',
+                                    fontSize: '10px',
+                                    fontWeight: 'bold',
+                                    backgroundColor: '#10b981',
+                                    color: 'white',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.3s ease',
+                                    textAlign: 'center',
+                                    boxShadow: '0 2px 4px rgba(16, 185, 129, 0.3)'
+                                  }}
+                                  onMouseEnter={(e) => {
+                                    e.currentTarget.style.backgroundColor = '#059669';
+                                    e.currentTarget.style.transform = 'translateY(-1px)';
+                                    e.currentTarget.style.boxShadow = '0 4px 8px rgba(16, 185, 129, 0.4)';
+                                  }}
+                                  onMouseLeave={(e) => {
+                                    e.currentTarget.style.backgroundColor = '#10b981';
+                                    e.currentTarget.style.transform = 'translateY(0)';
+                                    e.currentTarget.style.boxShadow = '0 2px 4px rgba(16, 185, 129, 0.3)';
+                                  }}
+                                >
+                                  {isRTL ? 'پیشنهاد قیمت' : 'Suggest Price'}
+                                </button>
+                              )}
+                            </div>
+
+                            {/* Three Dots Menu */}
+                            <div style={{
+                              position: 'relative',
+                              zIndex: 1001
+                            }}>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setActiveMenu(activeMenu === flight.requestId ? null : flight.requestId);
+                                }}
+                                style={{
+                                  background: 'rgba(255,255,255,0.2)',
+                                  border: 'none',
+                                  borderRadius: '50%',
+                                  width: '32px',
+                                  height: '32px',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  cursor: 'pointer',
+                                  fontSize: '16px',
+                                  color: 'white',
+                                  transition: 'all 0.2s ease'
+                                }}
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.background = 'rgba(255,255,255,0.3)';
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.background = 'rgba(255,255,255,0.2)';
+                                }}
+                              >
+                                ⋮
+                              </button>
+
+                              {/* Popup Menu Overlay */}
+                              {activeMenu === flight.requestId && createPortal(
+                                <>
+                                  {/* Background Overlay */}
+                                  <div
+                                    onClick={() => setActiveMenu(null)}
+                                    style={{
+                                      position: 'fixed',
+                                      top: 0,
+                                      left: 0,
+                                      right: 0,
+                                      bottom: 0,
+                                      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                                      zIndex: 99999,
+                                      backdropFilter: 'blur(4px)'
+                                    }}
+                                  />
+
+                                  <div style={{
+                                    position: 'fixed',
+                                    top: '50%',
+                                    left: '50%',
+                                    transform: 'translate(-50%, -50%)',
+                                    background: 'linear-gradient(135deg, rgba(26, 32, 38, 0.95) 0%, rgba(36, 43, 53, 0.95) 100%)',
+                                    borderRadius: '20px',
+                                    boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1)',
+                                    minWidth: '280px',
+                                    maxWidth: '320px',
+                                    zIndex: 100000,
+                                    overflow: 'hidden',
+                                    backdropFilter: 'blur(20px)',
+                                    border: '1px solid rgba(73, 88, 82, 0.1)',
+                                    animation: 'fadeInScale 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+                                  }}>
+                                    {/* Menu Header */}
+                                    <div style={{
+                                      padding: '10px 10px 8px 10px',
+                                      borderBottom: '1px solid rgba(0, 245, 212, 0.1)',
+                                      textAlign: 'center'
+                                    }}>
+                                    </div>
+
+                                    {/* Menu Items */}
+                                    <div style={{ padding: '8px' }}>
+                                      <div
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleMenuAction('details', flight);
+                                        }}
+                                        style={{
+                                          padding: '16px 20px',
+                                          cursor: 'pointer',
+                                          fontSize: '14px',
+                                          color: '#ffffff',
+                                          borderRadius: '12px',
+                                          transition: 'all 0.3s ease',
+                                          textAlign: isRTL ? 'right' : 'left',
+                                          fontFamily: 'IRANSansX, sans-serif',
+                                          display: 'flex',
+                                          alignItems: 'center',
+                                          gap: '12px',
+                                          marginBottom: '4px'
+                                        }}
+                                        onMouseEnter={(e) => {
+                                          e.currentTarget.style.backgroundColor = 'rgba(80, 180, 255, 0.2)';
+                                          e.currentTarget.style.transform = 'translateX(' + (isRTL ? '-4px' : '4px') + ')';
+                                        }}
+                                        onMouseLeave={(e) => {
+                                          e.currentTarget.style.backgroundColor = 'transparent';
+                                          e.currentTarget.style.transform = 'translateX(0)';
+                                        }}
+                                      >
+                                        <span style={{ fontSize: '16px' }}>📋</span>
+                                        {t('flights.menu.details')}
+                                      </div>
+                                      <div
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleMenuAction('saveToFavorites', flight);
+                                        }}
+                                        style={{
+                                          padding: '16px 20px',
+                                          cursor: 'pointer',
+                                          fontSize: '14px',
+                                          color: '#ffffff',
+                                          borderRadius: '12px',
+                                          transition: 'all 0.3s ease',
+                                          textAlign: isRTL ? 'right' : 'left',
+                                          fontFamily: 'IRANSansX, sans-serif',
+                                          display: 'flex',
+                                          alignItems: 'center',
+                                          gap: '12px',
+                                          marginBottom: '4px'
+                                        }}
+                                        onMouseEnter={(e) => {
+                                          e.currentTarget.style.backgroundColor = 'rgba(255, 193, 7, 0.2)';
+                                          e.currentTarget.style.transform = 'translateX(' + (isRTL ? '-4px' : '4px') + ')';
+                                        }}
+                                        onMouseLeave={(e) => {
+                                          e.currentTarget.style.backgroundColor = 'transparent';
+                                          e.currentTarget.style.transform = 'translateX(0)';
+                                        }}
+                                      >
+                                        <span style={{ fontSize: '16px' }}>⭐</span>
+                                        {t('flights.menu.saveToFavorites')}
+                                      </div>
+                                      <div
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleMenuAction('report', flight);
+                                        }}
+                                        style={{
+                                          padding: '16px 20px',
+                                          cursor: 'pointer',
+                                          fontSize: '14px',
+                                          color: '#ffffff',
+                                          borderRadius: '12px',
+                                          transition: 'all 0.3s ease',
+                                          textAlign: isRTL ? 'right' : 'left',
+                                          fontFamily: 'IRANSansX, sans-serif',
+                                          display: 'flex',
+                                          alignItems: 'center',
+                                          gap: '12px'
+                                        }}
+                                        onMouseEnter={(e) => {
+                                          e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.2)';
+                                          e.currentTarget.style.transform = 'translateX(' + (isRTL ? '-4px' : '4px') + ')';
+                                        }}
+                                        onMouseLeave={(e) => {
+                                          e.currentTarget.style.backgroundColor = 'transparent';
+                                          e.currentTarget.style.transform = 'translateX(0)';
+                                        }}
+                                      >
+                                        <span style={{ fontSize: '16px' }}>🚨</span>
+                                        {t('flights.menu.report')}
+                                      </div>
+                                    </div>
+
+                                    {/* Loading Indicator */}
+                                    {isLoading && (
+                                      <div style={{
+                                        position: 'absolute',
+                                        top: 0,
+                                        left: 0,
+                                        right: 0,
+                                        bottom: 0,
+                                        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        borderRadius: '16px',
+                                        zIndex: 1000
+                                      }}>
+                                        <div style={{
+                                          width: '24px',
+                                          height: '24px',
+                                          border: '3px solid rgba(255, 255, 255, 0.3)',
+                                          borderTop: '3px solid #ffffff',
+                                          borderRadius: '50%',
+                                          animation: 'spin 1s linear infinite'
+                                        }} />
+                                      </div>
+                                    )}
+
+
+                                  </div>
+                                </>,
+                                document.body
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Flight Route */}
                         <div style={{
                           display: 'flex',
                           alignItems: 'center',
-                          gap: '8px'
+                          justifyContent: 'space-between',
+                          position: 'relative',
+                          zIndex: 1
                         }}>
-                          {/* Show Suggestions Button */}
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleShowSuggestions(flight);
-                            }}
-                            style={{
-                              padding: '4px 8px',
-                              borderRadius: '12px',
-                              fontSize: '10px',
+                          <div style={{
+                            textAlign: 'center',
+                            flex: 1
+                          }}>
+                            <div style={{
+                              fontSize: '18px',
                               fontWeight: 'bold',
-                              backgroundColor: '#3b82f6',
-                              color: 'white',
-                              border: 'none',
-                              cursor: 'pointer',
-                              transition: 'all 0.3s ease'
-                            }}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.backgroundColor = '#2563eb';
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.backgroundColor = '#3b82f6';
-                            }}
-                          >
-                            {isRTL ? 'پیشنهادات' : 'Suggestions'}
-                          </button>
-                          
-                          {/* Three Dots Menu */}
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setActiveMenu(activeMenu === flight.requestId ? null : flight.requestId);
-                            }}
-                            style={{
-                              background: 'rgba(107, 114, 128, 0.1)',
-                              border: 'none',
-                              borderRadius: '50%',
-                              width: '24px',
-                              height: '24px',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              cursor: 'pointer',
-                              fontSize: '12px',
-                              color: '#6b7280'
-                            }}
-                          >
-                            ⋮
-                          </button>
+                              marginBottom: '4px'
+                            }}>{flight.originCity}</div>
+                            <div style={{
+                              fontSize: '10px',
+                              opacity: 0.8
+                            }}>{isRTL ? 'مبدأ' : 'FROM'}</div>
+                          </div>
+
+                          <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            margin: '0 20px'
+                          }}>
+                            <div style={{
+                              width: '30px',
+                              height: '1px',
+                              background: 'rgba(255,255,255,0.5)'
+                            }} />
+                            <div style={{
+                              fontSize: '16px',
+                              animation: 'pulse 2s infinite'
+                            }}>✈️</div>
+                            <div style={{
+                              width: '30px',
+                              height: '1px',
+                              background: 'rgba(255,255,255,0.5)'
+                            }} />
+                          </div>
+
+                          <div style={{
+                            textAlign: 'center',
+                            flex: 1
+                          }}>
+                            <div style={{
+                              fontSize: '18px',
+                              fontWeight: 'bold',
+                              marginBottom: '4px'
+                            }}>{flight.destinationCity}</div>
+                            <div style={{
+                              fontSize: '10px',
+                              opacity: 0.8
+                            }}>{isRTL ? 'مقصد' : 'TO'}</div>
+                          </div>
                         </div>
                       </div>
-                      
-                      {/* Flight Route - Compact */}
+
+                      {/* Ticket Info Bar */}
                       <div style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        marginBottom: '12px'
-                      }}>
-                        <div style={{
-                          textAlign: 'center',
-                          flex: 1
-                        }}>
-                          <div style={{
-                            fontSize: '16px',
-                            fontWeight: 'bold',
-                            color: '#1e293b'
-                          }}>{flight.originCity}</div>
-                        </div>
-                        
-                        <div style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '6px',
-                          margin: '0 12px'
-                        }}>
-                          <div style={{
-                            width: '20px',
-                            height: '1px',
-                            background: '#cbd5e1'
-                          }} />
-                          <div style={{
-                            fontSize: '12px'
-                          }}>✈️</div>
-                          <div style={{
-                            width: '20px',
-                            height: '1px',
-                            background: '#cbd5e1'
-                          }} />
-                        </div>
-                        
-                        <div style={{
-                          textAlign: 'center',
-                          flex: 1
-                        }}>
-                          <div style={{
-                            fontSize: '16px',
-                            fontWeight: 'bold',
-                            color: '#1e293b'
-                          }}>{flight.destinationCity}</div>
-                        </div>
-                      </div>
-                      
-                      {/* Flight Date and Item Types - Compact */}
-                      <div style={{
+                        background: 'linear-gradient(90deg, #f1f5f9 0%, #e2e8f0 100%)',
+                        padding: '12px 20px',
                         display: 'flex',
                         justifyContent: 'space-between',
                         alignItems: 'center',
-                        padding: '8px 12px',
-                        background: '#f8fafc',
-                        borderRadius: '8px',
-                        border: '1px solid #e2e8f0'
+                        borderBottom: '2px dashed #cbd5e1'
                       }}>
-                        <div>
+                        <div style={{ flex: 1 }}>
                           <div style={{
                             fontSize: '10px',
                             color: '#64748b',
                             marginBottom: '2px'
                           }}>{isRTL ? 'تاریخ پرواز' : 'FLIGHT DATE'}</div>
                           <div style={{
-                            fontSize: '12px',
+                            fontSize: '14px',
                             fontWeight: 'bold',
-                            color: '#1e293b'
+                            color: '#1e293b',
+                            marginBottom: '8px'
                           }}>{formatDate(flight.departureDate)}</div>
-                        </div>
-                        
-                        {/* Item Types - Compact */}
-                        {((isRTL && flight.itemTypesFa && flight.itemTypesFa.length > 0) ||
-                          (!isRTL && flight.itemTypes && flight.itemTypes.length > 0)) && (
-                          <div style={{
-                            display: 'flex',
-                            flexWrap: 'wrap',
-                            gap: '4px',
-                            maxWidth: '150px'
-                          }}>
-                            {(isRTL ? flight.itemTypesFa : flight.itemTypes)?.slice(0, 2).map((itemType: string, index: number) => (
-                              <span
-                                key={index}
-                                style={{
+
+                          {/* Item Types in Ticket Bar */}
+                          {((isRTL && flight.itemTypesFa && flight.itemTypesFa.length > 0) ||
+                            (!isRTL && flight.itemTypes && flight.itemTypes.length > 0)) && (
+                              <div>
+                                <div style={{
                                   fontSize: '8px',
-                                  padding: '2px 4px',
-                                  borderRadius: '4px',
-                                  background: '#dbeafe',
-                                  color: '#1e40af',
-                                  fontWeight: '500'
-                                }}
-                              >
-                                {itemType}
-                              </span>
-                            ))}
-                            {(isRTL ? flight.itemTypesFa : flight.itemTypes)?.length > 2 && (
-                              <span style={{
-                                fontSize: '8px',
-                                color: '#64748b',
-                                fontWeight: '500'
-                              }}>+{(isRTL ? flight.itemTypesFa : flight.itemTypes).length - 2}</span>
+                                  color: '#64748b',
+                                  marginBottom: '4px'
+                                }}>{isRTL ? 'اقلام مجاز' : 'ALLOWED ITEMS'}</div>
+                                <div style={{
+                                  display: 'flex',
+                                  flexWrap: 'wrap',
+                                  gap: '4px'
+                                }}>
+                                  {(isRTL ? flight.itemTypesFa : flight.itemTypes)?.slice(0, 3).map((itemType: string, index: number) => (
+                                    <span
+                                      key={index}
+                                      style={{
+                                        fontSize: '8px',
+                                        padding: '2px 6px',
+                                        borderRadius: '4px',
+                                        background: '#dbeafe',
+                                        color: '#1e40af',
+                                        fontWeight: '500',
+                                        border: '1px solid #93c5fd'
+                                      }}
+                                    >
+                                      {itemType}
+                                    </span>
+                                  ))}
+                                  {(isRTL ? flight.itemTypesFa : flight.itemTypes)?.length > 3 && (
+                                    <span style={{
+                                      fontSize: '8px',
+                                      color: '#64748b',
+                                      fontWeight: '500'
+                                    }}>+{(isRTL ? flight.itemTypesFa : flight.itemTypes).length - 3}</span>
+                                  )}
+                                </div>
+                              </div>
                             )}
-                          </div>
-                        )}
+                        </div>
+                        <div style={{
+                          width: '60px',
+                          height: '60px',
+                          background: 'white',
+                          border: '2px solid #e2e8f0',
+                          borderRadius: '8px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '8px',
+                          color: '#64748b',
+                          textAlign: 'center',
+                          lineHeight: '1.2'
+                        }}>
+                          QR CODE<br />PLACEHOLDER
+                        </div>
                       </div>
-                      
-                      {/* Menu Popup for compact cards */}
-                      {activeMenu === flight.requestId && createPortal(
-                        <>
-                          <div 
-                            onClick={() => setActiveMenu(null)}
-                            style={{
-                              position: 'fixed',
-                              top: 0,
-                              left: 0,
-                              right: 0,
-                              bottom: 0,
-                              backgroundColor: 'rgba(0, 0, 0, 0.3)',
-                              zIndex: 99998,
-                              backdropFilter: 'blur(2px)'
-                            }}
-                          />
+
+
+
+                      {/* Compact Description */}
+                      {flight.description && (
+                        <div style={{
+                          background: 'rgba(3, 125, 136, 0.8)',
+                          padding: '8px',
+                          border: '1px solid rgba(80, 180, 255, 0.1)',
+                        }}>
                           <div style={{
-                            position: 'fixed',
-                            top: '50%',
-                            left: '50%',
-                            transform: 'translate(-50%, -50%)',
-                            background: 'linear-gradient(135deg, #1a202c 0%, #2d3748 100%)',
-                            borderRadius: '16px',
-                            padding: '16px',
-                            minWidth: '200px',
-                            zIndex: 99999,
-                            boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)'
+                            fontSize: '10px',
+                            color: '#000',
+                            marginBottom: '4px',
+                            fontFamily: 'IRANSansX, sans-serif'
                           }}>
-                            <div
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleMenuAction('details', flight);
-                              }}
-                              style={{
-                                padding: '12px 16px',
-                                cursor: 'pointer',
-                                fontSize: '14px',
-                                color: '#ffffff',
-                                borderRadius: '8px',
-                                marginBottom: '8px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '8px'
-                              }}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.backgroundColor = 'rgba(59, 130, 246, 0.2)';
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.backgroundColor = 'transparent';
-                              }}
-                            >
-                              <span>📋</span>
-                              {t('flights.menu.details')}
-                            </div>
-                            <div
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleMenuAction('saveToFavorites', flight);
-                              }}
-                              style={{
-                                padding: '12px 16px',
-                                cursor: 'pointer',
-                                fontSize: '14px',
-                                color: '#ffffff',
-                                borderRadius: '8px',
-                                marginBottom: '8px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '8px'
-                              }}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.backgroundColor = 'rgba(16, 185, 129, 0.2)';
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.backgroundColor = 'transparent';
-                              }}
-                            >
-                              <span>⭐</span>
-                              {t('flights.menu.saveToFavorites')}
-                            </div>
-                            <div
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleMenuAction('report', flight);
-                              }}
-                              style={{
-                                padding: '12px 16px',
-                                cursor: 'pointer',
-                                fontSize: '14px',
-                                color: '#ffffff',
-                                borderRadius: '8px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '8px'
-                              }}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.2)';
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.backgroundColor = 'transparent';
-                              }}
-                            >
-                              <span>🚨</span>
-                              {t('flights.menu.report')}
-                            </div>
+                            {isRTL ? 'توضیحات:' : 'Description:'}
                           </div>
-                        </>,
-                        document.body
+                          <div style={{
+                            fontSize: '10px',
+                            color: '#fff',
+                            fontFamily: 'IRANSansX, sans-serif',
+                            lineHeight: '1.4'
+                          }}>
+                            {flight.description}
+                          </div>
+                        </div>
                       )}
                     </div>
                   );
-                }
-                
-                // Full card for other tabs
-                return (
-                <div
-                  key={flight.requestId}
-                  className="flight-card"
-                  style={{
-                    background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #ffffff 100%)',
-                    borderRadius: '20px',
-                    padding: '0',
-                    border: '2px solid #e2e8f0',
-                    direction: isRTL ? 'rtl' : 'ltr',
-                    boxShadow: '0 10px 30px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1)',
-                    transition: 'all 0.3s ease',
-                    position: 'relative',
-                    cursor: 'pointer',
-                    overflow: 'hidden',
-                    fontFamily: 'IRANSansX, sans-serif',
-                    minHeight: '200px'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-5px) scale(1.02)';
-                    e.currentTarget.style.boxShadow = '0 20px 40px rgba(0, 0, 0, 0.2), 0 8px 16px rgba(0, 0, 0, 0.15)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'translateY(0) scale(1)';
-                    e.currentTarget.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1)';
-                  }}
-                >
-                  {/* Airline Header */}
-                  <div style={{
-                    background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
-                    padding: '20px',
-                    color: 'white',
-                    position: 'relative',
-                    overflow: 'hidden'
-                  }}>
-                    {/* Background Pattern */}
-                    <div style={{
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      backgroundImage: `
-                        radial-gradient(circle at 20% 20%, rgba(255,255,255,0.1) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 80%, rgba(255,255,255,0.05) 0%, transparent 50%)
-                      `,
-                      pointerEvents: 'none'
-                    }} />
-                    
-                    {/* Airline Info */}
-                    <div style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      marginBottom: '15px',
-                      position: 'relative',
-                      zIndex: 1
-                    }}>
-                      <div style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '10px'
-                      }}>
-                        <div>
-                          <div style={{
-                            fontSize: '16px',
-                            fontWeight: 'bold',
-                            marginBottom: '2px'
-                          }}>{flight.fullName}</div>
-                          <div style={{
-                            fontSize: '10px',
-                            opacity: 0.8
-                          }}>{isRTL ? 'بلیط بار' : 'CARGO TICKET'}</div>
-                        </div>
-                      </div>
-                      
-                      <div style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '15px'
-                      }}>
-                        {/* Request ID */}
-                        <div style={{
-                        textAlign: isRTL ? 'left' : 'right'
-                      }}>
-                        {/* Submit Suggestion Button or Selected Status */}
-                        {flight.selectStatus === "ipicked" ? (
-                          <div
-                            style={{
-                              padding: '6px 12px',
-                              borderRadius: '16px',
-                              fontSize: '10px',
-                              fontWeight: 'bold',
-                              backgroundColor: '#6b7280',
-                              color: 'white',
-                              border: 'none',
-                              textAlign: 'center',
-                              boxShadow: '0 2px 4px rgba(107, 114, 128, 0.3)',
-                              opacity: 0.7
-                            }}
-                          >
-                            {isRTL ? 'انتخاب شده' : 'picked'}
-                          </div>
-                        ) : flight.selectStatus === "pickedme" ? (
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleShowSuggestions(flight);
-                            }}
-                            style={{
-                              padding: '6px 12px',
-                              borderRadius: '16px',
-                              fontSize: '10px',
-                              fontWeight: 'bold',
-                              backgroundColor: '#3b82f6',
-                              color: 'white',
-                              border: 'none',
-                              cursor: 'pointer',
-                              transition: 'all 0.3s ease',
-                              textAlign: 'center',
-                              boxShadow: '0 2px 4px rgba(59, 130, 246, 0.3)'
-                            }}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.backgroundColor = '#2563eb';
-                              e.currentTarget.style.transform = 'translateY(-1px)';
-                              e.currentTarget.style.boxShadow = '0 4px 8px rgba(59, 130, 246, 0.4)';
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.backgroundColor = '#3b82f6';
-                              e.currentTarget.style.transform = 'translateY(0)';
-                              e.currentTarget.style.boxShadow = '0 2px 4px rgba(59, 130, 246, 0.3)';
-                            }}
-                          >
-                            {isRTL ? t('flights.showSuggestions') : t('flights.showSuggestions')}
-                          </button>
-                        ) : (
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSelectedFlightForTrip(flight);
-                              setSelectedTripOption('');
-                              setShowSelectTripModal(true);
-                            }}
-                            style={{
-                              padding: '6px 12px',
-                              borderRadius: '16px',
-                              fontSize: '10px',
-                              fontWeight: 'bold',
-                              backgroundColor: '#10b981',
-                              color: 'white',
-                              border: 'none',
-                              cursor: 'pointer',
-                              transition: 'all 0.3s ease',
-                              textAlign: 'center',
-                              boxShadow: '0 2px 4px rgba(16, 185, 129, 0.3)'
-                            }}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.backgroundColor = '#059669';
-                              e.currentTarget.style.transform = 'translateY(-1px)';
-                              e.currentTarget.style.boxShadow = '0 4px 8px rgba(16, 185, 129, 0.4)';
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.backgroundColor = '#10b981';
-                              e.currentTarget.style.transform = 'translateY(0)';
-                              e.currentTarget.style.boxShadow = '0 2px 4px rgba(16, 185, 129, 0.3)';
-                            }}
-                          >
-                            {isRTL ? 'پیشنهاد قیمت' : 'Suggest Price'}
-                          </button>
-                        )}
-                      </div>
-                        
-                        {/* Three Dots Menu */}
-                        <div style={{
-                          position: 'relative',
-                          zIndex: 1001
-                        }}>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setActiveMenu(activeMenu === flight.requestId ? null : flight.requestId);
-                            }}
-                            style={{
-                              background: 'rgba(255,255,255,0.2)',
-                              border: 'none',
-                              borderRadius: '50%',
-                              width: '32px',
-                              height: '32px',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              cursor: 'pointer',
-                              fontSize: '16px',
-                              color: 'white',
-                              transition: 'all 0.2s ease'
-                            }}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.background = 'rgba(255,255,255,0.3)';
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.background = 'rgba(255,255,255,0.2)';
-                            }}
-                          >
-                            ⋮
-                          </button>
-                          
-                          {/* Popup Menu Overlay */}
-                          {activeMenu === flight.requestId && createPortal(
-                            <>
-                              {/* Background Overlay */}
-                              <div 
-                                onClick={() => setActiveMenu(null)}
-                                style={{
-                                  position: 'fixed',
-                                  top: 0,
-                                  left: 0,
-                                  right: 0,
-                                  bottom: 0,
-                                  backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                                  zIndex: 99999,
-                                  backdropFilter: 'blur(4px)'
-                                }}
-                              />
-                              
-                              <div style={{
-                                position: 'fixed',
-                                top: '50%',
-                                left: '50%',
-                                transform: 'translate(-50%, -50%)',
-                                background: 'linear-gradient(135deg, rgba(26, 32, 38, 0.95) 0%, rgba(36, 43, 53, 0.95) 100%)',
-                                borderRadius: '20px',
-                                boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1)',
-                                minWidth: '280px',
-                                maxWidth: '320px',
-                                zIndex: 100000,
-                                overflow: 'hidden',
-                                backdropFilter: 'blur(20px)',
-                                border: '1px solid rgba(73, 88, 82, 0.1)',
-                                animation: 'fadeInScale 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
-                              }}>
-                                {/* Menu Header */}
-                                <div style={{
-                                  padding: '10px 10px 8px 10px',
-                                  borderBottom: '1px solid rgba(0, 245, 212, 0.1)',
-                                  textAlign: 'center'
-                                }}>
-                                </div>
-                                
-                                {/* Menu Items */}
-                                <div style={{ padding: '8px' }}>
-                                  <div
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      handleMenuAction('details', flight);
-                                    }}
-                                    style={{
-                                      padding: '16px 20px',
-                                      cursor: 'pointer',
-                                      fontSize: '14px',
-                                      color: '#ffffff',
-                                      borderRadius: '12px',
-                                      transition: 'all 0.3s ease',
-                                      textAlign: isRTL ? 'right' : 'left',
-                                      fontFamily: 'IRANSansX, sans-serif',
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                      gap: '12px',
-                                      marginBottom: '4px'
-                                    }}
-                                    onMouseEnter={(e) => {
-                                      e.currentTarget.style.backgroundColor = 'rgba(80, 180, 255, 0.2)';
-                                      e.currentTarget.style.transform = 'translateX(' + (isRTL ? '-4px' : '4px') + ')';
-                                    }}
-                                    onMouseLeave={(e) => {
-                                      e.currentTarget.style.backgroundColor = 'transparent';
-                                      e.currentTarget.style.transform = 'translateX(0)';
-                                    }}
-                                  >
-                                    <span style={{ fontSize: '16px' }}>📋</span>
-                                    {t('flights.menu.details')}
-                                  </div>
-                                  <div
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      handleMenuAction('saveToFavorites', flight);
-                                    }}
-                                    style={{
-                                      padding: '16px 20px',
-                                      cursor: 'pointer',
-                                      fontSize: '14px',
-                                      color: '#ffffff',
-                                      borderRadius: '12px',
-                                      transition: 'all 0.3s ease',
-                                      textAlign: isRTL ? 'right' : 'left',
-                                      fontFamily: 'IRANSansX, sans-serif',
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                      gap: '12px',
-                                      marginBottom: '4px'
-                                    }}
-                                    onMouseEnter={(e) => {
-                                      e.currentTarget.style.backgroundColor = 'rgba(255, 193, 7, 0.2)';
-                                      e.currentTarget.style.transform = 'translateX(' + (isRTL ? '-4px' : '4px') + ')';
-                                    }}
-                                    onMouseLeave={(e) => {
-                                      e.currentTarget.style.backgroundColor = 'transparent';
-                                      e.currentTarget.style.transform = 'translateX(0)';
-                                    }}
-                                  >
-                                    <span style={{ fontSize: '16px' }}>⭐</span>
-                                    {t('flights.menu.saveToFavorites')}
-                                  </div>
-                                  <div
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      handleMenuAction('report', flight);
-                                    }}
-                                    style={{
-                                      padding: '16px 20px',
-                                      cursor: 'pointer',
-                                      fontSize: '14px',
-                                      color: '#ffffff',
-                                      borderRadius: '12px',
-                                      transition: 'all 0.3s ease',
-                                      textAlign: isRTL ? 'right' : 'left',
-                                      fontFamily: 'IRANSansX, sans-serif',
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                      gap: '12px'
-                                    }}
-                                    onMouseEnter={(e) => {
-                                      e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.2)';
-                                      e.currentTarget.style.transform = 'translateX(' + (isRTL ? '-4px' : '4px') + ')';
-                                    }}
-                                    onMouseLeave={(e) => {
-                                      e.currentTarget.style.backgroundColor = 'transparent';
-                                      e.currentTarget.style.transform = 'translateX(0)';
-                                    }}
-                                  >
-                                    <span style={{ fontSize: '16px' }}>🚨</span>
-                                    {t('flights.menu.report')}
-                                  </div>
-                                </div>
-                                
-                                {/* Loading Indicator */}
-                                {isLoading && (
-                                  <div style={{
-                                    position: 'absolute',
-                                    top: 0,
-                                    left: 0,
-                                    right: 0,
-                                    bottom: 0,
-                                    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    borderRadius: '16px',
-                                    zIndex: 1000
-                                  }}>
-                                    <div style={{
-                                      width: '24px',
-                                      height: '24px',
-                                      border: '3px solid rgba(255, 255, 255, 0.3)',
-                                      borderTop: '3px solid #ffffff',
-                                      borderRadius: '50%',
-                                      animation: 'spin 1s linear infinite'
-                                    }} />
-                                  </div>
-                                )}
-                                
-
-                              </div>
-                            </>,
-                            document.body
-                          )}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Flight Route */}
-                    <div style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      position: 'relative',
-                      zIndex: 1
-                    }}>
-                      <div style={{
-                        textAlign: 'center',
-                        flex: 1
-                      }}>
-                        <div style={{
-                          fontSize: '18px',
-                          fontWeight: 'bold',
-                          marginBottom: '4px'
-                        }}>{flight.originCity}</div>
-                        <div style={{
-                          fontSize: '10px',
-                          opacity: 0.8
-                        }}>{isRTL ? 'مبدأ' : 'FROM'}</div>
-                      </div>
-                      
-                      <div style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px',
-                        margin: '0 20px'
-                      }}>
-                        <div style={{
-                          width: '30px',
-                          height: '1px',
-                          background: 'rgba(255,255,255,0.5)'
-                        }} />
-                        <div style={{
-                          fontSize: '16px',
-                          animation: 'pulse 2s infinite'
-                        }}>✈️</div>
-                        <div style={{
-                          width: '30px',
-                          height: '1px',
-                          background: 'rgba(255,255,255,0.5)'
-                        }} />
-                      </div>
-                      
-                      <div style={{
-                        textAlign: 'center',
-                        flex: 1
-                      }}>
-                        <div style={{
-                          fontSize: '18px',
-                          fontWeight: 'bold',
-                          marginBottom: '4px'
-                        }}>{flight.destinationCity}</div>
-                        <div style={{
-                          fontSize: '10px',
-                          opacity: 0.8
-                        }}>{isRTL ? 'مقصد' : 'TO'}</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Ticket Info Bar */}
-                  <div style={{
-                    background: 'linear-gradient(90deg, #f1f5f9 0%, #e2e8f0 100%)',
-                    padding: '12px 20px',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    borderBottom: '2px dashed #cbd5e1'
-                  }}>
-                    <div style={{ flex: 1 }}>
-                      <div style={{
-                        fontSize: '10px',
-                        color: '#64748b',
-                        marginBottom: '2px'
-                      }}>{isRTL ? 'تاریخ پرواز' : 'FLIGHT DATE'}</div>
-                      <div style={{
-                        fontSize: '14px',
-                        fontWeight: 'bold',
-                        color: '#1e293b',
-                        marginBottom: '8px'
-                      }}>{formatDate(flight.departureDate)}</div>
-                      
-                      {/* Item Types in Ticket Bar */}
-                      {((isRTL && flight.itemTypesFa && flight.itemTypesFa.length > 0) ||
-                        (!isRTL && flight.itemTypes && flight.itemTypes.length > 0)) && (
-                        <div>
-                          <div style={{
-                            fontSize: '8px',
-                            color: '#64748b',
-                            marginBottom: '4px'
-                          }}>{isRTL ? 'اقلام مجاز' : 'ALLOWED ITEMS'}</div>
-                          <div style={{
-                            display: 'flex',
-                            flexWrap: 'wrap',
-                            gap: '4px'
-                          }}>
-                            {(isRTL ? flight.itemTypesFa : flight.itemTypes)?.slice(0, 3).map((itemType: string, index: number) => (
-                              <span
-                                key={index}
-                                style={{
-                                  fontSize: '8px',
-                                  padding: '2px 6px',
-                                  borderRadius: '4px',
-                                  background: '#dbeafe',
-                                  color: '#1e40af',
-                                  fontWeight: '500',
-                                  border: '1px solid #93c5fd'
-                                }}
-                              >
-                                {itemType}
-                              </span>
-                            ))}
-                            {(isRTL ? flight.itemTypesFa : flight.itemTypes)?.length > 3 && (
-                              <span style={{
-                                fontSize: '8px',
-                                color: '#64748b',
-                                fontWeight: '500'
-                              }}>+{(isRTL ? flight.itemTypesFa : flight.itemTypes).length - 3}</span>
-                            )}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                    <div style={{
-                      width: '60px',
-                      height: '60px',
-                      background: 'white',
-                      border: '2px solid #e2e8f0',
-                      borderRadius: '8px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: '8px',
-                      color: '#64748b',
-                      textAlign: 'center',
-                      lineHeight: '1.2'
-                    }}>
-                      QR CODE<br/>PLACEHOLDER
-                    </div>
-                  </div>
-
-
-
-                  {/* Compact Description */}
-                  {flight.description && (
-                    <div style={{
-                      background: 'rgba(3, 125, 136, 0.8)',
-                      padding: '8px',
-                      border: '1px solid rgba(80, 180, 255, 0.1)',
-                    }}>
-                      <div style={{
-                        fontSize: '10px',
-                        color: '#000',
-                        marginBottom: '4px',
-                        fontFamily: 'IRANSansX, sans-serif'
-                      }}>
-                        {isRTL ? 'توضیحات:' : 'Description:'}
-                      </div>
-                      <div style={{
-                        fontSize: '10px',
-                        color: '#fff',
-                        fontFamily: 'IRANSansX, sans-serif',
-                        lineHeight: '1.4'
-                      }}>
-                        {flight.description}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+                })}
+              </div>
+            )}
           </div>
-        )}
         </div>
       </div>
-    </div>
 
-    {/* Select Trip Modal */}
-    {showSelectTripModal && selectedFlightForTrip && createPortal(
-      <>
-        {/* Background Overlay */}
-        <div 
-          onClick={handleSelectTripCancel}
-          style={{
+      {/* Select Trip Modal */}
+      {showSelectTripModal && selectedFlightForTrip && createPortal(
+        <>
+          {/* Background Overlay */}
+          <div
+            onClick={handleSelectTripCancel}
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: 'rgba(0, 0, 0, 0.5)',
+              zIndex: 99999,
+              backdropFilter: 'blur(4px)'
+            }}
+          />
+
+          <div style={{
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            background: 'linear-gradient(135deg, rgba(26, 32, 38, 0.95) 0%, rgba(36, 43, 53, 0.95) 100%)',
+            borderRadius: '20px',
+            boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1)',
+            minWidth: '320px',
+            maxWidth: '400px',
+            zIndex: 100000,
+            overflow: 'hidden',
+            backdropFilter: 'blur(20px)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            animation: 'fadeInScale 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+          }}>
+            {/* Modal Header */}
+            <div style={{
+              padding: '20px 20px 16px 20px',
+              borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+              textAlign: 'center',
+              position: 'relative'
+            }}>
+              {/* Close Button */}
+              <button
+                type="button"
+                onClick={handleSelectTripCancel}
+                style={{
+                  position: 'absolute',
+                  top: '16px',
+                  right: isRTL ? 'auto' : '16px',
+                  left: isRTL ? '16px' : 'auto',
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  border: 'none',
+                  borderRadius: '50%',
+                  width: '32px',
+                  height: '32px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  color: '#ffffff',
+                  fontSize: '16px',
+                  transition: 'all 0.3s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
+                  e.currentTarget.style.transform = 'scale(1.1)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+                  e.currentTarget.style.transform = 'scale(1)';
+                }}
+              >
+                ×
+              </button>
+
+              <h3 style={{
+                margin: 0,
+                fontSize: '18px',
+                fontWeight: '600',
+                color: '#ffffff',
+                fontFamily: 'IRANSansX, sans-serif'
+              }}>
+                {isRTL ? 'پیشنهاد قیمت' : 'Price Suggestion'}
+              </h3>
+              <p style={{
+                margin: '4px 0 0 0',
+                fontSize: '12px',
+                color: '#a0a8b0',
+                fontFamily: 'IRANSansX, sans-serif'
+              }}>
+                {isRTL ? `درخواست #${selectedFlightForTrip.requestId}` : `Request #${selectedFlightForTrip.requestId}`}
+              </p>
+            </div>
+
+            {/* Modal Body */}
+            <div style={{ padding: '20px' }}>
+              {/* Flight Info Card */}
+              <div style={{
+                background: 'rgba(16, 185, 129, 0.1)',
+                border: '1px solid rgba(16, 185, 129, 0.3)',
+                borderRadius: '12px',
+                padding: '16px',
+                marginBottom: '20px'
+              }}>
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: '8px'
+                }}>
+                  <span style={{
+                    fontSize: '14px',
+                    color: '#10b981',
+                    fontWeight: '600',
+                    fontFamily: 'IRANSansX, sans-serif'
+                  }}>
+                    {selectedFlightForTrip.originCity} → {selectedFlightForTrip.destinationCity}
+                  </span>
+                  <span style={{
+                    fontSize: '12px',
+                    color: '#a0a8b0',
+                    fontFamily: 'IRANSansX, sans-serif'
+                  }}>
+                    {selectedFlightForTrip.fullName}
+                  </span>
+                </div>
+                <div style={{
+                  fontSize: '12px',
+                  color: '#ffffff',
+                  fontFamily: 'IRANSansX, sans-serif'
+                }}>
+                  {isRTL ? 'لطفاً قیمت پیشنهادی خود را وارد کنید' : 'Please enter your suggested price'}
+                </div>
+              </div>
+
+              {/* Trip Options Dropdown */}
+              <div style={{ marginBottom: '20px' }}>
+                <label style={{
+                  display: 'block',
+                  fontSize: '14px',
+                  color: '#ffffff',
+                  marginBottom: '8px',
+                  fontFamily: 'IRANSansX, sans-serif',
+                  fontWeight: '500'
+                }}>
+                  {isRTL ? 'نوع درخواست:' : 'Request Type:'} <span style={{ color: '#ef4444' }}>*</span>
+                </label>
+                <select
+                  value={selectedTripOption}
+                  onChange={(e) => setSelectedTripOption(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '12px 16px',
+                    borderRadius: '12px',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    color: '#ffffff',
+                    fontSize: '14px',
+                    fontFamily: 'IRANSansX, sans-serif',
+                    outline: 'none',
+                    transition: 'all 0.3s ease'
+                  }}
+                  onFocus={(e) => {
+                    e.currentTarget.style.borderColor = 'rgba(80, 180, 255, 0.5)';
+                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+                  }}
+                >
+                  <option value="" style={{ background: '#1a202c', color: '#ffffff' }}>
+                    {isRTL ? 'نوع درخواست را انتخاب کنید' : 'Select request type'}
+                  </option>
+                  <option value="accept_price" style={{ background: '#1a202c', color: '#ffffff' }}>
+                    {isRTL ? 'قبول قیمت‌های موجود' : 'Accept existing prices'}
+                  </option>
+                  <option value="suggest_price" style={{ background: '#1a202c', color: '#ffffff' }}>
+                    {isRTL ? 'پیشنهاد قیمت جدید' : 'Suggest new price'}
+                  </option>
+                </select>
+              </div>
+
+              {/* Price Suggestion Fields */}
+              {selectedTripOption === 'suggest_price' && (
+                <>
+                  {/* Suggested Price Input */}
+                  <div style={{ marginBottom: '16px' }}>
+                    <label style={{
+                      display: 'block',
+                      fontSize: '14px',
+                      color: '#ffffff',
+                      marginBottom: '8px',
+                      fontFamily: 'IRANSansX, sans-serif',
+                      fontWeight: '500'
+                    }}>
+                      {isRTL ? 'قیمت پیشنهادی:' : 'Suggested Price:'} <span style={{ color: '#ef4444' }}>*</span>
+                    </label>
+                    <input
+                      type="number"
+                      value={suggestionPrice}
+                      onChange={(e) => setSuggestionPrice(e.target.value)}
+                      placeholder={isRTL ? 'قیمت پیشنهادی را وارد کنید' : 'Enter suggested price'}
+                      style={{
+                        width: '100%',
+                        padding: '12px 16px',
+                        borderRadius: '12px',
+                        border: '1px solid rgba(255, 255, 255, 0.2)',
+                        background: 'rgba(255, 255, 255, 0.1)',
+                        color: '#ffffff',
+                        fontSize: '14px',
+                        fontFamily: 'IRANSansX, sans-serif',
+                        outline: 'none',
+                        transition: 'all 0.3s ease'
+                      }}
+                      onFocus={(e) => {
+                        e.currentTarget.style.borderColor = 'rgba(80, 180, 255, 0.5)';
+                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
+                      }}
+                      onBlur={(e) => {
+                        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+                      }}
+                    />
+                  </div>
+
+                  {/* Currency Selection */}
+                  <div style={{ marginBottom: '16px' }}>
+                    <label style={{
+                      display: 'block',
+                      fontSize: '14px',
+                      color: '#ffffff',
+                      marginBottom: '8px',
+                      fontFamily: 'IRANSansX, sans-serif',
+                      fontWeight: '500'
+                    }}>
+                      {isRTL ? 'نوع ارز:' : 'Currency Type:'} <span style={{ color: '#ef4444' }}>*</span>
+                    </label>
+                    <select
+                      value={currency}
+                      onChange={(e) => setCurrency(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '12px 16px',
+                        borderRadius: '12px',
+                        border: '1px solid rgba(255, 255, 255, 0.2)',
+                        background: 'rgba(255, 255, 255, 0.1)',
+                        color: '#ffffff',
+                        fontSize: '14px',
+                        fontFamily: 'IRANSansX, sans-serif',
+                        outline: 'none',
+                        transition: 'all 0.3s ease'
+                      }}
+                      onFocus={(e) => {
+                        e.currentTarget.style.borderColor = 'rgba(80, 180, 255, 0.5)';
+                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
+                      }}
+                      onBlur={(e) => {
+                        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+                      }}
+                    >
+                      <option value="-1" style={{ background: '#1a202c', color: '#ffffff' }}>
+                        {isRTL ? 'نوع ارز را انتخاب کنید' : 'Select Currency'}
+                      </option>
+                      <option value="1" style={{ background: '#1a202c', color: '#ffffff' }}>
+                        {isRTL ? 'دلار' : 'Dollar'}
+                      </option>
+                      <option value="2" style={{ background: '#1a202c', color: '#ffffff' }}>
+                        {isRTL ? 'ریال' : 'Rial'}
+                      </option>
+                    </select>
+                  </div>
+
+                  {/* Description Textarea */}
+                  <div style={{ marginBottom: '20px' }}>
+                    <label style={{
+                      display: 'block',
+                      fontSize: '14px',
+                      color: '#ffffff',
+                      marginBottom: '8px',
+                      fontFamily: 'IRANSansX, sans-serif',
+                      fontWeight: '500'
+                    }}>
+                      {isRTL ? 'توضیحات:' : 'Description:'}
+                    </label>
+                    <textarea
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      placeholder={isRTL ? 'توضیحات خود را وارد کنید' : 'Enter your description'}
+                      rows={3}
+                      style={{
+                        width: '100%',
+                        padding: '12px 16px',
+                        borderRadius: '12px',
+                        border: '1px solid rgba(255, 255, 255, 0.2)',
+                        background: 'rgba(255, 255, 255, 0.1)',
+                        color: '#ffffff',
+                        fontSize: '14px',
+                        fontFamily: 'IRANSansX, sans-serif',
+                        outline: 'none',
+                        transition: 'all 0.3s ease',
+                        resize: 'vertical',
+                        minHeight: '80px'
+                      }}
+                      onFocus={(e) => {
+                        e.currentTarget.style.borderColor = 'rgba(80, 180, 255, 0.5)';
+                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
+                      }}
+                      onBlur={(e) => {
+                        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+                      }}
+                    />
+                  </div>
+                </>
+              )}
+
+              {/* Action Buttons */}
+              <div style={{
+                display: 'flex',
+                gap: '12px',
+                justifyContent: 'flex-end'
+              }}>
+                {/* Cancel Button */}
+                <button
+                  type="button"
+                  onClick={handleSelectTripCancel}
+                  disabled={isLoading}
+                  style={{
+                    padding: '12px 24px',
+                    borderRadius: '12px',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    background: 'transparent',
+                    color: '#ffffff',
+                    fontSize: '14px',
+                    fontFamily: 'IRANSansX, sans-serif',
+                    cursor: isLoading ? 'not-allowed' : 'pointer',
+                    transition: 'all 0.3s ease',
+                    opacity: isLoading ? 0.5 : 1,
+                    fontWeight: '500'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isLoading) {
+                      e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+                      e.currentTarget.style.transform = 'translateY(-1px)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isLoading) {
+                      e.currentTarget.style.background = 'transparent';
+                      e.currentTarget.style.transform = 'translateY(0)';
+                    }
+                  }}
+                >
+                  {isRTL ? 'انصراف' : 'Cancel'}
+                </button>
+
+                {/* Submit Button */}
+                <button
+                  type="button"
+                  onClick={handleSelectTripSubmit}
+                  disabled={isLoading || !selectedTripOption || (selectedTripOption === 'suggest_price' && (!suggestionPrice || currency === '-1'))}
+                  style={{
+                    padding: '14px 28px',
+                    borderRadius: '16px',
+                    border: 'none',
+                    background: (isLoading || !selectedTripOption || (selectedTripOption === 'suggest_price' && (!suggestionPrice || currency === '-1')))
+                      ? 'linear-gradient(135deg, rgba(107, 114, 128, 0.6), rgba(75, 85, 99, 0.6))'
+                      : selectedTripOption === 'suggest_price'
+                        ? 'linear-gradient(135deg, #f59e0b, #d97706, #b45309)'
+                        : 'linear-gradient(135deg, #10b981, #059669, #047857)',
+                    color: '#ffffff',
+                    fontSize: '15px',
+                    fontFamily: 'IRANSansX, sans-serif',
+                    cursor: (isLoading || !selectedTripOption || (selectedTripOption === 'suggest_price' && (!suggestionPrice || currency === '-1'))) ? 'not-allowed' : 'pointer',
+                    transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                    opacity: (isLoading || !selectedTripOption || (selectedTripOption === 'suggest_price' && (!suggestionPrice || currency === '-1'))) ? 0.6 : 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '10px',
+                    fontWeight: '700',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    boxShadow: (isLoading || !selectedTripOption || (selectedTripOption === 'suggest_price' && (!suggestionPrice || currency === '-1')))
+                      ? 'none'
+                      : selectedTripOption === 'suggest_price'
+                        ? '0 8px 25px rgba(245, 158, 11, 0.4), 0 4px 12px rgba(245, 158, 11, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
+                        : '0 8px 25px rgba(16, 185, 129, 0.4), 0 4px 12px rgba(16, 185, 129, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isLoading && selectedTripOption && !(selectedTripOption === 'suggest_price' && (!suggestionPrice || currency === '-1'))) {
+                      if (selectedTripOption === 'suggest_price') {
+                        e.currentTarget.style.background = 'linear-gradient(135deg, #d97706, #b45309, #92400e)';
+                        e.currentTarget.style.transform = 'translateY(-3px) scale(1.02)';
+                        e.currentTarget.style.boxShadow = '0 12px 35px rgba(245, 158, 11, 0.5), 0 6px 20px rgba(245, 158, 11, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3)';
+                      } else {
+                        e.currentTarget.style.background = 'linear-gradient(135deg, #059669, #047857, #065f46)';
+                        e.currentTarget.style.transform = 'translateY(-3px) scale(1.02)';
+                        e.currentTarget.style.boxShadow = '0 12px 35px rgba(16, 185, 129, 0.5), 0 6px 20px rgba(16, 185, 129, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3)';
+                      }
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isLoading && selectedTripOption && !(selectedTripOption === 'suggest_price' && (!suggestionPrice || currency === '-1'))) {
+                      if (selectedTripOption === 'suggest_price') {
+                        e.currentTarget.style.background = 'linear-gradient(135deg, #f59e0b, #d97706, #b45309)';
+                        e.currentTarget.style.transform = 'translateY(0) scale(1)';
+                        e.currentTarget.style.boxShadow = '0 8px 25px rgba(245, 158, 11, 0.4), 0 4px 12px rgba(245, 158, 11, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)';
+                      } else {
+                        e.currentTarget.style.background = 'linear-gradient(135deg, #10b981, #059669, #047857)';
+                        e.currentTarget.style.transform = 'translateY(0) scale(1)';
+                        e.currentTarget.style.boxShadow = '0 8px 25px rgba(16, 185, 129, 0.4), 0 4px 12px rgba(16, 185, 129, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)';
+                      }
+                    }
+                  }}
+                >
+                  {isLoading ? (
+                    <div style={{
+                      width: '18px',
+                      height: '18px',
+                      border: '2px solid rgba(255, 255, 255, 0.3)',
+                      borderTop: '2px solid #ffffff',
+                      borderRadius: '50%',
+                      animation: 'spin 1s linear infinite'
+                    }} />
+                  ) : (
+                    <span style={{
+                      fontSize: '18px',
+                      filter: 'drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3))',
+                      animation: selectedTripOption === 'suggest_price' ? 'pulse 2s infinite' : 'none'
+                    }}>
+                      {selectedTripOption === 'suggest_price' ? '💡' : '✈️'}
+                    </span>
+                  )}
+                  <span style={{
+                    textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)',
+                    fontWeight: '700'
+                  }}>
+                    {selectedTripOption === 'suggest_price'
+                      ? (isRTL ? 'ثبت پیشنهاد' : 'Submit Suggestion')
+                      : (isRTL ? 'ثبت درخواست' : 'Submit Request')
+                    }
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </>,
+        document.body
+      )}
+
+      {/* Suggestions Modal */}
+      {showSuggestionsModal && selectedFlightForSuggestions && createPortal(
+        <>
+          <div style={{
             position: 'fixed',
             top: 0,
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            zIndex: 99999,
-            backdropFilter: 'blur(4px)'
-          }}
-        />
-        
-        <div style={{
-          position: 'fixed',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          background: 'linear-gradient(135deg, rgba(26, 32, 38, 0.95) 0%, rgba(36, 43, 53, 0.95) 100%)',
-          borderRadius: '20px',
-          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1)',
-          minWidth: '320px',
-          maxWidth: '400px',
-          zIndex: 100000,
-          overflow: 'hidden',
-          backdropFilter: 'blur(20px)',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-          animation: 'fadeInScale 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
-        }}>
-          {/* Modal Header */}
-          <div style={{
-            padding: '20px 20px 16px 20px',
-            borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-            textAlign: 'center',
-            position: 'relative'
+            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+            backdropFilter: 'blur(8px)',
+            zIndex: 10000,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '20px'
           }}>
-            {/* Close Button */}
-            <button
-              type="button"
-              onClick={handleSelectTripCancel}
-              style={{
-                position: 'absolute',
-                top: '16px',
-                right: isRTL ? 'auto' : '16px',
-                left: isRTL ? '16px' : 'auto',
-                background: 'rgba(255, 255, 255, 0.1)',
-                border: 'none',
-                borderRadius: '50%',
-                width: '32px',
-                height: '32px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                color: '#ffffff',
-                fontSize: '16px',
-                transition: 'all 0.3s ease'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
-                e.currentTarget.style.transform = 'scale(1.1)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
-                e.currentTarget.style.transform = 'scale(1)';
-              }}
-            >
-              ×
-            </button>
-            
-            <h3 style={{
-              margin: 0,
-              fontSize: '18px',
-              fontWeight: '600',
-              color: '#ffffff',
-              fontFamily: 'IRANSansX, sans-serif'
+            <div className="suggestions-modal" style={{
+              background: 'linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%)',
+              borderRadius: '16px',
+              padding: '24px',
+              maxWidth: '400px',
+              width: '100%',
+              maxHeight: '80vh',
+              overflowY: 'auto',
+              overflowX: 'hidden',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              boxShadow: '0 25px 50px rgba(0, 0, 0, 0.5)',
+              position: 'relative',
+              scrollbarWidth: 'none',
+              msOverflowStyle: 'none'
             }}>
-              {isRTL ? 'پیشنهاد قیمت' : 'Price Suggestion'}
-            </h3>
-            <p style={{
-              margin: '4px 0 0 0',
-              fontSize: '12px',
-              color: '#a0a8b0',
-              fontFamily: 'IRANSansX, sans-serif'
-            }}>
-              {isRTL ? `درخواست #${selectedFlightForTrip.requestId}` : `Request #${selectedFlightForTrip.requestId}`}
-            </p>
-          </div>
-          
-          {/* Modal Body */}
-          <div style={{ padding: '20px' }}>
-            {/* Flight Info Card */}
-            <div style={{
-              background: 'rgba(16, 185, 129, 0.1)',
-              border: '1px solid rgba(16, 185, 129, 0.3)',
-              borderRadius: '12px',
-              padding: '16px',
-              marginBottom: '20px'
-            }}>
+              {/* Header */}
               <div style={{
                 display: 'flex',
+                alignItems: 'center',
                 justifyContent: 'space-between',
-                alignItems: 'center',
-                marginBottom: '8px'
+                marginBottom: '20px',
+                paddingBottom: '16px',
+                borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
               }}>
-                <span style={{
-                  fontSize: '14px',
-                  color: '#10b981',
-                  fontWeight: '600',
-                  fontFamily: 'IRANSansX, sans-serif'
-                }}>
-                  {selectedFlightForTrip.originCity} → {selectedFlightForTrip.destinationCity}
-                </span>
-                <span style={{
-                  fontSize: '12px',
-                  color: '#a0a8b0',
-                  fontFamily: 'IRANSansX, sans-serif'
-                }}>
-                  {selectedFlightForTrip.fullName}
-                </span>
-              </div>
-              <div style={{
-                fontSize: '12px',
-                color: '#ffffff',
-                fontFamily: 'IRANSansX, sans-serif'
-              }}>
-                {isRTL ? 'لطفاً قیمت پیشنهادی خود را وارد کنید' : 'Please enter your suggested price'}
-              </div>
-            </div>
-            
-            {/* Trip Options Dropdown */}
-            <div style={{ marginBottom: '20px' }}>
-              <label style={{
-                display: 'block',
-                fontSize: '14px',
-                color: '#ffffff',
-                marginBottom: '8px',
-                fontFamily: 'IRANSansX, sans-serif',
-                fontWeight: '500'
-              }}>
-                {isRTL ? 'نوع درخواست:' : 'Request Type:'} <span style={{ color: '#ef4444' }}>*</span>
-              </label>
-              <select
-                value={selectedTripOption}
-                onChange={(e) => setSelectedTripOption(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '12px 16px',
-                  borderRadius: '12px',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  background: 'rgba(255, 255, 255, 0.1)',
+                <h3 style={{
+                  margin: 0,
                   color: '#ffffff',
-                  fontSize: '14px',
+                  fontSize: '18px',
                   fontFamily: 'IRANSansX, sans-serif',
-                  outline: 'none',
-                  transition: 'all 0.3s ease'
-                }}
-                onFocus={(e) => {
-                  e.currentTarget.style.borderColor = 'rgba(80, 180, 255, 0.5)';
-                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
-                }}
-                onBlur={(e) => {
-                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
-                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
-                }}
-              >
-                <option value="" style={{ background: '#1a202c', color: '#ffffff' }}>
-                  {isRTL ? 'نوع درخواست را انتخاب کنید' : 'Select request type'}
-                </option>
-                <option value="accept_price" style={{ background: '#1a202c', color: '#ffffff' }}>
-                  {isRTL ? 'قبول قیمت‌های موجود' : 'Accept existing prices'}
-                </option>
-                <option value="suggest_price" style={{ background: '#1a202c', color: '#ffffff' }}>
-                  {isRTL ? 'پیشنهاد قیمت جدید' : 'Suggest new price'}
-                </option>
-              </select>
-            </div>
-            
-            {/* Price Suggestion Fields */}
-            {selectedTripOption === 'suggest_price' && (
-              <>
-                {/* Suggested Price Input */}
-                <div style={{ marginBottom: '16px' }}>
-                  <label style={{
-                    display: 'block',
-                    fontSize: '14px',
-                    color: '#ffffff',
-                    marginBottom: '8px',
-                    fontFamily: 'IRANSansX, sans-serif',
-                    fontWeight: '500'
-                  }}>
-                    {isRTL ? 'قیمت پیشنهادی:' : 'Suggested Price:'} <span style={{ color: '#ef4444' }}>*</span>
-                  </label>
-                  <input
-                    type="number"
-                    value={suggestionPrice}
-                    onChange={(e) => setSuggestionPrice(e.target.value)}
-                    placeholder={isRTL ? 'قیمت پیشنهادی را وارد کنید' : 'Enter suggested price'}
-                    style={{
-                      width: '100%',
-                      padding: '12px 16px',
-                      borderRadius: '12px',
-                      border: '1px solid rgba(255, 255, 255, 0.2)',
-                      background: 'rgba(255, 255, 255, 0.1)',
-                      color: '#ffffff',
-                      fontSize: '14px',
-                      fontFamily: 'IRANSansX, sans-serif',
-                      outline: 'none',
-                      transition: 'all 0.3s ease'
-                    }}
-                    onFocus={(e) => {
-                      e.currentTarget.style.borderColor = 'rgba(80, 180, 255, 0.5)';
-                      e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
-                    }}
-                    onBlur={(e) => {
-                      e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
-                      e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
-                    }}
-                  />
-                </div>
-                
-                {/* Currency Selection */}
-                <div style={{ marginBottom: '16px' }}>
-                  <label style={{
-                    display: 'block',
-                    fontSize: '14px',
-                    color: '#ffffff',
-                    marginBottom: '8px',
-                    fontFamily: 'IRANSansX, sans-serif',
-                    fontWeight: '500'
-                  }}>
-                    {isRTL ? 'نوع ارز:' : 'Currency Type:'} <span style={{ color: '#ef4444' }}>*</span>
-                  </label>
-                  <select
-                    value={currency}
-                    onChange={(e) => setCurrency(e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '12px 16px',
-                      borderRadius: '12px',
-                      border: '1px solid rgba(255, 255, 255, 0.2)',
-                      background: 'rgba(255, 255, 255, 0.1)',
-                      color: '#ffffff',
-                      fontSize: '14px',
-                      fontFamily: 'IRANSansX, sans-serif',
-                      outline: 'none',
-                      transition: 'all 0.3s ease'
-                    }}
-                    onFocus={(e) => {
-                      e.currentTarget.style.borderColor = 'rgba(80, 180, 255, 0.5)';
-                      e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
-                    }}
-                    onBlur={(e) => {
-                      e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
-                      e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
-                    }}
-                  >
-                    <option value="-1" style={{ background: '#1a202c', color: '#ffffff' }}>
-                      {isRTL ? 'نوع ارز را انتخاب کنید' : 'Select Currency'}
-                    </option>
-                    <option value="1" style={{ background: '#1a202c', color: '#ffffff' }}>
-                      {isRTL ? 'دلار' : 'Dollar'}
-                    </option>
-                    <option value="2" style={{ background: '#1a202c', color: '#ffffff' }}>
-                      {isRTL ? 'ریال' : 'Rial'}
-                    </option>
-                  </select>
-                </div>
-                
-                {/* Description Textarea */}
-                <div style={{ marginBottom: '20px' }}>
-                  <label style={{
-                    display: 'block',
-                    fontSize: '14px',
-                    color: '#ffffff',
-                    marginBottom: '8px',
-                    fontFamily: 'IRANSansX, sans-serif',
-                    fontWeight: '500'
-                  }}>
-                    {isRTL ? 'توضیحات:' : 'Description:'}
-                  </label>
-                  <textarea
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    placeholder={isRTL ? 'توضیحات خود را وارد کنید' : 'Enter your description'}
-                    rows={3}
-                    style={{
-                      width: '100%',
-                      padding: '12px 16px',
-                      borderRadius: '12px',
-                      border: '1px solid rgba(255, 255, 255, 0.2)',
-                      background: 'rgba(255, 255, 255, 0.1)',
-                      color: '#ffffff',
-                      fontSize: '14px',
-                      fontFamily: 'IRANSansX, sans-serif',
-                      outline: 'none',
-                      transition: 'all 0.3s ease',
-                      resize: 'vertical',
-                      minHeight: '80px'
-                    }}
-                    onFocus={(e) => {
-                      e.currentTarget.style.borderColor = 'rgba(80, 180, 255, 0.5)';
-                      e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
-                    }}
-                    onBlur={(e) => {
-                      e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
-                      e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
-                    }}
-                  />
-                </div>
-              </>
-            )}
-            
-            {/* Action Buttons */}
-            <div style={{
-              display: 'flex',
-              gap: '12px',
-              justifyContent: 'flex-end'
-            }}>
-              {/* Cancel Button */}
-              <button
-                type="button"
-                onClick={handleSelectTripCancel}
-                disabled={isLoading}
-                style={{
-                  padding: '12px 24px',
-                  borderRadius: '12px',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  background: 'transparent',
-                  color: '#ffffff',
-                  fontSize: '14px',
-                  fontFamily: 'IRANSansX, sans-serif',
-                  cursor: isLoading ? 'not-allowed' : 'pointer',
-                  transition: 'all 0.3s ease',
-                  opacity: isLoading ? 0.5 : 1,
-                  fontWeight: '500'
-                }}
-                onMouseEnter={(e) => {
-                  if (!isLoading) {
-                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
-                    e.currentTarget.style.transform = 'translateY(-1px)';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!isLoading) {
-                    e.currentTarget.style.background = 'transparent';
-                    e.currentTarget.style.transform = 'translateY(0)';
-                  }
-                }}
-              >
-                {isRTL ? 'انصراف' : 'Cancel'}
-              </button>
-              
-              {/* Submit Button */}
-              <button
-                type="button"
-                onClick={handleSelectTripSubmit}
-                disabled={isLoading || !selectedTripOption || (selectedTripOption === 'suggest_price' && (!suggestionPrice || currency === '-1'))}
-                style={{
-                  padding: '14px 28px',
-                  borderRadius: '16px',
-                  border: 'none',
-                  background: (isLoading || !selectedTripOption || (selectedTripOption === 'suggest_price' && (!suggestionPrice || currency === '-1'))) 
-                    ? 'linear-gradient(135deg, rgba(107, 114, 128, 0.6), rgba(75, 85, 99, 0.6))' 
-                    : selectedTripOption === 'suggest_price'
-                      ? 'linear-gradient(135deg, #f59e0b, #d97706, #b45309)'
-                      : 'linear-gradient(135deg, #10b981, #059669, #047857)',
-                  color: '#ffffff',
-                  fontSize: '15px',
-                  fontFamily: 'IRANSansX, sans-serif',
-                  cursor: (isLoading || !selectedTripOption || (selectedTripOption === 'suggest_price' && (!suggestionPrice || currency === '-1'))) ? 'not-allowed' : 'pointer',
-                  transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                  opacity: (isLoading || !selectedTripOption || (selectedTripOption === 'suggest_price' && (!suggestionPrice || currency === '-1'))) ? 0.6 : 1,
+                  fontWeight: '700',
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '10px',
-                  fontWeight: '700',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.5px',
-                  position: 'relative',
-                  overflow: 'hidden',
-                  boxShadow: (isLoading || !selectedTripOption || (selectedTripOption === 'suggest_price' && (!suggestionPrice || currency === '-1'))) 
-                    ? 'none' 
-                    : selectedTripOption === 'suggest_price'
-                      ? '0 8px 25px rgba(245, 158, 11, 0.4), 0 4px 12px rgba(245, 158, 11, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
-                      : '0 8px 25px rgba(16, 185, 129, 0.4), 0 4px 12px rgba(16, 185, 129, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
-                }}
-                onMouseEnter={(e) => {
-                  if (!isLoading && selectedTripOption && !(selectedTripOption === 'suggest_price' && (!suggestionPrice || currency === '-1'))) {
-                    if (selectedTripOption === 'suggest_price') {
-                      e.currentTarget.style.background = 'linear-gradient(135deg, #d97706, #b45309, #92400e)';
-                      e.currentTarget.style.transform = 'translateY(-3px) scale(1.02)';
-                      e.currentTarget.style.boxShadow = '0 12px 35px rgba(245, 158, 11, 0.5), 0 6px 20px rgba(245, 158, 11, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3)';
-                    } else {
-                      e.currentTarget.style.background = 'linear-gradient(135deg, #059669, #047857, #065f46)';
-                      e.currentTarget.style.transform = 'translateY(-3px) scale(1.02)';
-                      e.currentTarget.style.boxShadow = '0 12px 35px rgba(16, 185, 129, 0.5), 0 6px 20px rgba(16, 185, 129, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3)';
-                    }
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!isLoading && selectedTripOption && !(selectedTripOption === 'suggest_price' && (!suggestionPrice || currency === '-1'))) {
-                    if (selectedTripOption === 'suggest_price') {
-                      e.currentTarget.style.background = 'linear-gradient(135deg, #f59e0b, #d97706, #b45309)';
-                      e.currentTarget.style.transform = 'translateY(0) scale(1)';
-                      e.currentTarget.style.boxShadow = '0 8px 25px rgba(245, 158, 11, 0.4), 0 4px 12px rgba(245, 158, 11, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)';
-                    } else {
-                      e.currentTarget.style.background = 'linear-gradient(135deg, #10b981, #059669, #047857)';
-                      e.currentTarget.style.transform = 'translateY(0) scale(1)';
-                      e.currentTarget.style.boxShadow = '0 8px 25px rgba(16, 185, 129, 0.4), 0 4px 12px rgba(16, 185, 129, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)';
-                    }
-                  }
-                }}
-              >
-                {isLoading ? (
-                  <div style={{
-                    width: '18px',
-                    height: '18px',
-                    border: '2px solid rgba(255, 255, 255, 0.3)',
-                    borderTop: '2px solid #ffffff',
-                    borderRadius: '50%',
-                    animation: 'spin 1s linear infinite'
-                  }} />
-                ) : (
-                  <span style={{
-                    fontSize: '18px',
-                    filter: 'drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3))',
-                    animation: selectedTripOption === 'suggest_price' ? 'pulse 2s infinite' : 'none'
-                  }}>
-                    {selectedTripOption === 'suggest_price' ? '💡' : '✈️'}
-                  </span>
-                )}
-                <span style={{
-                  textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)',
-                  fontWeight: '700'
+                  gap: '8px'
                 }}>
-                  {selectedTripOption === 'suggest_price' 
-                    ? (isRTL ? 'ثبت پیشنهاد' : 'Submit Suggestion')
-                    : (isRTL ? 'ثبت درخواست' : 'Submit Request')
-                  }
-                </span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </>,
-      document.body
-    )}
+                  <span style={{ fontSize: '20px' }}>💡</span>
+                  {t('flights.suggestionsModal.title')}
+                </h3>
+                <button
+                  onClick={handleCloseSuggestionsModal}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: '#ffffff',
+                    fontSize: '24px',
+                    cursor: 'pointer',
+                    padding: '4px',
+                    borderRadius: '8px'
+                  }}
+                >
+                  ×
+                </button>
+              </div>
 
-    {/* Suggestions Modal */}
-    {showSuggestionsModal && selectedFlightForSuggestions && createPortal(
-      <>
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.7)',
-          backdropFilter: 'blur(8px)',
-          zIndex: 10000,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '20px'
-        }}>
-          <div className="suggestions-modal" style={{
-            background: 'linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%)',
-            borderRadius: '16px',
-            padding: '24px',
-            maxWidth: '400px',
-            width: '100%',
-            maxHeight: '80vh',
-            overflowY: 'auto',
-            overflowX: 'hidden',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            boxShadow: '0 25px 50px rgba(0, 0, 0, 0.5)',
-            position: 'relative',
-            scrollbarWidth: 'none',
-            msOverflowStyle: 'none'
-          }}>
-            {/* Header */}
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              marginBottom: '20px',
-              paddingBottom: '16px',
-              borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
-            }}>
-              <h3 style={{
-                margin: 0,
-                color: '#ffffff',
-                fontSize: '18px',
-                fontFamily: 'IRANSansX, sans-serif',
-                fontWeight: '700',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px'
+              {/* Suggestions List */}
+              <div style={{
+                marginBottom: '20px'
               }}>
-                <span style={{ fontSize: '20px' }}>💡</span>
-                {t('flights.suggestionsModal.title')}
-              </h3>
-              <button
-                onClick={handleCloseSuggestionsModal}
-                style={{
-                  background: 'none',
-                  border: 'none',
+                <h4 style={{
+                  margin: '0 0 16px 0',
                   color: '#ffffff',
-                  fontSize: '24px',
-                  cursor: 'pointer',
-                  padding: '4px',
-                  borderRadius: '8px'
-                }}
-              >
-                ×
-              </button>
-            </div>
-
-            {/* Suggestions List */}
-            <div style={{
-              marginBottom: '20px'
-            }}>
-              <h4 style={{
-                margin: '0 0 16px 0',
-                color: '#ffffff',
-                fontSize: '16px',
-                fontFamily: 'IRANSansX, sans-serif',
-                fontWeight: '600'
-              }}>
-                {t('flights.suggestionsModal.suggestionsReceived')}
-              </h4>
-              
-              {selectedFlightForSuggestions.suggestions && selectedFlightForSuggestions.suggestions.length > 0 ? (
-                <div style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '12px',
-                  maxHeight: '300px',
-                  overflowY: 'auto'
+                  fontSize: '16px',
+                  fontFamily: 'IRANSansX, sans-serif',
+                  fontWeight: '600'
                 }}>
-                  {selectedFlightForSuggestions.suggestions.map((suggestion) => (
-                    <div
-                      key={suggestion.suggestionId}
-                      style={{
-                        background: suggestion.lastStatusEn === 'accept' 
-                          ? 'rgba(34, 197, 94, 0.1)' 
-                          : suggestion.lastStatusEn === 'rejected'
-                          ? 'rgba(239, 68, 68, 0.1)'
-                          : 'rgba(255, 255, 255, 0.05)',
-                        border: `1px solid ${
-                          suggestion.lastStatusEn === 'accept' 
-                            ? 'rgba(34, 197, 94, 0.3)' 
+                  {t('flights.suggestionsModal.suggestionsReceived')}
+                </h4>
+
+                {selectedFlightForSuggestions.suggestions && selectedFlightForSuggestions.suggestions.length > 0 ? (
+                  <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '12px',
+                    maxHeight: '300px',
+                    overflowY: 'auto'
+                  }}>
+                    {selectedFlightForSuggestions.suggestions.map((suggestion) => (
+                      <div
+                        key={suggestion.suggestionId}
+                        style={{
+                          background: suggestion.lastStatusEn === 'accept'
+                            ? 'rgba(34, 197, 94, 0.1)'
                             : suggestion.lastStatusEn === 'rejected'
-                            ? 'rgba(239, 68, 68, 0.3)'
-                            : 'rgba(255, 255, 255, 0.1)'
-                        }`,
-                        borderRadius: '12px',
-                        padding: '16px',
-                        transition: 'all 0.2s ease'
-                      }}
-                    >
-                      <div style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'flex-start',
-                        marginBottom: '12px'
-                      }}>
-                        <div>
-                          <div style={{
-                            color: '#ffffff',
-                            fontSize: '14px',
-                            fontFamily: 'IRANSansX, sans-serif',
-                            fontWeight: '600',
-                            marginBottom: '4px'
-                          }}>
-                            {suggestion.fullName}
-                          </div>
-                          <div style={{
-                            color: '#ffffff',
-                            fontSize: '16px',
-                            fontFamily: 'IRANSansX, sans-serif',
-                            fontWeight: '700'
-                          }}>
-                            {suggestion.price.toLocaleString()} {suggestion.currency === 1 ? t('flights.suggestionsModal.dollar') : t('flights.suggestionsModal.rial')}
-                          </div>
-                        </div>
-                        <div style={{
-                          background: suggestion.lastStatusEn === 'accept' 
-                            ? 'rgba(34, 197, 94, 0.2)' 
-                            : suggestion.lastStatusEn === 'rejected'
-                            ? 'rgba(239, 68, 68, 0.2)'
-                            : 'rgba(156, 163, 175, 0.2)',
-                          color: suggestion.lastStatusEn === 'accept' 
-                            ? '#22c55e' 
-                            : suggestion.lastStatusEn === 'rejected'
-                            ? '#ef4444'
-                            : '#9ca3af',
-                          padding: '4px 8px',
-                          borderRadius: '6px',
-                          fontSize: '12px',
-                          fontFamily: 'IRANSansX, sans-serif',
-                          fontWeight: '500'
-                        }}>
-                          {isRTL ? suggestion.lastStatusFa : suggestion.lastStatusEn}
-                        </div>
-                      </div>
-                      
-                      {suggestion.description && (
-                        <div style={{
-                          color: 'rgba(255, 255, 255, 0.7)',
-                          fontSize: '12px',
-                          fontFamily: 'IRANSansX, sans-serif',
-                          marginBottom: '12px',
-                          fontStyle: 'italic'
-                        }}>
-                          {suggestion.description}
-                        </div>
-                      )}
-                      
-                      {suggestion.lastStatusEn !== 'accept' && suggestion.lastStatusEn !== 'rejected' && (
+                              ? 'rgba(239, 68, 68, 0.1)'
+                              : 'rgba(255, 255, 255, 0.05)',
+                          border: `1px solid ${suggestion.lastStatusEn === 'accept'
+                              ? 'rgba(34, 197, 94, 0.3)'
+                              : suggestion.lastStatusEn === 'rejected'
+                                ? 'rgba(239, 68, 68, 0.3)'
+                                : 'rgba(255, 255, 255, 0.1)'
+                            }`,
+                          borderRadius: '12px',
+                          padding: '16px',
+                          transition: 'all 0.2s ease'
+                        }}
+                      >
                         <div style={{
                           display: 'flex',
-                          gap: '8px',
-                          justifyContent: 'flex-end'
+                          justifyContent: 'space-between',
+                          alignItems: 'flex-start',
+                          marginBottom: '12px'
                         }}>
-                          <button
-                            onClick={() => handleSuggestionAction(suggestion, 'reject')}
-                            disabled={actionLoading}
-                            style={{
-                              padding: '6px 12px',
-                              borderRadius: '8px',
-                              border: '1px solid rgba(239, 68, 68, 0.3)',
-                              background: 'rgba(239, 68, 68, 0.1)',
-                              color: '#ef4444',
-                              fontSize: '12px',
+                          <div>
+                            <div style={{
+                              color: '#ffffff',
+                              fontSize: '14px',
                               fontFamily: 'IRANSansX, sans-serif',
-                              cursor: actionLoading ? 'not-allowed' : 'pointer',
-                              opacity: actionLoading ? 0.5 : 1,
-                              fontWeight: '500'
-                            }}
-                          >
-                            {t('flights.suggestionsModal.reject')}
-                          </button>
-                          <button
-                            onClick={() => handleSuggestionAction(suggestion, 'accept')}
-                            disabled={actionLoading}
-                            style={{
-                              padding: '6px 12px',
-                              borderRadius: '8px',
-                              border: '1px solid rgba(34, 197, 94, 0.3)',
-                              background: 'rgba(34, 197, 94, 0.1)',
-                              color: '#22c55e',
-                              fontSize: '12px',
+                              fontWeight: '600',
+                              marginBottom: '4px'
+                            }}>
+                              {suggestion.fullName}
+                            </div>
+                            <div style={{
+                              color: '#ffffff',
+                              fontSize: '16px',
                               fontFamily: 'IRANSansX, sans-serif',
-                              cursor: actionLoading ? 'not-allowed' : 'pointer',
-                              opacity: actionLoading ? 0.5 : 1,
-                              fontWeight: '500'
-                            }}
-                          >
-                            {t('flights.suggestionsModal.accept')}
-                          </button>
+                              fontWeight: '700'
+                            }}>
+                              {suggestion.price.toLocaleString()} {suggestion.currency === 1 ? t('flights.suggestionsModal.dollar') : t('flights.suggestionsModal.rial')}
+                            </div>
+                          </div>
+                          <div style={{
+                            background: suggestion.lastStatusEn === 'accept'
+                              ? 'rgba(34, 197, 94, 0.2)'
+                              : suggestion.lastStatusEn === 'rejected'
+                                ? 'rgba(239, 68, 68, 0.2)'
+                                : 'rgba(156, 163, 175, 0.2)',
+                            color: suggestion.lastStatusEn === 'accept'
+                              ? '#22c55e'
+                              : suggestion.lastStatusEn === 'rejected'
+                                ? '#ef4444'
+                                : '#9ca3af',
+                            padding: '4px 8px',
+                            borderRadius: '6px',
+                            fontSize: '12px',
+                            fontFamily: 'IRANSansX, sans-serif',
+                            fontWeight: '500'
+                          }}>
+                            {isRTL ? suggestion.lastStatusFa : suggestion.lastStatusEn}
+                          </div>
                         </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              ) : (
+
+                        {suggestion.description && (
+                          <div style={{
+                            color: 'rgba(255, 255, 255, 0.7)',
+                            fontSize: '12px',
+                            fontFamily: 'IRANSansX, sans-serif',
+                            marginBottom: '12px',
+                            fontStyle: 'italic'
+                          }}>
+                            {suggestion.description}
+                          </div>
+                        )}
+
+                        {suggestion.lastStatusEn !== 'accept' && suggestion.lastStatusEn !== 'rejected' && (
+                          <div style={{
+                            display: 'flex',
+                            gap: '8px',
+                            justifyContent: 'flex-end'
+                          }}>
+                            <button
+                              onClick={() => handleSuggestionAction(suggestion, 'reject')}
+                              disabled={actionLoading}
+                              style={{
+                                padding: '6px 12px',
+                                borderRadius: '8px',
+                                border: '1px solid rgba(239, 68, 68, 0.3)',
+                                background: 'rgba(239, 68, 68, 0.1)',
+                                color: '#ef4444',
+                                fontSize: '12px',
+                                fontFamily: 'IRANSansX, sans-serif',
+                                cursor: actionLoading ? 'not-allowed' : 'pointer',
+                                opacity: actionLoading ? 0.5 : 1,
+                                fontWeight: '500'
+                              }}
+                            >
+                              {t('flights.suggestionsModal.reject')}
+                            </button>
+                            <button
+                              onClick={() => handleSuggestionAction(suggestion, 'accept')}
+                              disabled={actionLoading}
+                              style={{
+                                padding: '6px 12px',
+                                borderRadius: '8px',
+                                border: '1px solid rgba(34, 197, 94, 0.3)',
+                                background: 'rgba(34, 197, 94, 0.1)',
+                                color: '#22c55e',
+                                fontSize: '12px',
+                                fontFamily: 'IRANSansX, sans-serif',
+                                cursor: actionLoading ? 'not-allowed' : 'pointer',
+                                opacity: actionLoading ? 0.5 : 1,
+                                fontWeight: '500'
+                              }}
+                            >
+                              {t('flights.suggestionsModal.accept')}
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div style={{
+                    textAlign: 'center',
+                    padding: '40px 20px',
+                    color: 'rgba(255, 255, 255, 0.6)',
+                    fontSize: '14px',
+                    fontFamily: 'IRANSansX, sans-serif'
+                  }}>
+                    <div style={{ fontSize: '48px', marginBottom: '16px' }}>📭</div>
+                    {t('flights.suggestionsModal.noSuggestions')}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </>,
+        document.body
+      )}
+
+      {/* Confirmation Modal */}
+      {showConfirmDialog && (
+        createPortal(
+          <div style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            zIndex: 10001,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '20px'
+          }}>
+            <div style={{
+              background: 'linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%)',
+              borderRadius: '16px',
+              padding: '24px',
+              maxWidth: '400px',
+              width: '100%',
+              border: '1px solid rgba(255, 255, 255, 0.1)'
+            }}>
+              <div style={{
+                textAlign: 'center',
+                marginBottom: '20px'
+              }}>
                 <div style={{
-                  textAlign: 'center',
-                  padding: '40px 20px',
-                  color: 'rgba(255, 255, 255, 0.6)',
+                  fontSize: '48px',
+                  marginBottom: '16px'
+                }}>
+                  {confirmAction === 'accept' ? '✅' : '❌'}
+                </div>
+                <h3 style={{
+                  margin: '0 0 8px 0',
+                  color: '#ffffff',
+                  fontSize: '18px',
+                  fontFamily: 'IRANSansX, sans-serif',
+                  fontWeight: '700'
+                }}>
+                  {confirmAction === 'accept'
+                    ? t('flights.suggestionsModal.confirmAccept')
+                    : t('flights.suggestionsModal.confirmReject')
+                  }
+                </h3>
+                <p style={{
+                  margin: 0,
+                  color: 'rgba(255, 255, 255, 0.7)',
                   fontSize: '14px',
                   fontFamily: 'IRANSansX, sans-serif'
                 }}>
-                  <div style={{ fontSize: '48px', marginBottom: '16px' }}>📭</div>
-                  {t('flights.suggestionsModal.noSuggestions')}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </>,
-      document.body
-    )}
-
-    {/* Confirmation Modal */}
-    {showConfirmDialog && (
-      createPortal(
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.8)',
-          zIndex: 10001,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '20px'
-        }}>
-          <div style={{
-            background: 'linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%)',
-            borderRadius: '16px',
-            padding: '24px',
-            maxWidth: '400px',
-            width: '100%',
-            border: '1px solid rgba(255, 255, 255, 0.1)'
-          }}>
-            <div style={{
-              textAlign: 'center',
-              marginBottom: '20px'
-            }}>
-              <div style={{
-                fontSize: '48px',
-                marginBottom: '16px'
-              }}>
-                {confirmAction === 'accept' ? '✅' : '❌'}
+                  {t('flights.suggestionsModal.confirmMessage')}
+                </p>
               </div>
-              <h3 style={{
-                margin: '0 0 8px 0',
-                color: '#ffffff',
-                fontSize: '18px',
-                fontFamily: 'IRANSansX, sans-serif',
-                fontWeight: '700'
+
+              <div style={{
+                display: 'flex',
+                gap: '12px',
+                justifyContent: 'center'
               }}>
-                {confirmAction === 'accept' 
-                  ? t('flights.suggestionsModal.confirmAccept')
-                  : t('flights.suggestionsModal.confirmReject')
-                }
-              </h3>
-              <p style={{
-                margin: 0,
-                color: 'rgba(255, 255, 255, 0.7)',
-                fontSize: '14px',
-                fontFamily: 'IRANSansX, sans-serif'
-              }}>
-                {t('flights.suggestionsModal.confirmMessage')}
-              </p>
-            </div>
-            
-            <div style={{
-              display: 'flex',
-              gap: '12px',
-              justifyContent: 'center'
-            }}>
-              <button
-                onClick={handleCancelConfirmAction}
-                disabled={actionLoading}
-                style={{
-                  padding: '12px 24px',
-                  borderRadius: '12px',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  background: 'transparent',
-                  color: '#ffffff',
-                  fontSize: '14px',
-                  fontFamily: 'IRANSansX, sans-serif',
-                  cursor: actionLoading ? 'not-allowed' : 'pointer',
-                  opacity: actionLoading ? 0.5 : 1,
-                  fontWeight: '500'
-                }}
-              >
-                {t('flights.suggestionsModal.cancel')}
-              </button>
-              
-              <button
-                onClick={handleConfirmSuggestionAction}
-                disabled={actionLoading}
-                style={{
-                  padding: '12px 24px',
-                  borderRadius: '12px',
-                  border: 'none',
-                  background: confirmAction === 'accept'
-                    ? 'linear-gradient(135deg, #22c55e, #16a34a, #15803d)'
-                    : 'linear-gradient(135deg, #ef4444, #dc2626, #b91c1c)',
-                  color: '#ffffff',
-                  fontSize: '14px',
-                  fontFamily: 'IRANSansX, sans-serif',
-                  cursor: actionLoading ? 'not-allowed' : 'pointer',
-                  opacity: actionLoading ? 0.5 : 1,
-                  fontWeight: '600'
-                }}
-              >
-                {actionLoading ? (
-                  <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px'
-                  }}>
+                <button
+                  onClick={handleCancelConfirmAction}
+                  disabled={actionLoading}
+                  style={{
+                    padding: '12px 24px',
+                    borderRadius: '12px',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    background: 'transparent',
+                    color: '#ffffff',
+                    fontSize: '14px',
+                    fontFamily: 'IRANSansX, sans-serif',
+                    cursor: actionLoading ? 'not-allowed' : 'pointer',
+                    opacity: actionLoading ? 0.5 : 1,
+                    fontWeight: '500'
+                  }}
+                >
+                  {t('flights.suggestionsModal.cancel')}
+                </button>
+
+                <button
+                  onClick={handleConfirmSuggestionAction}
+                  disabled={actionLoading}
+                  style={{
+                    padding: '12px 24px',
+                    borderRadius: '12px',
+                    border: 'none',
+                    background: confirmAction === 'accept'
+                      ? 'linear-gradient(135deg, #22c55e, #16a34a, #15803d)'
+                      : 'linear-gradient(135deg, #ef4444, #dc2626, #b91c1c)',
+                    color: '#ffffff',
+                    fontSize: '14px',
+                    fontFamily: 'IRANSansX, sans-serif',
+                    cursor: actionLoading ? 'not-allowed' : 'pointer',
+                    opacity: actionLoading ? 0.5 : 1,
+                    fontWeight: '600'
+                  }}
+                >
+                  {actionLoading ? (
                     <div style={{
-                      width: '16px',
-                      height: '16px',
-                      border: '2px solid rgba(255, 255, 255, 0.3)',
-                      borderTop: '2px solid #ffffff',
-                      borderRadius: '50%'
-                    }} />
-                    {t('flights.suggestionsModal.processing')}
-                  </div>
-                ) : (
-                  confirmAction === 'accept' 
-                    ? t('flights.suggestionsModal.confirmAcceptButton')
-                    : t('flights.suggestionsModal.confirmRejectButton')
-                )}
-              </button>
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px'
+                    }}>
+                      <div style={{
+                        width: '16px',
+                        height: '16px',
+                        border: '2px solid rgba(255, 255, 255, 0.3)',
+                        borderTop: '2px solid #ffffff',
+                        borderRadius: '50%'
+                      }} />
+                      {t('flights.suggestionsModal.processing')}
+                    </div>
+                  ) : (
+                    confirmAction === 'accept'
+                      ? t('flights.suggestionsModal.confirmAcceptButton')
+                      : t('flights.suggestionsModal.confirmRejectButton')
+                  )}
+                </button>
+              </div>
             </div>
-          </div>
-        </div>,
-        document.body
-      )
-    )}
+          </div>,
+          document.body
+        )
+      )}
     </div>
   );
 };
