@@ -879,7 +879,6 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
                 itemTypes.map(itemType => (
                   <label
                     key={itemType.itemTypeId}
-                    onClick={() => handleItemTypeToggle(itemType.itemTypeId)}
                     style={{
                       display: 'flex',
                       alignItems: 'center',
@@ -901,7 +900,10 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
                     <input
                       type="checkbox"
                       checked={formData.itemTypeIds.includes(itemType.itemTypeId)}
-                      onChange={() => handleItemTypeToggle(itemType.itemTypeId)}
+                      onChange={(e) => {
+                        e.preventDefault();
+                        handleItemTypeToggle(itemType.itemTypeId);
+                      }}
                       style={{
                         marginRight: isRTL ? '0' : '8px',
                         marginLeft: isRTL ? '8px' : '0',

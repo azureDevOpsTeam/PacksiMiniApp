@@ -366,8 +366,9 @@ const AppContent: React.FC = () => {
       }}>
         <Logo />
       </div>
-      <p style={{ marginBottom: '30px', fontSize: '14px', fontFamily: 'IRANSansX, sans-serif' }}>{t('app.welcome')}</p>
-      <div style={{ width: '100%', maxWidth: '400px' }}>
+      <p style={{ marginBottom: '5px', fontSize: '14px', fontFamily: 'IRANSansX, sans-serif' }}>{t('app.welcome')}</p>
+      {/* Search Input */}
+      {/* <div style={{ width: '100%', maxWidth: '400px' }}>
         <div style={{
           position: 'relative',
           display: 'flex',
@@ -413,7 +414,7 @@ const AppContent: React.FC = () => {
             }}
           />
         </div>
-      </div>
+      </div> */}
 
       {/* Advertisement Banner - Only visible when Unlimited section is hidden */}
       {!showVerifyPhone && !showUpdateProfile && (
