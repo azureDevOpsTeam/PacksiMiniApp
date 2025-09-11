@@ -148,7 +148,10 @@
     "selectItemTypes": "Select Item Types",
     "submit": "Create Request",
     "success": "Your request has been submitted successfully!",
-    "sending": "Sending..."
+    "sending": "Sending...",
+    "generalFiles": "Upload Flight Ticket",
+    "uploadGeneralFiles": "Select Ticket Image",
+    "maxFileSize": "Max File Size (2 MB)"
   },
   "updateProfile": {
     "title": "Please complete your profile information below.",

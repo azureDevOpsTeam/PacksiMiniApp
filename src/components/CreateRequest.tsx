@@ -38,7 +38,7 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
     destinationCityId: 0,
     departureDate: '',
     arrivalDate: '',
-    requestType: -1,
+    requestType: 1,
     description: '',
     maxWeightKg: 0,
     maxLengthCm: 0,
@@ -56,6 +56,7 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
   const generalFileInputRef = useRef<HTMLInputElement>(null); // برایل‌های عمومی
 
   const [activeButton, setActiveButton] = useState<'user' | 'admin'>('user');
+  const [activeTab, setActiveTab] = useState<'passenger' | 'sender'>('passenger');
   const [isLoading, setIsLoading] = useState(false);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -72,8 +73,8 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
     originCityId: { required: true, custom: (value: number) => value !== 0 },
     destinationCityId: { required: true, custom: (value: number) => value !== 0 },
     departureDate: { required: true },
-    arrivalDate: { required: true },
-    requestType: { required: true, custom: (value: number) => value !== -1 }
+    arrivalDate: { required: true }
+    // requestType: { required: true, custom: (value: number) => value !== -1 }
   };
 
   const {
@@ -138,10 +139,10 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
 
 
 
-  const requestTypes = [
-    { id: 1, name: t('createRequest.passenger'), nameEn: 'Passenger' },
-    { id: 2, name: t('createRequest.sender'), nameEn: 'Sender' }
-  ];
+  // const requestTypes = [
+  //   { id: 1, name: t('createRequest.passenger'), nameEn: 'Passenger' },
+  //   { id: 2, name: t('createRequest.sender'), nameEn: 'Sender' }
+  // ];
 
 
 
@@ -228,6 +229,12 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
 
 
   const handleSubmit = async () => {
+    // اگر تب ارسال کننده فعال است، فعلاً پیام نمایش دهیم که در حال توسعه است
+    if (activeTab === 'sender') {
+      setError(isRTL ? 'میتوانید از لیست مسافران سفر منتخب خود را برای ارسال بار انتخاب کنید' : 'You can select your preferred traveler from the list to send your package');
+      return;
+    }
+    
     if (!validateForm(formData)) {
       setError(t('createRequest.validation.fillRequired') || 'لطفاً تمام فیلدهای الزامی را پر کنید');
       return;
@@ -492,8 +499,45 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
           {t('createRequest.title')}
         </p>
 
+        {/* Tabs */}
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          marginBottom: '20px',
+          borderBottom: `1px solid ${theme.colors.border}`,
+          maxWidth: '400px',
+          margin: '0 auto 20px auto'
+        }}>
+          <div
+            onClick={() => setActiveTab('passenger')}
+            style={{
+              padding: '10px 20px',
+              cursor: 'pointer',
+              fontWeight: activeTab === 'passenger' ? 'bold' : 'normal',
+              borderBottom: activeTab === 'passenger' ? `2px solid ${theme.colors.primary}` : 'none',
+              color: activeTab === 'passenger' ? theme.colors.primary : theme.colors.text.secondary,
+              transition: 'all 0.3s ease'
+            }}
+          >
+            {isRTL ? 'مسافر' : 'Passenger'}
+          </div>
+          <div
+            onClick={() => setActiveTab('sender')}
+            style={{
+              padding: '10px 20px',
+              cursor: 'pointer',
+              fontWeight: activeTab === 'sender' ? 'bold' : 'normal',
+              borderBottom: activeTab === 'sender' ? `2px solid ${theme.colors.primary}` : 'none',
+              color: activeTab === 'sender' ? theme.colors.primary : theme.colors.text.secondary,
+              transition: 'all 0.3s ease'
+            }}
+          >
+            {isRTL ? 'ارسال کننده' : 'Sender'}
+          </div>
+        </div>
+
         {/* Form */}
-        <div style={{ maxWidth: '400px', margin: '0 auto' }}>
+        <div style={{ maxWidth: '400px', margin: '0 auto', display: activeTab === 'passenger' ? 'block' : 'none' }}>
           {/* City Fields */}
           <div style={{
             display: 'grid',
@@ -581,7 +625,7 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
           </div>
 
           {/* Request Type */}
-          <div style={{ marginBottom: '20px' }}>
+          {/* <div style={{ marginBottom: '20px' }}>
             <label style={{
               ...labelStyle,
               color: hasFieldError('requestType') ? '#ff4757' : labelStyle.color
@@ -599,7 +643,7 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
                 </option>
               ))}
             </select>
-          </div>
+          </div> */}
 
           {/* فایل‌های عمومی */}
           <div style={{ marginBottom: '20px' }}>
@@ -639,7 +683,7 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
                 {t('createRequest.uploadGeneralFiles') || 'آپلود تصاویر و فایل‌های PDF'}
               </div>
               <div style={{ fontSize: '12px', color: '#848d96', marginTop: '5px' }}>
-                (حداکثر 2 مگابایت برای هر فایل، مجموع 8 مگابایت)
+                {t('createRequest.maxFileSize')}
               </div>
             </div>
 
@@ -940,7 +984,7 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
 
 
           {/* Error Message */}
-          {error && (
+          {error && activeTab === 'passenger' && (
             <div style={{
               marginTop: '15px',
               padding: '12px',
@@ -955,8 +999,41 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
               {error}
             </div>
           )}
+        </div>
 
+        {/* Sender Form */}
+        <div style={{ maxWidth: '400px', margin: '0 auto', display: activeTab === 'sender' ? 'block' : 'none' }}>
+          <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            minHeight: '200px',
+            border: `1px dashed ${theme.colors.border}`,
+            borderRadius: '5px',
+            padding: '20px',
+            color: theme.colors.text.secondary,
+            fontSize: '14px',
+            textAlign: 'center'
+          }}>
+            {isRTL ? 'فرم ارسال کننده در حال توسعه است...' : 'Sender form is under development...'}
+          </div>
 
+          {/* Error Message */}
+          {error && activeTab === 'sender' && (
+            <div style={{
+              marginTop: '15px',
+              padding: '12px',
+              backgroundColor: '#ff4444',
+              color: 'white',
+              borderRadius: '5px',
+              fontSize: '14px',
+              fontFamily: 'IRANSansX, sans-serif',
+              textAlign: 'center',
+              animation: 'fadeIn 0.3s ease'
+            }}>
+              {error}
+            </div>
+          )}
         </div>
       </div>
     </div>
