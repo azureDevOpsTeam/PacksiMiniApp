@@ -128,12 +128,12 @@ const MyRequest: React.FC<MyRequestProps> = () => {
     // Log for debugging
     console.log('Filtering request:', request);
     console.log('Active tab:', activeTab);
-    console.log('Request recordType:', request.recordType);
+    console.log('Request recordType:', request.tripType);
     
     // Filter by tab (recordType)
     const tabFilter = activeTab === 'passenger' 
-      ? request.recordType === 'Passenger'
-      : request.recordType === 'Sender';
+      ? request.tripType === 'Passenger'
+      : request.tripType === 'Sender';
     
     console.log('Tab filter result:', tabFilter);
     
@@ -146,7 +146,7 @@ const MyRequest: React.FC<MyRequestProps> = () => {
     return (
       request.originCity?.toLowerCase().includes(query) ||
       request.destinationCity?.toLowerCase().includes(query) ||
-      request.recordType?.toLowerCase().includes(query) ||
+      request.tripType?.toLowerCase().includes(query) ||
       request.status?.toLowerCase().includes(query)
     );
   });
@@ -508,7 +508,7 @@ const MyRequest: React.FC<MyRequestProps> = () => {
                       fontFamily: 'IRANSansX, sans-serif'
                     }}>
                       <div>
-                        {isRTL ? 'نوع:' : 'Type:'} {request.recordType === 'Passenger' ? (isRTL ? 'مسافر' : 'Passenger') : (isRTL ? 'ارسال کننده' : 'Sender')}
+                        {isRTL ? 'نوع:' : 'Type:'} {request.tripType === 'Passenger' ? (isRTL ? 'مسافر' : 'Passenger') : (isRTL ? 'ارسال کننده' : 'Sender')}
                       </div>
                       {request.createdAt && (
                         <div>

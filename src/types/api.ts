@@ -307,7 +307,7 @@ export interface MyRequestTrip {
   destinationCityFa?: string;
   departureDate: string;
   arrivalDate: string;
-  recordType: string; // 'Passenger' or 'Sender'
+  tripType: string; // 'Passenger' or 'Sender'
   status: string;
   description?: string;
   maxWeightKg?: number;
