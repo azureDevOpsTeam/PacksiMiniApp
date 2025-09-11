@@ -465,26 +465,68 @@ class ApiService {
 
   async getMyRequestTrips(): Promise<GetMyRequestTripsResponse> {
     try {
+      // Log headers for debugging
+      const headers = this.getHeaders();
+      console.log('Request headers:', headers);
+      
+      // Make the actual API call
+      console.log('Calling GetMyRequestTrips API endpoint');
       const response = await fetch(`${API_BASE_URL}/Request/GetMyRequestTrips`, {
         method: 'GET',
         headers: this.getHeaders()
       });
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-
-      const data = await response.json();
       
-      // Transform the response to match our expected format
-      return {
-        success: data.requestStatus?.value === 1,
-        data: data.objectResult || [],
-        message: data.message
-      };
+      console.log('Response status:', response.status);
+      
+      // Get the raw text first for debugging
+      const responseText = await response.text();
+      console.log('Response text:', responseText);
+      
+      // Try to parse the JSON
+      let data;
+      try {
+        data = JSON.parse(responseText);
+        console.log('Parsed response data:', data);
+      } catch (parseError) {
+        console.error('Error parsing response JSON:', parseError);
+        return {
+          success: false,
+          data: [],
+          message: 'Invalid JSON response from server'
+        };
+      }
+      
+      // Check if the response has the expected structure
+      if (data && data.objectResult) {
+        // API returns data in objectResult, but our interface expects it in data
+        return {
+          success: true,
+          data: data.objectResult,
+          message: data.message
+        };
+      } else if (data && data.requestStatus) {
+        // Handle API error with requestStatus
+        return {
+          success: data.requestStatus.value === 0,
+          data: data.objectResult || [],
+          message: data.message
+        };
+      } else {
+        // Unexpected response structure
+        console.error('Unexpected API response structure:', data);
+        return {
+          success: false,
+          data: [],
+          message: 'Unexpected API response structure'
+        };
+      }
     } catch (error) {
-      console.error('Error fetching my request trips:', error);
-      throw error;
+      console.error('Error in getMyRequestTrips:', error);
+      return {
+        success: false,
+        data: [],
+        message: error instanceof Error ? error.message : 'Unknown error'
+      };
     }
   }
 

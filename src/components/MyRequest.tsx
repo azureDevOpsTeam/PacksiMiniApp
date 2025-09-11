@@ -101,7 +101,17 @@ const MyRequest: React.FC<MyRequestProps> = () => {
         setRequestsLoading(true);
         setRequestsError(null);
         const response = await apiService.getMyRequestTrips();
-        setRequests(response.data || []);
+        console.log('MyRequest component received response:', response);
+        console.log('Response data:', response.data);
+        console.log('Response success:', response.success);
+        
+        if (response.success && response.data && response.data.length > 0) {
+          console.log('Setting requests with data:', response.data);
+          setRequests(response.data);
+        } else {
+          console.log('No requests data or success is false');
+          setRequests([]);
+        }
       } catch (error) {
         console.error('Error fetching requests:', error);
         setRequestsError(isRTL ? 'خطا در دریافت درخواست‌ها' : 'Error fetching requests');
@@ -115,10 +125,17 @@ const MyRequest: React.FC<MyRequestProps> = () => {
 
   // Filter requests based on active tab and search query
   const filteredRequests = requests.filter(request => {
+    // Log for debugging
+    console.log('Filtering request:', request);
+    console.log('Active tab:', activeTab);
+    console.log('Request recordType:', request.recordType);
+    
     // Filter by tab (recordType)
     const tabFilter = activeTab === 'passenger' 
       ? request.recordType === 'Passenger'
       : request.recordType === 'Sender';
+    
+    console.log('Tab filter result:', tabFilter);
     
     if (!tabFilter) return false;
 
@@ -133,6 +150,9 @@ const MyRequest: React.FC<MyRequestProps> = () => {
       request.status?.toLowerCase().includes(query)
     );
   });
+  
+  // Log filtered requests
+  console.log('Filtered requests:', filteredRequests);
 
   const getStatusDisplay = (status: string) => {
     const statusMap: Record<string, { fa: string; en: string; color: string }> = {
