@@ -877,8 +877,12 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
                 </div>
               ) : (
                 itemTypes.map(itemType => (
-                  <label
+                  <div
                     key={itemType.itemTypeId}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleItemTypeToggle(itemType.itemTypeId);
+                    }}
                     style={{
                       display: 'flex',
                       alignItems: 'center',
@@ -894,23 +898,23 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
                       transition: 'all 0.2s ease',
                       boxShadow: formData.itemTypeIds.includes(itemType.itemTypeId)
                         ? '0 0 0 1px #50b4ff40'
-                        : 'none'
+                        : 'none',
+                      userSelect: 'none'
                     }}
                   >
                     <input
                       type="checkbox"
                       checked={formData.itemTypeIds.includes(itemType.itemTypeId)}
-                      onChange={(e) => {
-                        e.preventDefault();
-                        handleItemTypeToggle(itemType.itemTypeId);
-                      }}
+                      onChange={() => {}}
+                      onClick={(e) => e.stopPropagation()}
                       style={{
                         marginRight: isRTL ? '0' : '8px',
                         marginLeft: isRTL ? '8px' : '0',
                         width: '18px',
                         height: '18px',
                         accentColor: '#50b4ff',
-                        cursor: 'pointer'
+                        cursor: 'pointer',
+                        pointerEvents: 'none'
                       }}
                     />
                     <span style={{
@@ -925,7 +929,7 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
                     }}>
                       {isRTL ? itemType.persianName : itemType.itemType}
                     </span>
-                  </label>
+                  </div>
                 ))
               )}
             </div>

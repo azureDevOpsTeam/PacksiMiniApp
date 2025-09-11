@@ -323,7 +323,7 @@ const AppContent: React.FC = () => {
         justifyContent: 'flex-start',
         alignItems: 'center',
         minHeight: '100vh',
-        padding: '80px 20px 0 20px',
+        padding: '80px 20px 30px 20px',
         textAlign: 'center',
         position: 'relative'
       }}>
@@ -347,7 +347,7 @@ const AppContent: React.FC = () => {
       justifyContent: 'flex-start',
       alignItems: 'center',
       minHeight: '100vh',
-      padding: '80px 20px 0 20px',
+      padding: '80px 20px 30px 20px',
       textAlign: 'center',
       position: 'relative'
     }}>
