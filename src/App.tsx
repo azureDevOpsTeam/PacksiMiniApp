@@ -677,24 +677,24 @@ const AppContent: React.FC = () => {
 
           {/* Create New Request Link */}
           <button onClick={() => setCurrentPage('createRequest')}
-            disabled={(showVerifyPhone && showUpdateProfile)}
+            disabled={(showVerifyPhone)}
             style={{
               display: 'flex',
               alignItems: 'center',
               padding: '12px',
-              backgroundColor: (showVerifyPhone && showUpdateProfile) ? '#2f2e2e' : '#212a33', // رنگ غیرفعال
+              backgroundColor: (showVerifyPhone) ? '#2f2e2e' : '#212a33', // رنگ غیرفعال
               borderRadius: '8px 8px 0 0',
-              cursor: (showVerifyPhone && showUpdateProfile) ? 'not-allowed' : 'pointer', border: 'none',
+              cursor: (showVerifyPhone) ? 'not-allowed' : 'pointer', border: 'none',
               width: '100%',
               direction: language === 'fa' ? 'rtl' : 'ltr',
               marginBottom: '1px',
-              opacity: (showVerifyPhone && showUpdateProfile) ? 0.6 : 1, // شفافیت غیرفعال
+              opacity: (showVerifyPhone) ? 0.6 : 1, // شفافیت غیرفعال
             }}>
             <div style={{
               width: '24px',
               height: '24px',
               borderRadius: '50%',
-              border: '1px solid ' + ((showVerifyPhone && showUpdateProfile) ? '#999' : '#50b4ff'),
+              border: '1px solid ' + ((showVerifyPhone) ? '#999' : '#50b4ff'),
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -706,7 +706,7 @@ const AppContent: React.FC = () => {
               </svg>
             </div>
             <span style={{
-              color: (showVerifyPhone && showUpdateProfile) ? '#999' : '#50b4ff',
+              color: (showVerifyPhone) ? '#999' : '#50b4ff',
               fontSize: '12px',
               fontFamily: 'IRANSansX, sans-serif',
               fontWeight: '500'
