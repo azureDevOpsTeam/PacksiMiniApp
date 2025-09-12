@@ -1480,7 +1480,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                         onClick={() => (activeTab === 'incoming' || activeTab === 'outgoing') ? toggleAccordion(flight.requestId) : undefined}
                         style={{
                           background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
-                          padding: '20px',
+                          padding: '10px 20px',
                           color: 'white',
                           position: 'relative',
                           overflow: 'hidden',
@@ -1898,7 +1898,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                         {(activeTab === 'incoming' || activeTab === 'outgoing') && (
                           <div style={{
                             textAlign: 'center',
-                            marginTop: '10px',
+                            marginTop: '2px',
                             fontSize: '14px',
                             opacity: 0.7,
                             transition: 'transform 0.3s ease'
