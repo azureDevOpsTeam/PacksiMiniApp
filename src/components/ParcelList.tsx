@@ -1203,6 +1203,88 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                             )}
                         </div>
 
+                        {/* Action Buttons - Added for ipicked and pickedme tabs */}
+                        <div style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          marginTop: '16px',
+                          gap: '0px',
+                          borderRadius: '8px',
+                          overflow: 'hidden',
+                          boxShadow: '0 2px 6px rgba(0, 0, 0, 0.08)',
+                          border: '1px solid #e5e7eb'
+                        }}>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              // Handle first button action
+                              console.log('First button clicked for flight:', flight.requestId);
+                            }}
+                            style={{
+                              flex: 1,
+                              padding: '10px 12px',
+                              borderRadius: '0',
+                              fontSize: '12px',
+                              fontWeight: '600',
+                              backgroundColor: '#ffffff',
+                              color: '#4b5563',
+                              border: 'none',
+                              borderRight: isRTL ? 'none' : '1px solid #e5e7eb',
+                              borderLeft: isRTL ? '1px solid #e5e7eb' : 'none',
+                              cursor: 'pointer',
+                              transition: 'all 0.2s ease',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              gap: '4px'
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.backgroundColor = '#f9fafb';
+                              e.currentTarget.style.color = '#2563eb';
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.backgroundColor = '#ffffff';
+                              e.currentTarget.style.color = '#4b5563';
+                            }}
+                          >
+                            {isRTL ? 'تماس' : 'Contact'} <span style={{ fontSize: '14px' }}>📞</span>
+                          </button>
+                          
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              // Handle second button action
+                              console.log('Second button clicked for flight:', flight.requestId);
+                            }}
+                            style={{
+                              flex: 1,
+                              padding: '10px 12px',
+                              borderRadius: '0',
+                              fontSize: '12px',
+                              fontWeight: '600',
+                              backgroundColor: '#f8f9fa',
+                              color: '#374151',
+                              border: 'none',
+                              cursor: 'pointer',
+                              transition: 'all 0.2s ease',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              gap: '4px'
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.backgroundColor = '#e5e7eb';
+                              e.currentTarget.style.color = '#1f2937';
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.backgroundColor = '#f8f9fa';
+                              e.currentTarget.style.color = '#374151';
+                            }}
+                          >
+                            {isRTL ? 'پیام' : 'Message'} <span style={{ fontSize: '14px' }}>💬</span>
+                          </button>
+                        </div>
+
                         {/* Menu Popup for compact cards */}
                         {activeMenu === flight.requestId && createPortal(
                           <>
