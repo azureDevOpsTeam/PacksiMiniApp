@@ -477,57 +477,57 @@ const AppContent: React.FC = () => {
       {/* Unlimited Access Section */}
       {(showVerifyPhone || showUpdateProfile) && (
         <div style={{
-        marginTop: (showVerifyPhone || showUpdateProfile) ? '0px' : '30px',
-        width: '100%',
-        maxWidth: '400px'
-      }}>
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            margin: '0 0 20px 0',
-            gap: '5px'
-          }}
-        >
-          {/* متن */}
-          <h3
+          marginTop: (showVerifyPhone || showUpdateProfile) ? '0px' : '30px',
+          width: '100%',
+          maxWidth: '400px'
+        }}>
+          <div
             style={{
-              color: '#50b4ff',
-              fontSize: '12px',
-              fontFamily: 'IRANSansX, sans-serif',
-              fontWeight: '700',
-              textAlign: language === 'fa' ? 'right' : 'left', // 👈 متن راست یا چپ
-              direction: language === 'fa' ? 'rtl' : 'ltr',
-              margin: 0,
-            }}
-          >
-            {t('unlimited.title')}
-          </h3>
-
-          {/* دکمه */}
-          <button
-            onClick={() => setShowUnlimitedHelpModal(true)}
-            style={{
-              background: 'none',
-              border: '1px solid #848d96',
-              color: '#848d96',
-              fontSize: '12px',
-              fontWeight: '600',
-              cursor: 'pointer',
-              padding: '0',
-              borderRadius: '50%',
-              width: '19px',
-              height: '19px',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
-              marginLeft: language === 'fa' ? '8px' : '0', // فاصله مناسب
-              marginRight: language === 'fa' ? '0' : '8px',
+              margin: '0 0 20px 0',
+              gap: '5px'
             }}
           >
-            ?
-          </button>
-        </div>
+            {/* متن */}
+            <h3
+              style={{
+                color: '#50b4ff',
+                fontSize: '12px',
+                fontFamily: 'IRANSansX, sans-serif',
+                fontWeight: '700',
+                textAlign: language === 'fa' ? 'right' : 'left', // 👈 متن راست یا چپ
+                direction: language === 'fa' ? 'rtl' : 'ltr',
+                margin: 0,
+              }}
+            >
+              {t('unlimited.title')}
+            </h3>
+
+            {/* دکمه */}
+            <button
+              onClick={() => setShowUnlimitedHelpModal(true)}
+              style={{
+                background: 'none',
+                border: '1px solid #848d96',
+                color: '#848d96',
+                fontSize: '12px',
+                fontWeight: '600',
+                cursor: 'pointer',
+                padding: '0',
+                borderRadius: '50%',
+                width: '19px',
+                height: '19px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginLeft: language === 'fa' ? '8px' : '0', // فاصله مناسب
+                marginRight: language === 'fa' ? '0' : '8px',
+              }}
+            >
+              ?
+            </button>
+          </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', marginBottom: '30px' }}>
             {showVerifyPhone && (
@@ -676,23 +676,25 @@ const AppContent: React.FC = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
 
           {/* Create New Request Link */}
-          <button onClick={() => setCurrentPage('createRequest')} style={{
-            display: 'flex',
-            alignItems: 'center',
-            padding: '12px',
-            backgroundColor: '#212a33',
-            borderRadius: '8px 8px 0 0',
-            cursor: 'pointer',
-            border: 'none',
-            width: '100%',
-            direction: language === 'fa' ? 'rtl' : 'ltr',
-            marginBottom: '1px'
-          }}>
+          <button onClick={() => setCurrentPage('createRequest')}
+            disabled={(showVerifyPhone && showUpdateProfile)}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              padding: '12px',
+              backgroundColor: (showVerifyPhone && showUpdateProfile) ? '#2f2e2e' : '#212a33', // رنگ غیرفعال
+              borderRadius: '8px 8px 0 0',
+              cursor: (showVerifyPhone && showUpdateProfile) ? 'not-allowed' : 'pointer', border: 'none',
+              width: '100%',
+              direction: language === 'fa' ? 'rtl' : 'ltr',
+              marginBottom: '1px',
+              opacity: (showVerifyPhone && showUpdateProfile) ? 0.6 : 1, // شفافیت غیرفعال
+            }}>
             <div style={{
               width: '24px',
               height: '24px',
               borderRadius: '50%',
-              border: '1px solid #50b4ff',
+              border: '1px solid ' + ((showVerifyPhone && showUpdateProfile) ? '#999' : '#50b4ff'),
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -704,7 +706,7 @@ const AppContent: React.FC = () => {
               </svg>
             </div>
             <span style={{
-              color: '#50b4ff',
+              color: (showVerifyPhone && showUpdateProfile) ? '#999' : '#50b4ff',
               fontSize: '12px',
               fontFamily: 'IRANSansX, sans-serif',
               fontWeight: '500'

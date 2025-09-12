@@ -56,194 +56,94 @@ const ModalOverlay = styled.div<{ $isOpen: boolean }>`
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, rgba(0, 0, 0, 0.8) 0%, rgba(30, 30, 60, 0.9) 100%);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
+  background: rgba(15, 23, 42, 0.9);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   display: ${props => props.$isOpen ? 'flex' : 'none'};
   align-items: center;
   justify-content: center;
   z-index: 9999;
   padding: ${({ theme }) => theme.spacing.md};
-  animation: ${fadeIn} 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: ${fadeIn} 0.4s ease-out;
 `;
 
 const ModalContainer = styled.div`
-  background: linear-gradient(145deg, 
-    rgba(255, 255, 255, 0.95) 0%, 
-    rgba(240, 248, 255, 0.98) 50%, 
-    rgba(230, 240, 255, 0.95) 100%);
-  border-radius: 24px;
+  background: #1e293b;
+  border-radius: 16px;
   width: 100%;
-  max-width: 500px;
+  max-width: 480px;
   max-height: 90vh;
   overflow: hidden;
-  box-shadow: 
-    0 25px 50px rgba(0, 0, 0, 0.25),
-    0 0 0 1px rgba(255, 255, 255, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.6);
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  animation: ${fadeIn} 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  animation: ${fadeIn} 0.4s ease-out;
   position: relative;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
-  }
 `;
 
 const ModalHeader = styled.div`
-  background: linear-gradient(135deg, 
-    #667eea 0%, 
-    #764ba2 50%, 
-    #f093fb 100%);
+  background: #0f172a;
   color: white;
-  padding: 16px 24px;
+  padding: 20px 24px;
   text-align: center;
   position: relative;
-  overflow: hidden;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, 
-      transparent, 
-      rgba(255, 255, 255, 0.2), 
-      transparent);
-    animation: ${shimmer} 3s infinite;
-  }
-  
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, 
-      transparent, 
-      rgba(255, 255, 255, 0.6), 
-      transparent);
-  }
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 `;
 
 const ModalTitle = styled.h2`
-  font-size: 20px;
-  font-weight: 700;
+  font-size: 18px;
+  font-weight: 600;
   font-family: 'IRANSansX', sans-serif;
   margin: 0;
-  text-shadow: 
-    0 2px 4px rgba(0, 0, 0, 0.3),
-    0 0 20px rgba(255, 255, 255, 0.3);
-  background: linear-gradient(45deg, #ffffff, #f0f8ff, #ffffff);
-  background-size: 200% 200%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: ${shimmer} 2s infinite;
+  color: #ffffff;
   position: relative;
   z-index: 1;
 `;
 
 const HeaderIcon = styled.div`
-  font-size: 32px;
+  font-size: 24px;
   margin-bottom: 8px;
   display: inline-block;
-  animation: ${float} 3s ease-in-out infinite;
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
   position: relative;
   z-index: 1;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 50px;
-    height: 50px;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    z-index: -1;
-    animation: ${pulse} 2s ease-in-out infinite;
-  }
 `;
 
 const ModalContent = styled.div`
-  padding: 16px 24px;
-  height: 450px;
+  padding: 20px 24px;
+  height: 400px;
   overflow-y: auto;
   position: relative;
-  background: linear-gradient(180deg, 
-    rgba(255, 255, 255, 0.1) 0%, 
-    rgba(240, 248, 255, 0.05) 100%);
+  background: #1e293b;
   
   /* Custom scrollbar */
   &::-webkit-scrollbar {
-    width: 6px;
+    width: 4px;
   }
   
   &::-webkit-scrollbar-track {
-    background: rgba(102, 126, 234, 0.1);
-    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 2px;
   }
   
   &::-webkit-scrollbar-thumb {
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    border-radius: 3px;
+    background: #4b5563;
+    border-radius: 2px;
     
     &:hover {
-      background: linear-gradient(135deg, #764ba2, #f093fb);
+      background: #6b7280;
     }
-  }
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, 
-      transparent, 
-      rgba(102, 126, 234, 0.3), 
-      transparent);
   }
 `;
 
 const SlideContent = styled.div`
-  font-size: 15px;
-  line-height: 1.8;
-  color: #4a5568;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #e2e8f0;
   font-family: 'IRANSansX', sans-serif;
   text-align: justify;
-  background: rgba(255, 255, 255, 0.7);
-  padding: 20px;
-  border-radius: 16px;
-  border: 1px solid rgba(102, 126, 234, 0.1);
-  box-shadow: 
-    0 4px 12px rgba(0, 0, 0, 0.05),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(10px);
+  background: #2d3748;
+  padding: 16px;
+  border-radius: 12px;
   position: relative;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.3), transparent);
-  }
   
   p {
     margin-bottom: 16px;
@@ -264,127 +164,78 @@ const SlideContent = styled.div`
       padding-right: 8px;
       
       &::before {
-        content: '✨';
+        content: '•';
         position: absolute;
         right: -16px;
         top: 0;
-        font-size: 12px;
+        font-size: 16px;
+        color: #60a5fa;
       }
     }
   }
   
   strong {
-    color: #667eea;
-    font-weight: 700;
+    color: #60a5fa;
+    font-weight: 600;
   }
 `;
 
 
 
 const ModalFooter = styled.div`
-  padding: 28px 24px;
-  background: linear-gradient(135deg, 
-    rgba(255, 255, 255, 0.9) 0%, 
-    rgba(240, 248, 255, 0.95) 100%);
-  backdrop-filter: blur(20px);
-  border-top: 1px solid rgba(102, 126, 234, 0.2);
+  padding: 20px 24px;
+  background: #0f172a;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
   position: relative;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 20px;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, 
-      transparent, 
-      rgba(102, 126, 234, 0.4), 
-      transparent);
-  }
+  gap: 16px;
 `;
 
 const Button = styled.button<{ $variant?: 'primary' | 'secondary' }>`
-  padding: 14px 28px;
-  border-radius: 16px;
+  padding: 12px 24px;
+  border-radius: 8px;
   font-family: 'IRANSansX', sans-serif;
-  font-weight: 700;
+  font-weight: 600;
   font-size: 14px;
   cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s ease;
   border: none;
   min-width: 120px;
   position: relative;
-  overflow: hidden;
   
   ${props => props.$variant === 'primary' ? `
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    background: #3b82f6;
     color: white;
-    box-shadow: 
-      0 6px 20px rgba(102, 126, 234, 0.4),
-      inset 0 1px 0 rgba(255, 255, 255, 0.3);
-    
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, 
-        transparent, 
-        rgba(255, 255, 255, 0.3), 
-        transparent);
-      transition: left 0.6s ease;
-    }
     
     &:hover {
-      transform: translateY(-3px) scale(1.02);
-      box-shadow: 
-        0 8px 25px rgba(102, 126, 234, 0.5),
-        inset 0 1px 0 rgba(255, 255, 255, 0.4);
-      
-      &::before {
-        left: 100%;
-      }
+      background: #2563eb;
+      transform: translateY(-2px);
     }
     
     &:active {
-      transform: translateY(-1px) scale(0.98);
+      transform: translateY(0);
     }
     
     &:disabled {
       opacity: 0.5;
       cursor: not-allowed;
+      background: #64748b;
       transform: none !important;
-      
-      &:hover {
-        transform: none !important;
-      }
     }
   ` : `
-    background: linear-gradient(135deg, 
-      rgba(255, 255, 255, 0.9) 0%, 
-      rgba(240, 248, 255, 0.9) 100%);
-    color: #667eea;
-    border: 2px solid rgba(102, 126, 234, 0.2);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    background: #334155;
+    color: #e2e8f0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     
     &:hover {
-      background: linear-gradient(135deg, 
-        rgba(255, 255, 255, 1) 0%, 
-        rgba(240, 248, 255, 1) 100%);
-      border-color: rgba(102, 126, 234, 0.4);
-      transform: translateY(-2px) scale(1.02);
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+      background: #475569;
+      transform: translateY(-2px);
     }
     
     &:active {
-      transform: translateY(0) scale(0.98);
+      transform: translateY(0);
     }
   `}
 `;
@@ -392,34 +243,17 @@ const Button = styled.button<{ $variant?: 'primary' | 'secondary' }>`
 const CheckboxContainer = styled.div`
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
   margin-top: 20px;
-  padding: 20px;
-  background: linear-gradient(135deg, 
-    rgba(255, 255, 255, 0.8) 0%, 
-    rgba(240, 248, 255, 0.9) 100%);
-  border-radius: 16px;
-  border: 2px solid rgba(102, 126, 234, 0.2);
+  padding: 16px;
+  background: #1e293b;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   position: relative;
-  overflow: hidden;
   transition: all 0.3s ease;
   
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, 
-      transparent, 
-      rgba(102, 126, 234, 0.4), 
-      transparent);
-  }
-  
   &:hover {
-    border-color: rgba(102, 126, 234, 0.4);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+    background: #263548;
   }
 `;
 
@@ -431,9 +265,8 @@ const Checkbox = styled.input`
   cursor: pointer;
   
   &:checked + label::before {
-    background: linear-gradient(135deg, #4CAF50, #45a049);
-    border-color: #4CAF50;
-    transform: scale(1.1);
+    background: #3b82f6;
+    border-color: #3b82f6;
   }
   
   &:checked + label::after {
@@ -444,50 +277,42 @@ const Checkbox = styled.input`
 
 const CheckboxLabel = styled.label`
   font-family: 'IRANSansX', sans-serif;
-  font-size: 15px;
-  color: #4a5568;
+  font-size: 14px;
+  color: #e2e8f0;
   cursor: pointer;
   user-select: none;
   display: flex;
   align-items: center;
-  gap: 12px;
-  font-weight: 600;
+  gap: 10px;
+  font-weight: 500;
   position: relative;
   
   &::before {
     content: '';
-    width: 24px;
-    height: 24px;
-    border: 2px solid #667eea;
-    border-radius: 6px;
-    background: linear-gradient(135deg, 
-      rgba(255, 255, 255, 0.9), 
-      rgba(240, 248, 255, 0.9));
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 
-      0 2px 4px rgba(0, 0, 0, 0.1),
-      inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    width: 20px;
+    height: 20px;
+    border: 2px solid #4b5563;
+    border-radius: 4px;
+    background: #1e293b;
+    transition: all 0.2s ease;
     flex-shrink: 0;
   }
   
   &::after {
     content: '✓';
     position: absolute;
-    left: 7px;
+    left: 6px;
     top: 50%;
-    transform: translateY(-50%) scale(0) rotate(45deg);
+    transform: translateY(-50%) scale(0);
     color: white;
-    font-size: 14px;
+    font-size: 12px;
     font-weight: bold;
     opacity: 0;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.2s ease;
   }
   
   &:hover::before {
-    border-color: #764ba2;
-    box-shadow: 
-      0 4px 8px rgba(102, 126, 234, 0.2),
-      inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    border-color: #3b82f6;
   }
 `;
 
