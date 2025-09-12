@@ -19,6 +19,7 @@ import ChatPersonList from './components/ChatPersonList';
 import { AdminRoutes } from './admin';
 import TermsOfServiceModal from './components/TermsOfServiceModal';
 import HelpModal from './components/HelpModal';
+import UnlimitedHelpModal from './components/UnlimitedHelpModal';
 
 import ErrorBoundary from './components/ErrorBoundary';
 import SkeletonLoader from './components/SkeletonLoader';
@@ -39,6 +40,7 @@ const AppContent: React.FC = () => {
   const [hasShownAutoSettings, setHasShownAutoSettings] = React.useState<boolean>(false);
   const [showTermsModal, setShowTermsModal] = React.useState<boolean>(false);
   const [showHelpModal, setShowHelpModal] = React.useState<boolean>(false);
+  const [showUnlimitedHelpModal, setShowUnlimitedHelpModal] = React.useState<boolean>(false);
 
   // Handle Telegram BackButton
   React.useEffect(() => {
@@ -148,7 +150,7 @@ const AppContent: React.FC = () => {
   // Check if user has accepted terms of service
   React.useEffect(() => {
     const hasAcceptedTerms = localStorage.getItem('hasAcceptedTerms');
-    
+
     if (!hasAcceptedTerms && isReady && !isValidating) {
       setShowTermsModal(true);
     }
@@ -361,38 +363,15 @@ const AppContent: React.FC = () => {
         onMenuItemClick={() => setForceSettingsExpanded(false)}
       />
       <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            marginBottom: '15px'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <button
-                onClick={() => setShowHelpModal(true)}
-                style={{
-                  top: '130px',
-                  right: '4px',
-                  background: 'none',
-                  border: '1px solid #848d96',
-                  color: '#848d96',
-                  fontSize: '18px',
-                  fontWeight: '600',
-                  cursor: 'pointer',
-                  padding: '0',
-                  borderRadius: '50%',
-                  width: '28px',
-                  height: '28px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  position: 'absolute'
-                }}
-              >
-                ?
-              </button>
-              <Logo />
-            </div>
-          </div>
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        marginBottom: '15px'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <Logo />
+        </div>
+      </div>
       {/* Search Input */}
       {/* <div style={{ width: '100%', maxWidth: '400px' }}>
         <div style={{
@@ -498,21 +477,57 @@ const AppContent: React.FC = () => {
       {/* Unlimited Access Section */}
       {(showVerifyPhone || showUpdateProfile) && (
         <div style={{
-          marginTop: '30px',
-          width: '100%',
-          maxWidth: '400px'
-        }}>
-          <h3 style={{
-            color: '#50b4ff',
-            fontSize: '12px',
-            fontFamily: 'IRANSansX, sans-serif',
+        marginTop: (showVerifyPhone || showUpdateProfile) ? '0px' : '30px',
+        width: '100%',
+        maxWidth: '400px'
+      }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
             margin: '0 0 20px 0',
-            fontWeight: '700',
-            textAlign: language === 'fa' ? 'right' : 'left',
-            direction: language === 'fa' ? 'rtl' : 'ltr'
-          }}>
+            gap: '5px'
+          }}
+        >
+          {/* متن */}
+          <h3
+            style={{
+              color: '#50b4ff',
+              fontSize: '12px',
+              fontFamily: 'IRANSansX, sans-serif',
+              fontWeight: '700',
+              textAlign: language === 'fa' ? 'right' : 'left', // 👈 متن راست یا چپ
+              direction: language === 'fa' ? 'rtl' : 'ltr',
+              margin: 0,
+            }}
+          >
             {t('unlimited.title')}
           </h3>
+
+          {/* دکمه */}
+          <button
+            onClick={() => setShowUnlimitedHelpModal(true)}
+            style={{
+              background: 'none',
+              border: '1px solid #848d96',
+              color: '#848d96',
+              fontSize: '12px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              padding: '0',
+              borderRadius: '50%',
+              width: '19px',
+              height: '19px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginLeft: language === 'fa' ? '8px' : '0', // فاصله مناسب
+              marginRight: language === 'fa' ? '0' : '8px',
+            }}
+          >
+            ?
+          </button>
+        </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', marginBottom: '30px' }}>
             {showVerifyPhone && (
@@ -610,17 +625,53 @@ const AppContent: React.FC = () => {
         width: '100%',
         maxWidth: '400px'
       }}>
-        <h3 style={{
-          color: '#50b4ff',
-          fontSize: '12px',
-          fontFamily: 'IRANSansX, sans-serif',
-          margin: '0 0 20px 0',
-          fontWeight: '700',
-          textAlign: language === 'fa' ? 'right' : 'left',
-          direction: language === 'fa' ? 'rtl' : 'ltr'
-        }}>
-          {t('bots.title')}
-        </h3>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            margin: '0 0 20px 0',
+            gap: '5px'
+          }}
+        >
+          {/* متن */}
+          <h3
+            style={{
+              color: '#50b4ff',
+              fontSize: '12px',
+              fontFamily: 'IRANSansX, sans-serif',
+              fontWeight: '700',
+              textAlign: language === 'fa' ? 'right' : 'left', // 👈 متن راست یا چپ
+              direction: language === 'fa' ? 'rtl' : 'ltr',
+              margin: 0,
+            }}
+          >
+            {t('bots.title')}
+          </h3>
+
+          {/* دکمه */}
+          <button
+            onClick={() => setShowHelpModal(true)}
+            style={{
+              background: 'none',
+              border: '1px solid #848d96',
+              color: '#848d96',
+              fontSize: '12px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              padding: '0',
+              borderRadius: '50%',
+              width: '19px',
+              height: '19px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginLeft: language === 'fa' ? '8px' : '0', // فاصله مناسب
+              marginRight: language === 'fa' ? '0' : '8px',
+            }}
+          >
+            ?
+          </button>
+        </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
 
@@ -942,7 +993,7 @@ const AppContent: React.FC = () => {
       </div>
 
       {/* Terms of Service Modal */}
-      <TermsOfServiceModal 
+      <TermsOfServiceModal
         isOpen={showTermsModal}
         onAccept={handleAcceptTerms}
       />
@@ -950,7 +1001,19 @@ const AppContent: React.FC = () => {
       {/* Chat Panel - Only on Home page */}
       <ChatPanel />
 
-      {showHelpModal && <HelpModal isOpen={showHelpModal} onClose={() => setShowHelpModal(false)} />}
+      {showUnlimitedHelpModal && (
+        <UnlimitedHelpModal
+          isOpen={showUnlimitedHelpModal}
+          onClose={() => setShowUnlimitedHelpModal(false)}
+        />
+      )}
+
+      {showHelpModal && (
+        <HelpModal
+          isOpen={showHelpModal}
+          onClose={() => setShowHelpModal(false)}
+        />
+      )}
     </div>
   );
 };
