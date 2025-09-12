@@ -75,6 +75,47 @@ const accordionStyles = `
       transform: translate(-50%, -50%) scale(1);
     }
   }
+  
+  @keyframes slideDown {
+    0% {
+      max-height: 0;
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    100% {
+      max-height: 1000px;
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes slideUp {
+    0% {
+      max-height: 1000px;
+      opacity: 1;
+      transform: translateY(0);
+    }
+    100% {
+      max-height: 0;
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+  }
+  
+  .accordion-content {
+    overflow: hidden;
+    transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+  }
+  
+  .accordion-content.open {
+    animation: slideDown 0.5s ease forwards;
+  }
+  
+  .accordion-content.closed {
+    animation: slideUp 0.5s ease forwards;
+    max-height: 0;
+    opacity: 0;
+  }
 
   .suggestions-modal::-webkit-scrollbar {
     display: none;
@@ -134,6 +175,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
   const [flightsLoading, setFlightsLoading] = useState(true);
   const [flightsError, setFlightsError] = useState<string | null>(null);
   const [activeMenu, setActiveMenu] = useState<number | null>(null);
+  const [expandedCards, setExpandedCards] = useState<Record<string, boolean>>({});
   const [apiResult, setApiResult] = useState<{ success: boolean, message: string } | null>(null);
   const [showMyRequest, setShowMyRequest] = useState(false);
   const [showSelectTripModal, setShowSelectTripModal] = useState(false);
@@ -243,6 +285,14 @@ const ParcelList: React.FC<ParcelListProps> = () => {
       document.removeEventListener('click', handleClickOutside);
     };
   }, [activeMenu]);
+
+  // Toggle accordion expansion
+  const toggleAccordion = (flightId: string) => {
+    setExpandedCards(prev => ({
+      ...prev,
+      [flightId]: !prev[flightId]
+    }));
+  };
 
   // Handle menu actions
   const handleMenuAction = async (action: string, flight: OutboundTrip) => {
@@ -1412,10 +1462,9 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                         boxShadow: '0 10px 30px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1)',
                         transition: 'all 0.3s ease',
                         position: 'relative',
-                        cursor: 'pointer',
                         overflow: 'hidden',
                         fontFamily: 'IRANSansX, sans-serif',
-                        minHeight: '200px'
+                        minHeight: '120px'
                       }}
                       onMouseEnter={(e) => {
                         e.currentTarget.style.transform = 'translateY(-5px) scale(1.02)';
@@ -1426,14 +1475,18 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                         e.currentTarget.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1)';
                       }}
                     >
-                      {/* Airline Header */}
-                      <div style={{
-                        background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
-                        padding: '20px',
-                        color: 'white',
-                        position: 'relative',
-                        overflow: 'hidden'
-                      }}>
+                      {/* Airline Header - Always visible section */}
+                      <div 
+                        onClick={() => toggleAccordion(flight.requestId)}
+                        style={{
+                          background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+                          padding: '20px',
+                          color: 'white',
+                          position: 'relative',
+                          overflow: 'hidden',
+                          cursor: 'pointer'
+                        }}
+                      >
                         {/* Background Pattern */}
                         <div style={{
                           position: 'absolute',
@@ -1840,116 +1893,131 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                             }}>{isRTL ? 'مقصد' : 'TO'}</div>
                           </div>
                         </div>
-                      </div>
-
-                      {/* Ticket Info Bar */}
-                      <div style={{
-                        background: 'linear-gradient(90deg, #f1f5f9 0%, #e2e8f0 100%)',
-                        padding: '12px 20px',
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        borderBottom: '2px dashed #cbd5e1'
-                      }}>
-                        <div style={{ flex: 1 }}>
-                          <div style={{
-                            fontSize: '10px',
-                            color: '#64748b',
-                            marginBottom: '2px'
-                          }}>{isRTL ? 'تاریخ پرواز' : 'FLIGHT DATE'}</div>
-                          <div style={{
-                            fontSize: '14px',
-                            fontWeight: 'bold',
-                            color: '#1e293b',
-                            marginBottom: '8px'
-                          }}>{formatDate(flight.departureDate)}</div>
-
-                          {/* Item Types in Ticket Bar */}
-                          {((isRTL && flight.itemTypesFa && flight.itemTypesFa.length > 0) ||
-                            (!isRTL && flight.itemTypes && flight.itemTypes.length > 0)) && (
-                              <div>
-                                <div style={{
-                                  fontSize: '8px',
-                                  color: '#64748b',
-                                  marginBottom: '4px'
-                                }}>{isRTL ? 'اقلام مجاز' : 'ALLOWED ITEMS'}</div>
-                                <div style={{
-                                  display: 'flex',
-                                  flexWrap: 'wrap',
-                                  gap: '4px'
-                                }}>
-                                  {(isRTL ? flight.itemTypesFa : flight.itemTypes)?.slice(0, 3).map((itemType: string, index: number) => (
-                                    <span
-                                      key={index}
-                                      style={{
-                                        fontSize: '8px',
-                                        padding: '2px 6px',
-                                        borderRadius: '4px',
-                                        background: '#dbeafe',
-                                        color: '#1e40af',
-                                        fontWeight: '500',
-                                        border: '1px solid #93c5fd'
-                                      }}
-                                    >
-                                      {itemType}
-                                    </span>
-                                  ))}
-                                  {(isRTL ? flight.itemTypesFa : flight.itemTypes)?.length > 3 && (
-                                    <span style={{
-                                      fontSize: '8px',
-                                      color: '#64748b',
-                                      fontWeight: '500'
-                                    }}>+{(isRTL ? flight.itemTypesFa : flight.itemTypes).length - 3}</span>
-                                  )}
-                                </div>
-                              </div>
-                            )}
-                        </div>
+                        
+                        {/* Expand/Collapse indicator */}
                         <div style={{
-                          width: '60px',
-                          height: '60px',
-                          background: 'white',
-                          border: '2px solid #e2e8f0',
-                          borderRadius: '8px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontSize: '8px',
-                          color: '#64748b',
                           textAlign: 'center',
-                          lineHeight: '1.2'
+                          marginTop: '10px',
+                          fontSize: '14px',
+                          opacity: 0.7,
+                          transition: 'transform 0.3s ease'
                         }}>
-                          QR CODE<br />PLACEHOLDER
+                          {expandedCards[flight.requestId] ? '▲' : '▼'}
                         </div>
                       </div>
 
-
-
-                      {/* Compact Description */}
-                      {flight.description && (
+                      {/* Accordion Content - First Section */}
+                      <div className={`accordion-content ${expandedCards[flight.requestId] ? 'open' : 'closed'}`}>
+                        {/* Ticket Info Bar */}
                         <div style={{
-                          background: 'rgba(3, 125, 136, 0.8)',
-                          padding: '8px',
-                          border: '1px solid rgba(80, 180, 255, 0.1)',
+                          background: 'linear-gradient(90deg, #f1f5f9 0%, #e2e8f0 100%)',
+                          padding: '12px 20px',
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          borderBottom: '2px dashed #cbd5e1'
                         }}>
-                          <div style={{
-                            fontSize: '10px',
-                            color: '#000',
-                            marginBottom: '4px',
-                            fontFamily: 'IRANSansX, sans-serif'
-                          }}>
-                            {isRTL ? 'توضیحات:' : 'Description:'}
+                          <div style={{ flex: 1 }}>
+                            <div style={{
+                              fontSize: '10px',
+                              color: '#64748b',
+                              marginBottom: '2px'
+                            }}>{isRTL ? 'تاریخ پرواز' : 'FLIGHT DATE'}</div>
+                            <div style={{
+                              fontSize: '14px',
+                              fontWeight: 'bold',
+                              color: '#1e293b',
+                              marginBottom: '8px'
+                            }}>{formatDate(flight.departureDate)}</div>
+
+                            {/* Item Types in Ticket Bar */}
+                            {((isRTL && flight.itemTypesFa && flight.itemTypesFa.length > 0) ||
+                              (!isRTL && flight.itemTypes && flight.itemTypes.length > 0)) && (
+                                <div>
+                                  <div style={{
+                                    fontSize: '8px',
+                                    color: '#64748b',
+                                    marginBottom: '4px'
+                                  }}>{isRTL ? 'اقلام مجاز' : 'ALLOWED ITEMS'}</div>
+                                  <div style={{
+                                    display: 'flex',
+                                    flexWrap: 'wrap',
+                                    gap: '4px'
+                                  }}>
+                                    {(isRTL ? flight.itemTypesFa : flight.itemTypes)?.slice(0, 3).map((itemType: string, index: number) => (
+                                      <span
+                                        key={index}
+                                        style={{
+                                          fontSize: '8px',
+                                          padding: '2px 6px',
+                                          borderRadius: '4px',
+                                          background: '#dbeafe',
+                                          color: '#1e40af',
+                                          fontWeight: '500',
+                                          border: '1px solid #93c5fd'
+                                        }}
+                                      >
+                                        {itemType}
+                                      </span>
+                                    ))}
+                                    {(isRTL ? flight.itemTypesFa : flight.itemTypes)?.length > 3 && (
+                                      <span style={{
+                                        fontSize: '8px',
+                                        color: '#64748b',
+                                        fontWeight: '500'
+                                      }}>+{(isRTL ? flight.itemTypesFa : flight.itemTypes).length - 3}</span>
+                                    )}
+                                  </div>
+                                </div>
+                              )}
                           </div>
                           <div style={{
-                            fontSize: '10px',
-                            color: '#fff',
-                            fontFamily: 'IRANSansX, sans-serif',
-                            lineHeight: '1.4'
+                            width: '60px',
+                            height: '60px',
+                            background: 'white',
+                            border: '2px solid #e2e8f0',
+                            borderRadius: '8px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: '8px',
+                            color: '#64748b',
+                            textAlign: 'center',
+                            lineHeight: '1.2'
                           }}>
-                            {flight.description}
+                            QR CODE<br />PLACEHOLDER
                           </div>
                         </div>
-                      )}
+                      </div>
+
+                      {/* Accordion Content - Second Section */}
+                      <div className={`accordion-content ${expandedCards[flight.requestId] ? 'open' : 'closed'}`}>
+                        {/* Compact Description */}
+                        {flight.description && (
+                          <div style={{
+                            background: 'rgba(3, 125, 136, 0.8)',
+                            padding: '8px',
+                            border: '1px solid rgba(80, 180, 255, 0.1)',
+                          }}>
+                            <div style={{
+                              fontSize: '10px',
+                              color: '#000',
+                              marginBottom: '4px',
+                              fontFamily: 'IRANSansX, sans-serif'
+                            }}>
+                              {isRTL ? 'توضیحات:' : 'Description:'}
+                            </div>
+                            <div style={{
+                              fontSize: '10px',
+                              color: '#fff',
+                              fontFamily: 'IRANSansX, sans-serif',
+                              lineHeight: '1.4'
+                            }}>
+                              {flight.description}
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   );
                 })}
