@@ -11,6 +11,34 @@ import Settings from './Settings';
 import SkeletonLoader from './SkeletonLoader';
 import MyRequest from './MyRequest';
 
+// Toast notification helper function
+const toast = {
+  error: (message: string) => {
+    // Simple implementation to show error messages
+    const errorDiv = document.createElement('div');
+    errorDiv.style.position = 'fixed';
+    errorDiv.style.bottom = '20px';
+    errorDiv.style.left = '50%';
+    errorDiv.style.transform = 'translateX(-50%)';
+    errorDiv.style.backgroundColor = '#ef4444';
+    errorDiv.style.color = 'white';
+    errorDiv.style.padding = '12px 20px';
+    errorDiv.style.borderRadius = '8px';
+    errorDiv.style.zIndex = '9999';
+    errorDiv.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+    errorDiv.style.fontFamily = 'IRANSansX, sans-serif';
+    errorDiv.textContent = message;
+    
+    document.body.appendChild(errorDiv);
+    
+    setTimeout(() => {
+      errorDiv.style.opacity = '0';
+      errorDiv.style.transition = 'opacity 0.3s ease';
+      setTimeout(() => document.body.removeChild(errorDiv), 300);
+    }, 3000);
+  }
+};
+
 // Add CSS animations for flight cards
 const accordionStyles = `
   @keyframes slideDown {
@@ -174,6 +202,9 @@ const ParcelList: React.FC<ParcelListProps> = () => {
   const [flights, setFlights] = useState<OutboundTrip[]>([]);
   const [flightsLoading, setFlightsLoading] = useState(true);
   const [flightsError, setFlightsError] = useState<string | null>(null);
+  const [itemTypes, setItemTypes] = useState<any[]>([]);
+  // We're using a ref instead of state to track loading since we don't need to re-render on this change
+  const itemTypesLoadingRef = React.useRef(false);
   const [activeMenu, setActiveMenu] = useState<number | null>(null);
   const [expandedCards, setExpandedCards] = useState<Record<string, boolean>>({});
   const [apiResult, setApiResult] = useState<{ success: boolean, message: string } | null>(null);
@@ -184,6 +215,8 @@ const ParcelList: React.FC<ParcelListProps> = () => {
   const [suggestionPrice, setSuggestionPrice] = useState<string>('');
   const [currency, setCurrency] = useState<string>('-1'); // -1 for select, 1 for USD, 2 for IRR
   const [description, setDescription] = useState<string>('');
+  const [itemTypeId, setItemTypeId] = useState<number>(-1); // -1 for select, other values for item types
+  const [files, setFiles] = useState<File[]>([]);
 
   // Suggestions modal state
   const [showSuggestionsModal, setShowSuggestionsModal] = useState(false);
@@ -213,6 +246,26 @@ const ParcelList: React.FC<ParcelListProps> = () => {
 
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
+  }, []);
+  
+  // Load item types on component mount
+  useEffect(() => {
+    const loadItemTypes = async () => {
+      try {
+        itemTypesLoadingRef.current = true;
+        const response = await apiService.getItemTypes();
+        if (response.requestStatus.name === 'Successful') {
+          setItemTypes(response.objectResult);
+        }
+      } catch (error) {
+        console.error('Error loading item types:', error);
+        toast.error(isRTL ? 'خطا در بارگذاری انواع آیتم‌ها' : 'Error loading item types');
+      } finally {
+        itemTypesLoadingRef.current = false;
+      }
+    };
+
+    loadItemTypes();
   }, []);
 
   // Filter flights based on search query and active tab using TripType
@@ -293,6 +346,50 @@ const ParcelList: React.FC<ParcelListProps> = () => {
       [flightId]: !prev[flightId]
     }));
   };
+  
+  // Handle file upload
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFiles = event.target.files;
+    if (!selectedFiles) return;
+    
+    const fileArray: File[] = [];
+    let totalSize = 0;
+    const maxSizePerFile = 2 * 1024 * 1024; // 2MB
+    const maxTotalSize = 8 * 1024 * 1024; // 8MB
+    
+    // Check file types and sizes
+    for (let i = 0; i < selectedFiles.length; i++) {
+      const file = selectedFiles[i];
+      const fileType = file.type.toLowerCase();
+      
+      // Check if file is an image
+      if (!fileType.startsWith('image/')) {
+        toast.error(isRTL ? 'فقط فایل‌های تصویری مجاز هستند' : 'Only image files are allowed');
+        return;
+      }
+      
+      // Check individual file size
+      if (file.size > maxSizePerFile) {
+        toast.error(isRTL ? 
+          `حجم هر فایل نباید بیشتر از 2 مگابایت باشد: ${file.name}` : 
+          `File size should not exceed 2MB: ${file.name}`);
+        return;
+      }
+      
+      totalSize += file.size;
+      fileArray.push(file);
+    }
+    
+    // Check total size of all files
+    if (totalSize > maxTotalSize) {
+      toast.error(isRTL ? 
+        'حجم کل فایل‌ها نباید بیشتر از 8 مگابایت باشد' : 
+        'Total file size should not exceed 8MB');
+      return;
+    }
+    
+    setFiles(fileArray);
+  };
 
   // Handle menu actions
   const handleMenuAction = async (action: string, flight: OutboundTrip) => {
@@ -361,6 +458,18 @@ const ParcelList: React.FC<ParcelListProps> = () => {
         }, 3000);
         return;
       }
+      
+      if (itemTypeId === -1) {
+        setApiResult({
+          success: false,
+          message: isRTL ? 'لطفا نوع آیتم را انتخاب کنید' : 'Please select an item type'
+        });
+
+        setTimeout(() => {
+          setApiResult(null);
+        }, 3000);
+        return;
+      }
     }
 
     try {
@@ -375,7 +484,9 @@ const ParcelList: React.FC<ParcelListProps> = () => {
             requestId: selectedFlightForTrip.requestId,
             suggestionPrice: parseFloat(suggestionPrice) || 0,
             currency: parseInt(currency) || 0,
-            description: description
+            description: description,
+            itemTypeId: itemTypeId,
+            files: files
           }
         };
       } else {
@@ -417,6 +528,8 @@ const ParcelList: React.FC<ParcelListProps> = () => {
         setSuggestionPrice('');
         setCurrency('-1');
         setDescription('');
+        setItemTypeId(-1);
+        setFiles([]);
 
         // Show success message and redirect after 1.5 seconds
         setTimeout(() => {
@@ -2333,6 +2446,223 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                         {isRTL ? 'ریال' : 'Rial'}
                       </option>
                     </select>
+                  </div>
+                  
+                  {/* Item Type Selection - Radio Button Style */}
+                  <div style={{ marginBottom: '16px' }}>
+                    <label style={{
+                      display: 'block',
+                      fontSize: '14px',
+                      color: '#ffffff',
+                      marginBottom: '12px',
+                      fontFamily: 'IRANSansX, sans-serif',
+                      fontWeight: '500'
+                    }}>
+                      {isRTL ? 'نوع آیتم:' : 'Item Type:'} <span style={{ color: '#ef4444' }}>*</span>
+                    </label>
+                    <div style={{ 
+                      display: 'flex', 
+                      flexWrap: 'wrap', 
+                      gap: '10px',
+                      marginBottom: '8px'
+                    }}>
+                      {itemTypes.map((item) => (
+                        <div 
+                          key={item.itemTypeId} 
+                          onClick={() => setItemTypeId(Number(item.itemTypeId))}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            padding: '10px 16px',
+                            borderRadius: '12px',
+                            border: itemTypeId === Number(item.itemTypeId) 
+                              ? '2px solid #50b4ff' 
+                              : '1px solid rgba(255, 255, 255, 0.2)',
+                            background: itemTypeId === Number(item.itemTypeId) 
+                              ? 'rgba(80, 180, 255, 0.15)' 
+                              : 'rgba(255, 255, 255, 0.1)',
+                            color: itemTypeId === Number(item.itemTypeId) ? '#50b4ff' : '#ffffff',
+                            fontSize: '14px',
+                            fontFamily: 'IRANSansX, sans-serif',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s ease',
+                            minWidth: '80px',
+                            textAlign: 'center',
+                            position: 'relative',
+                            overflow: 'hidden'
+                          }}
+                        >
+                          {itemTypeId === Number(item.itemTypeId) && (
+                            <div style={{
+                              position: 'absolute',
+                              top: '4px',
+                              right: '4px',
+                              width: '12px',
+                              height: '12px',
+                              borderRadius: '50%',
+                              background: '#50b4ff',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              fontSize: '8px',
+                              color: 'white'
+                            }}>
+                              <span style={{ fontSize: '8px', lineHeight: 1 }}>✓</span>
+                            </div>
+                          )}
+                          {isRTL ? item.persianName : item.itemType}
+                        </div>
+                      ))}
+                    </div>
+                    {itemTypeId === -1 && (
+                      <div style={{ 
+                        fontSize: '12px', 
+                        color: '#ef4444', 
+                        marginTop: '4px',
+                        fontFamily: 'IRANSansX, sans-serif'
+                      }}>
+                        {isRTL ? 'لطفاً یک نوع آیتم انتخاب کنید' : 'Please select an item type'}
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* File Upload - Improved Design */}
+                  <div style={{ marginBottom: '16px' }}>
+                    <label style={{
+                      display: 'block',
+                      fontSize: '14px',
+                      color: '#ffffff',
+                      marginBottom: '8px',
+                      fontFamily: 'IRANSansX, sans-serif',
+                      fontWeight: '500'
+                    }}>
+                      {isRTL ? 'تصاویر:' : 'Images:'}
+                    </label>
+                    
+                    <div style={{
+                      border: '1px dashed #3a4a5c',
+                      borderRadius: '12px',
+                      padding: '15px',
+                      textAlign: 'center',
+                      marginBottom: '10px',
+                      cursor: 'pointer',
+                      backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                      transition: 'all 0.3s ease'
+                    }} 
+                      onClick={() => document.getElementById('file-upload-input')?.click()}
+                      onMouseOver={(e) => {
+                        e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                        e.currentTarget.style.borderColor = '#50b4ff';
+                      }}
+                      onMouseOut={(e) => {
+                        e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+                        e.currentTarget.style.borderColor = '#3a4a5c';
+                      }}
+                    >
+                      <input
+                        id="file-upload-input"
+                        type="file"
+                        multiple
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        style={{ display: 'none' }}
+                      />
+                      <div style={{ color: '#50b4ff', marginBottom: '5px' }}>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M12 16V8M12 8L9 11M12 8L15 11" stroke="#50b4ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                          <path d="M3 15V16C3 17.6569 4.34315 19 6 19H18C19.6569 19 21 17.6569 21 16V15" stroke="#50b4ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      </div>
+                      <div style={{ fontSize: '14px', color: '#848d96' }}>
+                        {isRTL ? 'آپلود تصاویر' : 'Upload Images'}
+                      </div>
+                      <div style={{ fontSize: '12px', color: '#848d96', marginTop: '5px' }}>
+                        {isRTL ? 'حداکثر حجم هر فایل: 2 مگابایت' : 'Max file size: 2MB'}
+                      </div>
+                    </div>
+                    
+                    {/* نمایش فایل‌های آپلود شده */}
+                    {files.length > 0 && (
+                      <div style={{ marginTop: '10px' }}>
+                        {files.map((file, index) => (
+                          <div key={index} style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            padding: '8px',
+                            backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                            borderRadius: '8px',
+                            marginBottom: '8px'
+                          }}>
+                            <div style={{
+                              width: '50px',
+                              height: '50px',
+                              borderRadius: '6px',
+                              overflow: 'hidden',
+                              backgroundColor: 'rgba(255, 255, 255, 0.1)'
+                            }}>
+                              <img
+                                src={URL.createObjectURL(file)}
+                                alt="Preview"
+                                style={{
+                                  width: '100%',
+                                  height: '100%',
+                                  objectFit: 'cover'
+                                }}
+                              />
+                            </div>
+                            <div style={{ flex: 1, marginLeft: '10px', marginRight: '10px' }}>
+                              <div style={{
+                                fontSize: '14px',
+                                color: '#ffffff',
+                                fontFamily: 'IRANSansX, sans-serif',
+                                marginBottom: '4px',
+                                textOverflow: 'ellipsis',
+                                overflow: 'hidden',
+                                whiteSpace: 'nowrap'
+                              }}>
+                                {file.name}
+                              </div>
+                              <div style={{
+                                fontSize: '12px',
+                                color: '#848d96',
+                                fontFamily: 'IRANSansX, sans-serif'
+                              }}>
+                                {(file.size / 1024 / 1024).toFixed(2)} MB
+                              </div>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const newFiles = [...files];
+                                newFiles.splice(index, 1);
+                                setFiles(newFiles);
+                              }}
+                              style={{
+                                background: 'none',
+                                border: 'none',
+                                color: '#ff4757',
+                                cursor: 'pointer',
+                                fontSize: '18px',
+                                padding: '5px',
+                                borderRadius: '4px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                              }}
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+
+                        {/* نمایش حجم کل فایل‌ها */}
+                        <div style={{ fontSize: '12px', color: '#848d96', marginTop: '5px', textAlign: isRTL ? 'right' : 'left' }}>
+                          {isRTL ? 'حجم کل:' : 'Total size:'} {(files.reduce((sum, file) => sum + file.size, 0) / 1024 / 1024).toFixed(2)} / 8 MB
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* Description Textarea */}

@@ -277,6 +277,8 @@ export interface SelectRequestModel {
   suggestionPrice?: number;
   currency?: number;
   description?: string;
+  itemTypeId?: number;
+  files?: File[];
 }
 
 export interface SelectRequestPayload {

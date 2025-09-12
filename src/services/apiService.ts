@@ -532,18 +532,60 @@ class ApiService {
 
   async selectRequest(request: SelectRequestPayload): Promise<SelectRequestResponse> {
     try {
-      const response = await fetch(`${API_BASE_URL}/Request/SelectRequest`, {
-        method: 'POST',
-        headers: this.getHeaders(),
-        body: JSON.stringify(request)
-      });
+      // Check if files are included in the request
+      if (request.model.files && request.model.files.length > 0) {
+        // Use FormData for file uploads
+        const formData = new FormData();
+        
+        // Add JSON data as a string
+        const requestWithoutFiles = {
+          model: {
+            ...request.model,
+            files: undefined // Remove files from JSON
+          }
+        };
+        formData.append('requestData', JSON.stringify(requestWithoutFiles));
+        
+        // Add each file to the FormData
+        request.model.files.forEach((file) => {
+          formData.append(`files`, file);
+        });
+        
+        // Send FormData without Content-Type header (browser sets it automatically with boundary)
+        const headers = this.getHeaders();
+        // Remove Content-Type header for FormData
+        const headersWithoutContentType = { ...headers } as Record<string, string>;
+        if ('Content-Type' in headersWithoutContentType) {
+          delete headersWithoutContentType['Content-Type'];
+        }
+        
+        const response = await fetch(`${API_BASE_URL}/Request/SelectRequest`, {
+          method: 'POST',
+          headers: headersWithoutContentType,
+          body: formData
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        return data;
+      } else {
+        // Regular JSON request without files
+        const response = await fetch(`${API_BASE_URL}/Request/SelectRequest`, {
+          method: 'POST',
+          headers: this.getHeaders(),
+          body: JSON.stringify(request)
+        });
 
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        return data;
       }
-
-      const data = await response.json();
-      return data;
     } catch (error) {
       console.error('Error selecting request:', error);
       throw error;
