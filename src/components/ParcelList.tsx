@@ -287,7 +287,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
   }, [activeMenu]);
 
   // Toggle accordion expansion
-  const toggleAccordion = (flightId: string) => {
+  const toggleAccordion = (flightId: string | number) => {
     setExpandedCards(prev => ({
       ...prev,
       [flightId]: !prev[flightId]
@@ -1477,14 +1477,14 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                     >
                       {/* Airline Header - Always visible section */}
                       <div 
-                        onClick={() => toggleAccordion(flight.requestId)}
+                        onClick={() => (activeTab === 'incoming' || activeTab === 'outgoing') ? toggleAccordion(flight.requestId) : undefined}
                         style={{
                           background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
                           padding: '20px',
                           color: 'white',
                           position: 'relative',
                           overflow: 'hidden',
-                          cursor: 'pointer'
+                          cursor: (activeTab === 'incoming' || activeTab === 'outgoing') ? 'pointer' : 'default'
                         }}
                       >
                         {/* Background Pattern */}
@@ -1894,20 +1894,24 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                           </div>
                         </div>
                         
-                        {/* Expand/Collapse indicator */}
-                        <div style={{
-                          textAlign: 'center',
-                          marginTop: '10px',
-                          fontSize: '14px',
-                          opacity: 0.7,
-                          transition: 'transform 0.3s ease'
-                        }}>
-                          {expandedCards[flight.requestId] ? '▲' : '▼'}
-                        </div>
+                        {/* Expand/Collapse indicator - only for inbound and outbound tabs */}
+                        {(activeTab === 'incoming' || activeTab === 'outgoing') && (
+                          <div style={{
+                            textAlign: 'center',
+                            marginTop: '10px',
+                            fontSize: '14px',
+                            opacity: 0.7,
+                            transition: 'transform 0.3s ease'
+                          }}>
+                            {expandedCards[flight.requestId] ? '▲' : '▼'}
+                          </div>
+                        )}
                       </div>
 
-                      {/* Accordion Content - First Section */}
-                      <div className={`accordion-content ${expandedCards[flight.requestId] ? 'open' : 'closed'}`}>
+                      {/* Accordion Content - First Section - only for inbound and outbound tabs */}
+                      {(activeTab === 'incoming' || activeTab === 'outgoing') ? (
+                        <div className={`accordion-content ${expandedCards[flight.requestId] ? 'open' : 'closed'}`}>
+                      
                         {/* Ticket Info Bar */}
                         <div style={{
                           background: 'linear-gradient(90deg, #f1f5f9 0%, #e2e8f0 100%)',
@@ -1989,35 +1993,65 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                           </div>
                         </div>
                       </div>
-
-                      {/* Accordion Content - Second Section */}
-                      <div className={`accordion-content ${expandedCards[flight.requestId] ? 'open' : 'closed'}`}>
-                        {/* Compact Description */}
-                        {flight.description && (
+                      ) : (
+                        <div style={{ padding: '12px 20px' }}>
+                          {/* Ticket Info Bar - Always visible for ipicked and pickedme */}
                           <div style={{
-                            background: 'rgba(3, 125, 136, 0.8)',
-                            padding: '8px',
-                            border: '1px solid rgba(80, 180, 255, 0.1)',
+                            background: 'linear-gradient(90deg, #f1f5f9 0%, #e2e8f0 100%)',
+                            padding: '12px 20px',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            borderRadius: '8px',
+                            marginBottom: '10px'
                           }}>
-                            <div style={{
-                              fontSize: '10px',
-                              color: '#000',
-                              marginBottom: '4px',
-                              fontFamily: 'IRANSansX, sans-serif'
-                            }}>
-                              {isRTL ? 'توضیحات:' : 'Description:'}
-                            </div>
-                            <div style={{
-                              fontSize: '10px',
-                              color: '#fff',
-                              fontFamily: 'IRANSansX, sans-serif',
-                              lineHeight: '1.4'
-                            }}>
-                              {flight.description}
-                            </div>
+                            <div style={{ flex: 1 }}>
+                              <div style={{
+                                fontSize: '10px',
+                                color: '#64748b',
+                                marginBottom: '2px'
+                              }}>{isRTL ? 'تاریخ پرواز' : 'FLIGHT DATE'}</div>
+                              <div style={{
+                                fontSize: '14px',
+                                fontWeight: 'bold',
+                                color: '#1e293b',
+                                marginBottom: '8px'
+                              }}>{formatDate(flight.departureDate)}</div>
                           </div>
-                        )}
+                        </div>
                       </div>
+                      )}
+
+                      {/* Accordion Content - Second Section - only for inbound and outbound tabs */}
+                      {(activeTab === 'incoming' || activeTab === 'outgoing') && (
+                        <div className={`accordion-content ${expandedCards[flight.requestId] ? 'open' : 'closed'}`}>
+                          {/* Compact Description */}
+                          {flight.description && (
+                            <div style={{
+                              background: 'rgba(3, 125, 136, 0.8)',
+                              padding: '8px',
+                              border: '1px solid rgba(80, 180, 255, 0.1)',
+                            }}>
+                              <div style={{
+                                fontSize: '10px',
+                                color: '#000',
+                                marginBottom: '4px',
+                                fontFamily: 'IRANSansX, sans-serif'
+                              }}>
+                                {isRTL ? 'توضیحات:' : 'Description:'}
+                              </div>
+                              <div style={{
+                                fontSize: '10px',
+                                color: '#fff',
+                                fontFamily: 'IRANSansX, sans-serif',
+                                lineHeight: '1.4'
+                              }}>
+                                {flight.description}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                   );
                 })}
