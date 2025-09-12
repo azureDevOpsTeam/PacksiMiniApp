@@ -18,6 +18,7 @@ import NotFound from './components/NotFound';
 import ChatPersonList from './components/ChatPersonList';
 import { AdminRoutes } from './admin';
 import TermsOfServiceModal from './components/TermsOfServiceModal';
+import HelpModal from './components/HelpModal';
 
 import ErrorBoundary from './components/ErrorBoundary';
 import SkeletonLoader from './components/SkeletonLoader';
@@ -37,6 +38,7 @@ const AppContent: React.FC = () => {
   const [forceSettingsExpanded, setForceSettingsExpanded] = React.useState<boolean>(false);
   const [hasShownAutoSettings, setHasShownAutoSettings] = React.useState<boolean>(false);
   const [showTermsModal, setShowTermsModal] = React.useState<boolean>(false);
+  const [showHelpModal, setShowHelpModal] = React.useState<boolean>(false);
 
   // Handle Telegram BackButton
   React.useEffect(() => {
@@ -359,14 +361,38 @@ const AppContent: React.FC = () => {
         onMenuItemClick={() => setForceSettingsExpanded(false)}
       />
       <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        marginBottom: '15px'
-      }}>
-        <Logo />
-      </div>
-      <p style={{ marginBottom: '5px', fontSize: '14px', fontFamily: 'IRANSansX, sans-serif' }}>{t('app.welcome')}</p>
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            marginBottom: '15px'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <button
+                onClick={() => setShowHelpModal(true)}
+                style={{
+                  top: '130px',
+                  right: '4px',
+                  background: 'none',
+                  border: '1px solid #848d96',
+                  color: '#848d96',
+                  fontSize: '18px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  padding: '0',
+                  borderRadius: '50%',
+                  width: '28px',
+                  height: '28px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  position: 'absolute'
+                }}
+              >
+                ?
+              </button>
+              <Logo />
+            </div>
+          </div>
       {/* Search Input */}
       {/* <div style={{ width: '100%', maxWidth: '400px' }}>
         <div style={{
@@ -923,29 +949,29 @@ const AppContent: React.FC = () => {
 
       {/* Chat Panel - Only on Home page */}
       <ChatPanel />
+
+      {showHelpModal && <HelpModal isOpen={showHelpModal} onClose={() => setShowHelpModal(false)} />}
     </div>
   );
 };
 
-// Main App Component with Providers
-function App() {
+const App: React.FC = () => {
   return (
-    <TelegramProvider>
-      <ThemeProvider>
-        <LanguageProvider>
-          <ErrorBoundary>
+    <ErrorBoundary>
+      <TelegramProvider>
+        <ThemeProvider>
+          <LanguageProvider>
             <GlobalStyles />
             <BrowserRouter>
               <Routes>
-                <Route path="/" element={<AppContent />} />
-                <Route path="/chatlist" element={<ChatPersonList />} />
+                <Route path="/*" element={<AppContent />} />
               </Routes>
             </BrowserRouter>
-          </ErrorBoundary>
-        </LanguageProvider>
-      </ThemeProvider>
-    </TelegramProvider>
+          </LanguageProvider>
+        </ThemeProvider>
+      </TelegramProvider>
+    </ErrorBoundary>
   );
-}
+};
 
-export default App
+export default App;

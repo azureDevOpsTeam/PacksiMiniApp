@@ -248,5 +248,11 @@
       "previous": "Previous",
       "next": "Next"
     }
+  },
+  "helpModal": {
+    "title": "How to Use Packsi",
+    "paragraph1": "Packsi connects travelers with people who need to send parcels. Travelers can earn money by carrying parcels, and senders can get their items delivered quickly and affordably.",
+    "paragraph2": "To get started, simply create a request to send a parcel or offer your services as a traveler. Our platform ensures secure and reliable delivery.",
+    "paragraph3": "For more detailed instructions, please refer to the \"Terms and Conditions\" section."
   }
 }
