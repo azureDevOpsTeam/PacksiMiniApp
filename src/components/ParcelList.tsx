@@ -994,8 +994,8 @@ const ParcelList: React.FC<ParcelListProps> = () => {
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 {filteredFlights.map((flight) => {
-                  // Compact card for pickedme tab
-                  if (activeTab === 'pickedme') {
+                  // Compact card for pickedme and ipicked tabs
+                  if (activeTab === 'pickedme' || activeTab === 'ipicked') {
                     return (
                       <div
                         key={flight.requestId}
