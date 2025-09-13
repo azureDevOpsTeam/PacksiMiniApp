@@ -468,20 +468,20 @@ class ApiService {
       // Log headers for debugging
       const headers = this.getHeaders();
       console.log('Request headers:', headers);
-      
+
       // Make the actual API call
       console.log('Calling GetMyRequestTrips API endpoint');
       const response = await fetch(`${API_BASE_URL}/Request/GetMyRequestTrips`, {
         method: 'GET',
         headers: this.getHeaders()
       });
-      
+
       console.log('Response status:', response.status);
-      
+
       // Get the raw text first for debugging
       const responseText = await response.text();
       console.log('Response text:', responseText);
-      
+
       // Try to parse the JSON
       let data;
       try {
@@ -495,7 +495,7 @@ class ApiService {
           message: 'Invalid JSON response from server'
         };
       }
-      
+
       // Check if the response has the expected structure
       if (data && data.objectResult) {
         // API returns data in objectResult, but our interface expects it in data
@@ -530,64 +530,42 @@ class ApiService {
     }
   }
 
-  async selectRequest(request: SelectRequestPayload): Promise<SelectRequestResponse> {
+  async selectRequest(payload: SelectRequestPayload): Promise<SelectRequestResponse> {
     try {
-      // Check if files are included in the request
-      if (request.model.files && request.model.files.length > 0) {
-        // Use FormData for file uploads
-        const formData = new FormData();
-        
-        // Add JSON data as a string
-        const requestWithoutFiles = {
-          model: {
-            ...request.model,
-            files: undefined // Remove files from JSON
-          }
-        };
-        formData.append('requestData', JSON.stringify(requestWithoutFiles));
-        
-        // Add each file to the FormData
-        request.model.files.forEach((file) => {
-          formData.append(`files`, file);
-        });
-        
-        // Send FormData without Content-Type header (browser sets it automatically with boundary)
-        const headers = this.getHeaders();
-        // Remove Content-Type header for FormData
-        const headersWithoutContentType = { ...headers } as Record<string, string>;
-        if ('Content-Type' in headersWithoutContentType) {
-          delete headersWithoutContentType['Content-Type'];
-        }
-        
-        const response = await fetch(`${API_BASE_URL}/Request/SelectRequest`, {
-          method: 'POST',
-          headers: headersWithoutContentType,
-          body: formData
-        });
-        
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-        
-        const data = await response.json();
-        return data;
-      } else {
-        // Regular JSON request without files
-        const response = await fetch(`${API_BASE_URL}/Request/SelectRequest`, {
-          method: 'POST',
-          headers: this.getHeaders(),
-          body: JSON.stringify(request)
-        });
+      const formData = new FormData();
 
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
+      const model = payload.model;
+      formData.append("RequestId", model.requestId.toString());
 
-        const data = await response.json();
-        return data;
+      if (model.tripOption) formData.append("TripOption", model.tripOption);
+      if (model.suggestionPrice !== undefined) formData.append("SuggestionPrice", model.suggestionPrice.toString());
+      if (model.currency !== undefined) formData.append("Currency", model.currency.toString());
+      if (model.description) formData.append("Description", model.description);
+      if (model.itemTypeId !== undefined) formData.append("ItemTypeId", model.itemTypeId.toString());
+
+      // فایل‌ها
+      if (model.files && model.files.length > 0) {
+        model.files.forEach((file) => {
+          formData.append("Files", file);
+        });
       }
+
+      const headers = this.getHeaders(true); // FormData mode
+
+      const response = await fetch(`${API_BASE_URL}/Request/SelectRequest`, {
+        method: "POST",
+        headers,
+        body: formData
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return data;
     } catch (error) {
-      console.error('Error selecting request:', error);
+      console.error("Error selecting request:", error);
       throw error;
     }
   }
