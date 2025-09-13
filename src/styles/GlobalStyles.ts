@@ -66,6 +66,25 @@ export const GlobalStyles = createGlobalStyle`
   ::-webkit-scrollbar-thumb:hover {
     background: ${({ theme }) => theme.colors.text.primary};
   }
+  
+  /* Custom scrollbar for suggestions modal */
+  .suggestions-modal-content::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .suggestions-modal-content::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+  }
+
+  .suggestions-modal-content::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+  }
+
+  .suggestions-modal-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
 
   /* Focus styles - Remove outline */
   button:focus,

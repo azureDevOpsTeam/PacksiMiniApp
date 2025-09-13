@@ -2269,7 +2269,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
             </div>
 
             {/* Modal Body */}
-            <div style={{ padding: '20px' }}>
+            <div style={{ padding: '20px', maxHeight: '80vh', overflowY: 'auto'  }}>
               {/* Flight Info Card */}
               <div style={{
                 background: 'rgba(16, 185, 129, 0.1)',
@@ -2847,101 +2847,104 @@ const ParcelList: React.FC<ParcelListProps> = () => {
       )}
 
       {/* Suggestions Modal */}
+      {/* Price Suggestion Modal - Styled with styled-components approach */}
       {showSuggestionsModal && selectedFlightForSuggestions && createPortal(
-        <>
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(15, 23, 42, 0.9)',
+          backdropFilter: 'blur(8px)',
+          WebkitBackdropFilter: 'blur(8px)',
+          zIndex: 9999,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '20px',
+          animation: 'fadeIn 0.4s ease-out'
+        }}>
           <div style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.7)',
-            backdropFilter: 'blur(8px)',
-            zIndex: 10000,
+            background: '#1e293b',
+            borderRadius: '16px',
+            width: '100%',
+            maxWidth: '480px',
+            maxHeight: '90vh',
+            overflow: 'hidden',
+            boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            animation: 'fadeIn 0.4s ease-out',
+            position: 'relative',
             display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '20px'
+            flexDirection: 'column'
           }}>
-            <div className="suggestions-modal" style={{
-              background: 'linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%)',
-              borderRadius: '16px',
-              padding: '24px',
-              maxWidth: '400px',
-              width: '100%',
-              maxHeight: '80vh',
-              overflowY: 'auto',
-              overflowX: 'hidden',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              boxShadow: '0 25px 50px rgba(0, 0, 0, 0.5)',
-              position: 'relative'
+            {/* Header */}
+            <div style={{
+              background: '#0f172a',
+              color: 'white',
+              padding: '20px 24px',
+              position: 'relative',
+              borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between'
             }}>
-              {/* Added custom scrollbar styling */}
-              <style>
-                {`
-                .suggestions-modal::-webkit-scrollbar {
-                  width: 8px;
-                }
-                .suggestions-modal::-webkit-scrollbar-track {
-                  background: rgba(255, 255, 255, 0.05);
-                  border-radius: 10px;
-                }
-                .suggestions-modal::-webkit-scrollbar-thumb {
-                  background: rgba(255, 255, 255, 0.2);
-                  border-radius: 10px;
-                }
-                .suggestions-modal::-webkit-scrollbar-thumb:hover {
-                  background: rgba(255, 255, 255, 0.3);
-                }
-                `}
-              </style>
-              {/* Header */}
               <div style={{
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'space-between',
-                marginBottom: '20px',
-                paddingBottom: '16px',
-                borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
+                gap: '8px'
               }}>
-                <h3 style={{
-                  margin: 0,
-                  color: '#ffffff',
+                <span style={{ fontSize: '24px' }}>💡</span>
+                <h2 style={{
                   fontSize: '18px',
+                  fontWeight: 600,
                   fontFamily: 'IRANSansX, sans-serif',
-                  fontWeight: '700',
+                  margin: 0,
+                  color: '#ffffff'
+                }}>
+                  {t('flights.suggestionsModal.title')}
+                </h2>
+              </div>
+              <button
+                onClick={handleCloseSuggestionsModal}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#ffffff',
+                  fontSize: '24px',
+                  cursor: 'pointer',
+                  padding: '4px',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '8px'
-                }}>
-                  <span style={{ fontSize: '20px' }}>💡</span>
-                  {t('flights.suggestionsModal.title')}
-                </h3>
-                <button
-                  onClick={handleCloseSuggestionsModal}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    color: '#ffffff',
-                    fontSize: '24px',
-                    cursor: 'pointer',
-                    padding: '4px',
-                    borderRadius: '8px'
-                  }}
-                >
-                  ×
-                </button>
-              </div>
+                  justifyContent: 'center',
+                  width: '32px',
+                  height: '32px'
+                }}
+              >
+                ×
+              </button>
+            </div>
 
-              {/* Suggestions List */}
+            {/* Content - Scrollable */}
+            <div style={{
+              padding: '20px 24px',
+              height: '400px',
+              overflowY: 'auto',
+              position: 'relative',
+              background: '#1e293b',
+              direction: isRTL ? 'rtl' : 'ltr'
+            }}>
               <div style={{
-                marginBottom: '20px'
+                fontSize: '14px',
+                lineHeight: 1.6,
+                color: '#e2e8f0',
+                fontFamily: 'IRANSansX, sans-serif'
               }}>
                 <h4 style={{
                   margin: '0 0 16px 0',
                   color: '#ffffff',
                   fontSize: '16px',
-                  fontFamily: 'IRANSansX, sans-serif',
                   fontWeight: '600'
                 }}>
                   {t('flights.suggestionsModal.suggestionsReceived')}
@@ -2952,8 +2955,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                     display: 'flex',
                     flexDirection: 'column',
                     gap: '12px',
-                    maxHeight: '300px',
-                    overflowY: 'auto'
+                    paddingBottom: '20px'
                   }}>
                     {selectedFlightForSuggestions.suggestions.map((suggestion) => (
                       <div
@@ -3095,7 +3097,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
               </div>
             </div>
           </div>
-        </>,
+        </div>,
         document.body
       )}
 
