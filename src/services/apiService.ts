@@ -89,7 +89,7 @@ class ApiService {
       headers['X-Telegram-Init-Data'] = initData;
     } else {
       // Use provided token for development
-      headers['X-Telegram-Init-Data'] = 'query_id=AAEfymc9AAAAAB_KZz0pgVLW&user=%7B%22id%22%3A1030212127%2C%22first_name%22%3A%22Shahram%22%2C%22last_name%22%3A%22%22%2C%22username%22%3A%22Shahram0weisy%22%2C%22language_code%22%3A%22en%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Ft.me%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2FEVbiVIJZP-ipzuxmiuKkh1k1-dJF0U16tjKJdfQM7M4.svg%22%7D&auth_date=1757184054&signature=H18OcG--zgmjs_SXGpAr9OCWEPYdxgThVu1r1_KOyz747kB6zGxUhQEI_WSYN08FWwanwH0cVL-TMObOxGsXAg&hash=5df74314eb234cba4b00d560bbeac4957ffceade7c9d5c163ea6a201a112cc5e';
+      headers['X-Telegram-Init-Data'] = 'query_id=AAEfymc9AAAAAB_KZz3-1lnV&user=%7B%22id%22%3A1030212127%2C%22first_name%22%3A%22Shahram%22%2C%22last_name%22%3A%22%22%2C%22username%22%3A%22Shahram0weisy%22%2C%22language_code%22%3A%22en%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Ft.me%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2FEVbiVIJZP-ipzuxmiuKkh1k1-dJF0U16tjKJdfQM7M4.svg%22%7D&auth_date=1757781398&signature=HOhywJXP-xaV5T3lOI4yIQNiPBgE_jzP5fEgTyi_oH61WoJE_5Qrvq6LXmlJ5R_RBA16BQlJExt9N4r2-dOrCg&hash=75baa2138205e2ac7d484e968ae1fec7f3b51ffe9d407f7fb0f95ea2e25ad426';
     }
 
     // Add additional headers for mobile compatibility

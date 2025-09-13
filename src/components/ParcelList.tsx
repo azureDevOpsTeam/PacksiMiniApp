@@ -1209,7 +1209,10 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                               type="button"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                handleShowSuggestions(flight);
+                                // Open select trip modal with suggest_price option
+                                setSelectedFlightForTrip(flight);
+                                setSelectedTripOption('');
+                                setShowSelectTripModal(true);
                               }}
                               style={{
                                 padding: '4px 8px',
@@ -1229,7 +1232,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                                 e.currentTarget.style.backgroundColor = '#3b82f6';
                               }}
                             >
-                              {isRTL ? 'پیشنهادات' : 'Suggestions'}
+                              {isRTL ? 'آخرین وضعیت' : 'Last Status'}
                             </button>
 
                             {/* Three Dots Menu */}
@@ -1702,14 +1705,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                                   {isRTL ? t('flights.showSuggestions') : t('flights.showSuggestions')}
                                 </button>
                               ) : (
-                                <button
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setSelectedFlightForTrip(flight);
-                                    setSelectedTripOption('');
-                                    setShowSelectTripModal(true);
-                                  }}
+                                <span
                                   style={{
                                     padding: '6px 12px',
                                     borderRadius: '16px',
@@ -1734,8 +1730,8 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                                     e.currentTarget.style.boxShadow = '0 2px 4px rgba(16, 185, 129, 0.3)';
                                   }}
                                 >
-                                  {isRTL ? 'پیشنهاد قیمت' : 'Suggest Price'}
-                                </button>
+                                  {isRTL ? 'آخرین وضعیت' : 'Last Status'}
+                                </span>
                               )}
                             </div>
 
@@ -2089,20 +2085,35 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                               )}
                           </div>
                           <div style={{
-                            width: '60px',
-                            height: '60px',
-                            background: 'white',
-                            border: '2px solid #e2e8f0',
+                            width: '120px',
+                            background: 'rgba(255, 255, 255, 0.1)',
+                            border: '1px solid rgba(255, 255, 255, 0.2)',
                             borderRadius: '8px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontSize: '8px',
+                            padding: '8px',
+                            fontSize: '10px',
                             color: '#64748b',
-                            textAlign: 'center',
-                            lineHeight: '1.2'
                           }}>
-                            QR CODE<br />PLACEHOLDER
+                            <div style={{ marginBottom: '6px', fontWeight: 'bold', color: '#475569', fontSize: '10px' }}>
+                              {isRTL ? 'مشخصات بسته' : 'PACKAGE SPECS'}
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <span style={{ color: '#64748b' }}>{isRTL ? 'وزن' : 'Weight'}:</span>
+                                <span style={{ fontWeight: 'bold', color: '#334155' }}>{flight.maxWeightKg || '-'} kg</span>
+                              </div>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <span style={{ color: '#64748b' }}>{isRTL ? 'طول' : 'Length'}:</span>
+                                <span style={{ fontWeight: 'bold', color: '#334155' }}>{flight.maxLengthCm || '-'} cm</span>
+                              </div>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <span style={{ color: '#64748b' }}>{isRTL ? 'عرض' : 'Width'}:</span>
+                                <span style={{ fontWeight: 'bold', color: '#334155' }}>{flight.maxWidthCm || '-'} cm</span>
+                              </div>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <span style={{ color: '#64748b' }}>{isRTL ? 'ارتفاع' : 'Height'}:</span>
+                                <span style={{ fontWeight: 'bold', color: '#334155' }}>{flight.maxHeightCm || '-'} cm</span>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -2144,6 +2155,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                               background: 'rgba(3, 125, 136, 0.8)',
                               padding: '8px',
                               border: '1px solid rgba(80, 180, 255, 0.1)',
+                              marginBottom: '10px'
                             }}>
                               <div style={{
                                 fontSize: '10px',
@@ -2163,6 +2175,93 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                               </div>
                             </div>
                           )}
+                          
+                          {/* Action Buttons - Added for inbound and outbound tabs */}
+                          <div style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            marginTop: '10px',
+                            gap: '0px',
+                            borderRadius: '8px',
+                            overflow: 'hidden',
+                            boxShadow: '0 2px 6px rgba(0, 0, 0, 0.08)',
+                            border: '1px solid #e5e7eb',
+                            margin: '0 10px 10px 10px'
+                          }}>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                // Open select trip modal with suggest_price option
+                                setSelectedFlightForTrip(flight);
+                                setSelectedTripOption('');
+                                setShowSelectTripModal(true);
+                              }}
+                              style={{
+                                flex: 1,
+                                padding: '10px 12px',
+                                borderRadius: '0',
+                                fontSize: '12px',
+                                fontWeight: '600',
+                                backgroundColor: '#ffffff',
+                                color: '#4b5563',
+                                border: 'none',
+                                borderRight: isRTL ? 'none' : '1px solid #e5e7eb',
+                                borderLeft: isRTL ? '1px solid #e5e7eb' : 'none',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s ease',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '4px'
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.backgroundColor = '#f9fafb';
+                                e.currentTarget.style.color = '#2563eb';
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.backgroundColor = '#ffffff';
+                                e.currentTarget.style.color = '#4b5563';
+                              }}
+                            >
+                              {isRTL ? 'پیشنهاد قیمت' : 'Suggestion Price'} <span style={{ fontSize: '14px' }}>💰</span>
+                            </button>
+                            
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                // Open select trip modal with suggest_price option
+                                setSelectedFlightForTrip(flight);
+                                setSelectedTripOption('');
+                                setShowSelectTripModal(true);
+                              }}
+                              style={{
+                                flex: 1,
+                                padding: '10px 12px',
+                                borderRadius: '0',
+                                fontSize: '12px',
+                                fontWeight: '600',
+                                backgroundColor: '#f8f9fa',
+                                color: '#374151',
+                                border: 'none',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s ease',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '4px'
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.backgroundColor = '#e5e7eb';
+                                e.currentTarget.style.color = '#1f2937';
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.backgroundColor = '#f8f9fa';
+                                e.currentTarget.style.color = '#374151';
+                              }}
+                            >
+                              {isRTL ? 'پیام' : 'Message'} <span style={{ fontSize: '14px' }}>💬</span>
+                            </button>
+                          </div>
                         </div>
                       )}
                     </div>
