@@ -2874,10 +2874,27 @@ const ParcelList: React.FC<ParcelListProps> = () => {
               overflowX: 'hidden',
               border: '1px solid rgba(255, 255, 255, 0.1)',
               boxShadow: '0 25px 50px rgba(0, 0, 0, 0.5)',
-              position: 'relative',
-              scrollbarWidth: 'none',
-              msOverflowStyle: 'none'
+              position: 'relative'
             }}>
+              {/* Added custom scrollbar styling */}
+              <style>
+                {`
+                .suggestions-modal::-webkit-scrollbar {
+                  width: 8px;
+                }
+                .suggestions-modal::-webkit-scrollbar-track {
+                  background: rgba(255, 255, 255, 0.05);
+                  border-radius: 10px;
+                }
+                .suggestions-modal::-webkit-scrollbar-thumb {
+                  background: rgba(255, 255, 255, 0.2);
+                  border-radius: 10px;
+                }
+                .suggestions-modal::-webkit-scrollbar-thumb:hover {
+                  background: rgba(255, 255, 255, 0.3);
+                }
+                `}
+              </style>
               {/* Header */}
               <div style={{
                 display: 'flex',

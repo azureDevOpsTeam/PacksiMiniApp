@@ -978,6 +978,7 @@ const App: React.FC = () => {
             <GlobalStyles />
             <BrowserRouter>
               <Routes>
+                <Route path="/chatlist" element={<ChatPersonList />} />
                 <Route path="/*" element={<AppContent />} />
               </Routes>
             </BrowserRouter>
