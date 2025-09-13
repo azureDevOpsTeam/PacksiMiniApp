@@ -533,25 +533,29 @@ class ApiService {
   async selectRequest(payload: SelectRequestPayload): Promise<SelectRequestResponse> {
     try {
       const formData = new FormData();
-
       const model = payload.model;
-      formData.append("RequestId", model.requestId.toString());
 
+      // Append simple fields
+      formData.append("RequestId", model.requestId.toString());
       if (model.tripOption) formData.append("TripOption", model.tripOption);
       if (model.suggestionPrice !== undefined) formData.append("SuggestionPrice", model.suggestionPrice.toString());
       if (model.currency !== undefined) formData.append("Currency", model.currency.toString());
       if (model.description) formData.append("Description", model.description);
       if (model.itemTypeId !== undefined) formData.append("ItemTypeId", model.itemTypeId.toString());
 
-      // فایل‌ها
+      // Append files with compression for images
       if (model.files && model.files.length > 0) {
-        model.files.forEach((file) => {
-          formData.append("Files", file);
-        });
+        for (const file of model.files) {
+          if (file.type.startsWith("image/") && file.size > 1024 * 1024) {
+            // Compress image if larger than 1MB
+            await this.compressAndAppendImage(formData, file, "Files");
+          } else {
+            formData.append("Files", file);
+          }
+        }
       }
 
       const headers = this.getHeaders(true); // FormData mode
-
       const response = await fetch(`${API_BASE_URL}/Request/SelectRequest`, {
         method: "POST",
         headers,
@@ -569,6 +573,7 @@ class ApiService {
       throw error;
     }
   }
+
 
   async getLiveChatUsers(): Promise<LiveChatUsersResponse> {
     try {
