@@ -534,12 +534,6 @@ const ParcelList: React.FC<ParcelListProps> = () => {
         // Show success message and redirect after 1.5 seconds
         setTimeout(() => {
           setApiResult(null);
-          // Navigate back to previous page or home
-          if (window.history.length > 1) {
-            window.history.back();
-          } else {
-            window.location.href = '/';
-          }
         }, 1500);
 
         await fetchFlights();
