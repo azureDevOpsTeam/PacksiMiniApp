@@ -20,6 +20,12 @@
     "placeholder": "Search",
     "loading": "Loading..."
   },
+  "tabs": {
+    "home": "Home",
+    "requests": "Requests",
+    "parcels": "Parcels",
+    "chat": "Chat"
+  },
   "bots": {
         "title": "Services",
         "createNew": "Create New Request",

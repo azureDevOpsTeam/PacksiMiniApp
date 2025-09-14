@@ -20,6 +20,8 @@ import { AdminRoutes } from './admin';
 import TermsOfServiceModal from './components/TermsOfServiceModal';
 import HelpModal from './components/HelpModal';
 import UnlimitedHelpModal from './components/UnlimitedHelpModal';
+import TabBar from './components/TabBar';
+import type { TabItem } from './components/TabBar';
 
 import ErrorBoundary from './components/ErrorBoundary';
 import SkeletonLoader from './components/SkeletonLoader';
@@ -41,6 +43,91 @@ const AppContent: React.FC = () => {
   const [showTermsModal, setShowTermsModal] = React.useState<boolean>(false);
   const [showHelpModal, setShowHelpModal] = React.useState<boolean>(false);
   const [showUnlimitedHelpModal, setShowUnlimitedHelpModal] = React.useState<boolean>(false);
+  const [activeTab, setActiveTab] = React.useState<string>('home');
+
+  // Define tab items
+  const tabItems: TabItem[] = React.useMemo(() => [
+    {
+      id: 'home',
+      label: t('tabs.home') || 'خانه',
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          <path d="M9 22V12H15V22" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      )
+    },
+    {
+      id: 'requests',
+      label: t('tabs.requests') || 'درخواست‌ها',
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M16 4H18C18.5304 4 19.0391 4.21071 19.4142 4.58579C19.7893 4.96086 20 5.46957 20 6V20C20 20.5304 19.7893 21.0391 19.4142 21.4142C19.0391 21.7893 18.5304 22 18 22H6C5.46957 22 4.96086 21.7893 4.58579 21.4142C4.21071 21.0391 4 20.5304 4 20V6C4 5.46957 4.21071 4.96086 4.58579 4.58579C4.96086 4.21071 5.46957 4 6 4H8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          <path d="M15 2H9C8.44772 2 8 2.44772 8 3V5C8 5.55228 8.44772 6 9 6H15C15.5523 6 16 5.55228 16 5V3C16 2.44772 15.5523 2 15 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      )
+    },
+    {
+      id: 'parcels',
+      label: t('tabs.parcels') || 'بسته‌ها',
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M21 8C21 6.89543 20.1046 6 19 6H5C3.89543 6 3 6.89543 3 8V18C3 19.1046 3.89543 20 5 20H19C20.1046 20 21 19.1046 21 18V8Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          <path d="M3 8L12 13L21 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      )
+    },
+    {
+      id: 'chat',
+      label: t('tabs.chat') || 'چت',
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M21 11.5C21.0034 12.8199 20.6951 14.1219 20.1 15.3C19.3944 16.7118 18.3098 17.8992 16.9674 18.7293C15.6251 19.5594 14.0782 19.9994 12.5 20C11.1801 20.0035 9.87812 19.6951 8.7 19.1L3 21L4.9 15.3C4.30493 14.1219 3.99656 12.8199 4 11.5C4.00061 9.92179 4.44061 8.37488 5.27072 7.03258C6.10083 5.69028 7.28825 4.60573 8.7 3.90003C9.87812 3.30496 11.1801 2.99659 12.5 3.00003H13C15.0843 3.11502 17.053 3.99479 18.5291 5.47089C20.0052 6.94699 20.885 8.91568 21 11V11.5Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      )
+    }
+  ], [t]);
+
+  // Handle tab change
+  const handleTabChange = React.useCallback((tabId: string) => {
+    setActiveTab(tabId);
+    switch (tabId) {
+      case 'home':
+        setCurrentPage('home');
+        break;
+      case 'requests':
+        setCurrentPage('myRequest');
+        break;
+      case 'parcels':
+        setCurrentPage('parcelList');
+        break;
+      case 'chat':
+        setCurrentPage('chatPersonList');
+        break;
+      default:
+        setCurrentPage('home');
+    }
+  }, []);
+
+  // Sync activeTab with currentPage
+  React.useEffect(() => {
+    switch (currentPage) {
+      case 'home':
+        setActiveTab('home');
+        break;
+      case 'myRequest':
+        setActiveTab('requests');
+        break;
+      case 'parcelList':
+        setActiveTab('parcels');
+        break;
+      case 'chatPersonList':
+        setActiveTab('chat');
+        break;
+      default:
+        setActiveTab('home');
+    }
+  }, [currentPage]);
 
   // Handle Telegram BackButton
   React.useEffect(() => {
@@ -963,6 +1050,15 @@ const AppContent: React.FC = () => {
         <HelpModal
           isOpen={showHelpModal}
           onClose={() => setShowHelpModal(false)}
+        />
+      )}
+
+      {/* Tab Bar - Show only on main pages */}
+      {['home', 'myRequest', 'parcelList', 'chatPersonList'].includes(currentPage) && (
+        <TabBar
+          tabs={tabItems}
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
         />
       )}
     </div>

@@ -20,6 +20,12 @@
     "placeholder": "جستجو",
     "loading": "در حال بارگذاری..."
   },
+  "tabs": {
+    "home": "خانه",
+    "requests": "درخواست‌ها",
+    "parcels": "بسته‌ها",
+    "chat": "چت"
+  },
   "bots": {
         "title": "خدمات",
         "createNew": "ثبت درخواست جدید",
