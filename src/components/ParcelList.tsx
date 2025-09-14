@@ -1363,87 +1363,136 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                             )}
                         </div>
 
-                        {/* Action Buttons - Added for ipicked and pickedme tabs */}
-                        <div style={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          marginTop: '16px',
-                          gap: '0px',
-                          borderRadius: '8px',
-                          overflow: 'hidden',
-                          boxShadow: '0 2px 6px rgba(0, 0, 0, 0.08)',
-                          border: '1px solid #e5e7eb'
-                        }}>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              // Handle first button action
-                              console.log('First button clicked for flight:', flight.requestId);
-                            }}
-                            style={{
-                              flex: 1,
-                              padding: '10px 12px',
-                              borderRadius: '0',
-                              fontSize: '12px',
-                              fontWeight: '600',
-                              backgroundColor: '#ffffff',
-                              color: '#4b5563',
-                              border: 'none',
-                              borderRight: isRTL ? 'none' : '1px solid #e5e7eb',
-                              borderLeft: isRTL ? '1px solid #e5e7eb' : 'none',
-                              cursor: 'pointer',
-                              transition: 'all 0.2s ease',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              gap: '4px'
-                            }}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.backgroundColor = '#f9fafb';
-                              e.currentTarget.style.color = '#2563eb';
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.backgroundColor = '#ffffff';
-                              e.currentTarget.style.color = '#4b5563';
-                            }}
-                          >
-                            {isRTL ? 'تماس' : 'Contact'} <span style={{ fontSize: '14px' }}>📞</span>
-                          </button>
-                          
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              // Handle second button action
-                              console.log('Second button clicked for flight:', flight.requestId);
-                            }}
-                            style={{
-                              flex: 1,
-                              padding: '10px 12px',
-                              borderRadius: '0',
-                              fontSize: '12px',
-                              fontWeight: '600',
-                              backgroundColor: '#f8f9fa',
-                              color: '#374151',
-                              border: 'none',
-                              cursor: 'pointer',
-                              transition: 'all 0.2s ease',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              gap: '4px'
-                            }}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.backgroundColor = '#e5e7eb';
-                              e.currentTarget.style.color = '#1f2937';
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.backgroundColor = '#f8f9fa';
-                              e.currentTarget.style.color = '#374151';
-                            }}
-                          >
-                            {isRTL ? 'پیام' : 'Message'} <span style={{ fontSize: '14px' }}>💬</span>
-                          </button>
-                        </div>
+                        {/* Action Buttons - Only for ipicked tab */}
+                        {activeTab === 'ipicked' && (
+                          <div style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            marginTop: '16px',
+                            gap: '0px',
+                            borderRadius: '8px',
+                            overflow: 'hidden',
+                            boxShadow: '0 2px 6px rgba(0, 0, 0, 0.08)',
+                            border: '1px solid #e5e7eb'
+                          }}>
+                            {/* Contact Button */}
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                // Handle contact button action based on operation button state
+                                if (flight.ipicked_OperationButton === 'btnConfirmDelivery') {
+                                  // Handle "Not Delivered" action
+                                  console.log('Not Delivered clicked for flight:', flight.requestId);
+                                } else {
+                                  // Disabled state - no action
+                                  console.log('Contact button disabled for flight:', flight.requestId);
+                                }
+                              }}
+                              disabled={flight.ipicked_OperationButton !== 'btnConfirmDelivery'}
+                              style={{
+                                flex: 1,
+                                padding: '10px 12px',
+                                borderRadius: '0',
+                                fontSize: '12px',
+                                fontWeight: '600',
+                                backgroundColor: flight.ipicked_OperationButton === 'btnConfirmDelivery' ? '#ffffff' : '#f3f4f6',
+                                color: flight.ipicked_OperationButton === 'btnConfirmDelivery' ? '#4b5563' : '#9ca3af',
+                                border: 'none',
+                                borderRight: isRTL ? 'none' : '1px solid #e5e7eb',
+                                borderLeft: isRTL ? '1px solid #e5e7eb' : 'none',
+                                cursor: flight.ipicked_OperationButton === 'btnConfirmDelivery' ? 'pointer' : 'not-allowed',
+                                transition: 'all 0.2s ease',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '4px'
+                              }}
+                              onMouseEnter={(e) => {
+                                if (flight.ipicked_OperationButton === 'btnConfirmDelivery') {
+                                  e.currentTarget.style.backgroundColor = '#f9fafb';
+                                  e.currentTarget.style.color = '#dc2626';
+                                }
+                              }}
+                              onMouseLeave={(e) => {
+                                if (flight.ipicked_OperationButton === 'btnConfirmDelivery') {
+                                  e.currentTarget.style.backgroundColor = '#ffffff';
+                                  e.currentTarget.style.color = '#4b5563';
+                                }
+                              }}
+                            >
+                              {(() => {
+                                switch (flight.ipicked_OperationButton) {
+                                  case 'lblWaitForAcceptSuggetion':
+                                    return isRTL ? 'منتظر تایید پیشنهاد' : 'Waiting for Confirm';
+                                  case 'lblReadyToPickeUp':
+                                    return isRTL ? 'آماده دریافت مرسوله' : 'Ready To Get Parcel';
+                                  case 'lblReadyToDelivery':
+                                    return isRTL ? 'آماده تحویل' : 'Ready To Delivery';
+                                  case 'btnConfirmDelivery':
+                                    return isRTL ? 'تحویل نگرفتم' : 'Not Delivered';
+                                  default:
+                                    return isRTL ? 'تماس' : 'Contact';
+                                }
+                              })()} <span style={{ fontSize: '14px' }}>📞</span>
+                            </button>
+                            
+                            {/* Message Button */}
+                            {(flight.ipicked_OperationButton === 'lblReadyToPickeUp' || 
+                              flight.ipicked_OperationButton === 'lblReadyToDelivery' || 
+                              flight.ipicked_OperationButton === 'btnConfirmDelivery') && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  // Handle message button action
+                                  if (flight.ipicked_OperationButton === 'btnConfirmDelivery') {
+                                    // Handle "Delivered" action
+                                    console.log('Delivered clicked for flight:', flight.requestId);
+                                  } else {
+                                    // Handle message action
+                                    console.log('Message clicked for flight:', flight.requestId);
+                                  }
+                                }}
+                                style={{
+                                  flex: 1,
+                                  padding: '10px 12px',
+                                  borderRadius: '0',
+                                  fontSize: '12px',
+                                  fontWeight: '600',
+                                  backgroundColor: flight.ipicked_OperationButton === 'btnConfirmDelivery' ? '#10b981' : '#f8f9fa',
+                                  color: flight.ipicked_OperationButton === 'btnConfirmDelivery' ? '#ffffff' : '#374151',
+                                  border: 'none',
+                                  cursor: 'pointer',
+                                  transition: 'all 0.2s ease',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  gap: '4px'
+                                }}
+                                onMouseEnter={(e) => {
+                                  if (flight.ipicked_OperationButton === 'btnConfirmDelivery') {
+                                    e.currentTarget.style.backgroundColor = '#059669';
+                                  } else {
+                                    e.currentTarget.style.backgroundColor = '#e5e7eb';
+                                    e.currentTarget.style.color = '#1f2937';
+                                  }
+                                }}
+                                onMouseLeave={(e) => {
+                                  if (flight.ipicked_OperationButton === 'btnConfirmDelivery') {
+                                    e.currentTarget.style.backgroundColor = '#10b981';
+                                  } else {
+                                    e.currentTarget.style.backgroundColor = '#f8f9fa';
+                                    e.currentTarget.style.color = '#374151';
+                                  }
+                                }}
+                              >
+                                {flight.ipicked_OperationButton === 'btnConfirmDelivery' 
+                                  ? (isRTL ? 'تحویل گرفتم' : 'Delivered')
+                                  : (isRTL ? 'پیام' : 'Message')
+                                } <span style={{ fontSize: '14px' }}>{flight.ipicked_OperationButton === 'btnConfirmDelivery' ? '✅' : '💬'}</span>
+                              </button>
+                            )}
+                          </div>
+                        )}
 
                         {/* Menu Popup for compact cards */}
                         {activeMenu === flight.requestId && createPortal(

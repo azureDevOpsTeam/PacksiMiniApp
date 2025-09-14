@@ -254,6 +254,7 @@ export interface OutboundTrip {
   tripType: string;
   selectStatus: string;
   suggestions?: Suggestion[];
+  ipicked_OperationButton?: string;
 }
 
 export interface OutboundTripsResponse {
