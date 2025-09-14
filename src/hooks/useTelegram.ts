@@ -9,90 +9,98 @@ export const useTelegram = (): TelegramContextType => {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const [error, setError] = useState<string | null>(null);
 
+  // --- Safe area handler ---
+  const applySafeArea = useCallback(() => {
+    const diff = WebApp.viewportHeight - WebApp.viewportStableHeight;
+    document.body.style.paddingTop = diff + 'px';
+  }, []);
+
+  // --- Theme handler ---
+  const handleThemeChange = useCallback(() => {
+    setTheme(WebApp.colorScheme === 'dark' ? 'dark' : 'light');
+  }, []);
+
+  // --- Initialization ---
   const initializeTelegram = useCallback(() => {
     try {
-      // Initialize Telegram WebApp
-      WebApp.ready();
-
-      // Set up the app
-      // Expand to full screen to hide header
+      // Expand to full screen
       WebApp.expand();
-      // Check if requestFullscreen is supported (available from version 6.1+)
-      if (WebApp.platform !== 'tdesktop' && 
-          typeof WebApp.requestFullscreen === 'function' && 
-          WebApp.version && 
-          parseFloat(WebApp.version) >= 6.1) {
+
+      // Request fullscreen (if supported)
+      if (
+        WebApp.platform !== 'tdesktop' &&
+        typeof WebApp.requestFullscreen === 'function' &&
+        WebApp.version &&
+        parseFloat(WebApp.version) >= 6.1
+      ) {
         try {
           WebApp.requestFullscreen();
-        } catch (error) {
-          // requestFullscreen not supported in this version
+        } catch {
           console.warn('requestFullscreen not supported in this Telegram WebApp version');
         }
       }
-      // Hide header by setting it to transparent/secondary background
+
+      // Apply safe area
+      applySafeArea();
+      WebApp.onEvent('viewportChanged', applySafeArea);
+
+      // UI tweaks
       WebApp.setHeaderColor('secondary_bg_color');
-
-      // Set bottom bar color
       WebApp.setBottomBarColor('secondary_bg_color');
-
-      // Disable vertical swipes and enable closing confirmation
       WebApp.disableVerticalSwipes();
       WebApp.enableClosingConfirmation();
 
-      // Add viewport meta tag to disable zoom
+      // Ensure viewport meta
       const viewport = document.querySelector('meta[name="viewport"]');
       if (viewport) {
-        viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+        viewport.setAttribute(
+          'content',
+          'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no'
+        );
       } else {
         const meta = document.createElement('meta');
         meta.name = 'viewport';
-        meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
+        meta.content =
+          'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
         document.head.appendChild(meta);
       }
 
-      // Get user data
+      // User & initData
       if (WebApp.initDataUnsafe?.user) {
         setUser(WebApp.initDataUnsafe.user as TelegramUser);
       }
-
-      // Get init data
       if (WebApp.initDataUnsafe) {
         setInitData(WebApp.initDataUnsafe as TelegramInitData);
       }
 
-      // Set theme based on Telegram's color scheme
-      setTheme(WebApp.colorScheme === 'dark' ? 'dark' : 'light');
-
-      // Listen for theme changes
-      WebApp.onEvent('themeChanged', () => {
-        setTheme(WebApp.colorScheme === 'dark' ? 'dark' : 'light');
-      });
+      // Theme setup
+      handleThemeChange();
+      WebApp.onEvent('themeChanged', handleThemeChange);
 
       setIsReady(true);
       setError(null);
-    } catch (error) {
-      // Handle Telegram WebApp initialization errors
-      const errorMessage = error instanceof Error ? error.message : 'خطا در اتصال به Telegram';
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : 'خطا در اتصال به Telegram';
       setError(errorMessage);
 
-      // Log error in development mode
       if (import.meta.env.DEV) {
-        // Telegram WebApp initialization error handled silently
+        console.error('Telegram WebApp initialization error:', err);
       }
 
-      // Still set ready to true for fallback functionality
-      setIsReady(true);
+      setIsReady(true); // fallback
     }
-  }, []);
+  }, [applySafeArea, handleThemeChange]);
 
+  // --- Lifecycle ---
   useEffect(() => {
     initializeTelegram();
 
     return () => {
-      // Cleanup
-      WebApp.offEvent('themeChanged', () => { });
+      WebApp.offEvent('viewportChanged', applySafeArea);
+      WebApp.offEvent('themeChanged', handleThemeChange);
     };
-  }, [initializeTelegram]);
+  }, [initializeTelegram, applySafeArea, handleThemeChange]);
 
   return {
     webApp: WebApp,
