@@ -1,7 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useTheme } from '../hooks/useTheme';
-import { useLanguage } from '../hooks/useLanguage';
+
+import { useSafeArea } from '../contexts/SafeAreaContext';
 
 interface TabItem {
   id: string;
@@ -17,23 +18,29 @@ interface TabBarProps {
   className?: string;
 }
 
-const TabBarContainer = styled.div`
+const TabBarContainer = styled.div<{ $bottomPadding: number }>`
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
   z-index: 1000;
   padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
-  padding-bottom: calc(${({ theme }) => theme.spacing.sm} + env(safe-area-inset-bottom));
+  padding-bottom: ${({ $bottomPadding, theme }) => `calc(${theme.spacing.sm} + ${$bottomPadding}px)`};
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
+  transition: padding-bottom 0.3s ease;
   
   ${({ theme }) => theme.colors.background === '#1b2026' && `
     background: rgba(27, 32, 38, 0.9);
     border-top: 1px solid rgba(255, 255, 255, 0.05);
   `}
+  
+  /* Ensure proper safe area handling on iOS */
+  @supports (padding-bottom: env(safe-area-inset-bottom)) {
+    padding-bottom: calc(${({ theme }) => theme.spacing.sm} + env(safe-area-inset-bottom));
+  }
 `;
 
 const TabBarContent = styled.div`
@@ -154,10 +161,17 @@ const ActiveIndicator = styled.div<{ $isActive: boolean }>`
 
 const TabBar: React.FC<TabBarProps> = ({ tabs, activeTab, onTabChange, className }) => {
   const { theme } = useTheme();
-  const { language } = useLanguage();
+  const { insets, isReady } = useSafeArea();
+
+  // Get safe area bottom padding with fallback
+  const bottomPadding = isReady ? insets.bottom : 0;
 
   return (
-    <TabBarContainer className={className} theme={theme}>
+    <TabBarContainer 
+      className={className} 
+      theme={theme}
+      $bottomPadding={bottomPadding}
+    >
       <TabBarContent theme={theme}>
         {tabs.map((tab) => {
           const isActive = tab.id === activeTab;

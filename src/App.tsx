@@ -13,7 +13,7 @@ import ParcelList from './components/ParcelList';
 import MyRequest from './components/MyRequest';
 import Logo from './components/Logo';
 import Settings from './components/Settings';
-import ChatPanel from './components/ChatPanel';
+
 import NotFound from './components/NotFound';
 import ChatPersonList from './components/ChatPersonList';
 import { AdminRoutes } from './admin';
@@ -22,6 +22,7 @@ import HelpModal from './components/HelpModal';
 import UnlimitedHelpModal from './components/UnlimitedHelpModal';
 import TabBar from './components/TabBar';
 import type { TabItem } from './components/TabBar';
+import { SafeAreaProvider } from './contexts/SafeAreaContext';
 
 import ErrorBoundary from './components/ErrorBoundary';
 import SkeletonLoader from './components/SkeletonLoader';
@@ -1036,9 +1037,6 @@ const AppContent: React.FC = () => {
         onAccept={handleAcceptTerms}
       />
 
-      {/* Chat Panel - Only on Home page */}
-      <ChatPanel />
-
       {showUnlimitedHelpModal && (
         <UnlimitedHelpModal
           isOpen={showUnlimitedHelpModal}
@@ -1071,13 +1069,15 @@ const App: React.FC = () => {
       <TelegramProvider>
         <ThemeProvider>
           <LanguageProvider>
-            <GlobalStyles />
-            <BrowserRouter>
-              <Routes>
-                <Route path="/chatlist" element={<ChatPersonList />} />
-                <Route path="/*" element={<AppContent />} />
-              </Routes>
-            </BrowserRouter>
+            <SafeAreaProvider>
+              <GlobalStyles />
+              <BrowserRouter>
+                <Routes>
+                  <Route path="/chatlist" element={<ChatPersonList />} />
+                  <Route path="/*" element={<AppContent />} />
+                </Routes>
+              </BrowserRouter>
+            </SafeAreaProvider>
           </LanguageProvider>
         </ThemeProvider>
       </TelegramProvider>
