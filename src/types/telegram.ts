@@ -1,10 +1,23 @@
 import type { WebApp, WebAppInitData, WebAppUser } from '@twa-dev/types';
 
+// Safe Area Insets interface
+export interface SafeAreaInsets {
+  top: number;
+  bottom: number;
+  left: number;
+  right: number;
+}
+
+// Extended WebApp interface with Safe Area support
+interface ExtendedWebApp extends WebApp {
+  getSafeAreaInsets?: () => SafeAreaInsets;
+}
+
 // Extend the global Window interface to include Telegram
 declare global {
   interface Window {
     Telegram: {
-      WebApp: WebApp;
+      WebApp: ExtendedWebApp;
     };
   }
 }

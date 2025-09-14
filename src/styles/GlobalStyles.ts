@@ -13,12 +13,6 @@ export const GlobalStyles = createGlobalStyle`
     -webkit-text-size-adjust: 100%;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    
-    /* Safe Area CSS Variables */
-    --safe-area-inset-top: env(safe-area-inset-top, 0px);
-    --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
-    --safe-area-inset-left: env(safe-area-inset-left, 0px);
-    --safe-area-inset-right: env(safe-area-inset-right, 0px);
   }
 
   body {
@@ -37,12 +31,6 @@ export const GlobalStyles = createGlobalStyle`
     -webkit-user-select: none;
     -webkit-touch-callout: none;
     -webkit-text-size-adjust: none;
-    
-    /* Safe Area Support */
-    padding-top: var(--safe-area-inset-top);
-    padding-left: var(--safe-area-inset-left);
-    padding-right: var(--safe-area-inset-right);
-    /* Bottom padding handled by TabBar */
   }
 
   #root {

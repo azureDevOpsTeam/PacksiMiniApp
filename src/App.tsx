@@ -13,7 +13,7 @@ import ParcelList from './components/ParcelList';
 import MyRequest from './components/MyRequest';
 import Logo from './components/Logo';
 import Settings from './components/Settings';
-
+import SafeAreaWrapper from './components/SafeAreaWrapper';
 import NotFound from './components/NotFound';
 import ChatPersonList from './components/ChatPersonList';
 import { AdminRoutes } from './admin';
@@ -22,7 +22,7 @@ import HelpModal from './components/HelpModal';
 import UnlimitedHelpModal from './components/UnlimitedHelpModal';
 import TabBar from './components/TabBar';
 import type { TabItem } from './components/TabBar';
-import { SafeAreaProvider } from './contexts/SafeAreaContext';
+
 
 import ErrorBoundary from './components/ErrorBoundary';
 import SkeletonLoader from './components/SkeletonLoader';
@@ -1069,7 +1069,7 @@ const App: React.FC = () => {
       <TelegramProvider>
         <ThemeProvider>
           <LanguageProvider>
-            <SafeAreaProvider>
+            <SafeAreaWrapper>
               <GlobalStyles />
               <BrowserRouter>
                 <Routes>
@@ -1077,7 +1077,7 @@ const App: React.FC = () => {
                   <Route path="/*" element={<AppContent />} />
                 </Routes>
               </BrowserRouter>
-            </SafeAreaProvider>
+            </SafeAreaWrapper>
           </LanguageProvider>
         </ThemeProvider>
       </TelegramProvider>

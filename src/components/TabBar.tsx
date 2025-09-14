@@ -1,8 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useTheme } from '../hooks/useTheme';
+import SafeAreaWrapper from './SafeAreaWrapper';
 
-import { useSafeArea } from '../contexts/SafeAreaContext';
+
 
 interface TabItem {
   id: string;
@@ -36,11 +37,6 @@ const TabBarContainer = styled.div<{ $bottomPadding: number }>`
     background: rgba(27, 32, 38, 0.9);
     border-top: 1px solid rgba(255, 255, 255, 0.05);
   `}
-  
-  /* Ensure proper safe area handling on iOS */
-  @supports (padding-bottom: env(safe-area-inset-bottom)) {
-    padding-bottom: calc(${({ theme }) => theme.spacing.sm} + env(safe-area-inset-bottom));
-  }
 `;
 
 const TabBarContent = styled.div`
@@ -161,40 +157,38 @@ const ActiveIndicator = styled.div<{ $isActive: boolean }>`
 
 const TabBar: React.FC<TabBarProps> = ({ tabs, activeTab, onTabChange, className }) => {
   const { theme } = useTheme();
-  const { insets, isReady } = useSafeArea();
-
-  // Get safe area bottom padding with fallback
-  const bottomPadding = isReady ? insets.bottom : 0;
 
   return (
-    <TabBarContainer 
-      className={className} 
-      theme={theme}
-      $bottomPadding={bottomPadding}
-    >
-      <TabBarContent theme={theme}>
-        {tabs.map((tab) => {
-          const isActive = tab.id === activeTab;
-          return (
-            <TabButton
-              key={tab.id}
-              $isActive={isActive}
-              onClick={() => onTabChange(tab.id)}
-              theme={theme}
-              aria-label={tab.label}
-            >
-              <ActiveIndicator $isActive={isActive} theme={theme} />
-              <TabIcon $isActive={isActive} theme={theme}>
-                {tab.icon}
-              </TabIcon>
-              <TabLabel $isActive={isActive} theme={theme}>
-                {tab.label}
-              </TabLabel>
-            </TabButton>
-          );
-        })}
-      </TabBarContent>
-    </TabBarContainer>
+    <SafeAreaWrapper>
+      <TabBarContainer 
+        className={className} 
+        theme={theme}
+        $bottomPadding={0}
+      >
+        <TabBarContent theme={theme}>
+          {tabs.map((tab) => {
+            const isActive = tab.id === activeTab;
+            return (
+              <TabButton
+                key={tab.id}
+                $isActive={isActive}
+                onClick={() => onTabChange(tab.id)}
+                theme={theme}
+                aria-label={tab.label}
+              >
+                <ActiveIndicator $isActive={isActive} theme={theme} />
+                <TabIcon $isActive={isActive} theme={theme}>
+                  {tab.icon}
+                </TabIcon>
+                <TabLabel $isActive={isActive} theme={theme}>
+                  {tab.label}
+                </TabLabel>
+              </TabButton>
+            );
+          })}
+        </TabBarContent>
+      </TabBarContainer>
+    </SafeAreaWrapper>
   );
 };
 
