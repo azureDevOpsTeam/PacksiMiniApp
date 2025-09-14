@@ -21,7 +21,7 @@ interface TabBarProps {
 
 const TabBarContainer = styled.div<{ $bottomPadding: number }>`
   position: fixed;
-  bottom: 0;
+  bottom: 30px;
   left: 0;
   right: 0;
   z-index: 1000;
