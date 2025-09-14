@@ -112,3 +112,18 @@ export const useTelegram = (): TelegramContextType => {
     error,
   };
 };
+const applySafeArea = () => {
+  if (window.Telegram && window.Telegram.WebApp) {
+    const tg = window.Telegram.WebApp;
+    const diff = tg.viewportHeight - tg.viewportStableHeight;
+    document.body.style.paddingTop = `${diff}px`;
+  }
+};
+
+// یک بار در شروع
+applySafeArea();
+
+// اگر سایز تغییر کرد (مثلا وقتی کیبورد باز/بسته میشه)
+if (window.Telegram && window.Telegram.WebApp) {
+  window.Telegram.WebApp.onEvent('viewportChanged', applySafeArea);
+}
