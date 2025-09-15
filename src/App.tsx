@@ -11,6 +11,7 @@ import UpdateProfile from './components/UpdateProfile';
 import AddPreferredLocation from './components/AddPreferredLocation';
 import ParcelList from './components/ParcelList';
 import MyRequest from './components/MyRequest';
+import InProgressRequest from './components/InProgressRequest';
 import Logo from './components/Logo';
 import Settings from './components/Settings';
 import SafeAreaWrapper from './components/SafeAreaWrapper';
@@ -34,7 +35,7 @@ const AppContent: React.FC = () => {
   const { isReady, webApp, user } = useTelegramContext();
   const { t, language } = useLanguage();
   const [activeButton, setActiveButton] = React.useState<'user' | 'admin'>('user');
-  const [currentPage, setCurrentPage] = React.useState<'home' | 'createRequest' | 'updateProfile' | 'addPreferredLocation' | 'parcelList' | 'myRequest' | 'chatPersonList' | 'notFound'>('home');
+  const [currentPage, setCurrentPage] = React.useState<'home' | 'createRequest' | 'updateProfile' | 'addPreferredLocation' | 'parcelList' | 'myRequest' | 'inProgressRequest' | 'chatPersonList' | 'notFound'>('home');
   const [showVerifyPhone, setShowVerifyPhone] = React.useState<boolean>(false);
   const [showUpdateProfile, setShowUpdateProfile] = React.useState<boolean>(false);
   const [isValidating, setIsValidating] = React.useState<boolean>(true);
@@ -97,7 +98,7 @@ const AppContent: React.FC = () => {
         setCurrentPage('home');
         break;
       case 'requests':
-        setCurrentPage('myRequest');
+        setCurrentPage('inProgressRequest');
         break;
       case 'parcels':
         setCurrentPage('parcelList');
@@ -117,6 +118,9 @@ const AppContent: React.FC = () => {
         setActiveTab('home');
         break;
       case 'myRequest':
+        setActiveTab('requests');
+        break;
+      case 'inProgressRequest':
         setActiveTab('requests');
         break;
       case 'parcelList':
@@ -399,6 +403,11 @@ const AppContent: React.FC = () => {
   // Render MyRequest page
   if (currentPage === 'myRequest') {
     return <MyRequest />;
+  }
+
+  // Render InProgressRequest page
+  if (currentPage === 'inProgressRequest') {
+    return <InProgressRequest />;
   }
 
   // Render ChatPersonList page
