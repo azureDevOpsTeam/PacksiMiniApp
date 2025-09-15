@@ -850,19 +850,8 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
                         borderRadius: '20px',
                         fontSize: '11px',
                         fontWeight: '600',
-                        // backgroundColor: (activeTab === 'inProgress' && (suggestion.operationButton === 'lblWaitForAcceptSuggetion' || suggestion.operationButton === 'lblReadyToPickeUp' || suggestion.operationButton === 'lblReadyToDelivery' || suggestion.operationButton === 'btnConfirmDelivery')) ? '#f3f4f6' : 'transparent',
-                        // color: (activeTab === 'inProgress' && (suggestion.operationButton === 'lblWaitForAcceptSuggetion' || suggestion.operationButton === 'lblReadyToPickeUp' || suggestion.operationButton === 'lblReadyToDelivery' || suggestion.operationButton === 'btnConfirmDelivery')) ? '#9ca3af' : '#6366f1',
-                        backgroundColor: (activeTab === 'inProgress' && suggestion.operationButton === 'lblReadyToDelivery')
-                          ? '#c4ffc8' // سبز روشن برای lblReadyToDelivery
-                          : (activeTab === 'inProgress' && (suggestion.operationButton === 'lblWaitForAcceptSuggetion' || suggestion.operationButton === 'lblReadyToPickeUp' || suggestion.operationButton === 'btnConfirmDelivery'))
-                            ? '#f3f4f6' // خاکستری برای حالت‌های غیرفعال
-                            : 'transparent', // حالت پیش‌فرض
-
-                        color: (activeTab === 'inProgress' && suggestion.operationButton === 'lblReadyToDelivery')
-                          ? '#3e7750' // سبز تیره متن
-                          : (activeTab === 'inProgress' && (suggestion.operationButton === 'lblWaitForAcceptSuggetion' || suggestion.operationButton === 'lblReadyToPickeUp' || suggestion.operationButton === 'btnConfirmDelivery'))
-                            ? '#9ca3af' // خاکستری متن برای حالت غیرفعال
-                            : '#6366f1', // رنگ پیش‌فرض متن
+                        backgroundColor: (activeTab === 'inProgress' && suggestion.operationButton === 'lblReadyToDelivery') ? '#c4ffc8' : (activeTab === 'inProgress' && (suggestion.operationButton === 'lblWaitForAcceptSuggetion' || suggestion.operationButton === 'lblReadyToPickeUp' || suggestion.operationButton === 'btnConfirmDelivery')) ? '#f3f4f6' : 'transparent',
+                        color: (activeTab === 'inProgress' && suggestion.operationButton === 'lblReadyToDelivery') ? '#065f46' : (activeTab === 'inProgress' && (suggestion.operationButton === 'lblWaitForAcceptSuggetion' || suggestion.operationButton === 'lblReadyToPickeUp' || suggestion.operationButton === 'btnConfirmDelivery')) ? '#9ca3af' : '#6366f1',
                         border: (activeTab === 'inProgress' && (suggestion.operationButton === 'lblWaitForAcceptSuggetion' || suggestion.operationButton === 'lblReadyToPickeUp' || suggestion.operationButton === 'lblReadyToDelivery' || suggestion.operationButton === 'btnConfirmDelivery')) ? '1.5px solid #d1d5db' : '1.5px solid #6366f1',
                         cursor: (activeTab === 'inProgress' && (suggestion.operationButton === 'lblWaitForAcceptSuggetion' || suggestion.operationButton === 'lblReadyToPickeUp' || suggestion.operationButton === 'lblReadyToDelivery' || suggestion.operationButton === 'btnConfirmDelivery')) ? 'not-allowed' : 'pointer',
                         transition: 'all 0.2s ease',
