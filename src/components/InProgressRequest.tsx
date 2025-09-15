@@ -53,7 +53,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [itemTypes, setItemTypes] = useState<ItemType[]>([]);
-  
+
   // Modal states for image gallery
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalImages, setModalImages] = useState<string[]>([]);
@@ -104,13 +104,13 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
       try {
         setLoading(true);
         setError(null);
-        
+
         // Load both offers and item types
         const [offersResponse] = await Promise.all([
           apiService.getInProgressOffers(),
           loadItemTypes()
         ]);
-        
+
         if (offersResponse.requestStatus.name === 'Successful') {
           setMyReciveOffers(offersResponse.objectResult.myReciveOffers || []);
           setMySentOffers(offersResponse.objectResult.mySentOffers || []);
@@ -221,7 +221,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
                   display: 'flex',
                   justifyContent: 'space-between',
                   alignItems: 'center',
-                  marginBottom: '6px'
+                  marginBottom: '8px'
                 }}>
                   <span style={{
                     fontSize: '12px',
@@ -236,7 +236,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
                     gap: '8px'
                   }}>
                     <span style={{
-                      fontSize: '12px',
+                      fontSize: '14px',
                       fontWeight: 'bold',
                       color: '#059669'
                     }}>
@@ -303,7 +303,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
                     fontWeight: '500',
                     padding: '2px 6px',
                     borderRadius: '4px',
-                    marginBottom: '4px',
+                    marginBottom: '6px',
                     marginRight: isRTL ? '0' : '4px',
                     marginLeft: isRTL ? '4px' : '0'
                   }}>
@@ -430,83 +430,6 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
           </div>
         )}
 
-        {/* Action Buttons */}
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          gap: '8px',
-          borderRadius: '8px',
-          overflow: 'hidden',
-          boxShadow: '0 2px 6px rgba(0, 0, 0, 0.08)',
-          border: '1px solid #e5e7eb'
-        }}>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              console.log('View details for offer:', offer.id);
-            }}
-            style={{
-              flex: 1,
-              padding: '10px 12px',
-              borderRadius: '0',
-              fontSize: '12px',
-              fontWeight: '600',
-              backgroundColor: '#ffffff',
-              color: '#4b5563',
-              border: 'none',
-              borderRight: isRTL ? 'none' : '1px solid #e5e7eb',
-              borderLeft: isRTL ? '1px solid #e5e7eb' : 'none',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '4px'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#f8f9fa';
-              e.currentTarget.style.color = '#374151';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = '#ffffff';
-              e.currentTarget.style.color = '#4b5563';
-            }}
-          >
-            {isRTL ? 'جزئیات' : 'Details'} <span style={{ fontSize: '14px' }}>📋</span>
-          </button>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              console.log('Message for offer:', offer.id);
-            }}
-            style={{
-              flex: 1,
-              padding: '10px 12px',
-              borderRadius: '0',
-              fontSize: '12px',
-              fontWeight: '600',
-              backgroundColor: '#f8f9fa',
-              color: '#374151',
-              border: 'none',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '4px'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#e5e7eb';
-              e.currentTarget.style.color = '#1f2937';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = '#f8f9fa';
-              e.currentTarget.style.color = '#374151';
-            }}
-          >
-            {isRTL ? 'پیام' : 'Message'} <span style={{ fontSize: '14px' }}>💬</span>
-          </button>
-        </div>
       </div>
     );
   };
