@@ -79,10 +79,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
   const [selectedDeliverySuggestionId, setSelectedDeliverySuggestionId] = useState<number | null>(null);
   const [isConfirmingDelivery, setIsConfirmingDelivery] = useState(false);
 
-  // Wait To Confirm Delivery dialog states
-  const [showWaitConfirmDialog, setShowWaitConfirmDialog] = useState(false);
-  const [selectedWaitConfirmSuggestionId, setSelectedWaitConfirmSuggestionId] = useState<number | null>(null);
-  const [isWaitingConfirm, setIsWaitingConfirm] = useState(false);
+
 
   // Confirm Delivery dialog states
   const [showConfirmDeliveryDialog, setShowConfirmDeliveryDialog] = useState(false);
@@ -276,37 +273,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
     setSelectedDeliverySuggestionId(null);
   };
 
-  // Handle wait to confirm delivery
-  const handleWaitToConfirmDelivery = (suggestionId: number) => {
-    setSelectedWaitConfirmSuggestionId(suggestionId);
-    setShowWaitConfirmDialog(true);
-  };
 
-  // Confirm wait to confirm delivery
-  const confirmWaitToConfirmDelivery = async () => {
-    if (!selectedWaitConfirmSuggestionId) return;
-
-    try {
-      setIsWaitingConfirm(true);
-      
-      // For now, just close the dialog as this is a waiting state
-      // In a real implementation, you might want to call an API or update local state
-      console.log('Confirmed waiting for delivery confirmation:', selectedWaitConfirmSuggestionId);
-      
-    } catch (err) {
-      console.error('Error confirming wait:', err);
-    } finally {
-      setIsWaitingConfirm(false);
-      setShowWaitConfirmDialog(false);
-      setSelectedWaitConfirmSuggestionId(null);
-    }
-  };
-
-  // Cancel wait to confirm delivery
-  const cancelWaitToConfirmDelivery = () => {
-    setShowWaitConfirmDialog(false);
-    setSelectedWaitConfirmSuggestionId(null);
-  };
 
   // Confirm Delivery handlers
   const handleConfirmDelivery = (suggestionId: number) => {
@@ -749,41 +716,27 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
                     </button>
                   )}
 
-                  {/* Wait To Confirm Delivery Button - Show only for lblWaitToConfirmDelivery in Suggestions tab */}
+                  {/* Wait To Confirm Delivery Button - Show only for lblWaitToConfirmDelivery in Suggestions tab (Display Only) */}
                   {(activeTab === 'suggestion' && suggestion.operationButton === 'lblWaitToConfirmDelivery') && (
                     <button
-                      onClick={(e) => {
-                         e.stopPropagation();
-                         handleWaitToConfirmDelivery(suggestion.id);
-                       }}
+                      disabled={true}
                       style={{
                         flex: 1,
                         padding: '8px 12px',
                         borderRadius: '20px',
                         fontSize: '11px',
                         fontWeight: '600',
-                        backgroundColor: '#06b6d4',
-                        color: 'white',
-                        border: 'none',
-                        cursor: 'pointer',
+                        backgroundColor: '#f3f4f6',
+                        color: '#9ca3af',
+                        border: '1.5px solid #d1d5db',
+                        cursor: 'not-allowed',
                         transition: 'all 0.2s ease',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         gap: '4px',
-                        boxShadow: '0 2px 4px rgba(6, 182, 212, 0.2)',
                         position: 'relative',
                         overflow: 'hidden'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = '#0891b2';
-                        e.currentTarget.style.transform = 'translateY(-1px)';
-                        e.currentTarget.style.boxShadow = '0 4px 8px rgba(6, 182, 212, 0.3)';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = '#06b6d4';
-                        e.currentTarget.style.transform = 'translateY(0)';
-                        e.currentTarget.style.boxShadow = '0 2px 4px rgba(6, 182, 212, 0.2)';
                       }}
                     >
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
@@ -881,8 +834,8 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
                     </button>
                   )}
 
-                  {/* Chat Button - Hide for btnSuggtion, btnPickedUp, btnPassengerConfirmedDelivery, and lblWaitToConfirmDelivery in Suggestions tab, show special text for lblWaitForAcceptSuggetion and lblReadyToPickeUp in InProgress tab */}
-                  {!(activeTab === 'suggestion' && (suggestion.operationButton === 'btnSuggtion' || suggestion.operationButton === 'btnPickedUp' || suggestion.operationButton === 'btnPassengerConfirmedDelivery' || suggestion.operationButton === 'lblWaitToConfirmDelivery')) && (
+                  {/* Chat Button - Hide for btnSuggtion, btnPickedUp, btnPassengerConfirmedDelivery, and lblWaitToConfirmDelivery in Suggestions tab, and hide for btnConfirmDelivery in InProgress tab, show special text for lblWaitForAcceptSuggetion and lblReadyToPickeUp in InProgress tab */}
+                  {!(activeTab === 'suggestion' && (suggestion.operationButton === 'btnSuggtion' || suggestion.operationButton === 'btnPickedUp' || suggestion.operationButton === 'btnPassengerConfirmedDelivery' || suggestion.operationButton === 'lblWaitToConfirmDelivery')) && !(activeTab === 'inProgress' && suggestion.operationButton === 'btnConfirmDelivery') && (
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -1783,170 +1736,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
         </div>
       )}
 
-      {/* Wait To Confirm Delivery Dialog */}
-      {showWaitConfirmDialog && (
-        <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 1001,
-            padding: '20px'
-          }}
-          onClick={cancelWaitToConfirmDelivery}
-        >
-          <div
-            style={{
-              backgroundColor: 'white',
-              borderRadius: '16px',
-              padding: '24px',
-              maxWidth: '400px',
-              width: '100%',
-              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-              animation: 'slideDown 0.3s ease-out'
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Header */}
-            <div style={{ marginBottom: '16px', textAlign: 'center' }}>
-              <div
-                style={{
-                  width: '48px',
-                  height: '48px',
-                  backgroundColor: '#e0f2fe',
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  margin: '0 auto 12px'
-                }}
-              >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="#06b6d4">
-                  <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M15.5,17L10.5,12L15.5,7V17Z" />
-                </svg>
-              </div>
-              <h3
-                style={{
-                  margin: 0,
-                  fontSize: '18px',
-                  fontWeight: '600',
-                  color: '#1f2937',
-                  direction: isRTL ? 'rtl' : 'ltr'
-                }}
-              >
-                {isRTL ? 'تایید انتظار' : 'Confirm Waiting'}
-              </h3>
-            </div>
 
-            {/* Content */}
-            <div
-              style={{
-                marginBottom: '24px',
-                textAlign: 'center',
-                direction: isRTL ? 'rtl' : 'ltr'
-              }}
-            >
-              <p
-                style={{
-                  margin: 0,
-                  fontSize: '14px',
-                  color: '#6b7280',
-                  lineHeight: '1.5'
-                }}
-              >
-                {isRTL 
-                  ? 'آیا مطمئن هستید که می‌خواهید در انتظار تایید تحویل باشید؟'
-                  : 'Are you sure you want to wait for delivery confirmation?'
-                }
-              </p>
-            </div>
-
-            {/* Buttons */}
-            <div style={{ display: 'flex', gap: '12px', direction: isRTL ? 'rtl' : 'ltr' }}>
-              <button
-                onClick={cancelWaitToConfirmDelivery}
-                disabled={isWaitingConfirm}
-                style={{
-                  flex: 1,
-                  padding: '12px 16px',
-                  borderRadius: '8px',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  backgroundColor: '#f3f4f6',
-                  color: '#374151',
-                  border: 'none',
-                  cursor: isWaitingConfirm ? 'not-allowed' : 'pointer',
-                  transition: 'all 0.2s ease'
-                }}
-                onMouseEnter={(e) => {
-                  if (!isWaitingConfirm) {
-                    e.currentTarget.style.backgroundColor = '#e5e7eb';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!isWaitingConfirm) {
-                    e.currentTarget.style.backgroundColor = '#f3f4f6';
-                  }
-                }}
-              >
-                {isRTL ? 'لغو' : 'Cancel'}
-              </button>
-              <button
-                onClick={confirmWaitToConfirmDelivery}
-                disabled={isWaitingConfirm}
-                style={{
-                  flex: 1,
-                  padding: '12px 16px',
-                  borderRadius: '8px',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  backgroundColor: '#06b6d4',
-                  color: 'white',
-                  border: 'none',
-                  cursor: isWaitingConfirm ? 'not-allowed' : 'pointer',
-                  transition: 'all 0.2s ease',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px'
-                }}
-                onMouseEnter={(e) => {
-                  if (!isWaitingConfirm) {
-                    e.currentTarget.style.backgroundColor = '#0891b2';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!isWaitingConfirm) {
-                    e.currentTarget.style.backgroundColor = '#06b6d4';
-                  }
-                }}
-              >
-                {isWaitingConfirm && (
-                  <div
-                    style={{
-                      width: '16px',
-                      height: '16px',
-                      border: '2px solid transparent',
-                      borderTop: '2px solid white',
-                      borderRadius: '50%',
-                      animation: 'spin 1s linear infinite'
-                    }}
-                  />
-                )}
-                {isWaitingConfirm 
-                  ? (isRTL ? 'در حال پردازش...' : 'Processing...')
-                  : (isRTL ? 'تایید' : 'Confirm')
-                }
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Confirm Delivery Dialog */}
       {showConfirmDeliveryDialog && (
