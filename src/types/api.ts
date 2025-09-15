@@ -515,6 +515,7 @@ export interface OfferSuggestion {
   itemType: number;
   createdOn: string;
   attachments: string[];
+  description?: string;
 }
 
 export interface OfferRequest {
