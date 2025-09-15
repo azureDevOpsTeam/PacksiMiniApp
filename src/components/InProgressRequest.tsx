@@ -156,7 +156,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
           setMyReciveOffers(offersResponse.objectResult.myReciveOffers || []);
           setMySentOffers(offersResponse.objectResult.mySentOffers || []);
         }
-        
+
         // Show success message (you can implement a toast notification here)
         console.log('Suggestion accepted successfully');
       } else {
@@ -191,7 +191,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
 
     try {
       setIsPickingUp(true);
-      
+
       const payload = {
         model: {
           requestSuggestionId: selectedPickedUpSuggestionId
@@ -199,7 +199,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
       };
 
       const response = await apiService.pickedUp(payload);
-      
+
       if (response.requestStatus.name === 'Successful') {
         // Refresh data after successful picked up
         const offersResponse = await apiService.getInProgressOffers();
@@ -238,7 +238,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
 
     try {
       setIsConfirmingDelivery(true);
-      
+
       const payload = {
         model: {
           requestSuggestionId: selectedDeliverySuggestionId
@@ -246,7 +246,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
       };
 
       const response = await apiService.passengerConfirmedDelivery(payload);
-      
+
       if (response.requestStatus.name === 'Successful') {
         // Refresh data after successful delivery confirmation
         const offersResponse = await apiService.getInProgressOffers();
@@ -283,7 +283,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
 
   const confirmSenderDelivery = async () => {
     if (!selectedConfirmDeliverySuggestionId) return;
-    
+
     setIsConfirmingSenderDelivery(true);
     try {
       await apiService.senderConfirmedDelivery({
@@ -291,7 +291,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
           requestSuggestionId: selectedConfirmDeliverySuggestionId
         }
       });
-      
+
       setShowConfirmDeliveryDialog(false);
       setSelectedConfirmDeliverySuggestionId(null);
       // Refresh data
@@ -317,7 +317,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
 
   const confirmNotDelivered = async () => {
     if (!selectedNotDeliveredSuggestionId) return;
-    
+
     setIsNotDelivering(true);
     try {
       await apiService.notDelivered({
@@ -325,7 +325,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
           requestSuggestionId: selectedNotDeliveredSuggestionId
         }
       });
-      
+
       setShowNotDeliveredDialog(false);
       setSelectedNotDeliveredSuggestionId(null);
       // Refresh data
@@ -518,10 +518,10 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
                           e.currentTarget.style.boxShadow = '0 2px 4px rgba(59, 130, 246, 0.3)';
                         }}
                       >
-                        <svg 
-                          width="16" 
-                          height="16" 
-                          viewBox="0 0 24 24" 
+                        <svg
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
                           fill="currentColor"
                           style={{ flexShrink: 0 }}
                         >
@@ -588,9 +588,9 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
                   {(activeTab === 'suggestion' && suggestion.operationButton === 'btnSuggtion') && (
                     <button
                       onClick={(e) => {
-                         e.stopPropagation();
-                         handleAcceptSuggestion(suggestion.id);
-                       }}
+                        e.stopPropagation();
+                        handleAcceptSuggestion(suggestion.id);
+                      }}
                       style={{
                         flex: 1,
                         padding: '8px 12px',
@@ -632,9 +632,9 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
                   {(activeTab === 'suggestion' && suggestion.operationButton === 'btnPickedUp') && (
                     <button
                       onClick={(e) => {
-                         e.stopPropagation();
-                         handlePickedUpSuggestion(suggestion.id);
-                       }}
+                        e.stopPropagation();
+                        handlePickedUpSuggestion(suggestion.id);
+                      }}
                       style={{
                         flex: 1,
                         padding: '8px 12px',
@@ -676,9 +676,9 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
                   {(activeTab === 'suggestion' && suggestion.operationButton === 'btnPassengerConfirmedDelivery') && (
                     <button
                       onClick={(e) => {
-                         e.stopPropagation();
-                         handlePassengerConfirmedDelivery(suggestion.id);
-                       }}
+                        e.stopPropagation();
+                        handlePassengerConfirmedDelivery(suggestion.id);
+                      }}
                       style={{
                         flex: 1,
                         padding: '8px 12px',
@@ -750,9 +750,9 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
                   {(activeTab === 'inProgress' && suggestion.operationButton === 'btnConfirmDelivery') && (
                     <button
                       onClick={(e) => {
-                         e.stopPropagation();
-                         handleConfirmDelivery(suggestion.id);
-                       }}
+                        e.stopPropagation();
+                        handleConfirmDelivery(suggestion.id);
+                      }}
                       style={{
                         flex: 1,
                         padding: '8px 12px',
@@ -794,9 +794,9 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
                   {(activeTab === 'inProgress' && suggestion.operationButton === 'btnConfirmDelivery') && (
                     <button
                       onClick={(e) => {
-                         e.stopPropagation();
-                         handleNotDelivered(suggestion.id);
-                       }}
+                        e.stopPropagation();
+                        handleNotDelivered(suggestion.id);
+                      }}
                       style={{
                         flex: 1,
                         padding: '8px 12px',
@@ -850,8 +850,19 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
                         borderRadius: '20px',
                         fontSize: '11px',
                         fontWeight: '600',
-                        backgroundColor: (activeTab === 'inProgress' && (suggestion.operationButton === 'lblWaitForAcceptSuggetion' || suggestion.operationButton === 'lblReadyToPickeUp' || suggestion.operationButton === 'lblReadyToDelivery' || suggestion.operationButton === 'btnConfirmDelivery')) ? '#f3f4f6' : 'transparent',
-                        color: (activeTab === 'inProgress' && (suggestion.operationButton === 'lblWaitForAcceptSuggetion' || suggestion.operationButton === 'lblReadyToPickeUp' || suggestion.operationButton === 'lblReadyToDelivery' || suggestion.operationButton === 'btnConfirmDelivery')) ? '#9ca3af' : '#6366f1',
+                        // backgroundColor: (activeTab === 'inProgress' && (suggestion.operationButton === 'lblWaitForAcceptSuggetion' || suggestion.operationButton === 'lblReadyToPickeUp' || suggestion.operationButton === 'lblReadyToDelivery' || suggestion.operationButton === 'btnConfirmDelivery')) ? '#f3f4f6' : 'transparent',
+                        // color: (activeTab === 'inProgress' && (suggestion.operationButton === 'lblWaitForAcceptSuggetion' || suggestion.operationButton === 'lblReadyToPickeUp' || suggestion.operationButton === 'lblReadyToDelivery' || suggestion.operationButton === 'btnConfirmDelivery')) ? '#9ca3af' : '#6366f1',
+                        backgroundColor: (activeTab === 'inProgress' && suggestion.operationButton === 'lblReadyToDelivery')
+                          ? '#c4ffc8' // سبز روشن برای lblReadyToDelivery
+                          : (activeTab === 'inProgress' && (suggestion.operationButton === 'lblWaitForAcceptSuggetion' || suggestion.operationButton === 'lblReadyToPickeUp' || suggestion.operationButton === 'btnConfirmDelivery'))
+                            ? '#f3f4f6' // خاکستری برای حالت‌های غیرفعال
+                            : 'transparent', // حالت پیش‌فرض
+
+                        color: (activeTab === 'inProgress' && suggestion.operationButton === 'lblReadyToDelivery')
+                          ? '#3e7750' // سبز تیره متن
+                          : (activeTab === 'inProgress' && (suggestion.operationButton === 'lblWaitForAcceptSuggetion' || suggestion.operationButton === 'lblReadyToPickeUp' || suggestion.operationButton === 'btnConfirmDelivery'))
+                            ? '#9ca3af' // خاکستری متن برای حالت غیرفعال
+                            : '#6366f1', // رنگ پیش‌فرض متن
                         border: (activeTab === 'inProgress' && (suggestion.operationButton === 'lblWaitForAcceptSuggetion' || suggestion.operationButton === 'lblReadyToPickeUp' || suggestion.operationButton === 'lblReadyToDelivery' || suggestion.operationButton === 'btnConfirmDelivery')) ? '1.5px solid #d1d5db' : '1.5px solid #6366f1',
                         cursor: (activeTab === 'inProgress' && (suggestion.operationButton === 'lblWaitForAcceptSuggetion' || suggestion.operationButton === 'lblReadyToPickeUp' || suggestion.operationButton === 'lblReadyToDelivery' || suggestion.operationButton === 'btnConfirmDelivery')) ? 'not-allowed' : 'pointer',
                         transition: 'all 0.2s ease',
@@ -882,13 +893,13 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M20,2H4A2,2 0 0,0 2,4V22L6,18H20A2,2 0 0,0 22,16V4C22,2.89 21.1,2 20,2Z" />
                       </svg>
-                      {(activeTab === 'inProgress' && suggestion.operationButton === 'lblWaitForAcceptSuggetion') 
+                      {(activeTab === 'inProgress' && suggestion.operationButton === 'lblWaitForAcceptSuggetion')
                         ? (isRTL ? 'در انتظار تایید' : 'Wait For Accept')
                         : (activeTab === 'inProgress' && suggestion.operationButton === 'lblReadyToPickeUp')
-                        ? (isRTL ? 'آماده تحویل' : 'Ready To Picked Up')
-                        : (activeTab === 'inProgress' && suggestion.operationButton === 'lblReadyToDelivery')
-                        ? (isRTL ? 'آماده ارسال' : 'Ready To Delivery')
-                        : (isRTL ? 'چت' : 'Chat')
+                          ? (isRTL ? 'آماده تحویل' : 'Ready To Picked Up')
+                          : (activeTab === 'inProgress' && suggestion.operationButton === 'lblReadyToDelivery')
+                            ? (isRTL ? 'آماده ارسال' : 'Ready To Delivery')
+                            : (isRTL ? 'چت' : 'Chat')
                       }
                     </button>
                   )}
@@ -1317,7 +1328,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
                 lineHeight: '1.5'
               }}
             >
-              {isRTL 
+              {isRTL
                 ? 'آیا مطمئن هستید که می‌خواهید این پیشنهاد را بپذیرید؟ این عمل قابل بازگشت نیست.'
                 : 'Are you sure you want to accept this suggestion? This action cannot be undone.'
               }
@@ -1359,7 +1370,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
               >
                 {isRTL ? 'انصراف' : 'Cancel'}
               </button>
-              
+
               <button
                 onClick={confirmAcceptSuggestion}
                 disabled={isAccepting}
@@ -1400,7 +1411,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
                     }}
                   />
                 )}
-                {isAccepting 
+                {isAccepting
                   ? (isRTL ? 'در حال پردازش...' : 'Processing...')
                   : (isRTL ? 'تایید' : 'Confirm')
                 }
@@ -1480,7 +1491,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
                 lineHeight: '1.5'
               }}
             >
-              {isRTL 
+              {isRTL
                 ? 'آیا مطمئن هستید که بسته را تحویل گرفته‌اید؟ این عمل قابل بازگشت نیست.'
                 : 'Are you sure you have picked up the package? This action cannot be undone.'
               }
@@ -1522,7 +1533,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
               >
                 {isRTL ? 'انصراف' : 'Cancel'}
               </button>
-              
+
               <button
                 onClick={confirmPickedUpSuggestion}
                 disabled={isPickingUp}
@@ -1563,7 +1574,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
                     }}
                   />
                 )}
-                {isPickingUp 
+                {isPickingUp
                   ? (isRTL ? 'در حال پردازش...' : 'Processing...')
                   : (isRTL ? 'تایید' : 'Confirm')
                 }
@@ -1643,7 +1654,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
                 lineHeight: '1.5'
               }}
             >
-              {isRTL 
+              {isRTL
                 ? 'آیا مطمئن هستید که بسته را تحویل داده‌اید؟ این عمل قابل بازگشت نیست.'
                 : 'Are you sure you have delivered the package? This action cannot be undone.'
               }
@@ -1685,7 +1696,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
               >
                 {isRTL ? 'انصراف' : 'Cancel'}
               </button>
-              
+
               <button
                 onClick={confirmPassengerDelivery}
                 disabled={isConfirmingDelivery}
@@ -1726,7 +1737,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
                     }}
                   />
                 )}
-                {isConfirmingDelivery 
+                {isConfirmingDelivery
                   ? (isRTL ? 'در حال پردازش...' : 'Processing...')
                   : (isRTL ? 'تایید' : 'Confirm')
                 }
@@ -1804,7 +1815,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
                   lineHeight: '1.5'
                 }}
               >
-                {isRTL 
+                {isRTL
                   ? 'آیا مطمئن هستید که بسته تحویل داده شده است؟'
                   : 'Are you sure the package has been delivered?'
                 }
@@ -1882,7 +1893,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
                     }}
                   />
                 )}
-                {isConfirmingSenderDelivery 
+                {isConfirmingSenderDelivery
                   ? (isRTL ? 'در حال پردازش...' : 'Processing...')
                   : (isRTL ? 'تایید' : 'Confirm')
                 }
@@ -1958,7 +1969,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
                   lineHeight: '1.5'
                 }}
               >
-                {isRTL 
+                {isRTL
                   ? 'آیا مطمئن هستید که بسته تحویل داده نشده است؟'
                   : 'Are you sure the package was not delivered?'
                 }
@@ -2036,7 +2047,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
                     }}
                   />
                 )}
-                {isNotDelivering 
+                {isNotDelivering
                   ? (isRTL ? 'در حال پردازش...' : 'Processing...')
                   : (isRTL ? 'تایید' : 'Confirm')
                 }
