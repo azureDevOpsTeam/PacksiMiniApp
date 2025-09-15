@@ -1,4 +1,4 @@
-import type { CreateRequestPayload, ApiResponse, CreateRequestResponse, CitiesTreeResponse, ItemTypeResponse, CountriesResponse, UserInfoResponse, VerifyPhoneNumberPayload, VerifyPhoneNumberResponse, ValidateResponse, AddUserPreferredLocationRequest, AddUserPreferredLocationResponse, UpdateProfileRequest, UpdateProfileResponse, OutboundTripsResponse, SelectRequestPayload, SelectRequestResponse, GetMyRequestTripsResponse, LiveChatUsersResponse, ConversationsResponse, MessagesResponse, SendMessagePayload, SendMessageResponse, BlockUserPayload, BlockUserResponse, MarkReadResponse, SuggestionActionPayload, SuggestionActionResponse } from '../types/api';
+import type { CreateRequestPayload, ApiResponse, CreateRequestResponse, CitiesTreeResponse, ItemTypeResponse, CountriesResponse, UserInfoResponse, VerifyPhoneNumberPayload, VerifyPhoneNumberResponse, ValidateResponse, AddUserPreferredLocationRequest, AddUserPreferredLocationResponse, UpdateProfileRequest, UpdateProfileResponse, OutboundTripsResponse, SelectRequestPayload, SelectRequestResponse, GetMyRequestTripsResponse, LiveChatUsersResponse, ConversationsResponse, MessagesResponse, SendMessagePayload, SendMessageResponse, BlockUserPayload, BlockUserResponse, MarkReadResponse, SuggestionActionPayload, SuggestionActionResponse, InProgressOffersResponse } from '../types/api';
 
 const API_BASE_URL = 'https://api.packsi.net/api/miniapp';
 //const API_BASE_URL = 'http://localhost:5005/api/miniapp';
@@ -729,6 +729,25 @@ class ApiService {
       return data;
     } catch (error) {
       console.error('Error rejecting suggestion:', error);
+      throw error;
+    }
+  }
+
+  async getInProgressOffers(): Promise<InProgressOffersResponse> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/Request/GetInProgressRequest`, {
+        method: 'GET',
+        headers: this.getHeaders()
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching in progress offers:', error);
       throw error;
     }
   }

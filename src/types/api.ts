@@ -505,3 +505,43 @@ export interface SuggestionActionResponse {
     value: number;
   };
 }
+
+// Types for InProgress Requests
+export interface OfferSuggestion {
+  id: number;
+  displayName: string;
+  suggestionPrice: number;
+  currency: number;
+  itemType: number;
+  createdOn: string;
+  attachments: string[];
+}
+
+export interface OfferRequest {
+  id: number;
+  originCityName: string;
+  originCityPersianName: string;
+  destinationCityName: string;
+  destinationCityPersianName: string;
+  status: number;
+  suggestions: OfferSuggestion[];
+}
+
+export interface InProgressOffersResult {
+  myReciveOffers: OfferRequest[];
+  mySentOffers: OfferRequest[];
+}
+
+export interface InProgressOffersResponse {
+  validationResult: any;
+  requestStatus: {
+    name: string;
+    value: number;
+  };
+  message: string;
+  objectResult: InProgressOffersResult;
+  notificationType: {
+    name: string;
+    value: number;
+  };
+}
