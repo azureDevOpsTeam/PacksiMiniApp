@@ -1,4 +1,4 @@
-import type { CreateRequestPayload, ApiResponse, CreateRequestResponse, CitiesTreeResponse, ItemTypeResponse, CountriesResponse, UserInfoResponse, VerifyPhoneNumberPayload, VerifyPhoneNumberResponse, ValidateResponse, AddUserPreferredLocationRequest, AddUserPreferredLocationResponse, UpdateProfileRequest, UpdateProfileResponse, OutboundTripsResponse, SelectRequestPayload, SelectRequestResponse, GetMyRequestTripsResponse, LiveChatUsersResponse, ConversationsResponse, MessagesResponse, SendMessagePayload, SendMessageResponse, BlockUserPayload, BlockUserResponse, MarkReadResponse, SuggestionActionPayload, SuggestionActionResponse, InProgressOffersResponse } from '../types/api';
+import type { CreateRequestPayload, ApiResponse, CreateRequestResponse, CitiesTreeResponse, ItemTypeResponse, CountriesResponse, UserInfoResponse, VerifyPhoneNumberPayload, VerifyPhoneNumberResponse, ValidateResponse, AddUserPreferredLocationRequest, AddUserPreferredLocationResponse, UpdateProfileRequest, UpdateProfileResponse, OutboundTripsResponse, SelectRequestPayload, SelectRequestResponse, GetMyRequestTripsResponse, LiveChatUsersResponse, ConversationsResponse, MessagesResponse, SendMessagePayload, SendMessageResponse, BlockUserPayload, BlockUserResponse, MarkReadResponse, SuggestionActionPayload, SuggestionActionResponse, InProgressOffersResponse, ConfirmedBySenderPayload, ConfirmedBySenderResponse, PickedUpPayload, PickedUpResponse, PassengerConfirmedDeliveryPayload, PassengerConfirmedDeliveryResponse, SenderConfirmedDeliveryPayload, SenderConfirmedDeliveryResponse, NotDeliveredPayload, NotDeliveredResponse } from '../types/api';
 
 const API_BASE_URL = 'https://api.packsi.net/api/miniapp';
 //const API_BASE_URL = 'http://localhost:5005/api/miniapp';
@@ -748,6 +748,106 @@ class ApiService {
       return data;
     } catch (error) {
       console.error('Error fetching in progress offers:', error);
+      throw error;
+    }
+  }
+
+  async confirmedBySender(payload: ConfirmedBySenderPayload): Promise<ConfirmedBySenderResponse> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/Request/ConfirmedBySender`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error confirming by sender:', error);
+      throw error;
+    }
+  }
+
+  async pickedUp(payload: PickedUpPayload): Promise<PickedUpResponse> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/Request/PickedUp`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error marking as picked up:', error);
+      throw error;
+    }
+  }
+
+  async passengerConfirmedDelivery(payload: PassengerConfirmedDeliveryPayload): Promise<PassengerConfirmedDeliveryResponse> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/Request/PassengerConfirmedDelivery`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error confirming delivery by passenger:', error);
+      throw error;
+    }
+  }
+
+  async senderConfirmedDelivery(payload: SenderConfirmedDeliveryPayload): Promise<SenderConfirmedDeliveryResponse> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/Request/SenderConfirmedDelivery`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error confirming delivery by sender:', error);
+      throw error;
+    }
+  }
+
+  async notDelivered(payload: NotDeliveredPayload): Promise<NotDeliveredResponse> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/Request/NotDelivered`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error marking as not delivered:', error);
       throw error;
     }
   }

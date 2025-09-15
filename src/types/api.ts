@@ -516,6 +516,7 @@ export interface OfferSuggestion {
   createdOn: string;
   attachments: string[];
   description?: string;
+  operationButton?: string;
 }
 
 export interface OfferRequest {
@@ -541,6 +542,121 @@ export interface InProgressOffersResponse {
   };
   message: string;
   objectResult: InProgressOffersResult;
+  notificationType: {
+    name: string;
+    value: number;
+  };
+}
+
+// ConfirmedBySender API Types
+export interface ConfirmedBySenderModel {
+  requestSuggestionId: number;
+}
+
+export interface ConfirmedBySenderPayload {
+  model: ConfirmedBySenderModel;
+}
+
+export interface ConfirmedBySenderResponse {
+  validationResult: any;
+  requestStatus: {
+    name: string;
+    value: number;
+  };
+  message: string;
+  objectResult: any;
+  notificationType: {
+    name: string;
+    value: number;
+  };
+}
+
+// PickedUp API Types
+export interface PickedUpModel {
+  requestSuggestionId: number;
+}
+
+export interface PickedUpPayload {
+  model: PickedUpModel;
+}
+
+export interface PickedUpResponse {
+  validationResult: any;
+  requestStatus: {
+    name: string;
+    value: number;
+  };
+  message: string;
+  objectResult: any;
+  notificationType: {
+    name: string;
+    value: number;
+  };
+}
+
+// Passenger Confirmed Delivery API Types
+export interface PassengerConfirmedDeliveryModel {
+  requestSuggestionId: number;
+}
+
+export interface PassengerConfirmedDeliveryPayload {
+  model: PassengerConfirmedDeliveryModel;
+}
+
+export interface PassengerConfirmedDeliveryResponse {
+  validationResult: any;
+  requestStatus: {
+    name: string;
+    value: number;
+  };
+  message: string;
+  objectResult: any;
+  notificationType: {
+    name: string;
+    value: number;
+  };
+}
+
+// Sender Confirmed Delivery API Types
+export interface SenderConfirmedDeliveryModel {
+  requestSuggestionId: number;
+}
+
+export interface SenderConfirmedDeliveryPayload {
+  model: SenderConfirmedDeliveryModel;
+}
+
+export interface SenderConfirmedDeliveryResponse {
+  validationResult: any;
+  requestStatus: {
+    name: string;
+    value: number;
+  };
+  message: string;
+  objectResult: any;
+  notificationType: {
+    name: string;
+    value: number;
+  };
+}
+
+// Not Delivered API Types
+export interface NotDeliveredModel {
+  requestSuggestionId: number;
+}
+
+export interface NotDeliveredPayload {
+  model: NotDeliveredModel;
+}
+
+export interface NotDeliveredResponse {
+  validationResult: any;
+  requestStatus: {
+    name: string;
+    value: number;
+  };
+  message: string;
+  objectResult: any;
   notificationType: {
     name: string;
     value: number;
