@@ -229,7 +229,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   // Tab system
-  type TabType = 'incoming' | 'outgoing' | 'ipicked' | 'pickedme';
+  type TabType = 'incoming' | 'outgoing';
   const [activeTab, setActiveTab] = useState<TabType>('outgoing');
 
   // Responsive state for small screens
@@ -238,7 +238,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
   // Handle screen resize
   useEffect(() => {
     const handleResize = () => {
-      setIsSmallScreen(window.innerWidth <= 380);
+      setIsSmallScreen(window.innerWidth <= 250);
     };
 
     // Set initial value
@@ -274,16 +274,10 @@ const ParcelList: React.FC<ParcelListProps> = () => {
     let matchesTab = true;
     switch (activeTab) {
       case 'incoming':
-        matchesTab = flight.tripType === 'inbound' && !flight.selectStatus;
+        matchesTab = flight.tripType === 'inbound';
         break;
       case 'outgoing':
-        matchesTab = flight.tripType === 'outbound' && !flight.selectStatus;
-        break;
-      case 'ipicked':
-        matchesTab = flight.selectStatus === 'ipicked';
-        break;
-      case 'pickedme':
-        matchesTab = flight.selectStatus === 'pickedme';
+        matchesTab = flight.tripType === 'outbound';
         break;
       default:
         matchesTab = true;
@@ -307,23 +301,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
     return matchesTab;
   });
 
-  // Get count for each tab
-  const getTabCount = (tabType: TabType) => {
-    return flights.filter(flight => {
-      switch (tabType) {
-        case 'incoming':
-          return flight.tripType === 'inbound';
-        case 'outgoing':
-          return flight.tripType === 'outbound';
-        case 'ipicked':
-          return flight.selectStatus === 'ipicked';
-        case 'pickedme':
-          return flight.selectStatus === 'pickedme';
-        default:
-          return false;
-      }
-    }).length;
-  };
+
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -946,13 +924,9 @@ const ParcelList: React.FC<ParcelListProps> = () => {
           {(() => {
             switch (activeTab) {
               case 'incoming':
-                return isRTL ? 'لیست پروازهای ورودی' : 'Incoming Flights List';
+                return isRTL ? 'لیست پروازهای ورودی' : 'Inbound Flights List';
               case 'outgoing':
-                return isRTL ? 'لیست پروازهای خروجی' : 'Outgoing Flights List';
-              case 'ipicked':
-                return isRTL ? 'من انتخاب کرده ام' : 'I Picked List';
-              case 'pickedme':
-                return isRTL ? 'انتخاب شده ام' : 'Picked Me List';
+                return isRTL ? 'لیست پروازهای خروجی' : 'Outbound Flights List';
               default:
                 return isRTL ? 'لیست پروازها' : 'Flights List';
             }
@@ -968,7 +942,6 @@ const ParcelList: React.FC<ParcelListProps> = () => {
         }}>
           <div style={{
             maxWidth: '400px',
-            width: '100%',
             display: 'flex',
             backgroundColor: '#212a33',
             borderRadius: '12px',
@@ -978,35 +951,11 @@ const ParcelList: React.FC<ParcelListProps> = () => {
             justifyContent: 'space-between'
           }}>
             {[
-              { key: 'incoming' as TabType, labelFa: 'ورودی', labelEn: 'Incoming', icon: '⬇️' },
-              { key: 'outgoing' as TabType, labelFa: 'خروجی', labelEn: 'Outgoing', icon: '⬆️' },
-              { key: 'ipicked' as TabType, labelFa: 'منتخب من', labelEn: 'i picked', icon: '🎯' },
-              { key: 'pickedme' as TabType, labelFa: 'انتخاب شدم', labelEn: 'picked Me', icon: '⭐' }
+              { key: 'incoming' as TabType, labelFa: 'ورودی', labelEn: 'Inbound', icon: '⬇️' },
+              { key: 'outgoing' as TabType, labelFa: 'خروجی', labelEn: 'Outbound', icon: '⬆️' }
             ].map((tab) => {
-              const tabCount = getTabCount(tab.key);
               return (
                 <div key={tab.key} style={{ position: 'relative' }}>
-                  {(tab.key === 'ipicked' || tab.key === 'pickedme') && tabCount > 0 && (
-                    <div style={{
-                      position: 'absolute',
-                      top: '-8px',
-                      right: '-8px',
-                      minWidth: '18px',
-                      height: '18px',
-                      backgroundColor: '#ef4444',
-                      borderRadius: '9px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: '10px',
-                      fontWeight: 'bold',
-                      color: '#ffffff',
-                      zIndex: 10,
-                      padding: '0 4px'
-                    }}>
-                      {tabCount}
-                    </div>
-                  )}
                   <button
                     onClick={() => setActiveTab(tab.key)}
                     style={{
@@ -1151,463 +1100,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 {filteredFlights.map((flight) => {
-                  // Compact card for pickedme and ipicked tabs
-                  if (activeTab === 'pickedme' || activeTab === 'ipicked') {
-                    return (
-                      <div
-                        key={flight.requestId}
-                        className="flight-card"
-                        style={{
-                          background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #ffffff 100%)',
-                          borderRadius: '16px',
-                          padding: '16px',
-                          border: '2px solid #e2e8f0',
-                          direction: isRTL ? 'rtl' : 'ltr',
-                          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-                          transition: 'all 0.3s ease',
-                          position: 'relative',
-                          cursor: 'pointer',
-                          overflow: 'hidden',
-                          fontFamily: 'IRANSansX, sans-serif',
-                          minHeight: 'auto'
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.transform = 'translateY(-2px)';
-                          e.currentTarget.style.boxShadow = '0 8px 20px rgba(0, 0, 0, 0.15)';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.transform = 'translateY(0)';
-                          e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
-                        }}
-                      >
-                        {/* Compact Header */}
-                        <div style={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                          marginBottom: '12px'
-                        }}>
-                          <div style={{
-                            fontSize: '14px',
-                            fontWeight: 'bold',
-                            color: '#1e293b'
-                          }}>{flight.fullName}</div>
-
-                          <div style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px'
-                          }}>
-                            {/* Show Suggestions Button */}
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                // Open select trip modal with suggest_price option
-                                setSelectedFlightForTrip(flight);
-                                setSelectedTripOption('');
-                                setShowSelectTripModal(true);
-                              }}
-                              style={{
-                                padding: '4px 8px',
-                                borderRadius: '12px',
-                                fontSize: '10px',
-                                fontWeight: 'bold',
-                                backgroundColor: '#3b82f6',
-                                color: 'white',
-                                border: 'none',
-                                cursor: 'pointer',
-                                transition: 'all 0.3s ease'
-                              }}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.backgroundColor = '#2563eb';
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.backgroundColor = '#3b82f6';
-                              }}
-                            >
-                              {isRTL ? 'آخرین وضعیت' : 'Last Status'}
-                            </button>
-
-                            {/* Three Dots Menu */}
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setActiveMenu(activeMenu === flight.requestId ? null : flight.requestId);
-                              }}
-                              style={{
-                                background: 'rgba(107, 114, 128, 0.1)',
-                                border: 'none',
-                                borderRadius: '50%',
-                                width: '24px',
-                                height: '24px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                cursor: 'pointer',
-                                fontSize: '12px',
-                                color: '#6b7280'
-                              }}
-                            >
-                              ⋮
-                            </button>
-                          </div>
-                        </div>
-
-                        {/* Flight Route - Compact */}
-                        <div style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                          marginBottom: '12px'
-                        }}>
-                          <div style={{
-                            textAlign: 'center',
-                            flex: 1
-                          }}>
-                            <div style={{
-                              fontSize: '16px',
-                              fontWeight: 'bold',
-                              color: '#1e293b'
-                            }}>{flight.originCity}</div>
-                          </div>
-
-                          <div style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '6px',
-                            margin: '0 12px'
-                          }}>
-                            <div style={{
-                              width: '20px',
-                              height: '1px',
-                              background: '#cbd5e1'
-                            }} />
-                            <div style={{
-                              fontSize: '12px'
-                            }}>✈️</div>
-                            <div style={{
-                              width: '20px',
-                              height: '1px',
-                              background: '#cbd5e1'
-                            }} />
-                          </div>
-
-                          <div style={{
-                            textAlign: 'center',
-                            flex: 1
-                          }}>
-                            <div style={{
-                              fontSize: '16px',
-                              fontWeight: 'bold',
-                              color: '#1e293b'
-                            }}>{flight.destinationCity}</div>
-                          </div>
-                        </div>
-
-                        {/* Flight Date and Item Types - Compact */}
-                        <div style={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                          padding: '8px 12px',
-                          background: '#f8fafc',
-                          borderRadius: '8px',
-                          border: '1px solid #e2e8f0'
-                        }}>
-                          <div>
-                            <div style={{
-                              fontSize: '10px',
-                              color: '#64748b',
-                              marginBottom: '2px'
-                            }}>{isRTL ? 'تاریخ پرواز' : 'FLIGHT DATE'}</div>
-                            <div style={{
-                              fontSize: '12px',
-                              fontWeight: 'bold',
-                              color: '#1e293b'
-                            }}>{formatDate(flight.departureDate)}</div>
-                          </div>
-
-                          {/* Item Types - Compact */}
-                          {((isRTL && flight.itemTypesFa && flight.itemTypesFa.length > 0) ||
-                            (!isRTL && flight.itemTypes && flight.itemTypes.length > 0)) && (
-                              <div style={{
-                                display: 'flex',
-                                flexWrap: 'wrap',
-                                gap: '4px',
-                                maxWidth: '150px'
-                              }}>
-                                {(isRTL ? flight.itemTypesFa : flight.itemTypes)?.slice(0, 2).map((itemType: string, index: number) => (
-                                  <span
-                                    key={index}
-                                    style={{
-                                      fontSize: '8px',
-                                      padding: '2px 4px',
-                                      borderRadius: '4px',
-                                      background: '#dbeafe',
-                                      color: '#1e40af',
-                                      fontWeight: '500'
-                                    }}
-                                  >
-                                    {itemType}
-                                  </span>
-                                ))}
-                                {(isRTL ? flight.itemTypesFa : flight.itemTypes)?.length > 2 && (
-                                  <span style={{
-                                    fontSize: '8px',
-                                    color: '#64748b',
-                                    fontWeight: '500'
-                                  }}>+{(isRTL ? flight.itemTypesFa : flight.itemTypes).length - 2}</span>
-                                )}
-                              </div>
-                            )}
-                        </div>
-
-                        {/* Action Buttons - Only for ipicked tab */}
-                        {activeTab === 'ipicked' && (
-                          <div style={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            marginTop: '16px',
-                            gap: '0px',
-                            borderRadius: '8px',
-                            overflow: 'hidden',
-                            boxShadow: '0 2px 6px rgba(0, 0, 0, 0.08)',
-                            border: '1px solid #e5e7eb'
-                          }}>
-                            {/* Contact Button */}
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                // Handle contact button action based on operation button state
-                                if (flight.ipicked_OperationButton === 'btnConfirmDelivery') {
-                                  // Handle "Not Delivered" action
-                                  console.log('Not Delivered clicked for flight:', flight.requestId);
-                                } else {
-                                  // Disabled state - no action
-                                  console.log('Contact button disabled for flight:', flight.requestId);
-                                }
-                              }}
-                              disabled={flight.ipicked_OperationButton !== 'btnConfirmDelivery'}
-                              style={{
-                                flex: 1,
-                                padding: '10px 12px',
-                                borderRadius: '0',
-                                fontSize: '12px',
-                                fontWeight: '600',
-                                backgroundColor: flight.ipicked_OperationButton === 'btnConfirmDelivery' ? '#ffffff' : '#f3f4f6',
-                                color: flight.ipicked_OperationButton === 'btnConfirmDelivery' ? '#4b5563' : '#9ca3af',
-                                border: 'none',
-                                borderRight: isRTL ? 'none' : '1px solid #e5e7eb',
-                                borderLeft: isRTL ? '1px solid #e5e7eb' : 'none',
-                                cursor: flight.ipicked_OperationButton === 'btnConfirmDelivery' ? 'pointer' : 'not-allowed',
-                                transition: 'all 0.2s ease',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                gap: '4px'
-                              }}
-                              onMouseEnter={(e) => {
-                                if (flight.ipicked_OperationButton === 'btnConfirmDelivery') {
-                                  e.currentTarget.style.backgroundColor = '#f9fafb';
-                                  e.currentTarget.style.color = '#dc2626';
-                                }
-                              }}
-                              onMouseLeave={(e) => {
-                                if (flight.ipicked_OperationButton === 'btnConfirmDelivery') {
-                                  e.currentTarget.style.backgroundColor = '#ffffff';
-                                  e.currentTarget.style.color = '#4b5563';
-                                }
-                              }}
-                            >
-                              {(() => {
-                                switch (flight.ipicked_OperationButton) {
-                                  case 'lblWaitForAcceptSuggetion':
-                                    return isRTL ? 'منتظر تایید پیشنهاد' : 'Waiting for Confirm';
-                                  case 'lblReadyToPickeUp':
-                                    return isRTL ? 'آماده دریافت مرسوله' : 'Ready To Get Parcel';
-                                  case 'lblReadyToDelivery':
-                                    return isRTL ? 'آماده تحویل' : 'Ready To Delivery';
-                                  case 'btnConfirmDelivery':
-                                    return isRTL ? 'تحویل نگرفتم' : 'Not Delivered';
-                                  default:
-                                    return isRTL ? 'تماس' : 'Contact';
-                                }
-                              })()} <span style={{ fontSize: '14px' }}>📞</span>
-                            </button>
-                            
-                            {/* Message Button */}
-                            {(flight.ipicked_OperationButton === 'lblReadyToPickeUp' || 
-                              flight.ipicked_OperationButton === 'lblReadyToDelivery' || 
-                              flight.ipicked_OperationButton === 'btnConfirmDelivery') && (
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  // Handle message button action
-                                  if (flight.ipicked_OperationButton === 'btnConfirmDelivery') {
-                                    // Handle "Delivered" action
-                                    console.log('Delivered clicked for flight:', flight.requestId);
-                                  } else {
-                                    // Handle message action
-                                    console.log('Message clicked for flight:', flight.requestId);
-                                  }
-                                }}
-                                style={{
-                                  flex: 1,
-                                  padding: '10px 12px',
-                                  borderRadius: '0',
-                                  fontSize: '12px',
-                                  fontWeight: '600',
-                                  backgroundColor: flight.ipicked_OperationButton === 'btnConfirmDelivery' ? '#10b981' : '#f8f9fa',
-                                  color: flight.ipicked_OperationButton === 'btnConfirmDelivery' ? '#ffffff' : '#374151',
-                                  border: 'none',
-                                  cursor: 'pointer',
-                                  transition: 'all 0.2s ease',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
-                                  gap: '4px'
-                                }}
-                                onMouseEnter={(e) => {
-                                  if (flight.ipicked_OperationButton === 'btnConfirmDelivery') {
-                                    e.currentTarget.style.backgroundColor = '#059669';
-                                  } else {
-                                    e.currentTarget.style.backgroundColor = '#e5e7eb';
-                                    e.currentTarget.style.color = '#1f2937';
-                                  }
-                                }}
-                                onMouseLeave={(e) => {
-                                  if (flight.ipicked_OperationButton === 'btnConfirmDelivery') {
-                                    e.currentTarget.style.backgroundColor = '#10b981';
-                                  } else {
-                                    e.currentTarget.style.backgroundColor = '#f8f9fa';
-                                    e.currentTarget.style.color = '#374151';
-                                  }
-                                }}
-                              >
-                                {flight.ipicked_OperationButton === 'btnConfirmDelivery' 
-                                  ? (isRTL ? 'تحویل گرفتم' : 'Delivered')
-                                  : (isRTL ? 'پیام' : 'Message')
-                                } <span style={{ fontSize: '14px' }}>{flight.ipicked_OperationButton === 'btnConfirmDelivery' ? '✅' : '💬'}</span>
-                              </button>
-                            )}
-                          </div>
-                        )}
-
-                        {/* Menu Popup for compact cards */}
-                        {activeMenu === flight.requestId && createPortal(
-                          <>
-                            <div
-                              onClick={() => setActiveMenu(null)}
-                              style={{
-                                position: 'fixed',
-                                top: 0,
-                                left: 0,
-                                right: 0,
-                                bottom: 0,
-                                backgroundColor: 'rgba(0, 0, 0, 0.3)',
-                                zIndex: 99998,
-                                backdropFilter: 'blur(2px)'
-                              }}
-                            />
-                            <div style={{
-                              position: 'fixed',
-                              top: '50%',
-                              left: '50%',
-                              transform: 'translate(-50%, -50%)',
-                              background: 'linear-gradient(135deg, #1a202c 0%, #2d3748 100%)',
-                              borderRadius: '16px',
-                              padding: '16px',
-                              minWidth: '200px',
-                              zIndex: 99999,
-                              boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)'
-                            }}>
-                              <div
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleMenuAction('details', flight);
-                                }}
-                                style={{
-                                  padding: '12px 16px',
-                                  cursor: 'pointer',
-                                  fontSize: '14px',
-                                  color: '#ffffff',
-                                  borderRadius: '8px',
-                                  marginBottom: '8px',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  gap: '8px'
-                                }}
-                                onMouseEnter={(e) => {
-                                  e.currentTarget.style.backgroundColor = 'rgba(59, 130, 246, 0.2)';
-                                }}
-                                onMouseLeave={(e) => {
-                                  e.currentTarget.style.backgroundColor = 'transparent';
-                                }}
-                              >
-                                <span>📋</span>
-                                {t('flights.menu.details')}
-                              </div>
-                              <div
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleMenuAction('saveToFavorites', flight);
-                                }}
-                                style={{
-                                  padding: '12px 16px',
-                                  cursor: 'pointer',
-                                  fontSize: '14px',
-                                  color: '#ffffff',
-                                  borderRadius: '8px',
-                                  marginBottom: '8px',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  gap: '8px'
-                                }}
-                                onMouseEnter={(e) => {
-                                  e.currentTarget.style.backgroundColor = 'rgba(16, 185, 129, 0.2)';
-                                }}
-                                onMouseLeave={(e) => {
-                                  e.currentTarget.style.backgroundColor = 'transparent';
-                                }}
-                              >
-                                <span>⭐</span>
-                                {t('flights.menu.saveToFavorites')}
-                              </div>
-                              <div
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleMenuAction('report', flight);
-                                }}
-                                style={{
-                                  padding: '12px 16px',
-                                  cursor: 'pointer',
-                                  fontSize: '14px',
-                                  color: '#ffffff',
-                                  borderRadius: '8px',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  gap: '8px'
-                                }}
-                                onMouseEnter={(e) => {
-                                  e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.2)';
-                                }}
-                                onMouseLeave={(e) => {
-                                  e.currentTarget.style.backgroundColor = 'transparent';
-                                }}
-                              >
-                                <span>🚨</span>
-                                {t('flights.menu.report')}
-                              </div>
-                            </div>
-                          </>,
-                          document.body
-                        )}
-                      </div>
-                    );
-                  }
-
-                  // Full card for other tabs
+                  // Full card for all tabs
                   return (
                     <div
                       key={flight.requestId}
