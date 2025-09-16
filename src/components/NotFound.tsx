@@ -17,7 +17,7 @@ const NotFound: React.FC<NotFoundProps> = ({ onRetry }) => {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        minHeight: '100vh',
+        minHeight: '90vh',
         padding: '10px 20px 0 20px',
         backgroundColor: theme.colors.background,
         color: theme.colors.text.primary,

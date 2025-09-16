@@ -1019,7 +1019,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
     <div style={{
       display: 'flex',
       flexDirection: 'column',
-      minHeight: '100vh',
+      minHeight: '90vh',
       backgroundColor: theme.colors.background,
       color: theme.colors.text.primary,
       direction: isRTL ? 'rtl' : 'ltr',

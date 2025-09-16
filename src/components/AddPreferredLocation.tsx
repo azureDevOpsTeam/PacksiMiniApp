@@ -179,7 +179,7 @@ const AddPreferredLocation: React.FC<AddPreferredLocationProps> = ({ onComplete 
         flexDirection: 'column',
         justifyContent: 'flex-start',
         alignItems: 'center',
-        minHeight: '100vh',
+        minHeight: '90vh',
         padding: '10px 20px 0 20px',
         backgroundColor: theme.colors.background
       }}>
@@ -216,7 +216,7 @@ const AddPreferredLocation: React.FC<AddPreferredLocationProps> = ({ onComplete 
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        minHeight: '100vh',
+        minHeight: '90vh',
         padding: '10px 20px 0 20px',
         backgroundColor: theme.colors.background,
         textAlign: 'center'
@@ -260,13 +260,13 @@ const AddPreferredLocation: React.FC<AddPreferredLocationProps> = ({ onComplete 
       flexDirection: 'column',
       justifyContent: 'flex-start',
       alignItems: 'center',
-      minHeight: '100vh',
+      minHeight: '90vh',
       padding: '10px 20px 0 20px',
       textAlign: 'center',
       position: 'relative'
     }}>
       <div style={{
-        minHeight: '100vh',
+        minHeight: '90vh',
         backgroundColor: theme.colors.background,
         color: theme.colors.text.primary,
         direction: isRTL ? 'rtl' : 'ltr',

@@ -759,7 +759,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
         flexDirection: 'column',
         justifyContent: 'flex-start',
         alignItems: 'center',
-        minHeight: '100vh',
+        minHeight: '90vh',
         padding: '10px 20px 0 20px',
         backgroundColor: '#17212b'
       }}>
@@ -879,7 +879,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
     <div style={{
       display: 'flex',
       flexDirection: 'column',
-      height: '100vh',
+      height: '90vh',
       backgroundColor: theme.colors.background,
       color: theme.colors.text.primary,
       direction: isRTL ? 'rtl' : 'ltr',

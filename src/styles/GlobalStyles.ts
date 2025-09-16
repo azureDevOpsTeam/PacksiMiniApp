@@ -27,14 +27,14 @@ export const GlobalStyles = createGlobalStyle`
     /* iOS specific fixes */
     margin: 0;
     width: 100%;
-    min-height: 100vh;
+    min-height: 90vh;
     -webkit-user-select: none;
     -webkit-touch-callout: none;
     -webkit-text-size-adjust: none;
   }
 
   #root {
-    min-height: 100vh;
+    min-height: 90vh;
     width: 100%;
     /* iOS specific fixes */
     position: relative;
@@ -45,7 +45,7 @@ export const GlobalStyles = createGlobalStyle`
 
   /* Telegram WebApp specific styles */
   .tg-viewport {
-    height: 100vh;
+    height: 90vh;
     overflow: hidden;
   }
 
