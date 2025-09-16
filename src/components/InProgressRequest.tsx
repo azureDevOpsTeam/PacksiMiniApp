@@ -539,7 +539,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
                 </div>
 
                 {/* Item Type */}
-                {suggestion.itemType && (
+                {(isRTL ? suggestion.itemTypeFa : suggestion.itemTypeEn) && (
                   <div style={{
                     display: 'inline-block',
                     backgroundColor: '#dbeafe',
@@ -557,7 +557,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
                 )}
 
                 {/* Description */}
-                {suggestion.description && suggestion.description.trim() !== '' && (
+                {suggestion.descriptions && suggestion.descriptions.trim() !== '' && (
                   <div style={{
                     fontSize: '11px',
                     color: '#4b5563',
@@ -574,7 +574,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
                     WebkitLineClamp: 2,
                     WebkitBoxOrient: 'vertical'
                   }}>
-                    {suggestion.description}
+                    {suggestion.descriptions}
                   </div>
                 )}
 

@@ -513,9 +513,11 @@ export interface OfferSuggestion {
   suggestionPrice: number;
   currency: number;
   itemType: number;
+  itemTypeEn: string;
+  itemTypeFa: string;
   createdOn: string;
   attachments: string[];
-  description?: string;
+  descriptions?: string;
   operationButton?: string;
 }
 
