@@ -5,7 +5,7 @@ import { useChatContext } from '../contexts/ChatContext';
 import { apiService } from '../services/apiService';
 import type { LiveChatUser } from '../types/api';
 import Logo from './Logo';
-import Settings from './Settings';
+
 import ChatWindow from './ChatWindow';
 
 interface ChatPerson {
@@ -32,7 +32,7 @@ const ChatPersonList: React.FC = () => {
   const { language } = useLanguage();
   const { webApp } = useTelegramContext();
   const { setChatCount } = useChatContext();
-  const [activeButton, setActiveButton] = React.useState<'user' | 'admin'>('user');
+
   const [selectedPersonId, setSelectedPersonId] = React.useState<string | null>(null);
   const [showMenu, setShowMenu] = React.useState<string | null>(null);
   const [activeTab, setActiveTab] = React.useState<TabType>('all');
@@ -310,8 +310,7 @@ const ChatPersonList: React.FC = () => {
         direction: 'ltr',
         overflow: 'hidden'
       }}>
-        {/* Settings Component */}
-        <Settings activeButton={activeButton} setActiveButton={setActiveButton} />
+
 
         {/* Logo */}
         <div style={{

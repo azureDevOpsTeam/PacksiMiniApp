@@ -6,7 +6,7 @@ import { useFormValidation } from '../hooks/useFormValidation';
 import { apiService } from '../services/apiService';
 import type { CountryItem, CityItem, UpdateProfileRequest } from '../types/api';
 import Logo from './Logo';
-import Settings from './Settings';
+
 import SkeletonLoader from './SkeletonLoader';
 import MultiSelectTreeDropdown from './MultiSelectTreeDropdown';
 
@@ -38,7 +38,7 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ onProfileUpdated }) => {
     selectedCities: []
   });
 
-  const [activeButton, setActiveButton] = useState<'user' | 'admin'>('user');
+
   const [isLoading, setIsLoading] = useState(false);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [success, setSuccess] = useState(false);
@@ -338,8 +338,7 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ onProfileUpdated }) => {
         direction: isRTL ? 'rtl' : 'ltr',
         fontFamily: 'IRANSansX, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
       }}>
-        {/* Settings Component */}
-        <Settings activeButton={activeButton} setActiveButton={setActiveButton} />
+
 
         {/* Header with Logo */}
         <div style={{

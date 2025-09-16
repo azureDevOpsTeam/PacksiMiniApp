@@ -7,7 +7,7 @@ import { apiService } from '../services/apiService';
 import type { OutboundTrip } from '../types/api';
 import AddPreferredLocation from './AddPreferredLocation';
 import Logo from './Logo';
-import Settings from './Settings';
+
 import SkeletonLoader from './SkeletonLoader';
 import MyRequest from './MyRequest';
 
@@ -196,7 +196,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
   const { theme } = useTheme();
   const { webApp } = useTelegramContext();
 
-  const [activeButton, setActiveButton] = useState<'user' | 'admin'>('user');
+
   const [isLoading, setIsLoading] = useState(false);
   const [showForm, setShowForm] = useState(false); // Default to showing list
   const [flights, setFlights] = useState<OutboundTrip[]>([]);
@@ -886,11 +886,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
       fontFamily: 'IRANSansX, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
       position: 'relative'
     }}>
-      {/* Settings Component */}
-      <Settings
-        activeButton={activeButton}
-        setActiveButton={setActiveButton}
-      />
+
 
       {/* Fixed Header */}
       <div style={{

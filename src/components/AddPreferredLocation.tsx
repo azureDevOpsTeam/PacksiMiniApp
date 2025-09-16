@@ -8,7 +8,7 @@ import apiService from '../services/apiService';
 import type { CountryItem, CityItem, AddUserPreferredLocationRequest } from '../types/api';
 import SkeletonLoader from './SkeletonLoader';
 import Logo from './Logo';
-import Settings from './Settings';
+
 
 interface AddPreferredLocationData {
   countryOfResidenceId: number;
@@ -31,7 +31,7 @@ const AddPreferredLocation: React.FC<AddPreferredLocationProps> = ({ onComplete 
   const [isLoading, setIsLoading] = React.useState(false);
   const [isInitialLoading, setIsInitialLoading] = React.useState(true);
   const [success, setSuccess] = React.useState(false);
-  const [activeButton, setActiveButton] = React.useState<'user' | 'admin'>('user');
+
 
   // Validation rules
   const validationRules = {
@@ -272,8 +272,7 @@ const AddPreferredLocation: React.FC<AddPreferredLocationProps> = ({ onComplete 
         direction: isRTL ? 'rtl' : 'ltr',
         fontFamily: 'IRANSansX, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
       }}>
-        {/* Settings Component */}
-        <Settings activeButton={activeButton} setActiveButton={setActiveButton} />
+
 
         {/* Header with Logo */}
         <div style={{

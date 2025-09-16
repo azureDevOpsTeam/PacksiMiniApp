@@ -24,7 +24,8 @@
     "home": "Home",
     "requests": "Requests",
     "parcels": "Parcels",
-    "chat": "Chat"
+    "chat": "Chat",
+    "settings": "Settings"
   },
   "bots": {
         "title": "Services",
@@ -260,5 +261,12 @@
     "paragraph1": "Packsi connects travelers with people who need to send parcels. Travelers can earn money by carrying parcels, and senders can get their items delivered quickly and affordably.",
     "paragraph2": "To get started, simply create a request to send a parcel or offer your services as a traveler. Our platform ensures secure and reliable delivery.",
     "paragraph3": "For more detailed instructions, please refer to the \"Terms and Conditions\" section."
+  },
+  "settings": {
+    "title" : "settings",
+    "userType": "Panel",
+    "admin": "Admin Panel",
+    "user": "User Panel",
+    "language": "Language"
   }
 }

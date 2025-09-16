@@ -4,7 +4,7 @@ import { useTheme } from '../hooks/useTheme';
 import { useTelegramButtons } from '../hooks/useTelegramButtons';
 import { useFormValidation } from '../hooks/useFormValidation';
 import Logo from './Logo';
-import Settings from './Settings';
+
 import TreeDropdown from './TreeDropdown';
 import SkeletonLoader from './SkeletonLoader';
 import { apiService } from '../services/apiService';
@@ -55,7 +55,7 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
   //const fileInputRef = useRef<HTMLInputElement>(null);
   const generalFileInputRef = useRef<HTMLInputElement>(null); // برایل‌های عمومی
 
-  const [activeButton, setActiveButton] = useState<'user' | 'admin'>('user');
+
   const [activeTab, setActiveTab] = useState<'passenger' | 'sender'>('passenger');
   const [isLoading, setIsLoading] = useState(false);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
@@ -477,8 +477,7 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
         fontFamily: 'IRANSansX, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
       }}>
         {/* Header with Logo */}
-        {/* Settings Component */}
-        <Settings activeButton={activeButton} setActiveButton={setActiveButton} />
+
 
         <div style={{
           display: 'flex',
