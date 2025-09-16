@@ -23,9 +23,8 @@ import { AdminRoutes } from './admin';
 import TermsOfServiceModal from './components/TermsOfServiceModal';
 import HelpModal from './components/HelpModal';
 import UnlimitedHelpModal from './components/UnlimitedHelpModal';
-import TabBar from './components/TabBar';
 import type { TabItem } from './components/TabBar';
-
+import AppLayout from './components/AppLayout';
 
 import ErrorBoundary from './components/ErrorBoundary';
 import SkeletonLoader from './components/SkeletonLoader';
@@ -379,73 +378,75 @@ const AppContent: React.FC = () => {
     );
   }
 
-  // Render NotFound page
-  if (currentPage === 'notFound' || authenticationFailed) {
-    return <NotFound onRetry={validateUser} />;
-  }
+  // Function to render page content
+  const renderPageContent = () => {
+    // Render NotFound page
+    if (currentPage === 'notFound' || authenticationFailed) {
+      return <NotFound onRetry={validateUser} />;
+    }
 
-  // Render CreateRequest page
-  if (currentPage === 'createRequest') {
-    return <CreateRequest />;
-  }
+    // Render CreateRequest page
+    if (currentPage === 'createRequest') {
+      return <CreateRequest />;
+    }
 
-  // Render UpdateProfile page
-  if (currentPage === 'updateProfile') {
-    return <UpdateProfile onProfileUpdated={validateUser} />;
-  }
+    // Render UpdateProfile page
+    if (currentPage === 'updateProfile') {
+      return <UpdateProfile onProfileUpdated={validateUser} />;
+    }
 
-  // Render AddPreferredLocation page
-  if (currentPage === 'addPreferredLocation') {
-    return <AddPreferredLocation />;
-  }
+    // Render AddPreferredLocation page
+    if (currentPage === 'addPreferredLocation') {
+      return <AddPreferredLocation />;
+    }
 
-  // Render ParcelList page
-  if (currentPage === 'parcelList') {
-    return <ParcelList />;
-  }
+    // Render ParcelList page
+    if (currentPage === 'parcelList') {
+      return <ParcelList />;
+    }
 
-  // Render MyRequest page
-  if (currentPage === 'myRequest') {
-    return <MyRequest />;
-  }
+    // Render MyRequest page
+    if (currentPage === 'myRequest') {
+      return <MyRequest />;
+    }
 
-  // Render InProgressRequest page
-  if (currentPage === 'inProgressRequest') {
-    return <InProgressRequest />;
-  }
+    // Render InProgressRequest page
+    if (currentPage === 'inProgressRequest') {
+      return <InProgressRequest />;
+    }
 
-  // Render ChatPersonList page
-  if (currentPage === 'chatPersonList') {
-    return <ChatPersonList />;
-  }
+    // Render ChatPersonList page
+    if (currentPage === 'chatPersonList') {
+      return <ChatPersonList />;
+    }
 
-  // Render AdminPanel if admin is selected
-  if (activeButton === 'admin') {
+    // Render AdminPanel if admin is selected
+    if (activeButton === 'admin') {
+      return (
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'flex-start',
+          alignItems: 'center',
+          minHeight: '90vh',
+          padding: '10 20px 10px 20px',
+          textAlign: 'center',
+          position: 'relative'
+        }}>
+          {/* Settings Component */}
+          <Settings
+            activeButton={activeButton}
+            setActiveButton={setActiveButton}
+            forceExpanded={forceSettingsExpanded}
+            onMenuItemClick={() => setForceSettingsExpanded(false)}
+          />
+          <AdminRoutes currentPage="dashboard" />
+        </div>
+      );
+    }
+
+    // Render Home page (default)
     return (
-      <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'flex-start',
-        alignItems: 'center',
-        minHeight: '90vh',
-        padding: '10 20px 10px 20px',
-        textAlign: 'center',
-        position: 'relative'
-      }}>
-        {/* Settings Component */}
-        <Settings
-          activeButton={activeButton}
-          setActiveButton={setActiveButton}
-          forceExpanded={forceSettingsExpanded}
-          onMenuItemClick={() => setForceSettingsExpanded(false)}
-        />
-        <AdminRoutes currentPage="dashboard" />
-      </div>
-    );
-  }
-
-  // Render Home page
-  return (
     <div style={{
       display: 'flex',
       flexDirection: 'column',
@@ -527,6 +528,7 @@ const AppContent: React.FC = () => {
       {/* Unlimited Access Section */}
       {(showVerifyPhone || showUpdateProfile) && (
         <div style={{
+          fontSize: '13px',
           marginTop: (showVerifyPhone || showUpdateProfile) ? '0px' : '30px',
           width: '100%',
           maxWidth: '400px'
@@ -1044,7 +1046,28 @@ const AppContent: React.FC = () => {
         </div>
       </div>
 
-      {/* Terms of Service Modal */}
+      </div>
+    );
+  };
+
+  // Determine if TabBar should be shown
+  const shouldShowTabBar = !['notFound', 'createRequest', 'updateProfile', 'addPreferredLocation'].includes(currentPage) && 
+                          !authenticationFailed && 
+                          activeButton !== 'admin';
+
+  // Main render with AppLayout
+  return (
+    <>
+      <AppLayout
+        tabItems={tabItems}
+        activeTab={activeTab}
+        onTabChange={handleTabChange}
+        showTabBar={shouldShowTabBar}
+      >
+        {renderPageContent()}
+      </AppLayout>
+
+      {/* Modals */}
       <TermsOfServiceModal
         isOpen={showTermsModal}
         onAccept={handleAcceptTerms}
@@ -1063,16 +1086,7 @@ const AppContent: React.FC = () => {
           onClose={() => setShowHelpModal(false)}
         />
       )}
-
-      {/* Tab Bar - Show only on main pages */}
-      {['home', 'myRequest', 'parcelList', 'chatPersonList'].includes(currentPage) && (
-        <TabBar
-          tabs={tabItems}
-          activeTab={activeTab}
-          onTabChange={handleTabChange}
-        />
-      )}
-    </div>
+    </>
   );
 };
 
