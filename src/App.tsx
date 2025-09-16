@@ -3,9 +3,11 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import TelegramProvider from './contexts/TelegramContext';
 import ThemeProvider from './contexts/ThemeContext';
 import LanguageProvider from './contexts/LanguageContext';
+import ChatProvider from './contexts/ChatContext';
 import { GlobalStyles } from './styles/GlobalStyles';
 import { useTelegramContext } from './hooks/useTelegramContext';
 import { useLanguage } from './hooks/useLanguage';
+import { useChatContext } from './contexts/ChatContext';
 import CreateRequest from './components/CreateRequest';
 import UpdateProfile from './components/UpdateProfile';
 import AddPreferredLocation from './components/AddPreferredLocation';
@@ -34,6 +36,7 @@ import type { RequestContactResponse } from '@twa-dev/types';
 const AppContent: React.FC = () => {
   const { isReady, webApp, user } = useTelegramContext();
   const { t, language } = useLanguage();
+  const { chatCount } = useChatContext();
   const [activeButton, setActiveButton] = React.useState<'user' | 'admin'>('user');
   const [currentPage, setCurrentPage] = React.useState<'home' | 'createRequest' | 'updateProfile' | 'addPreferredLocation' | 'parcelList' | 'myRequest' | 'inProgressRequest' | 'chatPersonList' | 'notFound'>('home');
   const [showVerifyPhone, setShowVerifyPhone] = React.useState<boolean>(false);
@@ -82,13 +85,14 @@ const AppContent: React.FC = () => {
     {
       id: 'chat',
       label: t('tabs.chat') || 'چت',
+      badge: chatCount > 0 ? chatCount : undefined,
       icon: (
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M21 11.5C21.0034 12.8199 20.6951 14.1219 20.1 15.3C19.3944 16.7118 18.3098 17.8992 16.9674 18.7293C15.6251 19.5594 14.0782 19.9994 12.5 20C11.1801 20.0035 9.87812 19.6951 8.7 19.1L3 21L4.9 15.3C4.30493 14.1219 3.99656 12.8199 4 11.5C4.00061 9.92179 4.44061 8.37488 5.27072 7.03258C6.10083 5.69028 7.28825 4.60573 8.7 3.90003C9.87812 3.30496 11.1801 2.99659 12.5 3.00003H13C15.0843 3.11502 17.053 3.99479 18.5291 5.47089C20.0052 6.94699 20.885 8.91568 21 11V11.5Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       )
     }
-  ], [t]);
+  ], [t, chatCount]);
 
   // Handle tab change
   const handleTabChange = React.useCallback((tabId: string) => {
@@ -1078,15 +1082,17 @@ const App: React.FC = () => {
       <TelegramProvider>
         <ThemeProvider>
           <LanguageProvider>
-            <SafeAreaWrapper>
-              <GlobalStyles />
-              <BrowserRouter>
-                <Routes>
-                  <Route path="/chatlist" element={<ChatPersonList />} />
-                  <Route path="/*" element={<AppContent />} />
-                </Routes>
-              </BrowserRouter>
-            </SafeAreaWrapper>
+            <ChatProvider>
+              <SafeAreaWrapper>
+                <GlobalStyles />
+                <BrowserRouter>
+                  <Routes>
+                    <Route path="/chatlist" element={<ChatPersonList />} />
+                    <Route path="/*" element={<AppContent />} />
+                  </Routes>
+                </BrowserRouter>
+              </SafeAreaWrapper>
+            </ChatProvider>
           </LanguageProvider>
         </ThemeProvider>
       </TelegramProvider>

@@ -5,11 +5,11 @@ import SafeAreaWrapper from './SafeAreaWrapper';
 
 
 
-interface TabItem {
+export interface TabItem {
   id: string;
   label: string;
   icon: React.ReactNode;
-  isActive?: boolean;
+  badge?: number; // Optional badge count
 }
 
 interface TabBarProps {
@@ -155,6 +155,25 @@ const ActiveIndicator = styled.div<{ $isActive: boolean }>`
   box-shadow: 0 0 8px ${({ theme }) => theme.colors.primary};
 `;
 
+const Badge = styled.div`
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background-color: #ff4444;
+  color: white;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: bold;
+  font-family: 'IRANSansX', sans-serif;
+  min-width: 16px;
+  z-index: 10;
+`;
+
 const TabBar: React.FC<TabBarProps> = ({ tabs, activeTab, onTabChange, className }) => {
   const { theme } = useTheme();
 
@@ -179,6 +198,11 @@ const TabBar: React.FC<TabBarProps> = ({ tabs, activeTab, onTabChange, className
                 <ActiveIndicator $isActive={isActive} theme={theme} />
                 <TabIcon $isActive={isActive} theme={theme}>
                   {tab.icon}
+                  {tab.badge && tab.badge > 0 && (
+                    <Badge>
+                      {tab.badge > 99 ? '99+' : tab.badge}
+                    </Badge>
+                  )}
                 </TabIcon>
                 <TabLabel $isActive={isActive} theme={theme}>
                   {tab.label}
@@ -193,4 +217,4 @@ const TabBar: React.FC<TabBarProps> = ({ tabs, activeTab, onTabChange, className
 };
 
 export default TabBar;
-export type { TabItem, TabBarProps };
+export type { TabBarProps };

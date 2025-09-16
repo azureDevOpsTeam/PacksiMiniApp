@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLanguage } from '../hooks/useLanguage';
 import { useTelegramContext } from '../hooks/useTelegramContext';
+import { useChatContext } from '../contexts/ChatContext';
 import { apiService } from '../services/apiService';
 import type { LiveChatUser } from '../types/api';
 import Logo from './Logo';
@@ -30,6 +31,7 @@ type TabType = 'all' | 'online' | 'archive' | 'groups';
 const ChatPersonList: React.FC = () => {
   const { language } = useLanguage();
   const { webApp } = useTelegramContext();
+  const { setChatCount } = useChatContext();
   const [activeButton, setActiveButton] = React.useState<'user' | 'admin'>('user');
   const [selectedPersonId, setSelectedPersonId] = React.useState<string | null>(null);
   const [showMenu, setShowMenu] = React.useState<string | null>(null);
@@ -82,6 +84,7 @@ const ChatPersonList: React.FC = () => {
         setLiveChatUsers(usersWithLastSeen);
         const convertedUsers = usersWithLastSeen.map(convertLiveChatUserToChatPerson);
         setChatPersons(convertedUsers);
+        setChatCount(convertedUsers.length);
       } else {
         setError(response?.message || 'خطا در دریافت لیست کاربران');
       }
