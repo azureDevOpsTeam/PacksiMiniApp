@@ -1,9 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useTheme } from '../hooks/useTheme';
-import SafeAreaWrapper from './SafeAreaWrapper';
-
-
 
 export interface TabItem {
   id: string;
@@ -178,7 +175,6 @@ const TabBar: React.FC<TabBarProps> = ({ tabs, activeTab, onTabChange, className
   const { theme } = useTheme();
 
   return (
-    <SafeAreaWrapper>
       <TabBarContainer 
         className={className} 
         theme={theme}
@@ -212,7 +208,6 @@ const TabBar: React.FC<TabBarProps> = ({ tabs, activeTab, onTabChange, className
           })}
         </TabBarContent>
       </TabBarContainer>
-    </SafeAreaWrapper>
   );
 };
 
