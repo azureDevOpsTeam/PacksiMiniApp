@@ -174,7 +174,7 @@ const MyRequest: React.FC<MyRequestProps> = () => {
       {/* Fixed Header */}
       <div style={{
         position: 'fixed',
-        top: '80px',
+        //top: '80px',
         left: '0',
         right: '0',
         backgroundColor: theme.colors.background,

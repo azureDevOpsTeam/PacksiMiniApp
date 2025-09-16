@@ -372,7 +372,7 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
         justifyContent: 'center',
         alignItems: 'center',
         minHeight: '100vh',
-        padding: '80px 20px 0 20px',
+        padding: '10px 20px 0 20px',
         backgroundColor: theme.colors.background,
         textAlign: 'center'
       }}>
@@ -417,7 +417,7 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
         justifyContent: 'flex-start',
         alignItems: 'center',
         minHeight: '100vh',
-        padding: '80px 20px 0 20px',
+        padding: '10px 20px 0 20px',
         backgroundColor: '#17212b'
       }}>
         {/* Header Skeleton */}
@@ -466,7 +466,7 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
       justifyContent: 'flex-start',
       alignItems: 'center',
       minHeight: '100vh',
-      padding: '80px 20px 0 20px',
+      padding: '10px 20px 0 20px',
       textAlign: 'center',
       position: 'relative'
     }}>
@@ -913,7 +913,7 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
                 <div style={{
                   gridColumn: '1 / -1',
                   textAlign: 'center',
-                  padding: '80px 20px 0 20px',
+                  padding: '10px 20px 0 20px',
                   color: '#848d96',
                   fontSize: '14px'
                 }}>

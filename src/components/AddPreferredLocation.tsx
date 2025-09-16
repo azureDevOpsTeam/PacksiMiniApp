@@ -180,7 +180,7 @@ const AddPreferredLocation: React.FC<AddPreferredLocationProps> = ({ onComplete 
         justifyContent: 'flex-start',
         alignItems: 'center',
         minHeight: '100vh',
-        padding: '80px 20px 0 20px',
+        padding: '10px 20px 0 20px',
         backgroundColor: theme.colors.background
       }}>
         {/* Header Skeleton */}
@@ -217,7 +217,7 @@ const AddPreferredLocation: React.FC<AddPreferredLocationProps> = ({ onComplete 
         justifyContent: 'center',
         alignItems: 'center',
         minHeight: '100vh',
-        padding: '80px 20px 0 20px',
+        padding: '10px 20px 0 20px',
         backgroundColor: theme.colors.background,
         textAlign: 'center'
       }}>
@@ -261,7 +261,7 @@ const AddPreferredLocation: React.FC<AddPreferredLocationProps> = ({ onComplete 
       justifyContent: 'flex-start',
       alignItems: 'center',
       minHeight: '100vh',
-      padding: '80px 20px 0 20px',
+      padding: '10px 20px 0 20px',
       textAlign: 'center',
       position: 'relative'
     }}>

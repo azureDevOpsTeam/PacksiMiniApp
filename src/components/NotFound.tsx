@@ -18,7 +18,7 @@ const NotFound: React.FC<NotFoundProps> = ({ onRetry }) => {
         alignItems: 'center',
         justifyContent: 'center',
         minHeight: '100vh',
-        padding: '80px 20px 0 20px',
+        padding: '10px 20px 0 20px',
         backgroundColor: theme.colors.background,
         color: theme.colors.text.primary,
         textAlign: 'center'

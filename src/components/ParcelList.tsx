@@ -760,7 +760,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
         justifyContent: 'flex-start',
         alignItems: 'center',
         minHeight: '100vh',
-        padding: '80px 20px 0 20px',
+        padding: '10px 20px 0 20px',
         backgroundColor: '#17212b'
       }}>
         {/* Header Skeleton */}
@@ -895,7 +895,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
       {/* Fixed Header */}
       <div style={{
         position: 'fixed',
-        top: '80px',
+        //top: '80px',
         left: '0',
         right: '0',
         backgroundColor: theme.colors.background,
