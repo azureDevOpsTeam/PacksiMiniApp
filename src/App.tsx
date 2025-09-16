@@ -1041,8 +1041,7 @@ const AppContent: React.FC = () => {
 
   // Determine if TabBar should be shown
   const shouldShowTabBar = !['notFound', 'createRequest', 'updateProfile', 'addPreferredLocation'].includes(currentPage) && 
-                          !authenticationFailed && 
-                          activeButton !== 'admin';
+                          !authenticationFailed;
 
   // Main render with AppLayout
   return (
