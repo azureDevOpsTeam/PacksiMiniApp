@@ -28,18 +28,18 @@
     "settings": "Settings"
   },
   "bots": {
-        "title": "Services",
-        "createNew": "Create New Request",
-        "parcelList": "Parcel List",
-        "selectFlightFromList": "Select your desired flight from the list",
-        "temporaryRoomRental": "Temporary Room Rental",
-        "findBestRoom": "Find the most affordable and best room you like",
-        "carRental": "Car Rental",
-        "findBestCar": "Find the most suitable and affordable car for your trip",
-        "personalServices": "Personal Services",
-        "chooseTrustedPeople": "Choose trusted people with valuable services to get your tasks done",
-        "soon": "Soon"
-    },
+    "title": "Services",
+    "createNew": "Create New Request",
+    "parcelList": "Parcel List",
+    "selectFlightFromList": "Select your desired flight from the list",
+    "temporaryRoomRental": "Temporary Room Rental",
+    "findBestRoom": "Find the most affordable and best room you like",
+    "carRental": "Car Rental",
+    "findBestCar": "Find the most suitable and affordable car for your trip",
+    "personalServices": "Personal Services",
+    "chooseTrustedPeople": "Choose trusted people with valuable services to get your tasks done",
+    "soon": "Soon"
+  },
   "flights": {
     "title": "Outbound Flights",
     "noFlights": "No flights found",
@@ -258,12 +258,18 @@
   },
   "helpModal": {
     "title": "How to Use Packsi",
-    "paragraph1": "Packsi connects travelers with people who need to send parcels. Travelers can earn money by carrying parcels, and senders can get their items delivered quickly and affordably.",
-    "paragraph2": "To get started, simply create a request to send a parcel or offer your services as a traveler. Our platform ensures secure and reliable delivery.",
-    "paragraph3": "For more detailed instructions, please refer to the \"Terms and Conditions\" section."
+    "paragraph1": "Register your trip by entering your departure, destination, and travel date. This lets others know when and where you are traveling.",
+    "paragraph2": "Senders who want to deliver a package on your route will contact you through the platform. You can review their request and agree if it suits you.",
+    "paragraph3": "Carry the package with you on your trip and deliver it at the destination. It's that simple — and you earn money while traveling!"
+  },
+  "helpUnlimitedModal": {
+    "title": "استفاده نامحدود",
+    "paragraph1": "Get unlimited access to Packsi by verifying your mobile number and completing your profile. This builds trust with senders and keeps the community safe and reliable.",
+    "paragraph2": "Verification is fast — just enter the code we send to your phone. Complete your profile with a photo, short bio, and basic ID details so senders feel confident choosing you.",
+    "paragraph3": "Once verified and profile-complete, you can post unlimited delivery requests for free. Start turning your trips into earnings — easy, secure, and ready right away!"
   },
   "settings": {
-    "title" : "settings",
+    "title": "settings",
     "userType": "Panel",
     "admin": "Admin Panel",
     "user": "User Panel",

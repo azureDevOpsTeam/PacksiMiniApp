@@ -121,7 +121,7 @@ const AppContent: React.FC = () => {
         setCurrentPage('inProgressRequest');
         break;
       case 'parcels':
-        setCurrentPage('parcelList');
+        setCurrentPage('myRequest');
         break;
       case 'chat':
         setCurrentPage('chatPersonList');
@@ -137,13 +137,10 @@ const AppContent: React.FC = () => {
       case 'home':
         setActiveTab('home');
         break;
-      case 'myRequest':
-        setActiveTab('requests');
-        break;
       case 'inProgressRequest':
         setActiveTab('requests');
         break;
-      case 'parcelList':
+      case 'myRequest':
         setActiveTab('parcels');
         break;
       case 'chatPersonList':
@@ -801,53 +798,6 @@ const AppContent: React.FC = () => {
               <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
-
-          <button onClick={() => setCurrentPage('myRequest')} style={{
-            display: 'flex',
-            alignItems: 'center',
-            padding: '12px',
-            backgroundColor: '#212a33',
-            borderRadius: '0',
-            cursor: 'pointer',
-            border: 'none',
-            width: '100%',
-            direction: language === 'fa' ? 'rtl' : 'ltr'
-          }}>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginRight: language === 'fa' ? '0' : '12px',
-              marginLeft: language === 'fa' ? '12px' : '0'
-            }}>
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-                <path d="M16 4H18C19.1046 4 20 4.89543 20 6V18C20 19.1046 19.1046 20 18 20H6C4.89543 20 4 19.1046 4 18V6C4 4.89543 4.89543 4 6 4H8M16 4V2M16 4V6M8 4V2M8 4V6M8 10H16M8 14H13" stroke="#4f9eff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
-            <div style={{ flex: 1, textAlign: language === 'fa' ? 'right' : 'left' }}>
-              <div style={{
-                color: '#ffffff',
-                fontSize: '14px',
-                fontFamily: 'IRANSansX, sans-serif',
-                fontWeight: '400',
-                marginBottom: '2px'
-              }}>
-                {language === 'fa' ? 'درخواست‌های من' : 'My Request'}
-              </div>
-              <div style={{
-                color: '#848d96',
-                fontSize: '12px',
-                fontFamily: 'IRANSansX, sans-serif'
-              }}>
-                {language === 'fa' ? 'مشاهده درخواست‌های شما' : 'View your requests'}
-              </div>
-            </div>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style={{ color: '#848d96', transform: language === 'fa' ? 'rotate(180deg)' : 'none' }}>
-              <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
-
-
 
           <div style={{
             display: 'flex',

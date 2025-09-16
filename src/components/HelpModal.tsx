@@ -92,10 +92,10 @@ const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
         </div>
 
         {/* Body */}
-        <div style={{ lineHeight: '1.6' }}>
-          <p>{t('helpModal.paragraph1')}</p>
-          <p>{t('helpModal.paragraph2')}</p>
-          <p>{t('helpModal.paragraph3')}</p>
+        <div style={{ lineHeight: '1.6', fontSize: '13px' }}>
+          <p style={{paddingBottom: '16px'}}>{t('helpModal.paragraph1')}</p>
+          <p style={{paddingBottom: '16px'}}>{t('helpModal.paragraph2')}</p>
+          <p style={{paddingBottom: '16px'}}>{t('helpModal.paragraph3')}</p>
         </div>
       </div>
     </div>,

@@ -93,7 +93,6 @@ const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
 
         {/* Body */}
         <div style={{ lineHeight: '1.6' }}>
-          <p>{t('Unlimited Help Modal')}</p>
           <p>{t('helpModal.paragraph1')}</p>
           <p>{t('helpModal.paragraph2')}</p>
           <p>{t('helpModal.paragraph3')}</p>
