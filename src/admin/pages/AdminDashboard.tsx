@@ -92,7 +92,7 @@ const AdminDashboard: React.FC = () => {
       }}>
         <DashboardCard
           title={isRTL ? 'تعداد کاربران' : 'Total Users'}
-          value="1,247"
+          value="0"
           icon="👥"
           subtitle={isRTL ? 'کاربر فعال' : 'Active Users'}
           gradient="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
@@ -100,7 +100,7 @@ const AdminDashboard: React.FC = () => {
         
         <DashboardCard
           title={isRTL ? 'موجودی ریال' : 'IRR Balance'}
-          value="₹ 2,450,000"
+          value="₹ 0"
           icon="💰"
           subtitle={isRTL ? 'ریال ایران' : 'Iranian Rial'}
           gradient="linear-gradient(135deg, #f093fb 0%, #f5576c 100%)"
@@ -108,7 +108,7 @@ const AdminDashboard: React.FC = () => {
         
         <DashboardCard
           title={isRTL ? 'موجودی دلار' : 'USD Balance'}
-          value="$ 15,320"
+          value="$ 0"
           icon="💵"
           subtitle={isRTL ? 'دلار آمریکا' : 'US Dollar'}
           gradient="linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)"
@@ -116,7 +116,7 @@ const AdminDashboard: React.FC = () => {
         
         <DashboardCard
           title={isRTL ? 'تعداد بسته‌ها' : 'Total Packages'}
-          value="856"
+          value="0"
           icon="📦"
           subtitle={isRTL ? 'بسته در حال ارسال' : 'Packages in Transit'}
           gradient="linear-gradient(135deg, #fa709a 0%, #fee140 100%)"
