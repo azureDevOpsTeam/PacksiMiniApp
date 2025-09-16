@@ -20,7 +20,7 @@ const LayoutContainer = styled.div`
 
 const ContentArea = styled.div<{ $hasTabBar: boolean }>`
   flex: 1;
-  padding-bottom: ${({ $hasTabBar }) => $hasTabBar ? '100px' : '0'};
+  padding-bottom: ${({ $hasTabBar }) => $hasTabBar ? '80px' : '0'};
   overflow-y: auto;
 `;
 
