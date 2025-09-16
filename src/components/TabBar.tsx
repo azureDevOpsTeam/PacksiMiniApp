@@ -23,7 +23,9 @@ const TabBarContainer = styled.div<{ $bottomPadding: number }>`
   right: 0;
   z-index: 1000;
   padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
-  padding-bottom: ${({ $bottomPadding, theme }) => `calc(${theme.spacing.sm} + ${$bottomPadding}px)`};
+  padding-bottom: ${({ $bottomPadding, theme }) => `calc(${theme.spacing.sm} + ${$bottomPadding}px + max(0px, var(--tg-safe-area-inset-bottom, 0px)))`};
+  padding-left: ${({ theme }) => `calc(${theme.spacing.md} + var(--tg-safe-area-inset-left, 0px))`};
+  padding-right: ${({ theme }) => `calc(${theme.spacing.md} + var(--tg-safe-area-inset-right, 0px))`};
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
