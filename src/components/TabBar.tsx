@@ -17,6 +17,9 @@ interface TabBarProps {
 }
 
 const TabBarContainer = styled.div<{ $bottomPadding: number }>`
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
   position: fixed;
   bottom: 0;
   left: 0;
@@ -42,17 +45,8 @@ const TabBarContent = styled.div`
   display: flex;
   justify-content: space-around;
   align-items: center;
-  background: rgba(255, 255, 255, 0.08);
   border-radius: ${({ theme }) => theme.borderRadius.xl};
   padding: ${({ theme }) => theme.spacing.xs};
-  box-shadow: ${({ theme }) => theme.shadows.lg};
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  
-  ${({ theme }) => theme.colors.background === '#1b2026' && `
-    background: rgba(33, 42, 51, 0.8);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  `}
 `;
 
 const TabButton = styled.button<{ $isActive: boolean }>`

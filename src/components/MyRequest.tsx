@@ -269,7 +269,7 @@ const MyRequest: React.FC<MyRequestProps> = () => {
 
       {/* Scrollable Content */}
       <div style={{
-        marginTop: '240px',
+        marginTop: '160px',
         flex: 1,
         overflowY: 'auto',
         paddingBottom: '20px'

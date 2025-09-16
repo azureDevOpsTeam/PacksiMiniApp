@@ -36,7 +36,7 @@ const Settings: React.FC<SettingsProps> = ({ activeButton, setActiveButton, forc
   return (<>
     {/* Main Settings Panel */}
     <div style={{
-      position: 'absolute',   // 👈 به جای fixed
+      position: 'fixed',
       top: '70px',
       right: settingsExpanded ? '0px' : '-100px',
       width: '100px',

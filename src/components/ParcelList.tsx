@@ -1002,7 +1002,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
 
       {/* Scrollable Content */}
       <div style={{
-        marginTop: '240px',
+        marginTop: '160px',
         flex: 1,
         overflowY: 'auto',
         paddingBottom: '20px'
@@ -1106,7 +1106,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                       key={flight.requestId}
                       className="flight-card"
                       style={{
-                        background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #ffffff 100%)',
+                        background: '#037d88cc',
                         borderRadius: '20px',
                         padding: '0',
                         border: '2px solid #e2e8f0',
@@ -1131,7 +1131,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                       <div 
                         onClick={() => (activeTab === 'incoming' || activeTab === 'outgoing') ? toggleAccordion(flight.requestId) : undefined}
                         style={{
-                          background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+                          background: 'linear-gradient(135deg,rgb(42, 66, 68) 0%,rgb(18, 134, 143) 100%)',
                           padding: '10px 20px',
                           color: 'white',
                           position: 'relative',
@@ -1328,7 +1328,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                                     top: '50%',
                                     left: '50%',
                                     transform: 'translate(-50%, -50%)',
-                                    background: 'linear-gradient(135deg, rgba(26, 32, 38, 0.95) 0%, rgba(36, 43, 53, 0.95) 100%)',
+                                    background: 'linear-gradient(135deg, rgba(26, 38, 35, 0.95) 0%, rgba(22, 93, 192, 0.95) 100%)',
                                     borderRadius: '20px',
                                     boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1)',
                                     minWidth: '280px',
@@ -1760,42 +1760,6 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                               }}
                             >
                               {isRTL ? 'پیشنهاد قیمت' : 'Suggestion Price'} <span style={{ fontSize: '14px' }}>💰</span>
-                            </button>
-                            
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                // Open select trip modal with suggest_price option
-                                setSelectedFlightForTrip(flight);
-                                setSelectedTripOption('');
-                                setShowSelectTripModal(true);
-                              }}
-                              style={{
-                                flex: 1,
-                                padding: '10px 12px',
-                                borderRadius: '0',
-                                fontSize: '12px',
-                                fontWeight: '600',
-                                backgroundColor: '#f8f9fa',
-                                color: '#374151',
-                                border: 'none',
-                                cursor: 'pointer',
-                                transition: 'all 0.2s ease',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                gap: '4px'
-                              }}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.backgroundColor = '#e5e7eb';
-                                e.currentTarget.style.color = '#1f2937';
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.backgroundColor = '#f8f9fa';
-                                e.currentTarget.style.color = '#374151';
-                              }}
-                            >
-                              {isRTL ? 'پیام' : 'Message'} <span style={{ fontSize: '14px' }}>💬</span>
                             </button>
                           </div>
                         </div>
