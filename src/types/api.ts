@@ -664,3 +664,18 @@ export interface NotDeliveredResponse {
     value: number;
   };
 }
+
+// Admin Management Types
+export interface GetInviteCodeResponse {
+  validationResult: any;
+  requestStatus: {
+    name: string;
+    value: number;
+  };
+  message: string;
+  objectResult: string; // The invite code like "K9P2Pk"
+  notificationType: {
+    name: string;
+    value: number;
+  };
+}

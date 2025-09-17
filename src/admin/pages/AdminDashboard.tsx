@@ -1,15 +1,40 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../../hooks/useLanguage';
 import { useTelegram } from '../../hooks/useTelegram';
 import AdminLayout from '../components/AdminLayout';
 import AdminPanel from '../components/AdminPanel';
 import DashboardCard from '../components/DashboardCard';
 import Logo from '../../components/Logo';
+import { apiService } from '../../services/apiService';
 
 const AdminDashboard: React.FC = () => {
   const { language } = useLanguage();
   const { webApp } = useTelegram();
   const isRTL = language === 'fa';
+  
+  // State for invite code
+  const [inviteCode, setInviteCode] = useState<string>('Invit_Error'); // Default fallback
+  const [isLoadingInviteCode, setIsLoadingInviteCode] = useState<boolean>(true);
+
+  // Fetch invite code on component mount
+  useEffect(() => {
+    const fetchInviteCode = async () => {
+      try {
+        setIsLoadingInviteCode(true);
+        const response = await apiService.getInviteCode();
+        if (response.requestStatus.value === 0 && response.objectResult) {
+          setInviteCode(response.objectResult);
+        }
+      } catch (error) {
+        console.error('Failed to fetch invite code:', error);
+        // Keep the default fallback value
+      } finally {
+        setIsLoadingInviteCode(false);
+      }
+    };
+
+    fetchInviteCode();
+  }, []);
 
   return (
     <AdminLayout>
@@ -42,25 +67,28 @@ const AdminDashboard: React.FC = () => {
           direction: 'ltr',
           textAlign: 'left',
           flex: 1,
-          paddingRight: '40px'
+          paddingRight: '40px',
+          opacity: isLoadingInviteCode ? 0.6 : 1
         }}>
-          INV_ADM_001
+          {isLoadingInviteCode ? 'Loading...' : inviteCode}
         </div>
         <button
           onClick={() => {
-            navigator.clipboard.writeText('https://t.me/PacksiBot?start=INV_ADM_001');
+            const inviteLink = `https://t.me/PacksiBot?start=${inviteCode}`;
+            navigator.clipboard.writeText(inviteLink);
             if (webApp) {
               webApp.showAlert(isRTL ? 'لینک دعوت کپی شد!' : 'Invitation link copied!');
             }
           }}
+          disabled={isLoadingInviteCode}
           style={{
             backgroundColor: 'transparent',
             border: 'none',
             borderRadius: '4px',
             padding: '6px',
-            color: '#50b4ff',
+            color: isLoadingInviteCode ? '#888' : '#50b4ff',
             fontSize: '14px',
-            cursor: 'pointer',
+            cursor: isLoadingInviteCode ? 'not-allowed' : 'pointer',
             transition: 'all 0.2s ease',
             position: 'absolute',
             right: '12px',
@@ -68,15 +96,20 @@ const AdminDashboard: React.FC = () => {
             transform: 'translateY(-50%)',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center'
+            justifyContent: 'center',
+            opacity: isLoadingInviteCode ? 0.6 : 1
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = 'rgba(80, 180, 255, 0.1)';
-            e.currentTarget.style.color = '#4a9de8';
+            if (!isLoadingInviteCode) {
+              e.currentTarget.style.backgroundColor = 'rgba(80, 180, 255, 0.1)';
+              e.currentTarget.style.color = '#4a9de8';
+            }
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = 'transparent';
-            e.currentTarget.style.color = '#50b4ff';
+            if (!isLoadingInviteCode) {
+              e.currentTarget.style.backgroundColor = 'transparent';
+              e.currentTarget.style.color = '#50b4ff';
+            }
           }}
           title={isRTL ? 'کپی لینک' : 'Copy Link'}
         >

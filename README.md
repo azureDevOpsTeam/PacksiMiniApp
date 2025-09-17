@@ -61,7 +61,7 @@ npm run preview
 
 ### 1. Create a Bot
 
-1. Message [@BotFather](https://t.me/BotFather) on Telegram
+1. Message [@BotFather](https://BotFather) on Telegram
 2. Use `/newbot` command to create a new bot
 3. Save the bot token
 
