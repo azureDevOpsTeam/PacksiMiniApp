@@ -16,24 +16,85 @@ const AdminDashboard: React.FC = () => {
   const [inviteCode, setInviteCode] = useState<string>('Invit_Error'); // Default fallback
   const [isLoadingInviteCode, setIsLoadingInviteCode] = useState<boolean>(true);
 
+  // State for dashboard data
+  const [dashboardData, setDashboardData] = useState({
+    referralCount: 0,
+    irrBalance: 0,
+    usdtBalance: 0,
+    totalPackage: 0
+  });
+  const [isLoadingDashboard, setIsLoadingDashboard] = useState<boolean>(true);
+
   // Fetch invite code on component mount
   useEffect(() => {
     const fetchInviteCode = async () => {
       try {
         setIsLoadingInviteCode(true);
+        console.log('Fetching invite code...');
         const response = await apiService.getInviteCode();
-        if (response.requestStatus.value === 0 && response.objectResult) {
+        console.log('Full API response:', response);
+        console.log('Request status:', response.requestStatus);
+        console.log('Request status value:', response.requestStatus?.value);
+        console.log('Object result:', response.objectResult);
+        console.log('Object result type:', typeof response.objectResult);
+        
+        // Check if response is successful and has objectResult
+        if (response && response.objectResult && response.objectResult.trim() !== '') {
+          console.log('Setting invite code to:', response.objectResult);
           setInviteCode(response.objectResult);
+        } else if (response?.requestStatus?.value === 0 && response.objectResult) {
+          console.log('Setting invite code to (fallback):', response.objectResult);
+          setInviteCode(response.objectResult);
+        } else {
+          console.log('API response not successful or no objectResult');
+          console.log('Response status:', response?.requestStatus);
+          console.log('ObjectResult value:', response?.objectResult);
         }
       } catch (error) {
         console.error('Failed to fetch invite code:', error);
-        // Keep the default fallback value
+        console.error('Error details:', {
+          message: error instanceof Error ? error.message : 'Unknown error',
+          stack: error instanceof Error ? error.stack : undefined
+        });
+        // Keep the default fallback value on error
       } finally {
         setIsLoadingInviteCode(false);
       }
     };
 
     fetchInviteCode();
+  }, []);
+
+  // Fetch dashboard data on component mount
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        setIsLoadingDashboard(true);
+        console.log('Fetching dashboard data...');
+        const response = await apiService.getDashboardData();
+        console.log('Dashboard API response:', response);
+        
+        // Check if response is successful and has objectResult
+        if (response?.requestStatus?.value === 0 && response.objectResult) {
+          console.log('Setting dashboard data to:', response.objectResult);
+          setDashboardData(response.objectResult);
+        } else {
+          console.log('Dashboard API response not successful or no objectResult');
+          console.log('Response status:', response?.requestStatus);
+        }
+      } catch (error) {
+        console.error('Failed to fetch dashboard data:', error);
+        console.error('Error details:', {
+          message: error instanceof Error ? error.message : 'Unknown error',
+          stack: error instanceof Error ? error.stack : undefined
+        });
+        // Keep the default values on error
+      } finally {
+        setIsLoadingDashboard(false);
+      }
+    };
+
+    fetchDashboardData();
   }, []);
 
   return (
@@ -125,7 +186,7 @@ const AdminDashboard: React.FC = () => {
       }}>
         <DashboardCard
           title={isRTL ? 'تعداد کاربران' : 'Total Users'}
-          value="0"
+          value={isLoadingDashboard ? '...' : dashboardData.referralCount.toString()}
           icon="👥"
           subtitle={isRTL ? 'کاربر فعال' : 'Active Users'}
           gradient="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
@@ -133,7 +194,7 @@ const AdminDashboard: React.FC = () => {
         
         <DashboardCard
           title={isRTL ? 'موجودی ریال' : 'IRR Balance'}
-          value="₹ 0"
+          value={isLoadingDashboard ? '...' : `₹ ${dashboardData.irrBalance.toLocaleString()}`}
           icon="💰"
           subtitle={isRTL ? 'ریال ایران' : 'Iranian Rial'}
           gradient="linear-gradient(135deg, #f093fb 0%, #f5576c 100%)"
@@ -141,7 +202,7 @@ const AdminDashboard: React.FC = () => {
         
         <DashboardCard
           title={isRTL ? 'موجودی دلار' : 'USD Balance'}
-          value="$ 0"
+          value={isLoadingDashboard ? '...' : `$ ${dashboardData.usdtBalance.toLocaleString()}`}
           icon="💵"
           subtitle={isRTL ? 'دلار آمریکا' : 'US Dollar'}
           gradient="linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)"
@@ -149,7 +210,7 @@ const AdminDashboard: React.FC = () => {
         
         <DashboardCard
           title={isRTL ? 'تعداد بسته‌ها' : 'Total Packages'}
-          value="0"
+          value={isLoadingDashboard ? '...' : dashboardData.totalPackage.toString()}
           icon="📦"
           subtitle={isRTL ? 'بسته در حال ارسال' : 'Packages in Transit'}
           gradient="linear-gradient(135deg, #fa709a 0%, #fee140 100%)"

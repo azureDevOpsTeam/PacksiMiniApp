@@ -679,3 +679,25 @@ export interface GetInviteCodeResponse {
     value: number;
   };
 }
+
+// Dashboard Data Types
+export interface DashboardData {
+  referralCount: number;
+  irrBalance: number;
+  usdtBalance: number;
+  totalPackage: number;
+}
+
+export interface GetDashboardDataResponse {
+  validationResult: any;
+  requestStatus: {
+    name: string;
+    value: number;
+  };
+  message: string;
+  objectResult: DashboardData;
+  notificationType: {
+    name: string;
+    value: number;
+  };
+}
