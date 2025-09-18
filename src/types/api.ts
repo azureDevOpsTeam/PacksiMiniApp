@@ -600,6 +600,7 @@ export interface PickedUpResponse {
 // Passenger Confirmed Delivery API Types
 export interface PassengerConfirmedDeliveryModel {
   requestSuggestionId: number;
+  deliveryCode: string;
 }
 
 export interface PassengerConfirmedDeliveryPayload {

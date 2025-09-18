@@ -78,6 +78,8 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
   const [showDeliveryDialog, setShowDeliveryDialog] = useState(false);
   const [selectedDeliverySuggestionId, setSelectedDeliverySuggestionId] = useState<number | null>(null);
   const [isConfirmingDelivery, setIsConfirmingDelivery] = useState(false);
+  const [deliveryCode, setDeliveryCode] = useState('');
+  const [deliveryCodeError, setDeliveryCodeError] = useState('');
 
 
 
@@ -236,12 +238,20 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
   const confirmPassengerDelivery = async () => {
     if (!selectedDeliverySuggestionId) return;
 
+    // Validate delivery code
+    if (!deliveryCode.trim()) {
+      setDeliveryCodeError(isRTL ? 'کد تحویل الزامی است' : 'Delivery code is required');
+      return;
+    }
+
     try {
       setIsConfirmingDelivery(true);
+      setDeliveryCodeError('');
 
       const payload = {
         model: {
-          requestSuggestionId: selectedDeliverySuggestionId
+          requestSuggestionId: selectedDeliverySuggestionId,
+          deliveryCode: deliveryCode.trim()
         }
       };
 
@@ -264,6 +274,8 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
       setIsConfirmingDelivery(false);
       setShowDeliveryDialog(false);
       setSelectedDeliverySuggestionId(null);
+      setDeliveryCode('');
+      setDeliveryCodeError('');
     }
   };
 
@@ -271,6 +283,8 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
   const cancelPassengerDelivery = () => {
     setShowDeliveryDialog(false);
     setSelectedDeliverySuggestionId(null);
+    setDeliveryCode('');
+    setDeliveryCodeError('');
   };
 
 
@@ -1659,7 +1673,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
             {/* Content */}
             <p
               style={{
-                margin: '0 0 24px',
+                margin: '0 0 16px',
                 fontSize: '14px',
                 color: '#6b7280',
                 textAlign: 'center',
@@ -1667,10 +1681,58 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
               }}
             >
               {isRTL
-                ? 'آیا مطمئن هستید که بسته را تحویل داده‌اید؟ این عمل قابل بازگشت نیست.'
-                : 'Are you sure you have delivered the package? This action cannot be undone.'
+                ? 'لطفاً کد تحویل را وارد کنید:'
+                : 'Please enter the delivery code:'
               }
             </p>
+
+            {/* Delivery Code Input */}
+            <div style={{ marginBottom: '24px' }}>
+              <input
+                type="text"
+                value={deliveryCode}
+                onChange={(e) => {
+                  setDeliveryCode(e.target.value);
+                  if (deliveryCodeError) {
+                    setDeliveryCodeError('');
+                  }
+                }}
+                placeholder={isRTL ? 'کد تحویل را وارد کنید' : 'Enter delivery code'}
+                style={{
+                  width: '100%',
+                  padding: '12px 16px',
+                  borderRadius: '8px',
+                  border: deliveryCodeError ? '2px solid #ef4444' : '1px solid #d1d5db',
+                  fontSize: '14px',
+                  outline: 'none',
+                  transition: 'border-color 0.2s ease',
+                  direction: isRTL ? 'rtl' : 'ltr',
+                  textAlign: isRTL ? 'right' : 'left'
+                }}
+                onFocus={(e) => {
+                  if (!deliveryCodeError) {
+                    e.target.style.borderColor = '#8b5cf6';
+                  }
+                }}
+                onBlur={(e) => {
+                  if (!deliveryCodeError) {
+                    e.target.style.borderColor = '#d1d5db';
+                  }
+                }}
+              />
+              {deliveryCodeError && (
+                <p
+                  style={{
+                    margin: '8px 0 0',
+                    fontSize: '12px',
+                    color: '#ef4444',
+                    textAlign: isRTL ? 'right' : 'left'
+                  }}
+                >
+                  {deliveryCodeError}
+                </p>
+              )}
+            </div>
 
             {/* Buttons */}
             <div
@@ -1711,28 +1773,28 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
 
               <button
                 onClick={confirmPassengerDelivery}
-                disabled={isConfirmingDelivery}
+                disabled={isConfirmingDelivery || !deliveryCode.trim()}
                 style={{
                   padding: '10px 20px',
                   borderRadius: '8px',
                   fontSize: '14px',
                   fontWeight: '500',
-                  backgroundColor: isConfirmingDelivery ? '#9ca3af' : '#8b5cf6',
+                  backgroundColor: (isConfirmingDelivery || !deliveryCode.trim()) ? '#9ca3af' : '#8b5cf6',
                   color: 'white',
                   border: 'none',
-                  cursor: isConfirmingDelivery ? 'not-allowed' : 'pointer',
+                  cursor: (isConfirmingDelivery || !deliveryCode.trim()) ? 'not-allowed' : 'pointer',
                   transition: 'all 0.2s ease',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '8px'
                 }}
                 onMouseEnter={(e) => {
-                  if (!isConfirmingDelivery) {
+                  if (!isConfirmingDelivery && deliveryCode.trim()) {
                     e.currentTarget.style.backgroundColor = '#7c3aed';
                   }
                 }}
                 onMouseLeave={(e) => {
-                  if (!isConfirmingDelivery) {
+                  if (!isConfirmingDelivery && deliveryCode.trim()) {
                     e.currentTarget.style.backgroundColor = '#8b5cf6';
                   }
                 }}
