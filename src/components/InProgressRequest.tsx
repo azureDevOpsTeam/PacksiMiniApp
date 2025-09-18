@@ -578,6 +578,29 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
                   </div>
                 )}
 
+                {/* Delivery Code - Show when operationButton is lblReadyToDelivery or btnConfirmDelivery and deliveryCode exists */}
+                {(suggestion.operationButton === 'lblReadyToDelivery' || suggestion.operationButton === 'btnConfirmDelivery') && suggestion.deliveryCode && (
+                  <div style={{
+                    fontSize: '12px',
+                    color: '#065f46',
+                    marginBottom: '8px',
+                    lineHeight: '1.4',
+                    padding: '6px 10px',
+                    backgroundColor: '#d1fae5',
+                    borderRadius: '8px',
+                    border: '1px solid #a7f3d0',
+                    fontWeight: '600',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px'
+                  }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z" />
+                    </svg>
+                    {isRTL ? `کد تحویل: ${suggestion.deliveryCode}` : `Delivery Code: ${suggestion.deliveryCode}`}
+                  </div>
+                )}
+
                 {/* Action Buttons for each suggestion */}
                 <div style={{
                   display: 'flex',

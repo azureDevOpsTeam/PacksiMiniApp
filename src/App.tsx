@@ -335,7 +335,6 @@ const AppContent: React.FC = () => {
         flexDirection: 'column',
         justifyContent: 'flex-start',
         alignItems: 'center',
-        minHeight: '90vh',
         padding: '20px',
         backgroundColor: '#17212b'
       }}>
@@ -428,7 +427,6 @@ const AppContent: React.FC = () => {
           flexDirection: 'column',
           justifyContent: 'flex-start',
           alignItems: 'center',
-          minHeight: '90vh',
           padding: '10 20px 10px 20px',
           textAlign: 'center',
           position: 'relative'
@@ -445,7 +443,6 @@ const AppContent: React.FC = () => {
       flexDirection: 'column',
       justifyContent: 'flex-start',
       alignItems: 'center',
-      minHeight: '90vh',
       padding: '10px 20px 30px 20px',
       textAlign: 'center',
       position: 'relative'

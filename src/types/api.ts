@@ -519,6 +519,7 @@ export interface OfferSuggestion {
   attachments: string[];
   descriptions?: string;
   operationButton?: string;
+  deliveryCode?: number;
 }
 
 export interface OfferRequest {
