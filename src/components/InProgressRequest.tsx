@@ -80,6 +80,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
   const [isConfirmingDelivery, setIsConfirmingDelivery] = useState(false);
   const [deliveryCode, setDeliveryCode] = useState('');
   const [deliveryCodeError, setDeliveryCodeError] = useState('');
+  const [serverError, setServerError] = useState('');
 
 
 
@@ -247,6 +248,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
     try {
       setIsConfirmingDelivery(true);
       setDeliveryCodeError('');
+      setServerError('');
 
       const payload = {
         model: {
@@ -264,18 +266,22 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
           setMyReciveOffers(offersResponse.objectResult.myReciveOffers || []);
           setMySentOffers(offersResponse.objectResult.mySentOffers || []);
         }
+        
+        // Close modal only on success
+        setShowDeliveryDialog(false);
+        setSelectedDeliverySuggestionId(null);
+        setDeliveryCode('');
+        setDeliveryCodeError('');
+        setServerError('');
       } else {
-        console.error('Error confirming delivery:', response.message);
+        // Show server error message
+        setServerError(response.message || (isRTL ? 'کد تحویل نامعتبر است' : 'Invalid delivery code'));
       }
     } catch (err) {
       console.error('Error confirming delivery:', err);
-      // Show error message (you can implement a toast notification here)
+      setServerError(isRTL ? 'خطا در ارتباط با سرور' : 'Server connection error');
     } finally {
       setIsConfirmingDelivery(false);
-      setShowDeliveryDialog(false);
-      setSelectedDeliverySuggestionId(null);
-      setDeliveryCode('');
-      setDeliveryCodeError('');
     }
   };
 
@@ -285,6 +291,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
     setSelectedDeliverySuggestionId(null);
     setDeliveryCode('');
     setDeliveryCodeError('');
+    setServerError('');
   };
 
 
@@ -1692,17 +1699,20 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
                 type="text"
                 value={deliveryCode}
                 onChange={(e) => {
-                  setDeliveryCode(e.target.value);
-                  if (deliveryCodeError) {
-                    setDeliveryCodeError('');
-                  }
-                }}
+                   setDeliveryCode(e.target.value);
+                   if (deliveryCodeError) {
+                     setDeliveryCodeError('');
+                   }
+                   if (serverError) {
+                     setServerError('');
+                   }
+                 }}
                 placeholder={isRTL ? 'کد تحویل را وارد کنید' : 'Enter delivery code'}
                 style={{
                   width: '100%',
                   padding: '12px 16px',
                   borderRadius: '8px',
-                  border: deliveryCodeError ? '2px solid #ef4444' : '1px solid #d1d5db',
+                  border: (deliveryCodeError || serverError) ? '2px solid #ef4444' : '1px solid #d1d5db',
                   fontSize: '14px',
                   outline: 'none',
                   transition: 'border-color 0.2s ease',
@@ -1710,28 +1720,28 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
                   textAlign: isRTL ? 'right' : 'left'
                 }}
                 onFocus={(e) => {
-                  if (!deliveryCodeError) {
-                    e.target.style.borderColor = '#8b5cf6';
-                  }
-                }}
-                onBlur={(e) => {
-                  if (!deliveryCodeError) {
-                    e.target.style.borderColor = '#d1d5db';
-                  }
-                }}
+                   if (!deliveryCodeError && !serverError) {
+                     e.target.style.borderColor = '#8b5cf6';
+                   }
+                 }}
+                 onBlur={(e) => {
+                   if (!deliveryCodeError && !serverError) {
+                     e.target.style.borderColor = '#d1d5db';
+                   }
+                 }}
               />
-              {deliveryCodeError && (
-                <p
-                  style={{
-                    margin: '8px 0 0',
-                    fontSize: '12px',
-                    color: '#ef4444',
-                    textAlign: isRTL ? 'right' : 'left'
-                  }}
-                >
-                  {deliveryCodeError}
-                </p>
-              )}
+              {(deliveryCodeError || serverError) && (
+                 <p
+                   style={{
+                     margin: '8px 0 0',
+                     fontSize: '12px',
+                     color: '#ef4444',
+                     textAlign: isRTL ? 'right' : 'left'
+                   }}
+                 >
+                   {deliveryCodeError || serverError}
+                 </p>
+               )}
             </div>
 
             {/* Buttons */}
