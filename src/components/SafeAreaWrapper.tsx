@@ -32,6 +32,14 @@ const SafeAreaWrapper: React.FC<SafeAreaWrapperProps> = ({ children, style }) =>
         // اگر Telegram WebApp در دسترس نیست، از env() استفاده کن یا مقادیر پیش‌فرض
         console.log('Telegram WebApp not available, using CSS env() values');
       }
+
+      // Set Telegram WebApp viewport height
+      if (window.Telegram?.WebApp?.viewportHeight) {
+        root.style.setProperty('--tg-viewport-height', `${window.Telegram.WebApp.viewportHeight}px`);
+      } else {
+        // Fallback to window.innerHeight for better mobile support
+        root.style.setProperty('--tg-viewport-height', `${window.innerHeight}px`);
+      }
     };
 
     // اعمال Safe Area در ابتدا
@@ -42,11 +50,24 @@ const SafeAreaWrapper: React.FC<SafeAreaWrapperProps> = ({ children, style }) =>
       window.Telegram.WebApp.onEvent('viewportChanged', applySafeAreaInsets);
     }
 
+    // Listen to window resize for viewport height changes
+    const handleResize = () => {
+      const root = document.documentElement;
+      if (window.Telegram?.WebApp?.viewportHeight) {
+        root.style.setProperty('--tg-viewport-height', `${window.Telegram.WebApp.viewportHeight}px`);
+      } else {
+        root.style.setProperty('--tg-viewport-height', `${window.innerHeight}px`);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+
     // Cleanup
     return () => {
       if (window.Telegram?.WebApp?.offEvent) {
         window.Telegram.WebApp.offEvent('viewportChanged', applySafeAreaInsets);
       }
+      window.removeEventListener('resize', handleResize);
     };
   }, []);
 
