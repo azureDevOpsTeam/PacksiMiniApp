@@ -18,7 +18,6 @@ interface TabBarProps {
 
 const TabBarContainer = styled.div<{ $bottomPadding: number }>`
   width: 100%;
-  max-width: 400px;
   margin: 0 auto;
   position: fixed;
   bottom: 0;

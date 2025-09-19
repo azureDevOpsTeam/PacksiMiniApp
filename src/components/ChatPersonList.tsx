@@ -305,7 +305,6 @@ const ChatPersonList: React.FC = () => {
         padding: '20px',
         textAlign: 'center',
         position: 'relative',
-        backgroundColor: '#17212b',
         direction: 'ltr',
         overflow: 'hidden'
       }}>
