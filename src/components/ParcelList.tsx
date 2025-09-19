@@ -411,6 +411,19 @@ const ParcelList: React.FC<ParcelListProps> = () => {
       return;
     }
 
+    // Validate itemType for both options
+    if (itemTypeId === -1) {
+      setApiResult({
+        success: false,
+        message: isRTL ? 'لطفا نوع آیتم را انتخاب کنید' : 'Please select an item type'
+      });
+
+      setTimeout(() => {
+        setApiResult(null);
+      }, 3000);
+      return;
+    }
+
     // Validate price suggestion fields if price suggestion is selected
     if (selectedTripOption === 'suggest_price') {
       if (!suggestionPrice || suggestionPrice.trim() === '' || parseFloat(suggestionPrice) <= 0) {
@@ -436,18 +449,6 @@ const ParcelList: React.FC<ParcelListProps> = () => {
         }, 3000);
         return;
       }
-      
-      if (itemTypeId === -1) {
-        setApiResult({
-          success: false,
-          message: isRTL ? 'لطفا نوع آیتم را انتخاب کنید' : 'Please select an item type'
-        });
-
-        setTimeout(() => {
-          setApiResult(null);
-        }, 3000);
-        return;
-      }
     }
 
     try {
@@ -464,6 +465,17 @@ const ParcelList: React.FC<ParcelListProps> = () => {
             currency: parseInt(currency) || 0,
             description: description,
             itemTypeId: itemTypeId,
+            files: files
+          }
+        };
+      } else if (selectedTripOption === 'accept_price') {
+        // For accept price, use structure with itemType but no price/currency
+        requestData = {
+          model: {
+            requestId: selectedFlightForTrip.requestId,
+            tripOption: selectedTripOption,
+            itemTypeId: itemTypeId,
+            description: description,
             files: files
           }
         };
@@ -1952,96 +1964,97 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                 </select>
               </div>
 
-              {/* Price Suggestion Fields */}
-              {selectedTripOption === 'suggest_price' && (
+              {/* Form Fields - Show for both options */}
+              {(selectedTripOption === 'suggest_price' || selectedTripOption === 'accept_price') && (
                 <>
-                  {/* Suggested Price Input */}
-                  <div style={{ marginBottom: '16px' }}>
-                    <label style={{
-                      display: 'block',
-                      fontSize: '14px',
-                      color: '#ffffff',
-                      marginBottom: '8px',
-                      fontFamily: 'IRANSansX, sans-serif',
-                      fontWeight: '500'
-                    }}>
-                      {isRTL ? 'قیمت پیشنهادی:' : 'Suggested Price:'} <span style={{ color: '#ef4444' }}>*</span>
-                    </label>
-                    <input
-                      type="number"
-                      value={suggestionPrice}
-                      onChange={(e) => setSuggestionPrice(e.target.value)}
-                      placeholder={isRTL ? 'قیمت پیشنهادی را وارد کنید' : 'Enter suggested price'}
-                      style={{
-                        width: '100%',
-                        padding: '12px 16px',
-                        borderRadius: '12px',
-                        border: '1px solid rgba(255, 255, 255, 0.2)',
-                        background: 'rgba(255, 255, 255, 0.1)',
-                        color: '#ffffff',
+                  {/* Price and Currency - Only show for suggest_price */}
+                  {selectedTripOption === 'suggest_price' && (
+                    <div style={{ marginBottom: '16px' }}>
+                      <label style={{
+                        display: 'block',
                         fontSize: '14px',
-                        fontFamily: 'IRANSansX, sans-serif',
-                        outline: 'none',
-                        transition: 'all 0.3s ease'
-                      }}
-                      onFocus={(e) => {
-                        e.currentTarget.style.borderColor = 'rgba(80, 180, 255, 0.5)';
-                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
-                      }}
-                      onBlur={(e) => {
-                        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
-                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
-                      }}
-                    />
-                  </div>
-
-                  {/* Currency Selection */}
-                  <div style={{ marginBottom: '16px' }}>
-                    <label style={{
-                      display: 'block',
-                      fontSize: '14px',
-                      color: '#ffffff',
-                      marginBottom: '8px',
-                      fontFamily: 'IRANSansX, sans-serif',
-                      fontWeight: '500'
-                    }}>
-                      {isRTL ? 'نوع ارز:' : 'Currency Type:'} <span style={{ color: '#ef4444' }}>*</span>
-                    </label>
-                    <select
-                      value={currency}
-                      onChange={(e) => setCurrency(e.target.value)}
-                      style={{
-                        width: '100%',
-                        padding: '12px 16px',
-                        borderRadius: '12px',
-                        border: '1px solid rgba(255, 255, 255, 0.2)',
-                        background: 'rgba(255, 255, 255, 0.1)',
                         color: '#ffffff',
-                        fontSize: '14px',
+                        marginBottom: '8px',
                         fontFamily: 'IRANSansX, sans-serif',
-                        outline: 'none',
-                        transition: 'all 0.3s ease'
-                      }}
-                      onFocus={(e) => {
-                        e.currentTarget.style.borderColor = 'rgba(80, 180, 255, 0.5)';
-                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
-                      }}
-                      onBlur={(e) => {
-                        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
-                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
-                      }}
-                    >
-                      <option value="-1" style={{ background: '#1a202c', color: '#ffffff' }}>
-                        {isRTL ? 'نوع ارز را انتخاب کنید' : 'Select Currency'}
-                      </option>
-                      <option value="1" style={{ background: '#1a202c', color: '#ffffff' }}>
-                        {isRTL ? 'دلار' : 'Dollar'}
-                      </option>
-                      <option value="2" style={{ background: '#1a202c', color: '#ffffff' }}>
-                        {isRTL ? 'ریال' : 'Rial'}
-                      </option>
-                    </select>
-                  </div>
+                        fontWeight: '500'
+                      }}>
+                        {isRTL ? 'قیمت پیشنهادی و نوع ارز:' : 'Suggested Price & Currency:'} <span style={{ color: '#ef4444' }}>*</span>
+                      </label>
+                      <div style={{ 
+                        display: 'flex', 
+                        gap: '12px',
+                        direction: isRTL ? 'rtl' : 'ltr'
+                      }}>
+                        {/* Price Input */}
+                        <div style={{ flex: '2' }}>
+                          <input
+                            type="number"
+                            value={suggestionPrice}
+                            onChange={(e) => setSuggestionPrice(e.target.value)}
+                            placeholder={isRTL ? 'قیمت پیشنهادی' : 'Suggested Price'}
+                            style={{
+                              width: '100%',
+                              padding: '12px 16px',
+                              borderRadius: '12px',
+                              border: '1px solid rgba(255, 255, 255, 0.2)',
+                              background: 'rgba(255, 255, 255, 0.1)',
+                              color: '#ffffff',
+                              fontSize: '14px',
+                              fontFamily: 'IRANSansX, sans-serif',
+                              outline: 'none',
+                              transition: 'all 0.3s ease'
+                            }}
+                            onFocus={(e) => {
+                              e.currentTarget.style.borderColor = 'rgba(80, 180, 255, 0.5)';
+                              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
+                            }}
+                            onBlur={(e) => {
+                              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+                            }}
+                          />
+                        </div>
+                        
+                        {/* Currency Selection */}
+                        <div style={{ flex: '1' }}>
+                          <select
+                            value={currency}
+                            onChange={(e) => setCurrency(e.target.value)}
+                            style={{
+                              width: '100%',
+                              padding: '12px 16px',
+                              borderRadius: '12px',
+                              border: '1px solid rgba(255, 255, 255, 0.2)',
+                              background: 'rgba(255, 255, 255, 0.1)',
+                              color: '#ffffff',
+                              fontSize: '14px',
+                              fontFamily: 'IRANSansX, sans-serif',
+                              outline: 'none',
+                              transition: 'all 0.3s ease'
+                            }}
+                            onFocus={(e) => {
+                              e.currentTarget.style.borderColor = 'rgba(80, 180, 255, 0.5)';
+                              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
+                            }}
+                            onBlur={(e) => {
+                              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+                            }}
+                          >
+                            <option value="-1" style={{ background: '#1a202c', color: '#ffffff' }}>
+                              {isRTL ? 'ارز' : 'Currency'}
+                            </option>
+                            <option value="1" style={{ background: '#1a202c', color: '#ffffff' }}>
+                              {isRTL ? 'دلار' : 'Dollar'}
+                            </option>
+                            <option value="2" style={{ background: '#1a202c', color: '#ffffff' }}>
+                              {isRTL ? 'ریال' : 'Rial'}
+                            </option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                   
                   {/* Item Type Selection - Radio Button Style */}
                   <div style={{ marginBottom: '16px' }}>
@@ -2348,12 +2361,16 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                 <button
                   type="button"
                   onClick={handleSelectTripSubmit}
-                  disabled={isLoading || !selectedTripOption || (selectedTripOption === 'suggest_price' && (!suggestionPrice || currency === '-1'))}
+                  disabled={isLoading || !selectedTripOption || 
+                    ((selectedTripOption === 'suggest_price' || selectedTripOption === 'accept_price') && !itemTypeId) ||
+                    (selectedTripOption === 'suggest_price' && (!suggestionPrice || currency === '-1'))}
                   style={{
                     padding: '14px 28px',
                     borderRadius: '16px',
                     border: 'none',
-                    background: (isLoading || !selectedTripOption || (selectedTripOption === 'suggest_price' && (!suggestionPrice || currency === '-1')))
+                    background: (isLoading || !selectedTripOption || 
+                      ((selectedTripOption === 'suggest_price' || selectedTripOption === 'accept_price') && !itemTypeId) ||
+                      (selectedTripOption === 'suggest_price' && (!suggestionPrice || currency === '-1')))
                       ? 'linear-gradient(135deg, rgba(107, 114, 128, 0.6), rgba(75, 85, 99, 0.6))'
                       : selectedTripOption === 'suggest_price'
                         ? 'linear-gradient(135deg, #f59e0b, #d97706, #b45309)'
@@ -2361,9 +2378,13 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                     color: '#ffffff',
                     fontSize: '15px',
                     fontFamily: 'IRANSansX, sans-serif',
-                    cursor: (isLoading || !selectedTripOption || (selectedTripOption === 'suggest_price' && (!suggestionPrice || currency === '-1'))) ? 'not-allowed' : 'pointer',
+                    cursor: (isLoading || !selectedTripOption || 
+                      ((selectedTripOption === 'suggest_price' || selectedTripOption === 'accept_price') && !itemTypeId) ||
+                      (selectedTripOption === 'suggest_price' && (!suggestionPrice || currency === '-1'))) ? 'not-allowed' : 'pointer',
                     transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                    opacity: (isLoading || !selectedTripOption || (selectedTripOption === 'suggest_price' && (!suggestionPrice || currency === '-1'))) ? 0.6 : 1,
+                    opacity: (isLoading || !selectedTripOption || 
+                      ((selectedTripOption === 'suggest_price' || selectedTripOption === 'accept_price') && !itemTypeId) ||
+                      (selectedTripOption === 'suggest_price' && (!suggestionPrice || currency === '-1'))) ? 0.6 : 1,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -2373,14 +2394,18 @@ const ParcelList: React.FC<ParcelListProps> = () => {
                     letterSpacing: '0.5px',
                     position: 'relative',
                     overflow: 'hidden',
-                    boxShadow: (isLoading || !selectedTripOption || (selectedTripOption === 'suggest_price' && (!suggestionPrice || currency === '-1')))
+                    boxShadow: (isLoading || !selectedTripOption || 
+                      ((selectedTripOption === 'suggest_price' || selectedTripOption === 'accept_price') && !itemTypeId) ||
+                      (selectedTripOption === 'suggest_price' && (!suggestionPrice || currency === '-1')))
                       ? 'none'
                       : selectedTripOption === 'suggest_price'
                         ? '0 8px 25px rgba(245, 158, 11, 0.4), 0 4px 12px rgba(245, 158, 11, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
                         : '0 8px 25px rgba(16, 185, 129, 0.4), 0 4px 12px rgba(16, 185, 129, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
                   }}
                   onMouseEnter={(e) => {
-                    if (!isLoading && selectedTripOption && !(selectedTripOption === 'suggest_price' && (!suggestionPrice || currency === '-1'))) {
+                    if (!isLoading && selectedTripOption && 
+                        !((selectedTripOption === 'suggest_price' || selectedTripOption === 'accept_price') && !itemTypeId) &&
+                        !(selectedTripOption === 'suggest_price' && (!suggestionPrice || currency === '-1'))) {
                       if (selectedTripOption === 'suggest_price') {
                         e.currentTarget.style.background = 'linear-gradient(135deg, #d97706, #b45309, #92400e)';
                         e.currentTarget.style.transform = 'translateY(-3px) scale(1.02)';

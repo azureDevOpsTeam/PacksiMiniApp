@@ -364,6 +364,8 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
   // const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<number | null>(null);
+  const pollingIntervalRef = useRef<number | null>(null);
+  const [isWindowVisible, setIsWindowVisible] = useState(true);
 
 
   const scrollToBottom = () => {
@@ -551,6 +553,10 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
       if (typingTimeoutRef.current) {
         clearTimeout(typingTimeoutRef.current);
       }
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+        pollingIntervalRef.current = null;
+      }
       // Clear event handlers to prevent memory leaks
       signalRService.setOnMessageReceived(() => {});
       signalRService.setOnTypingReceived(() => {});
@@ -574,7 +580,10 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
   // Handle page visibility changes for Android
   useEffect(() => {
     const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible' && selectedUser.conversationId) {
+      const isVisible = document.visibilityState === 'visible';
+      setIsWindowVisible(isVisible);
+      
+      if (isVisible && selectedUser.conversationId) {
         console.log('صفحه مرئی شد - بارگذاری مجدد پیام‌ها');
         // Refresh messages when page becomes visible
         fetchMessages();
@@ -582,20 +591,58 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
     };
 
     const handleFocus = () => {
+      setIsWindowVisible(true);
       if (selectedUser.conversationId) {
         console.log('اپلیکیشن فوکوس یافت - بارگذاری مجدد پیام‌ها');
         fetchMessages();
       }
     };
 
+    const handleBlur = () => {
+      setIsWindowVisible(false);
+    };
+
     document.addEventListener('visibilitychange', handleVisibilityChange);
     window.addEventListener('focus', handleFocus);
+    window.addEventListener('blur', handleBlur);
 
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('focus', handleFocus);
+      window.removeEventListener('blur', handleBlur);
     };
   }, [selectedUser.conversationId]);
+
+  // Real-time message polling
+  useEffect(() => {
+    // Clear any existing polling interval
+    if (pollingIntervalRef.current) {
+      clearInterval(pollingIntervalRef.current);
+      pollingIntervalRef.current = null;
+    }
+
+    // Only start polling if we have a conversation and window is visible
+    if (selectedUser.conversationId && isWindowVisible && !loading) {
+      console.log('شروع polling برای پیام‌های جدید');
+      
+      pollingIntervalRef.current = setInterval(() => {
+        // Only fetch if window is still visible and we're not loading
+        if (isWindowVisible && !loading) {
+          console.log('بررسی پیام‌های جدید...');
+          fetchMessages();
+        }
+      }, 3000); // Poll every 3 seconds
+    }
+
+    // Cleanup interval on dependency change or unmount
+    return () => {
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+        pollingIntervalRef.current = null;
+        console.log('متوقف کردن polling');
+      }
+    };
+  }, [selectedUser.conversationId, isWindowVisible, loading]);
 
   useEffect(() => {
     const scrollAfterRender = () => {
@@ -637,9 +684,20 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
     if (selectedUser.conversationId) {
       try {
         const messagesResponse = await apiService.getMessages(selectedUser.conversationId);
-        setMessages(messagesResponse.objectResult);
+        const newMessages = messagesResponse.objectResult;
+        
+        // Update messages only if there are changes to prevent unnecessary re-renders
+        setMessages(prevMessages => {
+          // Check if messages have actually changed
+          if (JSON.stringify(prevMessages) !== JSON.stringify(newMessages)) {
+            console.log('پیام‌های جدید دریافت شد:', newMessages.length);
+            return newMessages;
+          }
+          return prevMessages;
+        });
       } catch (error) {
         console.error('Error fetching messages:', error);
+        // Don't stop polling on error, just log it
       }
     }
   };
