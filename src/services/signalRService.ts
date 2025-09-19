@@ -1,4 +1,5 @@
 import { HubConnection, HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
+import type { RetryContext } from '@microsoft/signalr';
 import type { ChatMessage } from '../types/api';
 
 class SignalRService {
@@ -119,7 +120,7 @@ class SignalRService {
       this.connection = new HubConnectionBuilder()
         .withUrl('https://api.packsi.net/chathub', connectionOptions)
         .withAutomaticReconnect({
-          nextRetryDelayInMilliseconds: (retryContext) => {
+          nextRetryDelayInMilliseconds: (retryContext: RetryContext) => {
             // Shorter delays for Android
             const baseDelay = isAndroid ? 1000 : 2000;
             if (retryContext.previousRetryCount < 3) {
@@ -144,18 +145,18 @@ class SignalRService {
     if (!this.connection) return;
 
     // Connection state events
-    this.connection.onclose((error) => {
+    this.connection.onclose((error?: Error) => {
       console.log('اتصال SignalR قطع شد:', error);
       this.onConnectionStateChanged?.(false);
       this.handleReconnection();
     });
 
-    this.connection.onreconnecting((error) => {
+    this.connection.onreconnecting((error?: Error) => {
       console.log('در حال تلاش برای اتصال مجدد SignalR:', error);
       this.onConnectionStateChanged?.(false);
     });
 
-    this.connection.onreconnected((connectionId) => {
+    this.connection.onreconnected((connectionId?: string) => {
       console.log('اتصال مجدد SignalR برقرار شد:', connectionId);
       this.onConnectionStateChanged?.(true);
       this.reconnectAttempts = 0;
