@@ -43,6 +43,8 @@
   "flights": {
     "title": "Outbound Flights",
     "noFlights": "No flights found",
+    "completeProfileMessage": "Dear user, to receive more accurate services and view destinations and suggestions tailored to your needs, please complete your profile",
+    "completeProfileButton": "Complete Profile",
     "requestId": "Request ID",
     "userAccountId": "User Account ID",
     "originCity": "Origin City",

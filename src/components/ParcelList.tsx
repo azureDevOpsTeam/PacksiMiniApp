@@ -795,11 +795,79 @@ const ParcelList: React.FC<ParcelListProps> = () => {
     );
   }
 
-  // Show form if setPreferredLocation is false
+  // Show message if setPreferredLocation is false
   if (showForm) {
     return (
-      <div>
-        <AddPreferredLocation onComplete={handleFormComplete} />
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: '40px 20px',
+        backgroundColor: '#17212b',
+        minHeight: '100vh',
+        textAlign: 'center'
+      }}>
+        {/* Logo */}
+        <div style={{ marginBottom: '40px' }}>
+          <Logo />
+        </div>
+        
+        {/* Message */}
+        <div style={{
+          backgroundColor: '#242f3d',
+          padding: '30px 25px',
+          borderRadius: '16px',
+          marginBottom: '30px',
+          maxWidth: '400px',
+          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)'
+        }}>
+          <p style={{
+            color: '#ffffff',
+            fontSize: '16px',
+            lineHeight: '1.6',
+            margin: '0',
+            fontFamily: 'IRANSansX, sans-serif',
+            fontWeight: '400'
+          }}>
+            {t('flights.completeProfileMessage')}
+          </p>
+        </div>
+        
+        {/* Complete Profile Button */}
+        <button
+          onClick={() => {
+            // Navigate to UpdateProfile by reloading the page
+            // This will trigger the validation check in App.tsx and show UpdateProfile
+            window.location.reload();
+          }}
+          style={{
+            backgroundColor: '#2ea5f7',
+            color: '#ffffff',
+            border: 'none',
+            borderRadius: '12px',
+            padding: '16px 32px',
+            fontSize: '16px',
+            fontWeight: '600',
+            cursor: 'pointer',
+            fontFamily: 'IRANSansX, sans-serif',
+            boxShadow: '0 4px 15px rgba(46, 165, 247, 0.3)',
+            transition: 'all 0.3s ease',
+            minWidth: '200px'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = '#1e90d4';
+            e.currentTarget.style.transform = 'translateY(-2px)';
+            e.currentTarget.style.boxShadow = '0 6px 20px rgba(46, 165, 247, 0.4)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = '#2ea5f7';
+            e.currentTarget.style.transform = 'translateY(0)';
+            e.currentTarget.style.boxShadow = '0 4px 15px rgba(46, 165, 247, 0.3)';
+          }}
+        >
+          {t('flights.completeProfileButton')}
+        </button>
       </div>
     );
   }
