@@ -5,7 +5,7 @@ import { useTheme } from '../hooks/useTheme';
 import { useTelegramContext } from '../hooks/useTelegramContext';
 import { apiService } from '../services/apiService';
 import type { OutboundTrip } from '../types/api';
-import AddPreferredLocation from './AddPreferredLocation';
+
 import Logo from './Logo';
 
 import SkeletonLoader from './SkeletonLoader';
@@ -723,11 +723,7 @@ const ParcelList: React.FC<ParcelListProps> = () => {
   // No need to fetch flights when activeTab changes since we get all data at once
   // Filtering is now done client-side based on tripType
 
-  // Handle form completion
-  const handleFormComplete = () => {
-    setShowForm(false);
-    fetchFlights();
-  };
+
 
   // Format date for display
   const formatDate = (dateString: string) => {
