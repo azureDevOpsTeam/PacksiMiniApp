@@ -26,8 +26,8 @@
   padding-right: var(--tg-safe-area-inset-right, 0px);
   box-sizing: border-box;
   /* Use Telegram WebApp viewport height instead of 100vh */
-  height: var(--tg-viewport-height, 80vh);
-  min-height: var(--tg-viewport-height, 80vh);
+  /* height: var(--tg-viewport-height, 80vh); */
+  /* min-height: var(--tg-viewport-height, 80vh); */
   width: 100%;
   overflow-x: hidden;
   overflow-y: auto;
