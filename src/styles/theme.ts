@@ -110,7 +110,7 @@ export const darkTheme: Theme = {
   colors: {
     primary: '#50b4ff',
     secondary: '#5E5CE6',
-    background: '#1b2026',
+    background: 'transparent', //'#1b2026',
     surface: '#1C1C1E',
     text: {
       primary: '#848d96',
