@@ -302,7 +302,6 @@ const ChatPersonList: React.FC = () => {
         flexDirection: 'column',
         justifyContent: 'flex-start',
         alignItems: 'center',
-        height: '90vh',
         padding: '20px',
         textAlign: 'center',
         position: 'relative',

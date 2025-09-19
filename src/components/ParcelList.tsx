@@ -771,7 +771,6 @@ const ParcelList: React.FC<ParcelListProps> = () => {
         flexDirection: 'column',
         justifyContent: 'flex-start',
         alignItems: 'center',
-        minHeight: '90vh',
         padding: '10px 20px 0 20px',
         backgroundColor: '#17212b'
       }}>
@@ -891,7 +890,6 @@ const ParcelList: React.FC<ParcelListProps> = () => {
     <div style={{
       display: 'flex',
       flexDirection: 'column',
-      height: '90vh',
       backgroundColor: theme.colors.background,
       color: theme.colors.text.primary,
       direction: isRTL ? 'rtl' : 'ltr',
@@ -2490,7 +2488,6 @@ const ParcelList: React.FC<ParcelListProps> = () => {
             borderRadius: '16px',
             width: '100%',
             maxWidth: '480px',
-            maxHeight: '90vh',
             overflow: 'hidden',
             boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)',
             border: '1px solid rgba(255, 255, 255, 0.1)',

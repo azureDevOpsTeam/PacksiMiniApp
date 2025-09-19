@@ -237,7 +237,6 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ onProfileUpdated }) => {
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        minHeight: '90vh',
         padding: '10px 20px 0 20px',
         backgroundColor: theme.colors.background,
         textAlign: 'center'
@@ -282,7 +281,6 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ onProfileUpdated }) => {
         flexDirection: 'column',
         justifyContent: 'flex-start',
         alignItems: 'center',
-        minHeight: '90vh',
         padding: '10px 20px 0 20px',
         backgroundColor: '#17212b'
       }}>
@@ -326,13 +324,11 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ onProfileUpdated }) => {
       flexDirection: 'column',
       justifyContent: 'flex-start',
       alignItems: 'center',
-      minHeight: '90vh',
       padding: '10px 20px 0 20px',
       textAlign: 'center',
       position: 'relative'
     }}>
       <div style={{
-        minHeight: '90vh',
         backgroundColor: theme.colors.background,
         color: theme.colors.text.primary,
         direction: isRTL ? 'rtl' : 'ltr',

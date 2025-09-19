@@ -371,7 +371,6 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        minHeight: '90vh',
         padding: '10px 20px 0 20px',
         backgroundColor: theme.colors.background,
         textAlign: 'center'
@@ -416,7 +415,6 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
         flexDirection: 'column',
         justifyContent: 'flex-start',
         alignItems: 'center',
-        minHeight: '90vh',
         padding: '10px 20px 0 20px',
         backgroundColor: '#17212b'
       }}>
@@ -465,7 +463,6 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
       flexDirection: 'column',
       justifyContent: 'flex-start',
       alignItems: 'center',
-      minHeight: '90vh',
       padding: '10px 20px 0 20px',
       textAlign: 'center',
       position: 'relative'

@@ -25,7 +25,6 @@ const showChatOdd = keyframes`
 
 // Styled Components
 const ChatContainer = styled.div`
-  height: 90vh;
   background: linear-gradient(-45deg, #183850 0%, #183850 25%, #192C46 50%, #22254C 75%, #22254C 100%);
   background-repeat: no-repeat;
   background-attachment: fixed;
