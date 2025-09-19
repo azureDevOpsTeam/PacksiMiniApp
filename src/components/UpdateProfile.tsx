@@ -51,6 +51,7 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ onProfileUpdated }) => {
   const validationRules = {
     firstName: { required: true },
     lastName: { required: true },
+    displayName: { required: true },
     countryOfResidenceId: { required: true, custom: (value: number) => value !== 0 },
     selectedCities: { required: true, custom: (value: number[]) => value && value.length > 0 }
   };
@@ -410,12 +411,16 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ onProfileUpdated }) => {
 
           {/* Display Name */}
           <div style={{ marginBottom: '20px' }}>
-            <label style={labelStyle}>{t('updateProfile.displayName')}</label>
+            <label style={{
+              ...labelStyle,
+              color: hasFieldError('displayName') ? '#ff4757' : labelStyle.color
+            }}>{t('updateProfile.displayName')}</label>
             <input
               type="text"
               value={formData.displayName || ''}
               onChange={(e) => handleInputChange('displayName', e.target.value)}
-              style={inputStyle}
+              onBlur={() => markFieldTouched('displayName')}
+              style={getFieldStyle(inputStyle, 'displayName')}
               placeholder={t('updateProfile.displayNamePlaceholder')}
             />
           </div>
@@ -443,7 +448,10 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ onProfileUpdated }) => {
 
           {/* Cities Selection */}
           <div style={{ marginBottom: '20px' }}>
-            <label style={labelStyle}>{t('updateProfile.cities')}</label>
+            <label style={{
+              ...labelStyle,
+              color: hasFieldError('selectedCities') ? '#ff4757' : labelStyle.color
+            }}>{t('updateProfile.cities')}</label>
             <div style={{
               border: hasFieldError('selectedCities') ? '2px solid #ff4757' : 'none',
               borderRadius: hasFieldError('selectedCities') ? '8px' : '0',
