@@ -217,6 +217,33 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
   const [description, setDescription] = useState<string>('');
   const [itemTypeId, setItemTypeId] = useState<number>(-1); // -1 for select, other values for item types
   const [files, setFiles] = useState<File[]>([]);
+  const [filePreviewUrls, setFilePreviewUrls] = useState<string[]>([]);
+
+  // Mobile detection
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  const isTelegramWebApp = window.Telegram?.WebApp !== undefined;
+
+  // Helper function to get file icon based on type
+  const getFileIcon = (file: File) => {
+    if (file.type.startsWith('image/')) {
+      return '🖼️';
+    } else if (file.type.startsWith('video/')) {
+      return '🎥';
+    } else if (file.type.includes('pdf')) {
+      return '📄';
+    } else if (file.type.includes('document') || file.type.includes('word')) {
+      return '📝';
+    } else if (file.type.includes('spreadsheet') || file.type.includes('excel')) {
+      return '📊';
+    } else {
+      return '📎';
+    }
+  };
+
+  // Helper function to check if preview is supported
+  const isPreviewSupported = (file: File) => {
+    return file.type.startsWith('image/') && !isTelegramWebApp;
+  };
 
   // Suggestions modal state
   const [showSuggestionsModal, setShowSuggestionsModal] = useState(false);
@@ -234,6 +261,22 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
 
   // Responsive state for small screens
   const [isSmallScreen, setIsSmallScreen] = useState<boolean>(false);
+
+  // Cleanup preview URLs when component unmounts or files change
+  useEffect(() => {
+    return () => {
+      // Cleanup all preview URLs to prevent memory leaks
+      filePreviewUrls.forEach(url => {
+        if (url) {
+          try {
+            URL.revokeObjectURL(url);
+          } catch (error) {
+            console.error('Error revoking object URL:', error);
+          }
+        }
+      });
+    };
+  }, [filePreviewUrls]);
 
   // Handle screen resize
   useEffect(() => {
@@ -391,6 +434,24 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
     // Add new files to existing files
     if (newFileArray.length > 0) {
       setFiles(prevFiles => [...prevFiles, ...newFileArray]);
+      
+      // Create preview URLs for new files (only for supported files)
+      const newPreviewUrls = newFileArray.map(file => {
+        try {
+          // Only create preview URLs for files that support preview
+          if (isPreviewSupported(file)) {
+            return URL.createObjectURL(file);
+          } else {
+            return '';
+          }
+        } catch (error) {
+          console.error('Error creating object URL:', error);
+          return '';
+        }
+      });
+      
+      setFilePreviewUrls(prevUrls => [...prevUrls, ...newPreviewUrls]);
+      
       console.log(isRTL ? 
         `${newFileArray.length} فایل با موفقیت اضافه شد` : 
         `${newFileArray.length} file(s) added successfully`);
@@ -2250,16 +2311,42 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
                       marginBottom: '10px',
                       cursor: 'pointer',
                       backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                      transition: 'all 0.3s ease'
+                      transition: 'all 0.3s ease',
+                      // Better touch target for mobile
+                      minHeight: '60px',
+                      WebkitTapHighlightColor: 'transparent'
                     }} 
-                      onClick={() => document.getElementById('file-upload-input')?.click()}
-                      onMouseOver={(e) => {
+                      onClick={() => {
+                        const input = document.getElementById('file-upload-input') as HTMLInputElement;
+                        if (input) {
+                          // For mobile browsers, especially Android
+                          if (isMobile) {
+                            input.click();
+                          } else {
+                            input.click();
+                          }
+                        }
+                      }}
+                      onTouchStart={(e) => {
+                        // Better touch feedback for mobile
                         e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
                         e.currentTarget.style.borderColor = '#50b4ff';
                       }}
-                      onMouseOut={(e) => {
+                      onTouchEnd={(e) => {
                         e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
                         e.currentTarget.style.borderColor = '#3a4a5c';
+                      }}
+                      onMouseOver={(e) => {
+                        if (!isMobile) {
+                          e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                          e.currentTarget.style.borderColor = '#50b4ff';
+                        }
+                      }}
+                      onMouseOut={(e) => {
+                        if (!isMobile) {
+                          e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+                          e.currentTarget.style.borderColor = '#3a4a5c';
+                        }
                       }}
                     >
                       <input
@@ -2268,7 +2355,16 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
                         multiple
                         accept="image/*"
                         onChange={handleFileChange}
-                        style={{ display: 'none' }}
+                        style={{ 
+                          display: 'none',
+                          // Additional mobile-specific attributes
+                          ...(isMobile && {
+                            position: 'absolute',
+                            left: '-9999px'
+                          })
+                        }}
+                        // Better mobile support
+                        capture={isMobile ? "environment" : undefined}
                       />
                       <div style={{ color: '#50b4ff', marginBottom: '5px' }}>
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -2301,17 +2397,46 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
                               height: '50px',
                               borderRadius: '6px',
                               overflow: 'hidden',
-                              backgroundColor: 'rgba(255, 255, 255, 0.1)'
+                              backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center'
                             }}>
-                              <img
-                                src={URL.createObjectURL(file)}
-                                alt="Preview"
-                                style={{
-                                  width: '100%',
-                                  height: '100%',
-                                  objectFit: 'cover'
-                                }}
-                              />
+                              {filePreviewUrls[index] && isPreviewSupported(file) ? (
+                                <img
+                                  src={filePreviewUrls[index]}
+                                  alt="Preview"
+                                  style={{
+                                    width: '100%',
+                                    height: '100%',
+                                    objectFit: 'cover'
+                                  }}
+                                  onError={(e) => {
+                                    // Fallback for mobile browsers that don't support preview
+                                    e.currentTarget.style.display = 'none';
+                                    const parent = e.currentTarget.parentElement;
+                                    if (parent) {
+                                      parent.innerHTML = `
+                                        <div style="color: #848d96; font-size: 20px; text-align: center; font-family: IRANSansX, sans-serif; display: flex; align-items: center; justify-content: center; height: 100%;">
+                                          ${getFileIcon(file)}
+                                        </div>
+                                      `;
+                                    }
+                                  }}
+                                />
+                              ) : (
+                                <div style={{
+                                  color: '#848d96',
+                                  fontSize: '20px',
+                                  textAlign: 'center',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  height: '100%'
+                                }}>
+                                  {getFileIcon(file)}
+                                </div>
+                              )}
                             </div>
                             <div style={{ flex: 1, marginLeft: '10px', marginRight: '10px' }}>
                               <div style={{
@@ -2337,9 +2462,17 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
                               type="button"
                               onClick={(e) => {
                                 e.stopPropagation();
+                                // Clean up the preview URL for this file
+                                if (filePreviewUrls[index]) {
+                                  URL.revokeObjectURL(filePreviewUrls[index]);
+                                }
+                                
                                 const newFiles = [...files];
+                                const newPreviewUrls = [...filePreviewUrls];
                                 newFiles.splice(index, 1);
+                                newPreviewUrls.splice(index, 1);
                                 setFiles(newFiles);
+                                setFilePreviewUrls(newPreviewUrls);
                               }}
                               style={{
                                 background: 'none',
