@@ -219,8 +219,10 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
   const [files, setFiles] = useState<File[]>([]);
   const [filePreviewUrls, setFilePreviewUrls] = useState<string[]>([]);
 
-  // Mobile detection
+  // Mobile and Telegram WebView detection
   const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  const isTelegramWebApp = window.Telegram?.WebApp !== undefined;
+  const isAndroid = /Android/i.test(navigator.userAgent);
 
   // Helper function to get file icon based on type
   const getFileIcon = (file: File) => {
@@ -370,7 +372,12 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
   // Handle file upload
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = event.target.files;
-    if (!selectedFiles) return;
+    if (!selectedFiles || selectedFiles.length === 0) {
+      console.log('No files selected');
+      return;
+    }
+    
+    console.log(`Selected ${selectedFiles.length} files in ${isTelegramWebApp ? 'Telegram WebView' : 'browser'}`);
     
     const newFileArray: File[] = [];
     const maxSizePerFile = 5 * 1024 * 1024; // 5MB
@@ -439,12 +446,19 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
         try {
           // Only create preview URLs for files that support preview
           if (isPreviewSupported(file)) {
-            return URL.createObjectURL(file);
+            // Better error handling for Telegram WebView and mobile browsers
+            if (typeof URL !== 'undefined' && URL.createObjectURL) {
+              return URL.createObjectURL(file);
+            } else {
+              console.warn('URL.createObjectURL not supported in this environment');
+              return '';
+            }
           } else {
             return '';
           }
         } catch (error) {
           console.error('Error creating object URL:', error);
+          // Fallback for environments that don't support object URLs
           return '';
         }
       });
@@ -2362,8 +2376,13 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
                             left: '-9999px'
                           })
                         }}
-                        // Better mobile support
-                        capture={isMobile ? "environment" : undefined}
+                        // Better mobile and Telegram WebView support
+                        capture={isMobile && !isTelegramWebApp ? "environment" : undefined}
+                        // Telegram WebView specific attributes
+                        {...(isTelegramWebApp && {
+                          webkitdirectory: false,
+                          directory: false
+                        })}
                       />
                       <div style={{ color: '#50b4ff', marginBottom: '5px' }}>
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -2400,7 +2419,7 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
                               alignItems: 'center',
                               justifyContent: 'center'
                             }}>
-                              {filePreviewUrls[index] && isPreviewSupported(file) ? (
+                              {filePreviewUrls[index] && isPreviewSupported(file) && !isTelegramWebApp ? (
                                 <img
                                   src={filePreviewUrls[index]}
                                   alt="Preview"
@@ -2411,15 +2430,33 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
                                   }}
                                   onError={(e) => {
                                     // Fallback for mobile browsers that don't support preview
+                                    console.log('Image preview failed, showing icon fallback');
                                     e.currentTarget.style.display = 'none';
                                     const parent = e.currentTarget.parentElement;
                                     if (parent) {
-                                      parent.innerHTML = `
-                                        <div style="color: #848d96; font-size: 24px; text-align: center; font-family: IRANSansX, sans-serif; display: flex; align-items: center; justify-content: center; height: 100%;">
-                                          ${getFileIcon(file)}
+                                      const fallbackDiv = document.createElement('div');
+                                      fallbackDiv.style.cssText = `
+                                        color: #848d96; 
+                                        font-size: 24px; 
+                                        text-align: center; 
+                                        font-family: IRANSansX, sans-serif; 
+                                        display: flex; 
+                                        align-items: center; 
+                                        justify-content: center; 
+                                        height: 100%;
+                                        flex-direction: column;
+                                      `;
+                                      fallbackDiv.innerHTML = `
+                                        <div>${getFileIcon(file)}</div>
+                                        <div style="font-size: 10px; margin-top: 4px; color: #6b7280;">
+                                          ${file.name.length > 8 ? file.name.substring(0, 8) + '...' : file.name}
                                         </div>
                                       `;
+                                      parent.appendChild(fallbackDiv);
                                     }
+                                  }}
+                                  onLoad={() => {
+                                    console.log('Image preview loaded successfully');
                                   }}
                                 />
                               ) : (
@@ -2430,14 +2467,25 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
                                   display: 'flex',
                                   alignItems: 'center',
                                   justifyContent: 'center',
-                                  height: '100%'
+                                  height: '100%',
+                                  flexDirection: 'column'
                                 }}>
-                                  {getFileIcon(file)}
+                                  <div>{getFileIcon(file)}</div>
+                                  <div style={{ 
+                                    fontSize: '10px', 
+                                    marginTop: '4px', 
+                                    color: '#6b7280',
+                                    wordBreak: 'break-all',
+                                    lineHeight: '1.2'
+                                  }}>
+                                    {file.name.length > 8 ? file.name.substring(0, 8) + '...' : file.name}
+                                  </div>
                                 </div>
                               )}
                               <button
                                 type="button"
                                 onClick={(e) => {
+                                  e.preventDefault();
                                   e.stopPropagation();
                                   // Clean up the preview URL for this file
                                   if (filePreviewUrls[index]) {
@@ -2451,22 +2499,40 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
                                   setFiles(newFiles);
                                   setFilePreviewUrls(newPreviewUrls);
                                 }}
+                                onTouchStart={(e) => {
+                                  // Better touch handling for Android
+                                  e.stopPropagation();
+                                }}
+                                onTouchEnd={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                }}
                                 style={{
                                   position: 'absolute',
                                   top: '4px',
                                   right: '4px',
-                                  background: 'rgba(0, 0, 0, 0.7)',
+                                  background: 'rgba(0, 0, 0, 0.8)',
                                   border: 'none',
                                   color: '#ff4757',
                                   cursor: 'pointer',
-                                  fontSize: '14px',
-                                  padding: '2px 6px',
+                                  fontSize: '16px',
+                                  padding: '0',
                                   borderRadius: '50%',
                                   display: 'flex',
                                   alignItems: 'center',
                                   justifyContent: 'center',
-                                  width: '20px',
-                                  height: '20px'
+                                  width: '24px',
+                                  height: '24px',
+                                  // Better touch target for mobile
+                                  minWidth: isAndroid ? '32px' : '24px',
+                                  minHeight: isAndroid ? '32px' : '24px',
+                                  // Prevent text selection on mobile
+                                  userSelect: 'none',
+                                  WebkitUserSelect: 'none',
+                                  WebkitTouchCallout: 'none',
+                                  // Better visibility
+                                  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3)',
+                                  zIndex: 10
                                 }}
                               >
                                 ×

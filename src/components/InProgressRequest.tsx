@@ -1080,7 +1080,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
         position: 'sticky',
         top: 0,
         zIndex: 100,
-        backgroundColor: theme.colors.background,
+        backgroundColor: '#17212b',
         borderBottom: `1px solid ${theme.colors.border}`,
         padding: '20px'
       }}>
