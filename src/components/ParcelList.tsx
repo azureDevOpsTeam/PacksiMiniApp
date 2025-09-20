@@ -187,11 +187,11 @@ if (typeof document !== 'undefined') {
 
 
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface ParcelListProps {
+  onNavigateToUpdateProfile?: () => void;
 }
 
-const ParcelList: React.FC<ParcelListProps> = () => {
+const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) => {
   const { t, isRTL } = useLanguage();
   const { theme } = useTheme();
   const { webApp } = useTelegramContext();
@@ -833,9 +833,10 @@ const ParcelList: React.FC<ParcelListProps> = () => {
         {/* Complete Profile Button */}
         <button
           onClick={() => {
-            // Navigate to UpdateProfile by reloading the page
-            // This will trigger the validation check in App.tsx and show UpdateProfile
-            window.location.reload();
+            // Navigate to UpdateProfile page
+            if (onNavigateToUpdateProfile) {
+              onNavigateToUpdateProfile();
+            }
           }}
           style={{
             backgroundColor: '#2ea5f7',
