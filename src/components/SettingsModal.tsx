@@ -237,14 +237,20 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
           <ToggleContainer theme={theme}>
             <ToggleButton
               $isActive={activeButton === 'user'}
-              onClick={() => setActiveButton('user')}
+              onClick={() => {
+                setActiveButton('user');
+                onClose();
+              }}
               theme={theme}
             >
               {t('settings.user') || 'کاربر'}
             </ToggleButton>
             <ToggleButton
               $isActive={activeButton === 'admin'}
-              onClick={() => setActiveButton('admin')}
+              onClick={() => {
+                setActiveButton('admin');
+                onClose();
+              }}
               theme={theme}
             >
               {t('settings.admin') || 'ادمین'}
@@ -259,14 +265,20 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
           <ToggleContainer>
             <ToggleButton
               $isActive={language === 'fa'}
-              onClick={() => handleLanguageChange({ target: { value: 'fa' } } as any)}
+              onClick={() => {
+                handleLanguageChange({ target: { value: 'fa' } } as any);
+                onClose();
+              }}
               theme={theme}
             >
               فارسی
             </ToggleButton>
             <ToggleButton
               $isActive={language === 'en'}
-              onClick={() => handleLanguageChange({ target: { value: 'en' } } as any)}
+              onClick={() => {
+                handleLanguageChange({ target: { value: 'en' } } as any);
+                onClose();
+              }}
               theme={theme}
             >
               English
