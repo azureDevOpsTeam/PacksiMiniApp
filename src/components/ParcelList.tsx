@@ -330,10 +330,13 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
     const selectedFiles = event.target.files;
     if (!selectedFiles) return;
     
-    const fileArray: File[] = [];
-    let totalSize = 0;
+    const newFileArray: File[] = [];
     const maxSizePerFile = 2 * 1024 * 1024; // 2MB
     const maxTotalSize = 8 * 1024 * 1024; // 8MB
+    
+    // Calculate current total size of existing files
+    const currentTotalSize = files.reduce((sum, file) => sum + file.size, 0);
+    let newFilesTotalSize = 0;
     
     // Check file types and sizes
     for (let i = 0; i < selectedFiles.length; i++) {
@@ -343,6 +346,8 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
       // Check if file is an image
       if (!fileType.startsWith('image/')) {
         toast.error(isRTL ? 'فقط فایل‌های تصویری مجاز هستند' : 'Only image files are allowed');
+        // Reset input value to allow re-selecting files
+        event.target.value = '';
         return;
       }
       
@@ -351,22 +356,48 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
         toast.error(isRTL ? 
           `حجم هر فایل نباید بیشتر از 2 مگابایت باشد: ${file.name}` : 
           `File size should not exceed 2MB: ${file.name}`);
+        // Reset input value to allow re-selecting files
+        event.target.value = '';
         return;
       }
       
-      totalSize += file.size;
-      fileArray.push(file);
+      // Check if file already exists (by name and size)
+      const fileExists = files.some(existingFile => 
+        existingFile.name === file.name && existingFile.size === file.size
+      );
+      
+      if (fileExists) {
+        toast.error(isRTL ? 
+          `فایل ${file.name} قبلاً انتخاب شده است` : 
+          `File ${file.name} is already selected`);
+        continue;
+      }
+      
+      newFilesTotalSize += file.size;
+      newFileArray.push(file);
     }
     
-    // Check total size of all files
-    if (totalSize > maxTotalSize) {
+    // Check total size of all files (existing + new)
+    if (currentTotalSize + newFilesTotalSize > maxTotalSize) {
+      const remainingSize = maxTotalSize - currentTotalSize;
       toast.error(isRTL ? 
-        'حجم کل فایل‌ها نباید بیشتر از 8 مگابایت باشد' : 
-        'Total file size should not exceed 8MB');
+        `حجم کل فایل‌ها نباید بیشتر از 8 مگابایت باشد. فضای باقی‌مانده: ${(remainingSize / 1024 / 1024).toFixed(2)} مگابایت` : 
+        `Total file size should not exceed 8MB. Remaining space: ${(remainingSize / 1024 / 1024).toFixed(2)} MB`);
+      // Reset input value to allow re-selecting files
+      event.target.value = '';
       return;
     }
     
-    setFiles(fileArray);
+    // Add new files to existing files
+    if (newFileArray.length > 0) {
+      setFiles(prevFiles => [...prevFiles, ...newFileArray]);
+      console.log(isRTL ? 
+        `${newFileArray.length} فایل با موفقیت اضافه شد` : 
+        `${newFileArray.length} file(s) added successfully`);
+    }
+    
+    // Reset input value to allow re-selecting files
+    event.target.value = '';
   };
 
   // Handle menu actions
