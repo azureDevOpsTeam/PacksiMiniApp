@@ -74,7 +74,7 @@ const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
             }}
           >
             <span style={{ fontSize: '20px' }}>❓</span>
-            {t('helpModal.title')}
+            {t('helpUnlimitedModal.title')}
           </h3>
           <button
             onClick={onClose}
@@ -93,9 +93,9 @@ const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
 
         {/* Body */}
         <div style={{ lineHeight: '1.6' }}>
-          <p>{t('helpModal.paragraph1')}</p>
-          <p>{t('helpModal.paragraph2')}</p>
-          <p>{t('helpModal.paragraph3')}</p>
+          <p>{t('helpUnlimitedModal.paragraph1')}</p>
+          <p>{t('helpUnlimitedModal.paragraph2')}</p>
+          <p>{t('helpUnlimitedModal.paragraph3')}</p>
         </div>
       </div>
     </div>,
