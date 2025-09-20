@@ -217,6 +217,7 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
   const [description, setDescription] = useState<string>('');
   const [itemTypeId, setItemTypeId] = useState<number>(-1); // -1 for select, other values for item types
   const [files, setFiles] = useState<File[]>([]);
+  const [validationErrors, setValidationErrors] = useState<{[key: string]: string}>({});
 
   // Suggestions modal state
   const [showSuggestionsModal, setShowSuggestionsModal] = useState(false);
@@ -330,8 +331,18 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
     const selectedFiles = event.target.files;
     if (!selectedFiles) return;
     
+    // Clear previous file validation errors
+    setValidationErrors(prev => {
+      const newErrors = { ...prev };
+      delete newErrors.fileType;
+      delete newErrors.fileSize;
+      delete newErrors.fileDuplicate;
+      delete newErrors.totalSize;
+      return newErrors;
+    });
+    
     const newFileArray: File[] = [];
-    const maxSizePerFile = 2 * 1024 * 1024; // 2MB
+    const maxSizePerFile = 5 * 1024 * 1024; // 5MB
     const maxTotalSize = 8 * 1024 * 1024; // 8MB
     
     // Calculate current total size of existing files
@@ -345,7 +356,10 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
       
       // Check if file is an image
       if (!fileType.startsWith('image/')) {
-        toast.error(isRTL ? 'فقط فایل‌های تصویری مجاز هستند' : 'Only image files are allowed');
+        setValidationErrors(prev => ({
+          ...prev,
+          fileType: isRTL ? 'فقط فایل‌های تصویری مجاز هستند' : 'Only image files are allowed'
+        }));
         // Reset input value to allow re-selecting files
         event.target.value = '';
         return;
@@ -353,9 +367,12 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
       
       // Check individual file size
       if (file.size > maxSizePerFile) {
-        toast.error(isRTL ? 
-          `حجم هر فایل نباید بیشتر از 2 مگابایت باشد: ${file.name}` : 
-          `File size should not exceed 2MB: ${file.name}`);
+        setValidationErrors(prev => ({
+          ...prev,
+          fileSize: isRTL ? 
+            `حجم هر فایل نباید بیشتر از 5 مگابایت باشد: ${file.name}` : 
+            `File size should not exceed 5MB: ${file.name}`
+        }));
         // Reset input value to allow re-selecting files
         event.target.value = '';
         return;
@@ -367,9 +384,12 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
       );
       
       if (fileExists) {
-        toast.error(isRTL ? 
-          `فایل ${file.name} قبلاً انتخاب شده است` : 
-          `File ${file.name} is already selected`);
+        setValidationErrors(prev => ({
+          ...prev,
+          fileDuplicate: isRTL ? 
+            `فایل ${file.name} قبلاً انتخاب شده است` : 
+            `File ${file.name} is already selected`
+        }));
         continue;
       }
       
@@ -380,9 +400,12 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
     // Check total size of all files (existing + new)
     if (currentTotalSize + newFilesTotalSize > maxTotalSize) {
       const remainingSize = maxTotalSize - currentTotalSize;
-      toast.error(isRTL ? 
-        `حجم کل فایل‌ها نباید بیشتر از 8 مگابایت باشد. فضای باقی‌مانده: ${(remainingSize / 1024 / 1024).toFixed(2)} مگابایت` : 
-        `Total file size should not exceed 8MB. Remaining space: ${(remainingSize / 1024 / 1024).toFixed(2)} MB`);
+      setValidationErrors(prev => ({
+        ...prev,
+        totalSize: isRTL ? 
+          `حجم کل فایل‌ها نباید بیشتر از 8 مگابایت باشد. فضای باقی‌مانده: ${(remainingSize / 1024 / 1024).toFixed(2)} مگابایت` : 
+          `Total file size should not exceed 8MB. Remaining space: ${(remainingSize / 1024 / 1024).toFixed(2)} MB`
+      }));
       // Reset input value to allow re-selecting files
       event.target.value = '';
       return;
@@ -430,56 +453,45 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
 
   // Handle select trip modal submission
   const handleSelectTripSubmit = async () => {
-    if (!selectedFlightForTrip || !selectedTripOption) {
-      setApiResult({
-        success: false,
-        message: isRTL ? 'لطفا گزینه سفر را انتخاب کنید' : 'Please select a trip option'
-      });
+    // Clear previous validation errors
+    setValidationErrors({});
+    
+    let hasErrors = false;
+    const newErrors: {[key: string]: string} = {};
 
-      setTimeout(() => {
-        setApiResult(null);
-      }, 3000);
-      return;
+    if (!selectedFlightForTrip) {
+      newErrors.tripOption = isRTL ? 'لطفا سفر را انتخاب کنید' : 'Please select a trip';
+      hasErrors = true;
+    }
+
+    if (!selectedTripOption) {
+      newErrors.tripOption = isRTL ? 'لطفا گزینه سفر را انتخاب کنید' : 'Please select a trip option';
+      hasErrors = true;
     }
 
     // Validate itemType for both options
     if (itemTypeId === -1) {
-      setApiResult({
-        success: false,
-        message: isRTL ? 'لطفا نوع آیتم را انتخاب کنید' : 'Please select an item type'
-      });
-
-      setTimeout(() => {
-        setApiResult(null);
-      }, 3000);
-      return;
+      newErrors.itemType = isRTL ? 'لطفا نوع آیتم را انتخاب کنید' : 'Please select an item type';
+      hasErrors = true;
     }
 
     // Validate price suggestion fields if price suggestion is selected
     if (selectedTripOption === 'suggest_price') {
       if (!suggestionPrice || suggestionPrice.trim() === '' || parseFloat(suggestionPrice) <= 0) {
-        setApiResult({
-          success: false,
-          message: isRTL ? 'لطفا قیمت پیشنهادی معتبر وارد کنید' : 'Please enter a valid suggested price'
-        });
-
-        setTimeout(() => {
-          setApiResult(null);
-        }, 3000);
-        return;
+        newErrors.suggestionPrice = isRTL ? 'لطفا قیمت پیشنهادی معتبر وارد کنید' : 'Please enter a valid suggested price';
+        hasErrors = true;
       }
 
       if (!currency || currency === '-1') {
-        setApiResult({
-          success: false,
-          message: isRTL ? 'لطفا نوع ارز را انتخاب کنید' : 'Please select currency type'
-        });
-
-        setTimeout(() => {
-          setApiResult(null);
-        }, 3000);
-        return;
+        newErrors.currency = isRTL ? 'لطفا نوع ارز را انتخاب کنید' : 'Please select currency type';
+        hasErrors = true;
       }
+    }
+
+    // If there are validation errors, show them and return
+    if (hasErrors) {
+      setValidationErrors(newErrors);
+      return;
     }
 
     try {
@@ -491,7 +503,7 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
         // For price suggestion, use the new API structure
         requestData = {
           model: {
-            requestId: selectedFlightForTrip.requestId,
+            requestId: selectedFlightForTrip!.requestId,
             suggestionPrice: parseFloat(suggestionPrice) || 0,
             currency: parseInt(currency) || 0,
             description: description,
@@ -503,7 +515,7 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
         // For accept price, use structure with itemType but no price/currency
         requestData = {
           model: {
-            requestId: selectedFlightForTrip.requestId,
+            requestId: selectedFlightForTrip!.requestId,
             tripOption: selectedTripOption,
             itemTypeId: itemTypeId,
             description: description,
@@ -514,7 +526,7 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
         // For regular trip selection, use the old structure
         requestData = {
           model: {
-            requestId: selectedFlightForTrip.requestId,
+            requestId: selectedFlightForTrip!.requestId,
             tripOption: selectedTripOption
           }
         };
@@ -531,7 +543,7 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
         // Update local state
         setFlights(prevFlights =>
           prevFlights.map(flight =>
-            flight.requestId === selectedFlightForTrip.requestId
+            flight.requestId === selectedFlightForTrip!.requestId
               ? {
                 ...flight,
                 currentUserStatus: 1,
@@ -591,6 +603,7 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
     setSuggestionPrice('');
     setCurrency('-1');
     setDescription('');
+    setValidationErrors({});
   };
 
   // Suggestions modal handlers
@@ -2056,6 +2069,25 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
                     {isRTL ? 'پیشنهاد قیمت جدید' : 'Suggest new price'}
                   </option>
                 </select>
+
+                {/* نمایش خطای validation برای گزینه سفر */}
+                {validationErrors.tripOption && (
+                  <div style={{
+                    marginTop: '10px',
+                    padding: '10px',
+                    backgroundColor: 'rgba(255, 71, 87, 0.1)',
+                    border: '1px solid rgba(255, 71, 87, 0.3)',
+                    borderRadius: '8px'
+                  }}>
+                    <div style={{
+                      color: '#ff4757',
+                      fontSize: '12px',
+                      fontFamily: 'IRANSansX, sans-serif'
+                    }}>
+                      {validationErrors.tripOption}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Form Fields - Show for both options */}
@@ -2147,6 +2179,37 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
                           </select>
                         </div>
                       </div>
+
+                      {/* نمایش خطاهای قیمت پیشنهادی و ارز */}
+                      {(validationErrors.suggestionPrice || validationErrors.currency) && (
+                        <div style={{
+                          marginTop: '10px',
+                          padding: '10px',
+                          backgroundColor: 'rgba(255, 71, 87, 0.1)',
+                          border: '1px solid rgba(255, 71, 87, 0.3)',
+                          borderRadius: '8px'
+                        }}>
+                          {validationErrors.suggestionPrice && (
+                            <div style={{
+                              color: '#ff4757',
+                              fontSize: '12px',
+                              fontFamily: 'IRANSansX, sans-serif',
+                              marginBottom: validationErrors.currency ? '5px' : '0'
+                            }}>
+                              {validationErrors.suggestionPrice}
+                            </div>
+                          )}
+                          {validationErrors.currency && (
+                            <div style={{
+                              color: '#ff4757',
+                              fontSize: '12px',
+                              fontFamily: 'IRANSansX, sans-serif'
+                            }}>
+                              {validationErrors.currency}
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                   )}
                   
@@ -2227,6 +2290,25 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
                         {isRTL ? 'لطفاً یک نوع آیتم انتخاب کنید' : 'Please select an item type'}
                       </div>
                     )}
+
+                    {/* نمایش خطای validation برای نوع آیتم */}
+                    {validationErrors.itemType && (
+                      <div style={{
+                        marginTop: '10px',
+                        padding: '10px',
+                        backgroundColor: 'rgba(255, 71, 87, 0.1)',
+                        border: '1px solid rgba(255, 71, 87, 0.3)',
+                        borderRadius: '8px'
+                      }}>
+                        <div style={{
+                          color: '#ff4757',
+                          fontSize: '12px',
+                          fontFamily: 'IRANSansX, sans-serif'
+                        }}>
+                          {validationErrors.itemType}
+                        </div>
+                      </div>
+                    )}
                   </div>
                   
                   {/* File Upload - Improved Design */}
@@ -2280,7 +2362,7 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
                         {isRTL ? 'آپلود تصاویر' : 'Upload Images'}
                       </div>
                       <div style={{ fontSize: '12px', color: '#848d96', marginTop: '5px' }}>
-                        {isRTL ? 'حداکثر حجم هر فایل: 2 مگابایت' : 'Max file size: 2MB'}
+                        {isRTL ? 'حداکثر حجم هر فایل: 5 مگابایت' : 'Max file size: 5MB'}
                       </div>
                     </div>
                     
@@ -2363,6 +2445,57 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
                         <div style={{ fontSize: '12px', color: '#848d96', marginTop: '5px', textAlign: isRTL ? 'right' : 'left' }}>
                           {isRTL ? 'حجم کل:' : 'Total size:'} {(files.reduce((sum, file) => sum + file.size, 0) / 1024 / 1024).toFixed(2)} / 8 MB
                         </div>
+                      </div>
+                    )}
+
+                    {/* نمایش خطاهای فایل آپلود */}
+                    {(validationErrors.fileType || validationErrors.fileSize || validationErrors.fileDuplicate || validationErrors.totalSize) && (
+                      <div style={{
+                        marginTop: '10px',
+                        padding: '10px',
+                        backgroundColor: 'rgba(255, 71, 87, 0.1)',
+                        border: '1px solid rgba(255, 71, 87, 0.3)',
+                        borderRadius: '8px'
+                      }}>
+                        {validationErrors.fileType && (
+                          <div style={{
+                            color: '#ff4757',
+                            fontSize: '12px',
+                            fontFamily: 'IRANSansX, sans-serif',
+                            marginBottom: '5px'
+                          }}>
+                            {validationErrors.fileType}
+                          </div>
+                        )}
+                        {validationErrors.fileSize && (
+                          <div style={{
+                            color: '#ff4757',
+                            fontSize: '12px',
+                            fontFamily: 'IRANSansX, sans-serif',
+                            marginBottom: '5px'
+                          }}>
+                            {validationErrors.fileSize}
+                          </div>
+                        )}
+                        {validationErrors.fileDuplicate && (
+                          <div style={{
+                            color: '#ff4757',
+                            fontSize: '12px',
+                            fontFamily: 'IRANSansX, sans-serif',
+                            marginBottom: '5px'
+                          }}>
+                            {validationErrors.fileDuplicate}
+                          </div>
+                        )}
+                        {validationErrors.totalSize && (
+                          <div style={{
+                            color: '#ff4757',
+                            fontSize: '12px',
+                            fontFamily: 'IRANSansX, sans-serif'
+                          }}>
+                            {validationErrors.totalSize}
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
