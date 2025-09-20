@@ -242,7 +242,7 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
 
   // Helper function to check if preview is supported
   const isPreviewSupported = (file: File) => {
-    return file.type.startsWith('image/') && !isTelegramWebApp;
+    return file.type.startsWith('image/');
   };
 
   // Suggestions modal state
@@ -374,7 +374,7 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
     if (!selectedFiles) return;
     
     const newFileArray: File[] = [];
-    const maxSizePerFile = 2 * 1024 * 1024; // 2MB
+    const maxSizePerFile = 5 * 1024 * 1024; // 5MB
     const maxTotalSize = 8 * 1024 * 1024; // 8MB
     
     // Calculate current total size of existing files
@@ -397,8 +397,8 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
       // Check individual file size
       if (file.size > maxSizePerFile) {
         toast.error(isRTL ? 
-          `حجم هر فایل نباید بیشتر از 2 مگابایت باشد: ${file.name}` : 
-          `File size should not exceed 2MB: ${file.name}`);
+          `حجم هر فایل نباید بیشتر از 5 مگابایت باشد: ${file.name}` : 
+          `File size should not exceed 5MB: ${file.name}`);
         // Reset input value to allow re-selecting files
         event.target.value = '';
         return;
@@ -1756,7 +1756,7 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
                                     flexWrap: 'wrap',
                                     gap: '4px'
                                   }}>
-                                    {(isRTL ? flight.itemTypesFa : flight.itemTypes)?.slice(0, 3).map((itemType: string, index: number) => (
+                                    {(isRTL ? flight.itemTypesFa : flight.itemTypes)?.map((itemType: string, index: number) => (
                                       <span
                                         key={index}
                                         style={{
@@ -2376,26 +2376,25 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
                         {isRTL ? 'آپلود تصاویر' : 'Upload Images'}
                       </div>
                       <div style={{ fontSize: '12px', color: '#848d96', marginTop: '5px' }}>
-                        {isRTL ? 'حداکثر حجم هر فایل: 2 مگابایت' : 'Max file size: 2MB'}
+                        {isRTL ? 'حداکثر حجم هر فایل: 5 مگابایت' : 'Max file size: 5MB'}
                       </div>
                     </div>
                     
                     {/* نمایش فایل‌های آپلود شده */}
                     {files.length > 0 && (
                       <div style={{ marginTop: '10px' }}>
-                        {files.map((file, index) => (
-                          <div key={index} style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            padding: '8px',
-                            backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                            borderRadius: '8px',
-                            marginBottom: '8px'
-                          }}>
-                            <div style={{
-                              width: '50px',
-                              height: '50px',
-                              borderRadius: '6px',
+                        <div style={{
+                          display: 'grid',
+                          gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))',
+                          gap: '10px',
+                          marginBottom: '10px'
+                        }}>
+                          {files.map((file, index) => (
+                            <div key={index} style={{
+                              position: 'relative',
+                              width: '80px',
+                              height: '80px',
+                              borderRadius: '8px',
                               overflow: 'hidden',
                               backgroundColor: 'rgba(255, 255, 255, 0.1)',
                               display: 'flex',
@@ -2417,7 +2416,7 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
                                     const parent = e.currentTarget.parentElement;
                                     if (parent) {
                                       parent.innerHTML = `
-                                        <div style="color: #848d96; font-size: 20px; text-align: center; font-family: IRANSansX, sans-serif; display: flex; align-items: center; justify-content: center; height: 100%;">
+                                        <div style="color: #848d96; font-size: 24px; text-align: center; font-family: IRANSansX, sans-serif; display: flex; align-items: center; justify-content: center; height: 100%;">
                                           ${getFileIcon(file)}
                                         </div>
                                       `;
@@ -2427,7 +2426,7 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
                               ) : (
                                 <div style={{
                                   color: '#848d96',
-                                  fontSize: '20px',
+                                  fontSize: '24px',
                                   textAlign: 'center',
                                   display: 'flex',
                                   alignItems: 'center',
@@ -2437,60 +2436,45 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
                                   {getFileIcon(file)}
                                 </div>
                               )}
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  // Clean up the preview URL for this file
+                                  if (filePreviewUrls[index]) {
+                                    URL.revokeObjectURL(filePreviewUrls[index]);
+                                  }
+                                  
+                                  const newFiles = [...files];
+                                  const newPreviewUrls = [...filePreviewUrls];
+                                  newFiles.splice(index, 1);
+                                  newPreviewUrls.splice(index, 1);
+                                  setFiles(newFiles);
+                                  setFilePreviewUrls(newPreviewUrls);
+                                }}
+                                style={{
+                                  position: 'absolute',
+                                  top: '4px',
+                                  right: '4px',
+                                  background: 'rgba(0, 0, 0, 0.7)',
+                                  border: 'none',
+                                  color: '#ff4757',
+                                  cursor: 'pointer',
+                                  fontSize: '14px',
+                                  padding: '2px 6px',
+                                  borderRadius: '50%',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  width: '20px',
+                                  height: '20px'
+                                }}
+                              >
+                                ×
+                              </button>
                             </div>
-                            <div style={{ flex: 1, marginLeft: '10px', marginRight: '10px' }}>
-                              <div style={{
-                                fontSize: '14px',
-                                color: '#ffffff',
-                                fontFamily: 'IRANSansX, sans-serif',
-                                marginBottom: '4px',
-                                textOverflow: 'ellipsis',
-                                overflow: 'hidden',
-                                whiteSpace: 'nowrap'
-                              }}>
-                                {file.name}
-                              </div>
-                              <div style={{
-                                fontSize: '12px',
-                                color: '#848d96',
-                                fontFamily: 'IRANSansX, sans-serif'
-                              }}>
-                                {(file.size / 1024 / 1024).toFixed(2)} MB
-                              </div>
-                            </div>
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                // Clean up the preview URL for this file
-                                if (filePreviewUrls[index]) {
-                                  URL.revokeObjectURL(filePreviewUrls[index]);
-                                }
-                                
-                                const newFiles = [...files];
-                                const newPreviewUrls = [...filePreviewUrls];
-                                newFiles.splice(index, 1);
-                                newPreviewUrls.splice(index, 1);
-                                setFiles(newFiles);
-                                setFilePreviewUrls(newPreviewUrls);
-                              }}
-                              style={{
-                                background: 'none',
-                                border: 'none',
-                                color: '#ff4757',
-                                cursor: 'pointer',
-                                fontSize: '18px',
-                                padding: '5px',
-                                borderRadius: '4px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center'
-                              }}
-                            >
-                              ×
-                            </button>
-                          </div>
-                        ))}
+                          ))}
+                        </div>
 
                         {/* نمایش حجم کل فایل‌ها */}
                         <div style={{ fontSize: '12px', color: '#848d96', marginTop: '5px', textAlign: isRTL ? 'right' : 'left' }}>

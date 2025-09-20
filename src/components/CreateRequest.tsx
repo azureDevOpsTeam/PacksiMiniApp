@@ -51,6 +51,7 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
   const [isAccordionOpen, setIsAccordionOpen] = useState(false);
   //const [ticketFile, setTicketFile] = useState<File | null>(null);
   const [files, setFiles] = useState<File[]>([]); // برایل‌های عمومی
+  const [filePreviewUrls, setFilePreviewUrls] = useState<(string | null)[]>([]); // URLs for file previews
 
   //const fileInputRef = useRef<HTMLInputElement>(null);
   const generalFileInputRef = useRef<HTMLInputElement>(null); // برایل‌های عمومی
@@ -84,7 +85,17 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
     markFieldTouched
   } = useFormValidation(validationRules);
 
-
+  // Cleanup preview URLs when component unmounts or files change
+  useEffect(() => {
+    return () => {
+      // Cleanup all preview URLs to prevent memory leaks
+      filePreviewUrls.forEach(url => {
+        if (url) {
+          URL.revokeObjectURL(url);
+        }
+      });
+    };
+  }, [filePreviewUrls]);
 
   // Load cities tree on component mount
   useEffect(() => {
@@ -167,8 +178,8 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
     const selectedFiles = event.target.files;
     if (!selectedFiles) return;
 
-    // بررسی حجم هر فایل (حداکثر 2 مگابایت)
-    const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
+    // بررسی حجم هر فایل (حداکثر 5 مگابایت)
+    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
     const MAX_TOTAL_SIZE = 8 * 1024 * 1024; // 8MB
 
     // محاسبه حجم کل فایل‌های موجود
@@ -191,7 +202,7 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
       // بررسی حجم هر فایل
       if (file.size > MAX_FILE_SIZE) {
         if (!errorShown) {
-          setError(t('createRequest.validation.fileTooLarge') || 'حجم هر فایل نباید بیشتر از 2 مگابایت باشد');
+          setError(t('createRequest.validation.fileTooLarge') || 'حجم هر فایل نباید بیشتر از 5 مگابایت باشد');
           errorShown = true;
         }
         return;
@@ -210,7 +221,16 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
     });
 
     if (newFiles.length > 0) {
+      // Create preview URLs for new files
+      const newPreviewUrls = newFiles.map(file => {
+        if (file.type.startsWith('image/')) {
+          return URL.createObjectURL(file);
+        }
+        return null;
+      });
+
       setFiles(prevFiles => [...prevFiles, ...newFiles]);
+      setFilePreviewUrls(prevUrls => [...prevUrls, ...newPreviewUrls]);
       setError(null);
     }
 
@@ -222,7 +242,13 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
 
   // حذف فایل از لیست فایل‌های عمومی
   const handleRemoveFile = (index: number) => {
+    // Clean up preview URL if it exists
+    if (filePreviewUrls[index]) {
+      URL.revokeObjectURL(filePreviewUrls[index]!);
+    }
+    
     setFiles(prevFiles => prevFiles.filter((_, i) => i !== index));
+    setFilePreviewUrls(prevUrls => prevUrls.filter((_, i) => i !== index));
   };
 
 
@@ -686,24 +712,24 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
             {/* نمایش فایل‌های آپلود شده */}
             {files.length > 0 && (
               <div style={{ marginTop: '10px' }}>
-                {files.map((file, index) => (
-                  <div key={index} style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    padding: '8px',
-                    backgroundColor: '#212a33',
-                    borderRadius: '5px',
-                    marginBottom: '8px'
-                  }}>
-                    {file.type.startsWith('image/') ? (
-                      <div style={{
-                        width: '60px',
-                        height: '60px',
-                        borderRadius: '6px',
-                        overflow: 'hidden'
-                      }}>
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))',
+                  gap: '10px',
+                  marginBottom: '10px'
+                }}>
+                  {files.map((file, index) => (
+                    <div key={index} style={{
+                      position: 'relative',
+                      width: '80px',
+                      height: '80px',
+                      borderRadius: '8px',
+                      overflow: 'hidden',
+                      backgroundColor: '#3a4a5c'
+                    }}>
+                      {file.type.startsWith('image/') && filePreviewUrls[index] ? (
                         <img
-                          src={URL.createObjectURL(file)}
+                          src={filePreviewUrls[index]!}
                           alt="Preview"
                           style={{
                             width: '100%',
@@ -711,59 +737,46 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
                             objectFit: 'cover'
                           }}
                         />
-                      </div>
-                    ) : (
-                      <div style={{
-                        width: '60px',
-                        height: '60px',
-                        backgroundColor: '#3a4a5c',
-                        borderRadius: '6px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: '12px',
-                        color: '#848d96'
-                      }}>
-                        PDF
-                      </div>
-                    )}
-                    <div style={{ flex: 1, marginLeft: '10px', marginRight: '10px' }}>
-                      <div style={{
-                        fontSize: '14px',
-                        color: '#ffffff',
-                        fontFamily: 'IRANSansX, sans-serif',
-                        marginBottom: '4px'
-                      }}>
-                        {file.name}
-                      </div>
-                      <div style={{
-                        fontSize: '12px',
-                        color: '#848d96',
-                        fontFamily: 'IRANSansX, sans-serif'
-                      }}>
-                        {(file.size / 1024 / 1024).toFixed(2)} MB
-                      </div>
+                      ) : (
+                        <div style={{
+                          width: '100%',
+                          height: '100%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '24px',
+                          color: '#848d96',
+                          fontWeight: 'bold'
+                        }}>
+                          {file.type === 'application/pdf' ? '📄' : '📁'}
+                        </div>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveFile(index)}
+                        style={{
+                          position: 'absolute',
+                          top: '4px',
+                          right: '4px',
+                          background: 'rgba(0, 0, 0, 0.7)',
+                          border: 'none',
+                          color: '#ff4757',
+                          cursor: 'pointer',
+                          fontSize: '14px',
+                          padding: '2px 6px',
+                          borderRadius: '50%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          width: '20px',
+                          height: '20px'
+                        }}
+                      >
+                        ×
+                      </button>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveFile(index)}
-                      style={{
-                        background: 'none',
-                        border: 'none',
-                        color: '#ff4757',
-                        cursor: 'pointer',
-                        fontSize: '18px',
-                        padding: '5px',
-                        borderRadius: '4px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}
-                    >
-                      ×
-                    </button>
-                  </div>
-                ))}
+                  ))}
+                </div>
 
                 {/* نمایش حجم کل فایل‌ها */}
                 <div style={{ fontSize: '12px', color: '#848d96', marginTop: '5px', textAlign: 'left' }}>

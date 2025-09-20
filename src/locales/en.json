@@ -160,7 +160,7 @@
     "sending": "Sending...",
     "generalFiles": "Upload Flight Ticket",
     "uploadGeneralFiles": "Select Ticket Image",
-    "maxFileSize": "Max File Size (2 MB)"
+    "maxFileSize": "Max File Size (5 MB)"
   },
   "updateProfile": {
     "title": "Please complete your profile information below.",
