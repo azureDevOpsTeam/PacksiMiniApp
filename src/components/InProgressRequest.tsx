@@ -88,6 +88,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
   const [showConfirmDeliveryDialog, setShowConfirmDeliveryDialog] = useState(false);
   const [selectedConfirmDeliverySuggestionId, setSelectedConfirmDeliverySuggestionId] = useState<number | null>(null);
   const [isConfirmingSenderDelivery, setIsConfirmingSenderDelivery] = useState(false);
+  const [selectedRating, setSelectedRating] = useState<number>(0);
 
   // Not Delivered dialog states
   const [showNotDeliveredDialog, setShowNotDeliveredDialog] = useState(false);
@@ -299,6 +300,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
   // Confirm Delivery handlers
   const handleConfirmDelivery = (suggestionId: number) => {
     setSelectedConfirmDeliverySuggestionId(suggestionId);
+    setSelectedRating(0); // Reset rating when opening modal
     setShowConfirmDeliveryDialog(true);
   };
 
@@ -309,12 +311,14 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
     try {
       await apiService.senderConfirmedDelivery({
         model: {
-          requestSuggestionId: selectedConfirmDeliverySuggestionId
+          requestSuggestionId: selectedConfirmDeliverySuggestionId,
+          rate: selectedRating
         }
       });
 
       setShowConfirmDeliveryDialog(false);
       setSelectedConfirmDeliverySuggestionId(null);
+      setSelectedRating(0); // Reset rating after successful submission
       // Refresh data
       fetchData();
     } catch (error) {
@@ -327,6 +331,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
   const cancelConfirmDelivery = () => {
     setShowConfirmDeliveryDialog(false);
     setSelectedConfirmDeliverySuggestionId(null);
+    setSelectedRating(0); // Reset rating when canceling
     setIsConfirmingSenderDelivery(false);
   };
 
@@ -1891,7 +1896,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
             >
               <p
                 style={{
-                  margin: 0,
+                  margin: '0 0 20px 0',
                   fontSize: '14px',
                   color: '#6b7280',
                   lineHeight: '1.5'
@@ -1902,6 +1907,73 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
                   : 'Are you sure the package has been delivered?'
                 }
               </p>
+
+              {/* Star Rating Component */}
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  gap: '8px',
+                  marginBottom: '16px'
+                }}
+              >
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    onClick={() => setSelectedRating(star)}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = 'scale(1.1)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'scale(1)';
+                    }}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      fontSize: '28px',
+                      color: star <= selectedRating ? '#fbbf24' : '#d1d5db',
+                      transition: 'all 0.2s ease',
+                      padding: '4px'
+                    }}
+                  >
+                    ★
+                  </button>
+                ))}
+              </div>
+
+              {/* Rating Labels */}
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  fontSize: '12px',
+                  color: '#9ca3af',
+                  marginBottom: '12px',
+                  padding: '0 8px'
+                }}
+              >
+                <span>{isRTL ? 'ضعیف' : 'Poor'}</span>
+                <span>{isRTL ? 'عالی' : 'Excellent'}</span>
+              </div>
+
+              {/* Selected Rating Display */}
+              {selectedRating > 0 && (
+                <p
+                  style={{
+                    margin: 0,
+                    fontSize: '14px',
+                    color: '#059669',
+                    fontWeight: '500'
+                  }}
+                >
+                  {isRTL 
+                    ? `امتیاز انتخاب شده: ${selectedRating} از 5`
+                    : `Selected rating: ${selectedRating} out of 5`
+                  }
+                </p>
+              )}
             </div>
 
             {/* Buttons */}
@@ -1936,29 +2008,29 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
               </button>
               <button
                 onClick={confirmSenderDelivery}
-                disabled={isConfirmingSenderDelivery}
+                disabled={isConfirmingSenderDelivery || selectedRating === 0}
                 style={{
                   flex: 1,
                   padding: '12px 16px',
                   borderRadius: '8px',
                   fontSize: '14px',
                   fontWeight: '500',
-                  backgroundColor: '#10b981',
+                  backgroundColor: (isConfirmingSenderDelivery || selectedRating === 0) ? '#9ca3af' : '#10b981',
                   color: 'white',
                   border: 'none',
-                  cursor: isConfirmingSenderDelivery ? 'not-allowed' : 'pointer',
+                  cursor: (isConfirmingSenderDelivery || selectedRating === 0) ? 'not-allowed' : 'pointer',
                   transition: 'all 0.2s ease',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '8px'
                 }}
                 onMouseEnter={(e) => {
-                  if (!isConfirmingSenderDelivery) {
+                  if (!isConfirmingSenderDelivery && selectedRating > 0) {
                     e.currentTarget.style.backgroundColor = '#059669';
                   }
                 }}
                 onMouseLeave={(e) => {
-                  if (!isConfirmingSenderDelivery) {
+                  if (!isConfirmingSenderDelivery && selectedRating > 0) {
                     e.currentTarget.style.backgroundColor = '#10b981';
                   }
                 }}

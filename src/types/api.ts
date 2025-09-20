@@ -624,6 +624,7 @@ export interface PassengerConfirmedDeliveryResponse {
 // Sender Confirmed Delivery API Types
 export interface SenderConfirmedDeliveryModel {
   requestSuggestionId: number;
+  rate?: number; // Optional rating parameter (1-5 stars)
 }
 
 export interface SenderConfirmedDeliveryPayload {

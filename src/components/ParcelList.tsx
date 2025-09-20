@@ -230,7 +230,7 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
 
   // Tab system
   type TabType = 'incoming' | 'outgoing';
-  const [activeTab, setActiveTab] = useState<TabType>('outgoing');
+  const [activeTab, setActiveTab] = useState<TabType>('incoming');
 
   // Responsive state for small screens
   const [isSmallScreen, setIsSmallScreen] = useState<boolean>(false);
