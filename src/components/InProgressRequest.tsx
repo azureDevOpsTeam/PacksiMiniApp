@@ -1856,14 +1856,15 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
         >
           <div
             style={{
-              backgroundColor: theme.colors.background,
+              backgroundColor: 'white',
               borderRadius: '16px',
               padding: '24px',
               maxWidth: '400px',
               width: '100%',
               boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-              border: `1px solid ${theme.colors.border}`,
-              direction: isRTL ? 'rtl' : 'ltr'
+              border: '1px solid #e5e7eb',
+              direction: isRTL ? 'rtl' : 'ltr',
+              animation: 'slideDown 0.3s ease-out'
             }}
             onClick={(e) => e.stopPropagation()}
           >
@@ -1879,7 +1880,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
                   margin: 0,
                   fontSize: '18px',
                   fontWeight: '600',
-                  color: theme.colors.text.primary,
+                  color: '#1f2937',
                   fontFamily: 'IRANSansX, sans-serif'
                 }}
               >

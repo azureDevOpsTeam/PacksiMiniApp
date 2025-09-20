@@ -221,7 +221,6 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
 
   // Mobile detection
   const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-  const isTelegramWebApp = window.Telegram?.WebApp !== undefined;
 
   // Helper function to get file icon based on type
   const getFileIcon = (file: File) => {
