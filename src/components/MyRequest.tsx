@@ -177,7 +177,7 @@ const MyRequest: React.FC<MyRequestProps> = () => {
         //top: '80px',
         left: '0',
         right: '0',
-        backgroundColor: theme.colors.background,
+        backgroundColor: '#17212b',
         zIndex: 100,
         paddingBottom: '20px',
       }}>

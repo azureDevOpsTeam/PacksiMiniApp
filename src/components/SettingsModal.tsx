@@ -68,7 +68,7 @@ const ModalOverlay = styled.div<{ $isOpen: boolean }>`
 `;
 
 const ModalContent = styled.div<{ $isOpen: boolean }>`
-  background: ${({ theme }) => theme.colors.background};
+  background: #17212b;
   border-radius: 24px 24px 0 0;
   width: 100%;
   max-width: 400px;
