@@ -835,53 +835,11 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z" />
                       </svg>
-                      {isRTL ? 'تایید تحویل' : 'Confirm Delivery'}
+                      {isRTL ? 'تایید و ثبت امتیاز' : 'Confirm And Rating'}
                     </button>
                   )}
 
-                  {/* Not Delivered Button - Show only for btnConfirmDelivery in InProgress tab */}
-                  {(activeTab === 'inProgress' && suggestion.operationButton === 'btnConfirmDelivery') && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleNotDelivered(suggestion.id);
-                      }}
-                      style={{
-                        flex: 1,
-                        padding: '8px 12px',
-                        borderRadius: '20px',
-                        fontSize: '11px',
-                        fontWeight: '600',
-                        backgroundColor: '#ef4444',
-                        color: 'white',
-                        border: 'none',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s ease',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '4px',
-                        boxShadow: '0 2px 4px rgba(239, 68, 68, 0.2)',
-                        position: 'relative',
-                        overflow: 'hidden'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = '#dc2626';
-                        e.currentTarget.style.transform = 'translateY(-1px)';
-                        e.currentTarget.style.boxShadow = '0 4px 8px rgba(239, 68, 68, 0.3)';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = '#ef4444';
-                        e.currentTarget.style.transform = 'translateY(0)';
-                        e.currentTarget.style.boxShadow = '0 2px 4px rgba(239, 68, 68, 0.2)';
-                      }}
-                    >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
-                      </svg>
-                      {isRTL ? 'تحویل نشده' : 'Not Delivered'}
-                    </button>
-                  )}
+
 
                   {/* Chat Button - Hide for btnSuggtion, btnPickedUp, btnPassengerConfirmedDelivery, and lblWaitToConfirmDelivery in Suggestions tab, and hide for btnConfirmDelivery in InProgress tab, show special text for lblWaitForAcceptSuggetion and lblReadyToPickeUp in InProgress tab */}
                   {!(activeTab === 'suggestion' && (suggestion.operationButton === 'btnSuggtion' || suggestion.operationButton === 'btnPickedUp' || suggestion.operationButton === 'btnPassengerConfirmedDelivery' || suggestion.operationButton === 'lblWaitToConfirmDelivery')) && !(activeTab === 'inProgress' && suggestion.operationButton === 'btnConfirmDelivery') && (
@@ -1856,7 +1814,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
         >
           <div
             style={{
-              backgroundColor: theme.colors.background,
+              backgroundColor: 'white',
               borderRadius: '16px',
               padding: '24px',
               maxWidth: '400px',
