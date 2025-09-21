@@ -467,24 +467,46 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
         {/* Suggestions */}
         {offer.suggestions && offer.suggestions.length > 0 && (
           <div style={{
-            marginBottom: '12px'
+            marginBottom: '20px',
+            padding: '16px',
+            backgroundColor: '#f8fafc',
+            borderRadius: '12px',
+            border: '1px solid #e2e8f0'
           }}>
             <div style={{
-              fontSize: '12px',
-              color: '#64748b',
-              marginBottom: '8px'
+              fontSize: '14px',
+              color: '#374151',
+              marginBottom: '16px',
+              fontWeight: '600',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
             }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style={{ color: '#3b82f6' }}>
+                <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8Z" />
+              </svg>
               {isRTL ? 'پیشنهادات:' : 'Suggestions:'}
             </div>
-            {offer.suggestions.map((suggestion) => (
+            {offer.suggestions.map((suggestion, index) => (
               <div
                 key={suggestion.id}
                 style={{
-                  backgroundColor: '#f8fafc',
-                  borderRadius: '8px',
-                  padding: '8px',
-                  marginBottom: '6px',
-                  border: '1px solid #e2e8f0'
+                  backgroundColor: '#ffffff',
+                  borderRadius: '12px',
+                  padding: '16px',
+                  marginBottom: index === offer.suggestions.length - 1 ? '0' : '16px',
+                  border: '1px solid #e2e8f0',
+                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
+                  transition: 'all 0.2s ease',
+                  position: 'relative'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
+                  e.currentTarget.style.transform = 'translateY(-1px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.06)';
+                  e.currentTarget.style.transform = 'translateY(0)';
                 }}
               >
                 {/* Header with name and price */}
