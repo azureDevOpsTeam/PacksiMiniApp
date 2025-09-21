@@ -10,6 +10,7 @@ import Logo from './Logo';
 
 import SkeletonLoader from './SkeletonLoader';
 import MyRequest from './MyRequest';
+import StarRating from './StarRating';
 
 // Toast notification helper function
 const toast = {
@@ -1284,10 +1285,18 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
                           }}>
                             <div>
                               <div style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
                                 fontSize: '16px',
                                 fontWeight: 'bold',
                                 marginBottom: '2px'
-                              }}>{flight.fullName}</div>
+                              }}>
+                                <span>{flight.fullName}</span>
+                                {flight.userRate && (
+                                  <StarRating rating={flight.userRate} size="small" />
+                                )}
+                              </div>
                               <div style={{
                                 fontSize: '10px',
                                 opacity: 0.8

@@ -459,6 +459,15 @@ class ApiService {
       }
 
       const data = await response.json();
+      
+      // Add sample userRate data for testing
+      if (data.data && Array.isArray(data.data)) {
+        data.data = data.data.map((trip: any, index: number) => ({
+          ...trip,
+          userRate: [4.5, 3.2, 5.0, 2.8, 4.1][index % 5] // Sample ratings for testing
+        }));
+      }
+      
       return data;
     } catch (error) {
       console.error('Error fetching request trips:', error);

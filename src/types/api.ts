@@ -255,6 +255,7 @@ export interface OutboundTrip {
   selectStatus: string;
   suggestions?: Suggestion[];
   ipicked_OperationButton?: string;
+  userRate?: number; // Rating from 1 to 5, can be decimal like 4.5
 }
 
 export interface OutboundTripsResponse {
