@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import styled, { keyframes, css } from 'styled-components';
 import { apiService } from '../services/apiService';
 import { signalRService } from '../services/signalRService';
+import SafeAreaWrapper from './SafeAreaWrapper';
 import type { ChatMessage, LiveChatUser } from '../types/api';
 
 // Animations - Simplified and smoother
@@ -746,83 +747,85 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
   };
 
   return (
-    <ChatContainer>
-      <ConnectionStatus $isConnected={isSignalRConnected} />
-      
-      <UserNameDisplay>
-        {selectedUser?.requestId || 'کاربر ناشناس'}
-      </UserNameDisplay>
-      
-      <TopSpacer />
+    <SafeAreaWrapper>
+      <ChatContainer>
+        <ConnectionStatus $isConnected={isSignalRConnected} />
+        
+        <UserNameDisplay>
+          {selectedUser?.requestId || 'کاربر ناشناس'}
+        </UserNameDisplay>
+        
+        <TopSpacer />
 
-      <ChatThread ref={chatThreadRef}>
-        {loading ? (
-          <LoadingSpinner>
-            <div></div>
-          </LoadingSpinner>
-        ) : messages.length === 0 ? (
-          <EmptyState>
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-            </svg>
-            <h3>هنوز پیامی ارسال نشده</h3>
-            <p>اولین پیام خود را ارسال کنید</p>
-          </EmptyState>
-        ) : (
-          <MessageList>
-            {messages.map((message, index) => {
-              const isMyMessage = message.senderId === selectedUser.senderId;
-              const showDate = index === 0 ||
-                formatDate(messages[index - 1].sentAt) !== formatDate(message.sentAt);
+        <ChatThread ref={chatThreadRef}>
+          {loading ? (
+            <LoadingSpinner>
+              <div></div>
+            </LoadingSpinner>
+          ) : messages.length === 0 ? (
+            <EmptyState>
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              </svg>
+              <h3>هنوز پیامی ارسال نشده</h3>
+              <p>اولین پیام خود را ارسال کنید</p>
+            </EmptyState>
+          ) : (
+            <MessageList>
+              {messages.map((message, index) => {
+                const isMyMessage = message.senderId === selectedUser.senderId;
+                const showDate = index === 0 ||
+                  formatDate(messages[index - 1].sentAt) !== formatDate(message.sentAt);
 
-              return (
-                <React.Fragment key={`message-fragment-${message.id}-${index}`}>
-                  {showDate && (
-                    <DateSeparator key={`date-${message.id}-${index}`}>
-                      <span>{formatDate(message.sentAt)}</span>
-                    </DateSeparator>
-                  )}
+                return (
+                  <React.Fragment key={`message-fragment-${message.id}-${index}`}>
+                    {showDate && (
+                      <DateSeparator key={`date-${message.id}-${index}`}>
+                        <span>{formatDate(message.sentAt)}</span>
+                      </DateSeparator>
+                    )}
 
-                  <MessageItem
-                    key={`msg-${message.id}-${index}`}
-                    $isOdd={isMyMessage}
-                    $isPersian={containsPersian(message.content)}
-                  >
-                    {message.content}
-                    <MessageTime $isOdd={isMyMessage}>
-                      {formatTime(message.sentAt)}
-                      {isMyMessage && message.isRead && (
-                        <span>✓✓</span>
-                      )}
-                    </MessageTime>
-                  </MessageItem>
-                </React.Fragment>
-              );
-            })}
-            {isTyping && <TypingIndicator>در حال تایپ...</TypingIndicator>}
-          </MessageList>
-        )}
-        <div ref={messagesEndRef} />
-      </ChatThread>
+                    <MessageItem
+                      key={`msg-${message.id}-${index}`}
+                      $isOdd={isMyMessage}
+                      $isPersian={containsPersian(message.content)}
+                    >
+                      {message.content}
+                      <MessageTime $isOdd={isMyMessage}>
+                        {formatTime(message.sentAt)}
+                        {isMyMessage && message.isRead && (
+                          <span>✓✓</span>
+                        )}
+                      </MessageTime>
+                    </MessageItem>
+                  </React.Fragment>
+                );
+              })}
+              {isTyping && <TypingIndicator>در حال تایپ...</TypingIndicator>}
+            </MessageList>
+          )}
+          <div ref={messagesEndRef} />
+        </ChatThread>
 
-      <ChatInputForm onSubmit={handleSubmit}>
-        <ChatInput
-          type="text"
-          value={newMessage}
-          onChange={(e) => {
-            setNewMessage(e.target.value);
-            handleTyping();
-          }}
-          onKeyPress={handleKeyPress}
-          placeholder="پیام خود را بنویسید..."
-          disabled={sending}
-          $isPersian={containsPersian(newMessage)}
-        />
-        <SendButton type="submit" disabled={sending || !newMessage.trim()}>
-          {sending ? '...' : '→'}
-        </SendButton>
-      </ChatInputForm>
-    </ChatContainer>
+        <ChatInputForm onSubmit={handleSubmit}>
+          <ChatInput
+            type="text"
+            value={newMessage}
+            onChange={(e) => {
+              setNewMessage(e.target.value);
+              handleTyping();
+            }}
+            onKeyPress={handleKeyPress}
+            placeholder="پیام خود را بنویسید..."
+            disabled={sending}
+            $isPersian={containsPersian(newMessage)}
+          />
+          <SendButton type="submit" disabled={sending || !newMessage.trim()}>
+            {sending ? '...' : '→'}
+          </SendButton>
+        </ChatInputForm>
+      </ChatContainer>
+    </SafeAreaWrapper>
   );
 };
 
