@@ -335,12 +335,6 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
     setIsConfirmingSenderDelivery(false);
   };
 
-  // Not Delivered handlers
-  const handleNotDelivered = (suggestionId: number) => {
-    setSelectedNotDeliveredSuggestionId(suggestionId);
-    setShowNotDeliveredDialog(true);
-  };
-
   const confirmNotDelivered = async () => {
     if (!selectedNotDeliveredSuggestionId) return;
 
