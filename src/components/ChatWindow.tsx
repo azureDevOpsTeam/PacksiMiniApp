@@ -4,97 +4,97 @@ import { apiService } from '../services/apiService';
 import { signalRService } from '../services/signalRService';
 import type { ChatMessage, LiveChatUser } from '../types/api';
 
-// Animations
-const showChatEven = keyframes`
+// Animations - Simplified and smoother
+const slideInLeft = keyframes`
   0% {
-    margin-left: -480px;
+    opacity: 0;
+    transform: translateX(-20px);
   }
   100% {
-    margin-left: 0;
+    opacity: 1;
+    transform: translateX(0);
   }
 `;
 
-const showChatOdd = keyframes`
+const slideInRight = keyframes`
   0% {
-    margin-right: -480px;
+    opacity: 0;
+    transform: translateX(20px);
   }
   100% {
-    margin-right: 0;
+    opacity: 1;
+    transform: translateX(0);
   }
 `;
 
-// Styled Components
+// Styled Components - Simplified and modern
 const ChatContainer = styled.div`
-  background: linear-gradient(-45deg, #183850 0%, #183850 25%, #192C46 50%, #22254C 75%, #22254C 100%);
-  background-repeat: no-repeat;
-  background-attachment: fixed;
+  background: #f8fafc;
   font-family: 'IRANSansX', sans-serif;
   position: relative;
+  min-height: 100vh;
 `;
 
 const UserNameDisplay = styled.div`
   position: fixed;
-  padding: 20px 0 0 0;
   top: 0;
   left: 0;
   width: 100%;
-  height: 80px; /* Adjust height as needed */
-  background: linear-gradient(135deg, #0f1419 0%, #1a2332 50%, #0f1419 100%);
-  color: #fff;
+  height: 70px;
+  background: #ffffff;
+  color: #1e293b;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.8em;
-  font-weight: bold;
+  font-size: 16px;
+  font-weight: 600;
   z-index: 1000;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-  
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent 0%, rgba(10, 213, 193, 0.3) 50%, transparent 100%);
-  }
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  border-bottom: 1px solid #e2e8f0;
 `;
 
 const TopSpacer = styled.div`
-  height: 60px; /* Adjusted to match UserNameDisplay height */
+  height: 70px;
   width: 100%;
-  position: relative;
 `;
 
-
-
 const ChatThread = styled.div`
-  scroll-behavior: smooth; /* Add smooth scrolling */
-  height: calc(100vh - 130px); /* Adjusted for new UserNameDisplay */
+  height: calc(100vh - 150px);
   margin: 0 auto;
-  padding: 15px 15px 80px 15px;
-  overflow-y: scroll; /* Changed to scroll to ensure functionality */
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
-  &::-webkit-scrollbar { /* Chrome, Safari, Opera */
-    display: none;
-  }
-  max-width: 800px;
+  padding: 20px;
+  overflow-y: auto;
+  max-width: 600px;
   width: 100%;
-  background: rgba(0, 0, 0, 0.05);
-  border-radius: 20px 20px 0 0;
-  backdrop-filter: blur(10px);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  
+  /* Custom scrollbar */
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 2px;
+  }
+  
+  &::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
 `;
 
 const MessageList = styled.ul`
   list-style: none;
   padding: 0;
   margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 `;
 
 const containsPersian = (text: string): boolean => {
-  // Regular expression to match common Persian characters
   const persianRegex = /[\u0600-\u06FF\uFB80-\uFBFB\uFE70-\uFEFF]/;
   return persianRegex.test(text);
 };
@@ -103,46 +103,27 @@ const MessageItem = styled.li<{
   $isOdd: boolean;
   $isPersian: boolean;
 }>`
+  max-width: 75%;
+  padding: 12px 16px;
+  border-radius: 18px;
+  font-size: 14px;
+  line-height: 1.4;
+  word-wrap: break-word;
   position: relative;
-  clear: both;
-  display: inline-block;
-  padding: 10px 30px 10px 12px;
-  margin: 0 0 12px 0;
-  font: 12px/16px 'IRANSansX', sans-serif;
-  border-radius: 8px 8px 8px 8px; /* Default for all corners */
-
-  ${props => props.$isOdd ? css`
-    border-bottom-right-radius: 2px; /* Smaller radius for the bottom-right corner of sent messages */
-  ` : css`
-    border-bottom-left-radius: 2px; /* Smaller radius for the bottom-left corner of received messages */
-  `}
-  background: linear-gradient(135deg, rgba(25, 147, 147, 0.15) 0%, rgba(25, 147, 147, 0.25) 100%);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-  
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-  }
   
   ${props => props.$isOdd ? css`
-    animation: ${showChatOdd} 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    float: right;
-    margin-right: 10px; /* Adjusted margin */
-    color: #FFFFFF; /* White text for sent messages */
-    background: #2B5278; /* Dark blue for sent messages */
-    
-
+    background: #3b82f6;
+    color: white;
+    align-self: flex-end;
+    border-bottom-right-radius: 6px;
+    animation: ${slideInRight} 0.3s ease-out;
   ` : css`
-    animation: ${showChatEven} 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    float: left;
-    margin-left: 10px; /* Adjusted margin */
-    color: #FFFFFF; /* White text for received messages */
-    background: #182533; /* Dark grey for received messages */
-    
-
+    background: white;
+    color: #1e293b;
+    align-self: flex-start;
+    border-bottom-left-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    animation: ${slideInLeft} 0.3s ease-out;
   `}
   
   ${props => props.$isPersian ? css`
@@ -152,86 +133,126 @@ const MessageItem = styled.li<{
     direction: ltr;
     text-align: left;
   `}
-`
+`;
 
-
-
-const ChatInputForm = styled.form`
-  position: fixed;
-  bottom: 18px;
-  left: 5%;
-  width: 90%;
+const MessageTime = styled.div<{ $isOdd: boolean }>`
+  font-size: 11px;
+  margin-top: 6px;
+  opacity: 0.7;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 4px;
   
-  @media (min-width: 768px) {
-    left: 25%;
-    width: 50%;
+  ${props => props.$isOdd ? css`
+    justify-content: flex-end;
+    color: rgba(255, 255, 255, 0.8);
+  ` : css`
+    justify-content: flex-start;
+    color: #64748b;
+  `}
+`;
+
+const DateSeparator = styled.div`
+  text-align: center;
+  margin: 20px 0;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 500;
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: #e2e8f0;
+    z-index: 1;
+  }
+  
+  span {
+    background: #f8fafc;
+    padding: 0 16px;
+    position: relative;
+    z-index: 2;
   }
 `;
 
-const ChatInput = styled.input`
+const ChatInputForm = styled.form`
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 40px);
+  max-width: 600px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: white;
+  padding: 16px;
+  border-radius: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+`;
+
+const ChatInput = styled.input<{ $isPersian?: boolean }>`
   flex: 1;
-  padding: 10px 16px;
+  padding: 12px 16px;
   border: none;
   border-radius: 20px;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.12) 100%);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: #fff;
-  font-size: 13px;
+  background: #f1f5f9;
+  color: #1e293b;
+  font-size: 14px;
   font-family: 'IRANSansX', sans-serif;
   outline: none;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
+  
+  ${props => props.$isPersian ? css`
+    direction: rtl;
+    text-align: right;
+  ` : css`
+    direction: ltr;
+    text-align: left;
+  `}
   
   &::placeholder {
-    color: rgba(255, 255, 255, 0.5);
-    font-size: 12px;
+    color: #64748b;
   }
   
   &:focus {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.18) 100%);
-    border-color: rgba(10, 213, 193, 0.4);
-    box-shadow: 0 0 20px rgba(10, 213, 193, 0.2);
-    transform: scale(1.02);
+    background: #e2e8f0;
+    transform: scale(1.01);
   }
 `;
 
 const SendButton = styled.button`
-  margin-left: 8px;
-  padding: 10px 16px;
+  width: 44px;
+  height: 44px;
   border: none;
-  border-radius: 18px;
-  background: linear-gradient(135deg, #0AD5C1 0%, #0EC879 100%);
+  border-radius: 50%;
+  background: #3b82f6;
   color: white;
   cursor: pointer;
-  font-size: 12px;
-  font-weight: 600;
-  font-family: 'IRANSansX', sans-serif;
-  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(8px);
-  box-shadow: 0 4px 15px rgba(10, 213, 193, 0.3);
+  font-size: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.2s ease;
   
-  &:hover {
-    transform: translateY(-3px) scale(1.05);
-    box-shadow: 0 8px 25px rgba(10, 213, 193, 0.5);
-    background: linear-gradient(135deg, #0EC879 0%, #0AD5C1 100%);
+  &:hover:not(:disabled) {
+    background: #2563eb;
+    transform: scale(1.05);
   }
   
   &:active {
-    transform: translateY(-1px) scale(1.02);
+    transform: scale(0.95);
   }
   
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
     transform: none;
-    box-shadow: 0 2px 8px rgba(10, 213, 193, 0.2);
   }
 `;
 
@@ -241,28 +262,29 @@ const EmptyState = styled.div`
   align-items: center;
   justify-content: center;
   height: 100%;
-  color: rgba(10, 213, 193, 0.6);
+  color: #64748b;
   text-align: center;
   font-family: 'IRANSansX', sans-serif;
 
   svg {
-    width: 48px;
-    height: 48px;
-    margin-bottom: 12px;
-    opacity: 0.4;
-    filter: drop-shadow(0 2px 4px rgba(10, 213, 193, 0.2));
+    width: 64px;
+    height: 64px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+    color: #cbd5e1;
   }
 
   h3 {
-    margin: 0 0 6px 0;
-    font-size: 14px;
+    margin: 0 0 8px 0;
+    font-size: 18px;
     font-weight: 600;
+    color: #475569;
   }
 
   p {
     margin: 0;
-    font-size: 11px;
-    opacity: 0.7;
+    font-size: 14px;
+    opacity: 0.8;
   }
 `;
 
@@ -273,10 +295,10 @@ const LoadingSpinner = styled.div`
   height: 100%;
   
   div {
-    width: 32px;
-    height: 32px;
-    border: 3px solid rgba(10, 213, 193, 0.2);
-    border-top: 3px solid #0AD5C1;
+    width: 40px;
+    height: 40px;
+    border: 3px solid #e2e8f0;
+    border-top: 3px solid #3b82f6;
     border-radius: 50%;
     animation: spin 1s linear infinite;
   }
@@ -289,53 +311,50 @@ const LoadingSpinner = styled.div`
 
 const ConnectionStatus = styled.div<{ $isConnected: boolean }>`
   position: fixed;
-  top: 10px;
-  right: 10px;
-  padding: 6px 12px;
-  border-radius: 12px;
-  font-size: 10px;
-  font-weight: 600;
-  font-family: 'IRANSansX', sans-serif;
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  transition: all 0.3s ease;
+  top: 20px;
+  right: 20px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
   z-index: 1000;
+  transition: all 0.3s ease;
   
   ${props => props.$isConnected ? css`
-    background: linear-gradient(135deg, rgba(14, 200, 121, 0.2) 0%, rgba(14, 200, 121, 0.3) 100%);
-    color: #0EC879;
-    border-color: rgba(14, 200, 121, 0.3);
-    box-shadow: 0 2px 8px rgba(14, 200, 121, 0.2);
+    background: #10b981;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
   ` : css`
-    background: linear-gradient(135deg, rgba(255, 107, 107, 0.2) 0%, rgba(255, 107, 107, 0.3) 100%);
-    color: #FF6B6B;
-    border-color: rgba(255, 107, 107, 0.3);
-    box-shadow: 0 2px 8px rgba(255, 107, 107, 0.2);
+    background: #ef4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
   `}
 `;
 
 const TypingIndicator = styled.div`
-  padding: 8px 16px;
-  margin: 8px 0;
-  font-size: 11px;
-  color: rgba(10, 213, 193, 0.7);
+  align-self: flex-start;
+  padding: 12px 16px;
+  background: white;
+  border-radius: 18px;
+  border-bottom-left-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  font-size: 14px;
+  color: #64748b;
   font-family: 'IRANSansX', sans-serif;
   font-style: italic;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+  max-width: 75%;
   
   &::before {
     content: '';
-    width: 4px;
-    height: 4px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
-    background: #0AD5C1;
+    background: #3b82f6;
     animation: pulse 1.5s infinite;
   }
   
   @keyframes pulse {
-    0%, 100% { opacity: 0.3; }
+    0%, 100% { opacity: 0.4; }
     50% { opacity: 1; }
   }
 `;
@@ -728,15 +747,14 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
 
   return (
     <ChatContainer>
-      {<ConnectionStatus $isConnected={isSignalRConnected}>
-        {isSignalRConnected ? '*' : '*'}
-      </ConnectionStatus>}
+      <ConnectionStatus $isConnected={isSignalRConnected} />
+      
       <UserNameDisplay>
         {selectedUser?.requestId || 'کاربر ناشناس'}
       </UserNameDisplay>
+      
       <TopSpacer />
 
-      {/* Messages */}
       <ChatThread ref={chatThreadRef}>
         {loading ? (
           <LoadingSpinner>
@@ -745,7 +763,7 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
         ) : messages.length === 0 ? (
           <EmptyState>
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
             </svg>
             <h3>هنوز پیامی ارسال نشده</h3>
             <p>اولین پیام خود را ارسال کنید</p>
@@ -760,18 +778,9 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
               return (
                 <React.Fragment key={`message-fragment-${message.id}-${index}`}>
                   {showDate && (
-                    <li key={`date-${message.id}-${index}`} style={{
-                      textAlign: 'center',
-                      margin: '15px 0',
-                      color: 'rgba(10, 213, 193, 0.5)',
-                      fontSize: '10px',
-                      listStyle: 'none',
-                      clear: 'both',
-                      fontFamily: 'IRANSansX, sans-serif',
-                      fontWeight: '500'
-                    }}>
-                      {formatDate(message.sentAt)}
-                    </li>
+                    <DateSeparator key={`date-${message.id}-${index}`}>
+                      <span>{formatDate(message.sentAt)}</span>
+                    </DateSeparator>
                   )}
 
                   <MessageItem
@@ -780,16 +789,12 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
                     $isPersian={containsPersian(message.content)}
                   >
                     {message.content}
-                    <div style={{
-                      fontSize: '9px',
-                      marginTop: '3px',
-                      opacity: 0.6
-                    }}>
+                    <MessageTime $isOdd={isMyMessage}>
                       {formatTime(message.sentAt)}
                       {isMyMessage && message.isRead && (
-                        <span style={{ marginRight: '4px' }}>✓✓</span>
+                        <span>✓✓</span>
                       )}
-                    </div>
+                    </MessageTime>
                   </MessageItem>
                 </React.Fragment>
               );
@@ -811,6 +816,7 @@ const ChatWindowComponent: React.FC<ChatWindowProps> = ({ selectedUser }) => {
           onKeyPress={handleKeyPress}
           placeholder="پیام خود را بنویسید..."
           disabled={sending}
+          $isPersian={containsPersian(newMessage)}
         />
         <SendButton type="submit" disabled={sending || !newMessage.trim()}>
           {sending ? '...' : '→'}
