@@ -1,4 +1,4 @@
-import type { CreateRequestPayload, ApiResponse, CreateRequestResponse, CitiesTreeResponse, ItemTypeResponse, CountriesResponse, UserInfoResponse, VerifyPhoneNumberPayload, VerifyPhoneNumberResponse, ValidateResponse, AddUserPreferredLocationRequest, AddUserPreferredLocationResponse, UpdateProfileRequest, UpdateProfileResponse, OutboundTripsResponse, SelectRequestPayload, SelectRequestResponse, GetMyRequestTripsResponse, LiveChatUsersResponse, ConversationsResponse, MessagesResponse, SendMessagePayload, SendMessageResponse, BlockUserPayload, BlockUserResponse, MarkReadResponse, SuggestionActionPayload, SuggestionActionResponse, InProgressOffersResponse, ConfirmedBySenderPayload, ConfirmedBySenderResponse, PickedUpPayload, PickedUpResponse, PassengerConfirmedDeliveryPayload, PassengerConfirmedDeliveryResponse, SenderConfirmedDeliveryPayload, SenderConfirmedDeliveryResponse, NotDeliveredPayload, NotDeliveredResponse, GetInviteCodeResponse, GetDashboardDataResponse } from '../types/api';
+import type { CreateRequestPayload, ApiResponse, CreateRequestResponse, CitiesTreeResponse, ItemTypeResponse, CountriesResponse, UserInfoResponse, VerifyPhoneNumberPayload, VerifyPhoneNumberResponse, ValidateResponse, AddUserPreferredLocationRequest, AddUserPreferredLocationResponse, UpdateProfileRequest, UpdateProfileResponse, OutboundTripsResponse, SelectRequestPayload, SelectRequestResponse, GetMyRequestTripsResponse, LiveChatUsersResponse, ConversationsResponse, MessagesResponse, SendMessagePayload, SendMessageResponse, BlockUserPayload, BlockUserResponse, MarkReadResponse, SuggestionActionPayload, SuggestionActionResponse, InProgressOffersResponse, ConfirmedBySenderPayload, ConfirmedBySenderResponse, PickedUpPayload, PickedUpResponse, PassengerConfirmedDeliveryPayload, PassengerConfirmedDeliveryResponse, SaveRatingPayload, SaveRatingResponse, NotDeliveredPayload, NotDeliveredResponse, GetInviteCodeResponse, GetDashboardDataResponse } from '../types/api';
 
 const API_BASE_URL = 'https://api.packsi.net/api/miniapp';
 //const API_BASE_URL = 'http://localhost:5005/api/miniapp';
@@ -815,9 +815,9 @@ class ApiService {
     }
   }
 
-  async senderConfirmedDelivery(payload: SenderConfirmedDeliveryPayload): Promise<SenderConfirmedDeliveryResponse> {
+  async saveRating(payload: SaveRatingPayload): Promise<SaveRatingResponse> {
     try {
-      const response = await fetch(`${API_BASE_URL}/Request/SenderConfirmedDelivery`, {
+      const response = await fetch(`${API_BASE_URL}/Request/SaveRating`, {
         method: 'POST',
         headers: this.getHeaders(),
         body: JSON.stringify(payload)

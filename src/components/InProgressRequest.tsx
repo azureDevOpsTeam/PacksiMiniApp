@@ -309,7 +309,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
 
     setIsConfirmingSenderDelivery(true);
     try {
-      await apiService.senderConfirmedDelivery({
+      await apiService.saveRating({
         model: {
           requestSuggestionId: selectedConfirmDeliverySuggestionId,
           rate: selectedRating

@@ -622,16 +622,16 @@ export interface PassengerConfirmedDeliveryResponse {
 }
 
 // Sender Confirmed Delivery API Types
-export interface SenderConfirmedDeliveryModel {
+export interface SaveRatingModel {
   requestSuggestionId: number;
   rate?: number; // Optional rating parameter (1-5 stars)
 }
 
-export interface SenderConfirmedDeliveryPayload {
-  model: SenderConfirmedDeliveryModel;
+export interface SaveRatingPayload {
+  model: SaveRatingModel;
 }
 
-export interface SenderConfirmedDeliveryResponse {
+export interface SaveRatingResponse {
   validationResult: any;
   requestStatus: {
     name: string;
