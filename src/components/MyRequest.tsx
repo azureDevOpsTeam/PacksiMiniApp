@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../hooks/useLanguage';
-import { useTheme } from '../hooks/useTheme';
 // import { useTelegramContext } from '../hooks/useTelegramContext'; // Not needed
 import { apiService } from '../services/apiService';
 import type { MyRequestTrip } from '../types/api';
@@ -85,7 +84,7 @@ interface MyRequestProps {}
 
 const MyRequest: React.FC<MyRequestProps> = () => {
   const { isRTL } = useLanguage();
-  const { theme } = useTheme();
+
   // const { user } = useTelegramContext(); // Not needed as API uses token
   
   const [activeTab, setActiveTab] = useState<TabType>('passenger');
