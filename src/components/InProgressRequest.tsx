@@ -78,6 +78,17 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
 
   // PassengerConfirmedDelivery confirmation dialog states
   const [showDeliveryDialog, setShowDeliveryDialog] = useState(false);
+
+  // Function to detect text direction based on content
+  const detectTextDirection = (text: string): 'rtl' | 'ltr' => {
+    if (!text) return 'ltr';
+    
+    // Persian/Arabic Unicode ranges
+    const persianArabicRegex = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
+    
+    // Check if text contains Persian/Arabic characters
+    return persianArabicRegex.test(text) ? 'rtl' : 'ltr';
+  };
   const [selectedDeliverySuggestionId, setSelectedDeliverySuggestionId] = useState<number | null>(null);
   const [isConfirmingDelivery, setIsConfirmingDelivery] = useState(false);
   const [deliveryCode, setDeliveryCode] = useState('');
@@ -484,7 +495,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
         {/* Header */}
         <div style={{
           display: 'flex',
-          justifyContent: 'space-between',
+          justifyContent: 'center',
           alignItems: 'center',
           marginBottom: '12px'
         }}>
@@ -502,200 +513,235 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
             padding: '4px 8px',
             borderRadius: '8px'
           }}>
-            #{offer.id}
           </div>
         </div>
 
         {/* Suggestions */}
         {offer.suggestions && offer.suggestions.length > 0 && (
-          <div style={{
-            marginBottom: '20px',
-            padding: '16px',
-            backgroundColor: '#f8fafc',
-            borderRadius: '12px',
-            border: '1px solid #e2e8f0'
-          }}>
-            <div style={{
-              fontSize: '14px',
-              color: '#374151',
-              marginBottom: '16px',
-              fontWeight: '600',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px'
-            }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style={{ color: '#3b82f6' }}>
-                <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8Z" />
-              </svg>
-              {isRTL ? 'پیشنهادات:' : 'Suggestions:'}
-            </div>
+          <div>
+
             {offer.suggestions.map((suggestion, index) => (
               <div
                 key={suggestion.id}
                 style={{
-                  backgroundColor: '#ffffff',
-                  borderRadius: '12px',
-                  padding: '16px',
+                  background: 'linear-gradient(145deg, #ffffff 0%, #f8fafc 50%, #ffffff 100%)',
+                  borderRadius: '16px',
+                  padding: '20px',
                   marginBottom: index === offer.suggestions.length - 1 ? '0' : '16px',
                   border: '1px solid #e2e8f0',
-                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
-                  transition: 'all 0.2s ease',
-                  position: 'relative'
+                  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.1)',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  position: 'relative',
+                  overflow: 'hidden'
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
-                  e.currentTarget.style.transform = 'translateY(-1px)';
+                  e.currentTarget.style.boxShadow = '0 8px 30px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.15)';
+                  e.currentTarget.style.transform = 'translateY(-2px) scale(1.01)';
+                  e.currentTarget.style.borderColor = '#c7d2fe';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.06)';
-                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.1)';
+                  e.currentTarget.style.transform = 'translateY(0) scale(1)';
+                  e.currentTarget.style.borderColor = '#e2e8f0';
                 }}
               >
-                {/* Header with name and price */}
+                {/* Decorative gradient overlay */}
+                <div style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: '4px',
+                  background: 'linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4)',
+                  borderRadius: '16px 16px 0 0'
+                }} />
+
+                {/* Header with enhanced styling */}
                 <div style={{
                   display: 'flex',
                   justifyContent: 'space-between',
-                  alignItems: 'center',
-                  marginBottom: '8px'
+                  alignItems: 'flex-start',
+                  marginBottom: '16px',
+                  paddingTop: '4px'
                 }}>
-                  <span style={{
-                    fontSize: '12px',
-                    fontWeight: '600',
-                    color: '#374151'
-                  }}>
-                    {suggestion.displayName}
-                  </span>
                   <div style={{
                     display: 'flex',
                     alignItems: 'center',
+                    gap: '12px',
+                    flex: 1
+                  }}>
+                    {/* User avatar placeholder */}
+                    <div style={{
+                      width: '44px',
+                      height: '44px',
+                      borderRadius: '50%',
+                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: 'white',
+                      fontSize: '16px',
+                      fontWeight: 'bold',
+                      boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)',
+                      flexShrink: 0
+                    }}>
+                      {suggestion.displayName.charAt(0).toUpperCase()}
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{
+                        fontSize: '14px',
+                        fontWeight: '700',
+                        color: '#1e293b',
+                        marginBottom: '4px',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap'
+                      }}>
+                        {suggestion.displayName}
+                      </div>
+                      <div style={{
+                      color: '#89084e',
+                      borderRadius: '12px',
+                      fontSize: '16px',
+                      fontWeight: 'bold',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px'
+                      }}>
+                        ${suggestion.suggestionPrice}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Enhanced price display */}
+                  <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'flex-end',
                     gap: '8px'
                   }}>
-                    <span style={{
-                      fontSize: '14px',
-                      fontWeight: 'bold',
-                      color: '#059669'
-                    }}>
-                      ${suggestion.suggestionPrice}
-                    </span>
-                    {/* Attachments icon */}
-                    {suggestion.attachments && suggestion.attachments.length > 0 && (
-                      <button
-                        onClick={() => openImageModal(suggestion.attachments)}
-                        title={`مشاهده ${suggestion.attachments.length} فایل ضمیمه`}
-                        style={{
-                          background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
-                          border: 'none',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '4px',
-                          padding: '6px 10px',
-                          borderRadius: '8px',
-                          color: 'white',
-                          fontSize: '12px',
-                          fontWeight: '600',
-                          boxShadow: '0 2px 4px rgba(59, 130, 246, 0.3)',
-                          transition: 'all 0.2s ease',
-                          minWidth: '44px',
-                          minHeight: '32px'
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.transform = 'scale(1.05)';
-                          e.currentTarget.style.boxShadow = '0 4px 8px rgba(59, 130, 246, 0.4)';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.transform = 'scale(1)';
-                          e.currentTarget.style.boxShadow = '0 2px 4px rgba(59, 130, 246, 0.3)';
-                        }}
-                      >
-                        <svg
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill="currentColor"
-                          style={{ flexShrink: 0 }}
-                        >
+
+                    
+                    {/* Enhanced Item Type Badge */}
+                {(isRTL ? suggestion.itemTypeFa : suggestion.itemTypeEn) && (
+                  <div 
+                  onClick={() => openImageModal(suggestion.attachments)}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
+                    background: 'linear-gradient(135deg, #dbeafe, #bfdbfe)',
+                    color: '#1e40af',
+                    fontSize: '11px',
+                    fontWeight: '600',
+                    padding: '6px 12px',
+                    borderRadius: '20px',
+                    marginBottom: '12px',
+                    border: '1px solid #93c5fd',
+                    boxShadow: '0 2px 4px rgba(30, 64, 175, 0.1)'
+                  }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                           <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
                         </svg>
-                        <span style={{
-                          fontSize: '11px',
-                          fontWeight: '700'
-                        }}>
-                          {suggestion.attachments.length}
-                        </span>
-                      </button>
-                    )}
-                  </div>
-                </div>
-
-                {/* Item Type */}
-                {(isRTL ? suggestion.itemTypeFa : suggestion.itemTypeEn) && (
-                  <div style={{
-                    display: 'inline-block',
-                    backgroundColor: '#dbeafe',
-                    color: '#1e40af',
-                    fontSize: '10px',
-                    fontWeight: '500',
-                    padding: '2px 6px',
-                    borderRadius: '4px',
-                    marginBottom: '6px',
-                    marginRight: isRTL ? '0' : '4px',
-                    marginLeft: isRTL ? '4px' : '0'
-                  }}>
                     {getItemTypeName(suggestion.itemType, isRTL)}
                   </div>
                 )}
-
-                {/* Description */}
-                {suggestion.descriptions && suggestion.descriptions.trim() !== '' && (
-                  <div style={{
-                    fontSize: '11px',
-                    color: '#4b5563',
-                    marginBottom: '8px',
-                    lineHeight: '1.4',
-                    padding: '4px 8px',
-                    backgroundColor: '#f9fafb',
-                    borderRadius: '6px',
-                    border: '1px solid #e5e7eb',
-                    maxHeight: '40px',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    display: '-webkit-box',
-                    WebkitLineClamp: 2,
-                    WebkitBoxOrient: 'vertical'
-                  }}>
-                    {suggestion.descriptions}
                   </div>
-                )}
+                </div>
 
-                {/* Delivery Code - Show when operationButton is lblReadyToDelivery or btnConfirmDelivery and deliveryCode exists */}
+                {/* Enhanced Description */}
+                {suggestion.descriptions && suggestion.descriptions.trim() !== '' && (() => {
+                  const textDirection = detectTextDirection(suggestion.descriptions);
+                  const isContentRTL = textDirection === 'rtl';
+                  
+                  return (
+                    <div style={{
+                      fontSize: '12px',
+                      color: '#475569',
+                      marginBottom: '16px',
+                      lineHeight: '1.6',
+                      padding: '12px 16px',
+                      background: 'linear-gradient(135deg, #f8fafc, #f1f5f9)',
+                      borderRadius: '12px',
+                      border: '1px solid #e2e8f0',
+                      borderLeft: isContentRTL ? '1px solid #e2e8f0' : '4px solid #3b82f6',
+                      borderRight: isContentRTL ? '4px solid #3b82f6' : '1px solid #e2e8f0',
+                      maxHeight: '60px',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      display: '-webkit-box',
+                      WebkitLineClamp: 3,
+                      WebkitBoxOrient: 'vertical',
+                      position: 'relative',
+                      direction: textDirection,
+                      textAlign: isContentRTL ? 'right' : 'left'
+                    }}>
+                      <div style={{
+                        position: 'absolute',
+                        top: '8px',
+                        [isContentRTL ? 'right' : 'left']: '8px',
+                        width: '4px',
+                        height: '4px',
+                        borderRadius: '50%',
+                        backgroundColor: '#3b82f6'
+                      }} />
+                      <div style={{ 
+                        paddingLeft: isContentRTL ? '0' : '12px', 
+                        paddingRight: isContentRTL ? '12px' : '0',
+                        direction: textDirection,
+                        textAlign: isContentRTL ? 'right' : 'left'
+                      }}>
+                        {suggestion.descriptions}
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {/* Enhanced Delivery Code */}
                 {(suggestion.operationButton === 'lblReadyToDelivery' || suggestion.operationButton === 'btnConfirmDelivery') && suggestion.deliveryCode && (
                   <div style={{
-                    fontSize: '12px',
+                    fontSize: '13px',
                     color: '#065f46',
-                    marginBottom: '8px',
+                    marginBottom: '16px',
                     lineHeight: '1.4',
-                    padding: '6px 10px',
-                    backgroundColor: '#d1fae5',
-                    borderRadius: '8px',
-                    border: '1px solid #a7f3d0',
+                    padding: '12px 16px',
+                    background: 'linear-gradient(135deg, #d1fae5, #a7f3d0)',
+                    borderRadius: '12px',
+                    border: '1px solid #6ee7b7',
                     fontWeight: '600',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '6px'
+                    gap: '8px',
+                    boxShadow: '0 2px 8px rgba(16, 185, 129, 0.15)'
                   }}>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z" />
-                    </svg>
-                    {isRTL ? `کد تحویل: ${suggestion.deliveryCode}` : `Delivery Code: ${suggestion.deliveryCode}`}
+                    <div style={{
+                      width: '24px',
+                      height: '24px',
+                      borderRadius: '50%',
+                      backgroundColor: '#10b981',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0
+                    }}>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="white">
+                        <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z" />
+                      </svg>
+                    </div>
+                    <span>
+                      {isRTL ? `کد تحویل: ${suggestion.deliveryCode}` : `Delivery Code: ${suggestion.deliveryCode}`}
+                    </span>
                   </div>
                 )}
 
-                {/* Action Buttons for each suggestion */}
+                {/* Enhanced Action Buttons */}
                 <div style={{
                   display: 'flex',
-                  gap: '6px',
-                  marginTop: '8px'
+                  gap: '8px',
+                  marginTop: '12px',
+                  paddingTop: '12px',
+                  borderTop: '1px solid #f1f5f9'
                 }}>
                   {/* Accept Button - Show only for btnSuggtion in Suggestions tab */}
                   {(activeTab === 'suggestion' && suggestion.operationButton === 'btnSuggtion') && (
@@ -743,223 +789,495 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
 
                   {/* Picked Up Button - Show only for btnPickedUp in Suggestions tab */}
                   {(activeTab === 'suggestion' && suggestion.operationButton === 'btnPickedUp') && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handlePickedUpSuggestion(suggestion.id);
-                      }}
-                      style={{
-                        flex: 1,
-                        padding: '8px 12px',
-                        borderRadius: '20px',
-                        fontSize: '11px',
-                        fontWeight: '600',
-                        backgroundColor: '#f59e0b',
-                        color: 'white',
-                        border: 'none',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s ease',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '4px',
-                        boxShadow: '0 2px 4px rgba(245, 158, 11, 0.2)',
-                        position: 'relative',
-                        overflow: 'hidden'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = '#d97706';
-                        e.currentTarget.style.transform = 'translateY(-1px)';
-                        e.currentTarget.style.boxShadow = '0 4px 8px rgba(245, 158, 11, 0.3)';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = '#f59e0b';
-                        e.currentTarget.style.transform = 'translateY(0)';
-                        e.currentTarget.style.boxShadow = '0 2px 4px rgba(245, 158, 11, 0.2)';
-                      }}
-                    >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M11,16.5L6.5,12L7.91,10.59L11,13.67L16.59,8.09L18,9.5L11,16.5Z" />
-                      </svg>
-                      {isRTL ? 'تحویل گرفته‌ام' : 'Picked Up'}
-                    </button>
+                    <>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handlePickedUpSuggestion(suggestion.id);
+                        }}
+                        style={{
+                          flex: 1,
+                          padding: '10px 16px',
+                          borderRadius: '12px',
+                          fontSize: '13px',
+                          fontWeight: '600',
+                          background: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                          color: 'white',
+                          border: 'none',
+                          cursor: 'pointer',
+                          transition: 'all 0.3s ease',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '6px',
+                          boxShadow: '0 4px 12px rgba(245, 158, 11, 0.25)',
+                          position: 'relative',
+                          overflow: 'hidden',
+                          fontFamily: 'inherit'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.transform = 'translateY(-2px)';
+                          e.currentTarget.style.boxShadow = '0 6px 20px rgba(245, 158, 11, 0.4)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.transform = 'translateY(0)';
+                          e.currentTarget.style.boxShadow = '0 4px 12px rgba(245, 158, 11, 0.25)';
+                        }}
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M11,16.5L6.5,12L7.91,10.59L11,13.67L16.59,8.09L18,9.5L11,16.5Z" />
+                        </svg>
+                        {isRTL ? 'تحویل گرفته‌ام' : 'Picked Up'}
+                      </button>
+                      
+                      {/* Chat Button for btnPickedUp */}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          console.log('Chat with suggestion owner:', suggestion.id);
+                        }}
+                        style={{
+                          padding: '10px 16px',
+                          borderRadius: '12px',
+                          fontSize: '13px',
+                          fontWeight: '600',
+                          background: 'linear-gradient(135deg, #6366f1, #4f46e5)',
+                          color: 'white',
+                          border: 'none',
+                          cursor: 'pointer',
+                          transition: 'all 0.3s ease',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '6px',
+                          boxShadow: '0 4px 12px rgba(99, 102, 241, 0.25)',
+                          position: 'relative',
+                          overflow: 'hidden',
+                          fontFamily: 'inherit',
+                          minWidth: '80px'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.transform = 'translateY(-2px)';
+                          e.currentTarget.style.boxShadow = '0 6px 20px rgba(99, 102, 241, 0.4)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.transform = 'translateY(0)';
+                          e.currentTarget.style.boxShadow = '0 4px 12px rgba(99, 102, 241, 0.25)';
+                        }}
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M20,2H4A2,2 0 0,0 2,4V22L6,18H20A2,2 0 0,0 22,16V4C22,2.89 21.1,2 20,2Z" />
+                        </svg>
+                        {isRTL ? 'چت' : 'Chat'}
+                      </button>
+                    </>
                   )}
 
                   {/* Passenger Confirmed Delivery Button - Show only for btnPassengerConfirmedDelivery in Suggestions tab */}
                   {(activeTab === 'suggestion' && suggestion.operationButton === 'btnPassengerConfirmedDelivery') && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handlePassengerConfirmedDelivery(suggestion.id);
-                      }}
-                      style={{
-                        flex: 1,
-                        padding: '8px 12px',
-                        borderRadius: '20px',
-                        fontSize: '11px',
-                        fontWeight: '600',
-                        backgroundColor: '#8b5cf6',
-                        color: 'white',
-                        border: 'none',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s ease',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '4px',
-                        boxShadow: '0 2px 4px rgba(139, 92, 246, 0.2)',
-                        position: 'relative',
-                        overflow: 'hidden'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = '#7c3aed';
-                        e.currentTarget.style.transform = 'translateY(-1px)';
-                        e.currentTarget.style.boxShadow = '0 4px 8px rgba(139, 92, 246, 0.3)';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = '#8b5cf6';
-                        e.currentTarget.style.transform = 'translateY(0)';
-                        e.currentTarget.style.boxShadow = '0 2px 4px rgba(139, 92, 246, 0.2)';
-                      }}
-                    >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z" />
-                      </svg>
-                      {isRTL ? 'تحویل داده‌ام' : 'Delivered'}
-                    </button>
+                    <>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handlePassengerConfirmedDelivery(suggestion.id);
+                        }}
+                        style={{
+                          flex: 1,
+                          padding: '10px 16px',
+                          borderRadius: '12px',
+                          fontSize: '13px',
+                          fontWeight: '600',
+                          background: 'linear-gradient(135deg, #8b5cf6, #7c3aed)',
+                          color: 'white',
+                          border: 'none',
+                          cursor: 'pointer',
+                          transition: 'all 0.3s ease',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '6px',
+                          boxShadow: '0 4px 12px rgba(139, 92, 246, 0.25)',
+                          position: 'relative',
+                          overflow: 'hidden',
+                          fontFamily: 'inherit'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.transform = 'translateY(-2px)';
+                          e.currentTarget.style.boxShadow = '0 6px 20px rgba(139, 92, 246, 0.4)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.transform = 'translateY(0)';
+                          e.currentTarget.style.boxShadow = '0 4px 12px rgba(139, 92, 246, 0.25)';
+                        }}
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z" />
+                        </svg>
+                        {isRTL ? 'تحویل داده‌ام' : 'Delivered'}
+                      </button>
+                      
+                      {/* Chat Button for btnPassengerConfirmedDelivery */}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          console.log('Chat with suggestion owner:', suggestion.id);
+                        }}
+                        style={{
+                          padding: '10px 16px',
+                          borderRadius: '12px',
+                          fontSize: '13px',
+                          fontWeight: '600',
+                          background: 'linear-gradient(135deg, #6366f1, #4f46e5)',
+                          color: 'white',
+                          border: 'none',
+                          cursor: 'pointer',
+                          transition: 'all 0.3s ease',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '6px',
+                          boxShadow: '0 4px 12px rgba(99, 102, 241, 0.25)',
+                          position: 'relative',
+                          overflow: 'hidden',
+                          fontFamily: 'inherit',
+                          minWidth: '80px'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.transform = 'translateY(-2px)';
+                          e.currentTarget.style.boxShadow = '0 6px 20px rgba(99, 102, 241, 0.4)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.transform = 'translateY(0)';
+                          e.currentTarget.style.boxShadow = '0 4px 12px rgba(99, 102, 241, 0.25)';
+                        }}
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M20,2H4A2,2 0 0,0 2,4V22L6,18H20A2,2 0 0,0 22,16V4C22,2.89 21.1,2 20,2Z" />
+                        </svg>
+                        {isRTL ? 'چت' : 'Chat'}
+                      </button>
+                    </>
                   )}
 
                   {/* Wait To Confirm Delivery Button - Show only for lblWaitToConfirmDelivery in Suggestions tab (Display Only) */}
                   {(activeTab === 'suggestion' && suggestion.operationButton === 'lblWaitToConfirmDelivery') && (
-                    <button
-                      disabled={true}
-                      style={{
-                        flex: 1,
-                        padding: '8px 12px',
-                        borderRadius: '20px',
-                        fontSize: '11px',
-                        fontWeight: '600',
-                        backgroundColor: '#f3f4f6',
-                        color: '#9ca3af',
-                        border: '1.5px solid #d1d5db',
-                        cursor: 'not-allowed',
-                        transition: 'all 0.2s ease',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '4px',
-                        position: 'relative',
-                        overflow: 'hidden'
-                      }}
-                    >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M15.5,17L10.5,12L15.5,7V17Z" />
-                      </svg>
-                      {isRTL ? 'در انتظار تایید تحویل' : 'Waiting for Delivery Confirmation'}
-                    </button>
+                    <>
+                      <button
+                        disabled={true}
+                        style={{
+                          flex: 1,
+                          padding: '10px 16px',
+                          borderRadius: '12px',
+                          fontSize: '13px',
+                          fontWeight: '600',
+                          background: 'linear-gradient(135deg, #f8f9fa, #e9ecef)',
+                          color: '#6c757d',
+                          border: '2px solid #dee2e6',
+                          cursor: 'not-allowed',
+                          transition: 'all 0.3s ease',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '6px',
+                          position: 'relative',
+                          overflow: 'hidden',
+                          fontFamily: 'inherit',
+                          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
+                        }}
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 48 48" width="16px" height="16px"><linearGradient id="IMoH7gpu5un5Dx2vID39Ra" x1="9.858" x2="38.142" y1="9.858" y2="38.142" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#9dffce"/><stop offset="1" stop-color="#50d18d"/></linearGradient><path fill="url(#IMoH7gpu5un5Dx2vID39Ra)" d="M44,24c0,11.045-8.955,20-20,20S4,35.045,4,24S12.955,4,24,4S44,12.955,44,24z"/><linearGradient id="IMoH7gpu5un5Dx2vID39Rb" x1="13" x2="36" y1="24.793" y2="24.793" gradientUnits="userSpaceOnUse"><stop offset=".824" stop-color="#135d36"/><stop offset=".931" stop-color="#125933"/><stop offset="1" stop-color="#11522f"/></linearGradient><path fill="url(#IMoH7gpu5un5Dx2vID39Rb)" d="M21.293,32.707l-8-8c-0.391-0.391-0.391-1.024,0-1.414l1.414-1.414	c0.391-0.391,1.024-0.391,1.414,0L22,27.758l10.879-10.879c0.391-0.391,1.024-0.391,1.414,0l1.414,1.414	c0.391,0.391,0.391,1.024,0,1.414l-13,13C22.317,33.098,21.683,33.098,21.293,32.707z"/></svg>
+                        {isRTL ? 'تحویل شد' : 'ّDelivered'}
+                      </button>
+                    </>
                   )}
 
                   {/* Confirm Delivery Button - Show only for btnConfirmDelivery in InProgress tab */}
                   {(activeTab === 'inProgress' && suggestion.operationButton === 'btnConfirmDelivery') && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleConfirmDelivery(suggestion.id);
-                      }}
-                      style={{
-                        flex: 1,
-                        padding: '8px 12px',
-                        borderRadius: '20px',
-                        fontSize: '11px',
-                        fontWeight: '600',
-                        backgroundColor: '#10b981',
-                        color: 'white',
-                        border: 'none',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s ease',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '4px',
-                        boxShadow: '0 2px 4px rgba(16, 185, 129, 0.2)',
-                        position: 'relative',
-                        overflow: 'hidden'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = '#059669';
-                        e.currentTarget.style.transform = 'translateY(-1px)';
-                        e.currentTarget.style.boxShadow = '0 4px 8px rgba(16, 185, 129, 0.3)';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = '#10b981';
-                        e.currentTarget.style.transform = 'translateY(0)';
-                        e.currentTarget.style.boxShadow = '0 2px 4px rgba(16, 185, 129, 0.2)';
-                      }}
-                    >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z" />
-                      </svg>
-                      {isRTL ? 'تایید و ثبت امتیاز' : 'Confirm And Rating'}
-                    </button>
+                    <>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleConfirmDelivery(suggestion.id);
+                        }}
+                        style={{
+                          flex: 1,
+                          padding: '10px 16px',
+                          borderRadius: '12px',
+                          fontSize: '13px',
+                          fontWeight: '600',
+                          background: 'linear-gradient(135deg, #10b981, #059669)',
+                          color: 'white',
+                          border: 'none',
+                          cursor: 'pointer',
+                          transition: 'all 0.3s ease',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '6px',
+                          boxShadow: '0 4px 12px rgba(16, 185, 129, 0.25)',
+                          position: 'relative',
+                          overflow: 'hidden',
+                          fontFamily: 'inherit'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.transform = 'translateY(-2px)';
+                          e.currentTarget.style.boxShadow = '0 6px 20px rgba(16, 185, 129, 0.4)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.transform = 'translateY(0)';
+                          e.currentTarget.style.boxShadow = '0 4px 12px rgba(16, 185, 129, 0.25)';
+                        }}
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z" />
+                        </svg>
+                        {isRTL ? 'تایید و ثبت امتیاز' : 'Confirm And Rating'}
+                      </button>
+                      
+                      {/* Chat Button for btnConfirmDelivery */}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          console.log('Chat with suggestion owner:', suggestion.id);
+                        }}
+                        style={{
+                          padding: '10px 16px',
+                          borderRadius: '12px',
+                          fontSize: '13px',
+                          fontWeight: '600',
+                          background: 'linear-gradient(135deg, #6366f1, #4f46e5)',
+                          color: 'white',
+                          border: 'none',
+                          cursor: 'pointer',
+                          transition: 'all 0.3s ease',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '6px',
+                          boxShadow: '0 4px 12px rgba(99, 102, 241, 0.25)',
+                          position: 'relative',
+                          overflow: 'hidden',
+                          fontFamily: 'inherit',
+                          minWidth: '80px'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.transform = 'translateY(-2px)';
+                          e.currentTarget.style.boxShadow = '0 6px 20px rgba(99, 102, 241, 0.4)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.transform = 'translateY(0)';
+                          e.currentTarget.style.boxShadow = '0 4px 12px rgba(99, 102, 241, 0.25)';
+                        }}
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M20,2H4A2,2 0 0,0 2,4V22L6,18H20A2,2 0 0,0 22,16V4C22,2.89 21.1,2 20,2Z" />
+                        </svg>
+                        {isRTL ? 'چت' : 'Chat'}
+                      </button>
+                    </>
                   )}
 
 
 
-                  {/* Chat Button - Hide for btnSuggtion, btnPickedUp, btnPassengerConfirmedDelivery, and lblWaitToConfirmDelivery in Suggestions tab, and hide for btnConfirmDelivery in InProgress tab, show special text for lblWaitForAcceptSuggetion and lblReadyToPickeUp in InProgress tab */}
-                  {!(activeTab === 'suggestion' && (suggestion.operationButton === 'btnSuggtion' || suggestion.operationButton === 'btnPickedUp' || suggestion.operationButton === 'btnPassengerConfirmedDelivery' || suggestion.operationButton === 'lblWaitToConfirmDelivery')) && !(activeTab === 'inProgress' && suggestion.operationButton === 'btnConfirmDelivery') && (
+                  {/* Ready To Pick Up Button - Show only for lblReadyToPickeUp in InProgress tab (Display Only) */}
+                  {(activeTab === 'inProgress' && suggestion.operationButton === 'lblReadyToPickeUp') && (
+                    <>
+                      <button
+                        disabled={true}
+                        style={{
+                          flex: 1,
+                          padding: '10px 16px',
+                          borderRadius: '12px',
+                          fontSize: '13px',
+                          fontWeight: '600',
+                          background: 'linear-gradient(135deg, #f8f9fa, #e9ecef)',
+                          color: '#6c757d',
+                          border: '2px solid #dee2e6',
+                          cursor: 'not-allowed',
+                          transition: 'all 0.3s ease',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '6px',
+                          position: 'relative',
+                          overflow: 'hidden',
+                          fontFamily: 'inherit',
+                          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
+                        }}
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M15.5,17L10.5,12L15.5,7V17Z" />
+                        </svg>
+                        {isRTL ? 'آماده تحویل' : 'Ready To Picked Up'}
+                      </button>
+                      
+                      {/* Chat Button for lblReadyToPickeUp */}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          console.log('Chat with suggestion owner:', suggestion.id);
+                        }}
+                        style={{
+                          padding: '10px 16px',
+                          borderRadius: '12px',
+                          fontSize: '13px',
+                          fontWeight: '600',
+                          background: 'linear-gradient(135deg, #6366f1, #4f46e5)',
+                          color: 'white',
+                          border: 'none',
+                          cursor: 'pointer',
+                          transition: 'all 0.3s ease',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '6px',
+                          boxShadow: '0 4px 12px rgba(99, 102, 241, 0.25)',
+                          position: 'relative',
+                          overflow: 'hidden',
+                          fontFamily: 'inherit',
+                          minWidth: '80px'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.transform = 'translateY(-2px)';
+                          e.currentTarget.style.boxShadow = '0 6px 20px rgba(99, 102, 241, 0.4)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.transform = 'translateY(0)';
+                          e.currentTarget.style.boxShadow = '0 4px 12px rgba(99, 102, 241, 0.25)';
+                        }}
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M20,2H4A2,2 0 0,0 2,4V22L6,18H20A2,2 0 0,0 22,16V4C22,2.89 21.1,2 20,2Z" />
+                        </svg>
+                        {isRTL ? 'چت' : 'Chat'}
+                      </button>
+                    </>
+                  )}
+
+                  {/* Ready To Delivery Button - Show only for lblReadyToDelivery in InProgress tab (Display Only) */}
+                  {(activeTab === 'inProgress' && suggestion.operationButton === 'lblReadyToDelivery') && (
+                    <>
+                      <button
+                        disabled={true}
+                        style={{
+                          flex: 1,
+                          padding: '10px 16px',
+                          borderRadius: '12px',
+                          fontSize: '13px',
+                          fontWeight: '600',
+                          background: 'linear-gradient(135deg, #d1fae5, #a7f3d0)',
+                          color: '#065f46',
+                          border: '2px solid #6ee7b7',
+                          cursor: 'not-allowed',
+                          transition: 'all 0.3s ease',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '6px',
+                          position: 'relative',
+                          overflow: 'hidden',
+                          fontFamily: 'inherit',
+                          boxShadow: '0 2px 8px rgba(16, 185, 129, 0.15)'
+                        }}
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M15.5,17L10.5,12L15.5,7V17Z" />
+                        </svg>
+                        {isRTL ? 'آماده ارسال' : 'Ready To Delivery'}
+                      </button>
+                      
+                      {/* Chat Button for lblReadyToDelivery */}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          console.log('Chat with suggestion owner:', suggestion.id);
+                        }}
+                        style={{
+                          padding: '10px 16px',
+                          borderRadius: '12px',
+                          fontSize: '13px',
+                          fontWeight: '600',
+                          background: 'linear-gradient(135deg, #6366f1, #4f46e5)',
+                          color: 'white',
+                          border: 'none',
+                          cursor: 'pointer',
+                          transition: 'all 0.3s ease',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '6px',
+                          boxShadow: '0 4px 12px rgba(99, 102, 241, 0.25)',
+                          position: 'relative',
+                          overflow: 'hidden',
+                          fontFamily: 'inherit',
+                          minWidth: '80px'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.transform = 'translateY(-2px)';
+                          e.currentTarget.style.boxShadow = '0 6px 20px rgba(99, 102, 241, 0.4)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.transform = 'translateY(0)';
+                          e.currentTarget.style.boxShadow = '0 4px 12px rgba(99, 102, 241, 0.25)';
+                        }}
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M20,2H4A2,2 0 0,0 2,4V22L6,18H20A2,2 0 0,0 22,16V4C22,2.89 21.1,2 20,2Z" />
+                        </svg>
+                        {isRTL ? 'چت' : 'Chat'}
+                      </button>
+                    </>
+                  )}
+
+                  {/* Chat Button - Hide for specific states where we now have dedicated chat buttons */}
+                  {!(activeTab === 'suggestion' && (suggestion.operationButton === 'btnSuggtion' || suggestion.operationButton === 'btnPickedUp' || suggestion.operationButton === 'btnPassengerConfirmedDelivery' || suggestion.operationButton === 'lblWaitToConfirmDelivery')) && !(activeTab === 'inProgress' && (suggestion.operationButton === 'btnConfirmDelivery' || suggestion.operationButton === 'lblReadyToPickeUp' || suggestion.operationButton === 'lblReadyToDelivery')) && (
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        if (!(activeTab === 'inProgress' && (suggestion.operationButton === 'lblWaitForAcceptSuggetion' || suggestion.operationButton === 'lblReadyToPickeUp' || suggestion.operationButton === 'lblReadyToDelivery'))) {
+                        if (!(activeTab === 'inProgress' && suggestion.operationButton === 'lblWaitForAcceptSuggetion')) {
                           console.log('Chat with suggestion owner:', suggestion.id);
                         }
                       }}
-                      disabled={activeTab === 'inProgress' && (suggestion.operationButton === 'lblWaitForAcceptSuggetion' || suggestion.operationButton === 'lblReadyToPickeUp' || suggestion.operationButton === 'lblReadyToDelivery' || suggestion.operationButton === 'btnConfirmDelivery')}
+                      disabled={activeTab === 'inProgress' && suggestion.operationButton === 'lblWaitForAcceptSuggetion'}
                       style={{
                         flex: 1,
-                        padding: '8px 12px',
-                        borderRadius: '20px',
-                        fontSize: '11px',
+                        padding: '10px 16px',
+                        borderRadius: '12px',
+                        fontSize: '13px',
                         fontWeight: '600',
-                        backgroundColor: (activeTab === 'inProgress' && suggestion.operationButton === 'lblReadyToDelivery') ? '#c4ffc8' : (activeTab === 'inProgress' && (suggestion.operationButton === 'lblWaitForAcceptSuggetion' || suggestion.operationButton === 'lblReadyToPickeUp' || suggestion.operationButton === 'btnConfirmDelivery')) ? '#f3f4f6' : 'transparent',
-                        color: (activeTab === 'inProgress' && suggestion.operationButton === 'lblReadyToDelivery') ? '#065f46' : (activeTab === 'inProgress' && (suggestion.operationButton === 'lblWaitForAcceptSuggetion' || suggestion.operationButton === 'lblReadyToPickeUp' || suggestion.operationButton === 'btnConfirmDelivery')) ? '#9ca3af' : '#6366f1',
-                        border: (activeTab === 'inProgress' && (suggestion.operationButton === 'lblWaitForAcceptSuggetion' || suggestion.operationButton === 'lblReadyToPickeUp' || suggestion.operationButton === 'lblReadyToDelivery' || suggestion.operationButton === 'btnConfirmDelivery')) ? '1.5px solid #d1d5db' : '1.5px solid #6366f1',
-                        cursor: (activeTab === 'inProgress' && (suggestion.operationButton === 'lblWaitForAcceptSuggetion' || suggestion.operationButton === 'lblReadyToPickeUp' || suggestion.operationButton === 'lblReadyToDelivery' || suggestion.operationButton === 'btnConfirmDelivery')) ? 'not-allowed' : 'pointer',
-                        transition: 'all 0.2s ease',
+                        background: (activeTab === 'inProgress' && suggestion.operationButton === 'lblWaitForAcceptSuggetion') ? 'linear-gradient(135deg, #f8f9fa, #e9ecef)' : 'linear-gradient(135deg, #6366f1, #4f46e5)',
+                        color: (activeTab === 'inProgress' && suggestion.operationButton === 'lblWaitForAcceptSuggetion') ? '#6c757d' : 'white',
+                        border: (activeTab === 'inProgress' && suggestion.operationButton === 'lblWaitForAcceptSuggetion') ? '2px solid #dee2e6' : 'none',
+                        cursor: (activeTab === 'inProgress' && suggestion.operationButton === 'lblWaitForAcceptSuggetion') ? 'not-allowed' : 'pointer',
+                        transition: 'all 0.3s ease',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        gap: '4px',
+                        gap: '6px',
                         position: 'relative',
-                        overflow: 'hidden'
+                        overflow: 'hidden',
+                        fontFamily: 'inherit',
+                        boxShadow: (activeTab === 'inProgress' && suggestion.operationButton === 'lblWaitForAcceptSuggetion') ? '0 2px 8px rgba(0, 0, 0, 0.1)' : '0 4px 12px rgba(99, 102, 241, 0.25)'
                       }}
                       onMouseEnter={(e) => {
-                        if (!(activeTab === 'inProgress' && (suggestion.operationButton === 'lblWaitForAcceptSuggetion' || suggestion.operationButton === 'lblReadyToPickeUp' || suggestion.operationButton === 'lblReadyToDelivery'))) {
-                          e.currentTarget.style.backgroundColor = '#6366f1';
-                          e.currentTarget.style.color = 'white';
-                          e.currentTarget.style.transform = 'translateY(-1px)';
-                          e.currentTarget.style.boxShadow = '0 4px 8px rgba(99, 102, 241, 0.3)';
+                        if (!(activeTab === 'inProgress' && suggestion.operationButton === 'lblWaitForAcceptSuggetion')) {
+                          e.currentTarget.style.transform = 'translateY(-2px)';
+                          e.currentTarget.style.boxShadow = '0 6px 20px rgba(99, 102, 241, 0.4)';
                         }
                       }}
                       onMouseLeave={(e) => {
-                        if (!(activeTab === 'inProgress' && (suggestion.operationButton === 'lblWaitForAcceptSuggetion' || suggestion.operationButton === 'lblReadyToPickeUp' || suggestion.operationButton === 'lblReadyToDelivery'))) {
-                          e.currentTarget.style.backgroundColor = 'transparent';
-                          e.currentTarget.style.color = '#6366f1';
+                        if (!(activeTab === 'inProgress' && suggestion.operationButton === 'lblWaitForAcceptSuggetion')) {
                           e.currentTarget.style.transform = 'translateY(0)';
-                          e.currentTarget.style.boxShadow = 'none';
+                          e.currentTarget.style.boxShadow = '0 4px 12px rgba(99, 102, 241, 0.25)';
                         }
                       }}
                     >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M20,2H4A2,2 0 0,0 2,4V22L6,18H20A2,2 0 0,0 22,16V4C22,2.89 21.1,2 20,2Z" />
                       </svg>
                       {(activeTab === 'inProgress' && suggestion.operationButton === 'lblWaitForAcceptSuggetion')
                         ? (isRTL ? 'در انتظار تایید' : 'Wait For Accept')
-                        : (activeTab === 'inProgress' && suggestion.operationButton === 'lblReadyToPickeUp')
-                          ? (isRTL ? 'آماده تحویل' : 'Ready To Picked Up')
-                          : (activeTab === 'inProgress' && suggestion.operationButton === 'lblReadyToDelivery')
-                            ? (isRTL ? 'آماده ارسال' : 'Ready To Delivery')
-                            : (isRTL ? 'چت' : 'Chat')
+                        : (isRTL ? 'چت' : 'Chat')
                       }
                     </button>
                   )}
