@@ -188,6 +188,11 @@ if (typeof document !== 'undefined') {
 
 
 
+interface FileWithPreview {
+  file: File;
+  preview: string;
+}
+
 interface ParcelListProps {
   onNavigateToUpdateProfile?: () => void;
 }
@@ -217,7 +222,7 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
   const [currency, setCurrency] = useState<string>('-1'); // -1 for select, 1 for USD, 2 for IRR
   const [description, setDescription] = useState<string>('');
   const [itemTypeId, setItemTypeId] = useState<number>(-1); // -1 for select, other values for item types
-  const [files, setFiles] = useState<File[]>([]);
+  const [files, setFiles] = useState<FileWithPreview[]>([]);
   const [validationErrors, setValidationErrors] = useState<{[key: string]: string}>({});
 
   // Suggestions modal state
@@ -269,6 +274,17 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
 
     loadItemTypes();
   }, []);
+
+  // Cleanup preview URLs when component unmounts
+  useEffect(() => {
+    return () => {
+      files.forEach(fileObj => {
+        if (fileObj.preview) {
+          URL.revokeObjectURL(fileObj.preview);
+        }
+      });
+    };
+  }, [files]);
 
   // Filter flights based on search query and active tab using TripType
   const filteredFlights = flights.filter(flight => {
@@ -331,97 +347,85 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = event.target.files;
     if (!selectedFiles) return;
-    
-    // Clear previous file validation errors
-    setValidationErrors(prev => {
-      const newErrors = { ...prev };
-      delete newErrors.fileType;
-      delete newErrors.fileSize;
-      delete newErrors.fileDuplicate;
-      delete newErrors.totalSize;
-      return newErrors;
-    });
-    
-    const newFileArray: File[] = [];
-    const maxSizePerFile = 5 * 1024 * 1024; // 5MB
-    const maxTotalSize = 20 * 1024 * 1024; // 8MB
-    
-    // Calculate current total size of existing files
-    const currentTotalSize = files.reduce((sum, file) => sum + file.size, 0);
-    let newFilesTotalSize = 0;
-    
-    // Check file types and sizes
-    for (let i = 0; i < selectedFiles.length; i++) {
-      const file = selectedFiles[i];
-      const fileType = file.type.toLowerCase();
-      
-      // Check if file is an image
-      if (!fileType.startsWith('image/')) {
-        setValidationErrors(prev => ({
-          ...prev,
-          fileType: isRTL ? 'فقط فایل‌های تصویری مجاز هستند' : 'Only image files are allowed'
-        }));
-        // Reset input value to allow re-selecting files
-        event.target.value = '';
+
+    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+    const MAX_TOTAL_SIZE = 8 * 1024 * 1024; // 8MB (همان چیزی که در UI نشان داده می‌شود)
+
+    const currentTotalSize = files.reduce((sum, f) => sum + f.file.size, 0);
+
+    const newFiles: FileWithPreview[] = [];
+    let errorShown = false;
+
+    Array.from(selectedFiles).forEach(file => {
+      if (!file.type.startsWith('image/') && file.type !== 'application/pdf') {
+        if (!errorShown) {
+          setValidationErrors(prev => ({
+            ...prev,
+            fileType: isRTL ? 'فقط فایل‌های تصویر و PDF مجاز هستند' : 'Only image and PDF files are allowed'
+          }));
+          errorShown = true;
+        }
         return;
       }
-      
-      // Check individual file size
-      if (file.size > maxSizePerFile) {
-        setValidationErrors(prev => ({
-          ...prev,
-          fileSize: isRTL ? 
-            `حجم هر فایل نباید بیشتر از 5 مگابایت باشد: ${file.name}` : 
-            `File size should not exceed 5MB: ${file.name}`
-        }));
-        // Reset input value to allow re-selecting files
-        event.target.value = '';
+
+      if (file.size > MAX_FILE_SIZE) {
+        if (!errorShown) {
+          setValidationErrors(prev => ({
+            ...prev,
+            fileSize: isRTL ? 'حجم هر فایل نباید بیشتر از 5MB باشد' : 'Each file size should not exceed 5MB'
+          }));
+          errorShown = true;
+        }
         return;
       }
-      
-      // Check if file already exists (by name and size)
-      const fileExists = files.some(existingFile => 
-        existingFile.name === file.name && existingFile.size === file.size
+
+      if (currentTotalSize + file.size > MAX_TOTAL_SIZE) {
+        if (!errorShown) {
+          setValidationErrors(prev => ({
+            ...prev,
+            totalSize: isRTL ? 'حجم کل فایل‌ها نباید بیشتر از 8MB باشد' : 'Total file size should not exceed 8MB'
+          }));
+          errorShown = true;
+        }
+        return;
+      }
+
+      // Check for duplicates
+      const isDuplicate = files.some(existingFile => 
+        existingFile.file.name === file.name && existingFile.file.size === file.size
       );
-      
-      if (fileExists) {
-        setValidationErrors(prev => ({
-          ...prev,
-          fileDuplicate: isRTL ? 
-            `فایل ${file.name} قبلاً انتخاب شده است` : 
-            `File ${file.name} is already selected`
-        }));
-        continue;
+
+      if (isDuplicate) {
+        if (!errorShown) {
+          setValidationErrors(prev => ({
+            ...prev,
+            fileDuplicate: isRTL ? `فایل ${file.name} قبلاً انتخاب شده است` : `File ${file.name} is already selected`
+          }));
+          errorShown = true;
+        }
+        return;
       }
-      
-      newFilesTotalSize += file.size;
-      newFileArray.push(file);
+
+      newFiles.push({ 
+        file, 
+        preview: file.type.startsWith('image/') ? URL.createObjectURL(file) : '' 
+      });
+    });
+
+    if (newFiles.length > 0) {
+      setFiles(prev => [...prev, ...newFiles]);
+      // Clear errors if files were added successfully
+      setValidationErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors.fileType;
+        delete newErrors.fileSize;
+        delete newErrors.fileDuplicate;
+        delete newErrors.totalSize;
+        return newErrors;
+      });
     }
-    
-    // Check total size of all files (existing + new)
-    if (currentTotalSize + newFilesTotalSize > maxTotalSize) {
-      const remainingSize = maxTotalSize - currentTotalSize;
-      setValidationErrors(prev => ({
-        ...prev,
-        totalSize: isRTL ? 
-          `حجم کل فایل‌ها نباید بیشتر از 20 مگابایت باشد. فضای باقی‌مانده: ${(remainingSize / 1024 / 1024).toFixed(2)} مگابایت` : 
-          `Total file size should not exceed 20MB. Remaining space: ${(remainingSize / 1024 / 1024).toFixed(2)} MB`
-      }));
-      // Reset input value to allow re-selecting files
-      event.target.value = '';
-      return;
-    }
-    
-    // Add new files to existing files
-    if (newFileArray.length > 0) {
-      setFiles(prevFiles => [...prevFiles, ...newFileArray]);
-      console.log(isRTL ? 
-        `${newFileArray.length} فایل با موفقیت اضافه شد` : 
-        `${newFileArray.length} file(s) added successfully`);
-    }
-    
-    // Reset input value to allow re-selecting files
-    event.target.value = '';
+
+    if (event.target) event.target.value = '';
   };
 
   // Handle menu actions
@@ -518,7 +522,7 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
             currency: parseInt(currency) || 0,
             description: description,
             itemTypeId: itemTypeId,
-            files: files
+            files: files.map(f => f.file)
           }
         };
       } else if (selectedTripOption === 'accept_price') {
@@ -529,7 +533,7 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
             tripOption: selectedTripOption,
             itemTypeId: itemTypeId,
             description: description,
-            files: files
+            files: files.map(f => f.file)
           }
         };
       } else {
@@ -2386,7 +2390,7 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
                         id="file-upload-input"
                         type="file"
                         multiple
-                        accept="image/*"
+                        accept="image/*,application/pdf"
                         onChange={handleFileChange}
                         style={{ display: 'none' }}
                       />
@@ -2397,17 +2401,17 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
                         </svg>
                       </div>
                       <div style={{ fontSize: '14px', color: '#848d96' }}>
-                        {isRTL ? 'آپلود تصاویر' : 'Upload Images'}
+                        {isRTL ? 'آپلود تصاویر یا PDF' : 'Upload Images or PDF'}
                       </div>
                       <div style={{ fontSize: '12px', color: '#848d96', marginTop: '5px' }}>
-                        {isRTL ? 'حداکثر حجم هر فایل: 5 مگابایت' : 'Max file size: 5MB'}
+                        {isRTL ? 'حداکثر حجم هر فایل: 5MB' : 'Max file size: 5MB'}
                       </div>
                     </div>
                     
                     {/* نمایش فایل‌های آپلود شده */}
                     {files.length > 0 && (
                       <div style={{ marginTop: '10px' }}>
-                        {files.map((file, index) => (
+                        {files.map((fileObj, index) => (
                           <div key={index} style={{
                             display: 'flex',
                             alignItems: 'center',
@@ -2426,41 +2430,31 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
                               alignItems: 'center',
                               justifyContent: 'center'
                             }}>
-                              {file.type.startsWith('image/') ? (
+                              {fileObj.preview ? (
                                 <img
-                                  src={URL.createObjectURL(file)}
+                                  src={fileObj.preview}
                                   alt="Preview"
                                   style={{
                                     width: '100%',
                                     height: '100%',
                                     objectFit: 'cover'
                                   }}
-                                  onError={(e) => {
-                                    // Fallback to file icon if image fails to load
-                                    const target = e.target as HTMLImageElement;
-                                    target.style.display = 'none';
-                                    const parent = target.parentElement;
-                                    if (parent) {
-                                      parent.innerHTML = `
-                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                          <path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.89 22 5.99 22H18C19.1 22 20 21.1 20 20V8L14 2Z" stroke="#50b4ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                          <path d="M14 2V8H20" stroke="#50b4ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                          <path d="M16 13H8" stroke="#50b4ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                          <path d="M16 17H8" stroke="#50b4ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                          <path d="M10 9H9H8" stroke="#50b4ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                        </svg>
-                                      `;
-                                    }
-                                  }}
                                 />
                               ) : (
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                  <path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.89 22 5.99 22H18C19.1 22 20 21.1 20 20V8L14 2Z" stroke="#50b4ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                  <path d="M14 2V8H20" stroke="#50b4ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                  <path d="M16 13H8" stroke="#50b4ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                  <path d="M16 17H8" stroke="#50b4ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                  <path d="M10 9H9H8" stroke="#50b4ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                </svg>
+                                <div style={{
+                                  width: '100%',
+                                  height: '100%',
+                                  borderRadius: '6px',
+                                  background: '#3a4a5c',
+                                  color: '#fff',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  fontSize: '10px',
+                                  fontWeight: 'bold'
+                                }}>
+                                  PDF
+                                </div>
                               )}
                             </div>
                             <div style={{ flex: 1, marginLeft: '10px', marginRight: '10px' }}>
@@ -2473,20 +2467,24 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
                                 overflow: 'hidden',
                                 whiteSpace: 'nowrap'
                               }}>
-                                {file.name}
+                                {fileObj.file.name}
                               </div>
                               <div style={{
                                 fontSize: '12px',
                                 color: '#848d96',
                                 fontFamily: 'IRANSansX, sans-serif'
                               }}>
-                                {(file.size / 1024 / 1024).toFixed(2)} MB
+                                {(fileObj.file.size / 1024 / 1024).toFixed(2)} MB
                               </div>
                             </div>
                             <button
                               type="button"
                               onClick={(e) => {
                                 e.stopPropagation();
+                                // Clean up preview URL if it exists
+                                if (fileObj.preview) {
+                                  URL.revokeObjectURL(fileObj.preview);
+                                }
                                 const newFiles = [...files];
                                 newFiles.splice(index, 1);
                                 setFiles(newFiles);
@@ -2511,7 +2509,7 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
 
                         {/* نمایش حجم کل فایل‌ها */}
                         <div style={{ fontSize: '12px', color: '#848d96', marginTop: '5px', textAlign: isRTL ? 'right' : 'left' }}>
-                          {isRTL ? 'حجم کل:' : 'Total size:'} {(files.reduce((sum, file) => sum + file.size, 0) / 1024 / 1024).toFixed(2)} / 8 MB
+                          {isRTL ? 'حجم کل:' : 'Total size:'} {(files.reduce((sum, fileObj) => sum + fileObj.file.size, 0) / 1024 / 1024).toFixed(2)} / 8 MB
                         </div>
                       </div>
                     )}
