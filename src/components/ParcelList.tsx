@@ -497,6 +497,15 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
 
     try {
       setIsLoading(true);
+      console.log('Starting suggestion submission...', {
+        selectedTripOption,
+        suggestionPrice,
+        currency,
+        description,
+        itemTypeId,
+        filesCount: files.length,
+        requestId: selectedFlightForTrip?.requestId
+      });
 
       let requestData;
 
@@ -533,7 +542,9 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
         };
       }
 
+      console.log('Sending request data:', requestData);
       const response = await apiService.selectRequest(requestData);
+      console.log('API Response:', response);
 
       if (response.requestStatus.value === 0) {
         setApiResult({
@@ -583,14 +594,32 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
       }
     } catch (error) {
       console.error('Error submitting request:', error);
+      
+      // More detailed error handling
+      let errorMessage = isRTL ? 'خطا در ارتباط با سرور' : 'Server connection error';
+      
+      if (error instanceof Error) {
+        if (error.message.includes('HTTP 400')) {
+          errorMessage = isRTL ? 'اطلاعات ارسالی نامعتبر است' : 'Invalid data submitted';
+        } else if (error.message.includes('HTTP 401')) {
+          errorMessage = isRTL ? 'لطفاً دوباره وارد شوید' : 'Please login again';
+        } else if (error.message.includes('HTTP 403')) {
+          errorMessage = isRTL ? 'شما مجاز به انجام این عمل نیستید' : 'You are not authorized for this action';
+        } else if (error.message.includes('HTTP 500')) {
+          errorMessage = isRTL ? 'خطا در سرور، لطفاً بعداً تلاش کنید' : 'Server error, please try again later';
+        } else if (error.message.includes('Failed to fetch')) {
+          errorMessage = isRTL ? 'مشکل در اتصال به اینترنت' : 'Internet connection problem';
+        }
+      }
+      
       setApiResult({
         success: false,
-        message: isRTL ? 'خطا در ارتباط با سرور' : 'Server connection error'
+        message: errorMessage
       });
 
       setTimeout(() => {
         setApiResult(null);
-      }, 3000);
+      }, 5000); // Increased timeout for better user experience
     } finally {
       setIsLoading(false);
     }
@@ -2392,17 +2421,47 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
                               height: '50px',
                               borderRadius: '6px',
                               overflow: 'hidden',
-                              backgroundColor: 'rgba(255, 255, 255, 0.1)'
+                              backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center'
                             }}>
-                              <img
-                                src={URL.createObjectURL(file)}
-                                alt="Preview"
-                                style={{
-                                  width: '100%',
-                                  height: '100%',
-                                  objectFit: 'cover'
-                                }}
-                              />
+                              {file.type.startsWith('image/') ? (
+                                <img
+                                  src={URL.createObjectURL(file)}
+                                  alt="Preview"
+                                  style={{
+                                    width: '100%',
+                                    height: '100%',
+                                    objectFit: 'cover'
+                                  }}
+                                  onError={(e) => {
+                                    // Fallback to file icon if image fails to load
+                                    const target = e.target as HTMLImageElement;
+                                    target.style.display = 'none';
+                                    const parent = target.parentElement;
+                                    if (parent) {
+                                      parent.innerHTML = `
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                          <path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.89 22 5.99 22H18C19.1 22 20 21.1 20 20V8L14 2Z" stroke="#50b4ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                          <path d="M14 2V8H20" stroke="#50b4ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                          <path d="M16 13H8" stroke="#50b4ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                          <path d="M16 17H8" stroke="#50b4ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                          <path d="M10 9H9H8" stroke="#50b4ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                        </svg>
+                                      `;
+                                    }
+                                  }}
+                                />
+                              ) : (
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                  <path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.89 22 5.99 22H18C19.1 22 20 21.1 20 20V8L14 2Z" stroke="#50b4ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                  <path d="M14 2V8H20" stroke="#50b4ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                  <path d="M16 13H8" stroke="#50b4ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                  <path d="M16 17H8" stroke="#50b4ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                  <path d="M10 9H9H8" stroke="#50b4ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                </svg>
+                              )}
                             </div>
                             <div style={{ flex: 1, marginLeft: '10px', marginRight: '10px' }}>
                               <div style={{
