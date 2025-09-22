@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../hooks/useLanguage';
 import { useTheme } from '../hooks/useTheme';
-import { useTelegramButtons } from '../hooks/useTelegramButtons';
+
 import { useFormValidation } from '../hooks/useFormValidation';
 import { apiService } from '../services/apiService';
 import type { CountryItem, CityItem, UpdateProfileRequest } from '../types/api';
@@ -180,31 +180,7 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ onProfileUpdated }) => {
     }
   };
 
-  // Setup Telegram buttons
-  const { updateMainButton } = useTelegramButtons({
-    mainButton: {
-      text: success ? (t('common.saved') || 'ذخیره شد ✓') : (t('common.save') || 'ذخیره تغییرات'),
-      onClick: handleSubmit,
-      isVisible: true,
-      isEnabled: !isLoading,
-      isLoading: isLoading,
-      color: success ? '#4CAF50' : '#50b4ff'
-    }
-  });
 
-  // Update button state when form validity or loading state changes with debounce for iOS
-  React.useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      updateMainButton({
-        text: success ? (t('common.saved') || 'ذخیره شد ✓') : (t('common.save') || 'ذخیره تغییرات'),
-        isEnabled: !isLoading,
-        isLoading: isLoading,
-        color: success ? '#4CAF50' : '#50b4ff'
-      });
-    }, 150); // Debounce for iOS
-
-    return () => clearTimeout(timeoutId);
-  }, [isLoading, success, t, updateMainButton]);
 
   const inputStyle = {
     width: '100%',
@@ -504,7 +480,44 @@ const UpdateProfile: React.FC<UpdateProfileProps> = ({ onProfileUpdated }) => {
             </select>
           </div>
 
-          {/* Note: Submit button is now handled by Telegram's MainButton in the bottom bar */}
+          {/* Submit Button */}
+          <div style={{ marginTop: '20px' }}>
+            <button
+              type="button"
+              onClick={handleSubmit}
+              disabled={isLoading}
+              style={{
+                width: '100%',
+                padding: '12px 20px',
+                backgroundColor: success ? '#4CAF50' : (isLoading ? '#6c757d' : '#50b4ff'),
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                fontSize: '16px',
+                fontWeight: '600',
+                fontFamily: 'IRANSansX, sans-serif',
+                cursor: isLoading ? 'not-allowed' : 'pointer',
+                transition: 'all 0.3s ease',
+                opacity: isLoading ? 0.7 : 1,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px'
+              }}
+            >
+              {isLoading && (
+                <div style={{
+                  width: '16px',
+                  height: '16px',
+                  border: '2px solid transparent',
+                  borderTop: '2px solid white',
+                  borderRadius: '50%',
+                  animation: 'spin 1s linear infinite'
+                }} />
+              )}
+              {success ? (t('common.saved') || 'ذخیره شد ✓') : (t('common.save') || 'ذخیره تغییرات')}
+            </button>
+          </div>
         </div>
       </div>
     </div>
