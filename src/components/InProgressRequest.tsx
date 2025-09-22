@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../hooks/useLanguage';
 import { useTheme } from '../hooks/useTheme';
+import { useRequestContext } from '../contexts/RequestContext';
 import Logo from './Logo';
 import { apiService } from '../services/apiService';
 import type { OfferRequest, ItemType } from '../types/api';
@@ -51,6 +52,7 @@ interface InProgressRequestProps { }
 const InProgressRequest: React.FC<InProgressRequestProps> = () => {
   const { isRTL } = useLanguage();
   const { theme } = useTheme();
+  const { refreshRequestCount } = useRequestContext();
 
   const [activeTab, setActiveTab] = useState<TabType>('suggestion');
   const [myReciveOffers, setMyReciveOffers] = useState<OfferRequest[]>([]);
@@ -378,6 +380,8 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
       if (offersResponse.requestStatus.name === 'Successful') {
         setMyReciveOffers(offersResponse.objectResult.myReciveOffers || []);
         setMySentOffers(offersResponse.objectResult.mySentOffers || []);
+        // Refresh request count for badge
+        refreshRequestCount();
       } else {
         setError(offersResponse.message || 'خطا در دریافت اطلاعات');
       }

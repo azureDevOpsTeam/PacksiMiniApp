@@ -4,10 +4,12 @@ import TelegramProvider from './contexts/TelegramContext';
 import ThemeProvider from './contexts/ThemeContext';
 import LanguageProvider from './contexts/LanguageContext';
 import ChatProvider from './contexts/ChatContext';
+import RequestProvider from './contexts/RequestContext';
 import { GlobalStyles } from './styles/GlobalStyles';
 import { useTelegramContext } from './hooks/useTelegramContext';
 import { useLanguage } from './hooks/useLanguage';
 import { useChatContext } from './contexts/ChatContext';
+import { useRequestContext } from './contexts/RequestContext';
 import CreateRequest from './components/CreateRequest';
 import UpdateProfile from './components/UpdateProfile';
 import AddPreferredLocation from './components/AddPreferredLocation';
@@ -37,6 +39,7 @@ const AppContent: React.FC = () => {
   const { isReady, webApp, user } = useTelegramContext();
   const { t, language } = useLanguage();
   const { chatCount } = useChatContext();
+  const { requestCount } = useRequestContext();
   const [activeButton, setActiveButton] = React.useState<'user' | 'admin'>('user');
   const [currentPage, setCurrentPage] = React.useState<'home' | 'createRequest' | 'updateProfile' | 'addPreferredLocation' | 'parcelList' | 'myRequest' | 'inProgressRequest' | 'chatPersonList' | 'notFound'>('home');
   const [showVerifyPhone, setShowVerifyPhone] = React.useState<boolean>(false);
@@ -66,6 +69,7 @@ const AppContent: React.FC = () => {
     {
       id: 'requests',
       label: t('tabs.requests') || 'درخواست‌ها',
+      badge: requestCount > 0 ? requestCount : undefined,
       icon: (
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M16 4H18C18.5304 4 19.0391 4.21071 19.4142 4.58579C19.7893 4.96086 20 5.46957 20 6V20C20 20.5304 19.7893 21.0391 19.4142 21.4142C19.0391 21.7893 18.5304 22 18 22H6C5.46957 22 4.96086 21.7893 4.58579 21.4142C4.21071 21.0391 4 20.5304 4 20V6C4 5.46957 4.21071 4.96086 4.58579 4.58579C4.96086 4.21071 5.46957 4 6 4H8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -103,7 +107,7 @@ const AppContent: React.FC = () => {
         </svg>
       )
     }
-  ], [t, chatCount]);
+  ], [t, chatCount, requestCount]);
 
   // Handle tab change
   const handleTabChange = React.useCallback((tabId: string) => {
@@ -1039,15 +1043,17 @@ const App: React.FC = () => {
         <ThemeProvider>
           <LanguageProvider>
             <ChatProvider>
-              <SafeAreaWrapper>
-                <GlobalStyles />
-                <BrowserRouter>
-                  <Routes>
-                    <Route path="/chatlist" element={<ChatPersonList />} />
-                    <Route path="/*" element={<AppContent />} />
-                  </Routes>
-                </BrowserRouter>
-              </SafeAreaWrapper>
+              <RequestProvider>
+                <SafeAreaWrapper>
+                  <GlobalStyles />
+                  <BrowserRouter>
+                    <Routes>
+                      <Route path="/chatlist" element={<ChatPersonList />} />
+                      <Route path="/*" element={<AppContent />} />
+                    </Routes>
+                  </BrowserRouter>
+                </SafeAreaWrapper>
+              </RequestProvider>
             </ChatProvider>
           </LanguageProvider>
         </ThemeProvider>

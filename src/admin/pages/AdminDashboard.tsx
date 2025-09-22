@@ -11,7 +11,7 @@ const AdminDashboard: React.FC = () => {
   const { language } = useLanguage();
   const { webApp } = useTelegram();
   const isRTL = language === 'fa';
-  
+
   // State for invite code
   const [inviteCode, setInviteCode] = useState<string>('Invit_Error'); // Default fallback
   const [isLoadingInviteCode, setIsLoadingInviteCode] = useState<boolean>(true);
@@ -37,7 +37,7 @@ const AdminDashboard: React.FC = () => {
         console.log('Request status value:', response.requestStatus?.value);
         console.log('Object result:', response.objectResult);
         console.log('Object result type:', typeof response.objectResult);
-        
+
         // Check if response is successful and has objectResult
         if (response && response.objectResult && response.objectResult.trim() !== '') {
           console.log('Setting invite code to:', response.objectResult);
@@ -73,7 +73,7 @@ const AdminDashboard: React.FC = () => {
         console.log('Fetching dashboard data...');
         const response = await apiService.getDashboardData();
         console.log('Dashboard API response:', response);
-        
+
         // Check if response is successful and has objectResult
         if (response?.requestStatus?.value === 0 && response.objectResult) {
           console.log('Setting dashboard data to:', response.objectResult);
@@ -184,12 +184,21 @@ const AdminDashboard: React.FC = () => {
         gap: '12px',
         marginBottom: '24px'
       }}>
+        
         <DashboardCard
           title={isRTL ? 'تعداد کاربران' : 'Total Users'}
           value={isLoadingDashboard ? '...' : dashboardData.referralCount.toString()}
           icon="👥"
           subtitle={isRTL ? 'کاربر فعال' : 'Active Users'}
           gradient="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+        />
+
+        <DashboardCard
+          title={isRTL ? 'تعداد بسته‌ها' : 'Total Packages'}
+          value={isLoadingDashboard ? '...' : dashboardData.totalPackage.toString()}
+          icon="📦"
+          subtitle={isRTL ? 'بسته در حال ارسال' : 'Packages in Transit'}
+          gradient="linear-gradient(135deg, #fa709a 0%, #fee140 100%)"
         />
         
         <DashboardCard
@@ -199,7 +208,7 @@ const AdminDashboard: React.FC = () => {
           subtitle={isRTL ? 'ریال ایران' : 'Iranian Rial'}
           gradient="linear-gradient(135deg, #f093fb 0%, #f5576c 100%)"
         />
-        
+
         <DashboardCard
           title={isRTL ? 'موجودی دلار' : 'USD Balance'}
           value={isLoadingDashboard ? '...' : `$ ${dashboardData.usdtBalance.toLocaleString()}`}
@@ -207,21 +216,14 @@ const AdminDashboard: React.FC = () => {
           subtitle={isRTL ? 'دلار آمریکا' : 'US Dollar'}
           gradient="linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)"
         />
-        
-        <DashboardCard
-          title={isRTL ? 'تعداد بسته‌ها' : 'Total Packages'}
-          value={isLoadingDashboard ? '...' : dashboardData.totalPackage.toString()}
-          icon="📦"
-          subtitle={isRTL ? 'بسته در حال ارسال' : 'Packages in Transit'}
-          gradient="linear-gradient(135deg, #fa709a 0%, #fee140 100%)"
-        />
+
       </div>
-      
+
       {/* Admin Panel Links */}
       <div style={{ marginBottom: '24px' }}>
         <AdminPanel />
       </div>
-      
+
       {/* Development Notice */}
       <div style={{
         display: 'flex',
@@ -240,7 +242,7 @@ const AdminDashboard: React.FC = () => {
         }}>
           🚧
         </div>
-        
+
         <div style={{
           color: '#ffffff',
           fontSize: '12px',
@@ -248,18 +250,18 @@ const AdminDashboard: React.FC = () => {
           fontWeight: '400',
           marginBottom: '6px'
         }}>
-          {isRTL 
+          {isRTL
             ? 'سایر امکانات داشبورد در حال توسعه است'
             : 'Other dashboard features are under development'
           }
         </div>
-        
+
         <div style={{
           color: '#848d96',
           fontSize: '10px',
           fontFamily: 'IRANSansX, sans-serif'
         }}>
-          {isRTL 
+          {isRTL
             ? 'گزارشات تفصیلی، نمودارها و تنظیمات پیشرفته به زودی اضافه خواهد شد'
             : 'Detailed reports, charts and advanced settings will be added soon'
           }

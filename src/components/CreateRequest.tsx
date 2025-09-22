@@ -3,6 +3,7 @@ import { useLanguage } from '../hooks/useLanguage';
 import { useTheme } from '../hooks/useTheme';
 import { useTelegramButtons } from '../hooks/useTelegramButtons';
 import { useFormValidation } from '../hooks/useFormValidation';
+import { useRequestContext } from '../contexts/RequestContext';
 import Logo from './Logo';
 
 import TreeDropdown from './TreeDropdown';
@@ -32,6 +33,7 @@ interface CreateRequestProps {
 const CreateRequest: React.FC<CreateRequestProps> = () => {
   const { t, isRTL } = useLanguage();
   const { theme } = useTheme();
+  const { refreshRequestCount } = useRequestContext();
 
   const [formData, setFormData] = useState<CreateRequestFormData>({
     originCityId: 0,
@@ -273,6 +275,8 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
 
       if (response.success) {
         setSuccess(true);
+        // Refresh request count for badge
+        refreshRequestCount();
         // Request created successfully
         // Redirect to home page after success
         setTimeout(() => {
