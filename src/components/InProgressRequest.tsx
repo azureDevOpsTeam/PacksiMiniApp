@@ -83,6 +83,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
   const [deliveryCode, setDeliveryCode] = useState('');
   const [deliveryCodeError, setDeliveryCodeError] = useState('');
   const [serverError, setServerError] = useState('');
+  const [connectivityTest, setConnectivityTest] = useState<{ testing: boolean; result?: any }>({ testing: false });
 
 
 
@@ -306,25 +307,65 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
     setShowConfirmDeliveryDialog(true);
   };
 
+  const testConnectivity = async () => {
+    setConnectivityTest({ testing: true });
+    try {
+      const result = await apiService.testConnectivity();
+      setConnectivityTest({ testing: false, result });
+      console.log('Connectivity test result:', result);
+    } catch (error) {
+      console.error('Connectivity test error:', error);
+      setConnectivityTest({ 
+        testing: false, 
+        result: { 
+          success: false, 
+          message: 'Test failed', 
+          details: { error: error instanceof Error ? error.message : 'Unknown error' } 
+        } 
+      });
+    }
+  };
+
   const confirmSenderDelivery = async () => {
     if (!selectedConfirmDeliverySuggestionId) return;
 
     setIsConfirmingSenderDelivery(true);
+    setServerError(''); // Clear previous errors
+    
     try {
-      await apiService.saveRating({
+      const response = await apiService.saveRating({
         model: {
           requestSuggestionId: selectedConfirmDeliverySuggestionId,
           rate: selectedRating
         }
       });
 
-      setShowConfirmDeliveryDialog(false);
-      setSelectedConfirmDeliverySuggestionId(null);
-      setSelectedRating(0); // Reset rating after successful submission
-      // Refresh data
-      fetchData();
+      if (response.requestStatus.name === 'Successful') {
+        setShowConfirmDeliveryDialog(false);
+        setSelectedConfirmDeliverySuggestionId(null);
+        setSelectedRating(0); // Reset rating after successful submission
+        // Refresh data
+        fetchData();
+      } else {
+        // Show server error message
+        setServerError(response.message || (isRTL ? 'خطا در ثبت امتیاز' : 'Error saving rating'));
+        
+        // Clear error after 5 seconds
+        setTimeout(() => {
+          setServerError('');
+        }, 5000);
+      }
     } catch (error) {
-      console.error('Error confirming delivery:', error);
+      console.error('Error confirming delivery by sender:', error);
+      
+      // Show user-friendly error message
+      const errorMessage = error instanceof Error ? error.message : (isRTL ? 'خطا در ارتباط با سرور' : 'Server connection error');
+      setServerError(errorMessage);
+      
+      // Clear error after 5 seconds
+      setTimeout(() => {
+        setServerError('');
+      }, 5000);
     } finally {
       setIsConfirmingSenderDelivery(false);
     }
@@ -1952,6 +1993,24 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
                   }
                 </p>
               )}
+
+              {/* Error Message */}
+              {serverError && (
+                <div
+                  style={{
+                    marginTop: '12px',
+                    padding: '8px 12px',
+                    backgroundColor: '#fef2f2',
+                    border: '1px solid #fecaca',
+                    borderRadius: '6px',
+                    fontSize: '12px',
+                    color: '#dc2626',
+                    textAlign: 'center'
+                  }}
+                >
+                  {serverError}
+                </div>
+              )}
             </div>
 
             {/* Buttons */}
@@ -2032,6 +2091,91 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Debug Panel for Network Issues */}
+      {(serverError.includes('network') || serverError.includes('fetch') || connectivityTest.result) && (
+        <div
+          style={{
+            position: 'fixed',
+            bottom: '20px',
+            left: '20px',
+            right: '20px',
+            backgroundColor: theme.colors.background,
+            border: `2px solid ${serverError.includes('network') || serverError.includes('fetch') ? '#ef4444' : '#10b981'}`,
+            borderRadius: '12px',
+            padding: '16px',
+            boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)',
+            zIndex: 1001,
+            direction: isRTL ? 'rtl' : 'ltr',
+            fontSize: '12px'
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+            <h4 style={{ margin: 0, fontSize: '14px', color: theme.colors.text }}>
+              {isRTL ? 'اطلاعات شبکه' : 'Network Debug'}
+            </h4>
+            <button
+              onClick={() => setConnectivityTest({ testing: false })}
+              style={{
+                background: 'none',
+                border: 'none',
+                fontSize: '16px',
+                cursor: 'pointer',
+                color: theme.colors.text
+              }}
+            >
+              ×
+            </button>
+          </div>
+          
+          <div style={{ marginBottom: '12px' }}>
+            <button
+              onClick={testConnectivity}
+              disabled={connectivityTest.testing}
+              style={{
+                padding: '8px 12px',
+                borderRadius: '6px',
+                border: 'none',
+                backgroundColor: connectivityTest.testing ? '#9ca3af' : '#3b82f6',
+                color: 'white',
+                fontSize: '12px',
+                cursor: connectivityTest.testing ? 'not-allowed' : 'pointer',
+                marginBottom: '8px'
+              }}
+            >
+              {connectivityTest.testing 
+                ? (isRTL ? 'در حال تست...' : 'Testing...') 
+                : (isRTL ? 'تست اتصال' : 'Test Connection')
+              }
+            </button>
+          </div>
+          
+          {connectivityTest.result && (
+            <div style={{
+              padding: '8px',
+              backgroundColor: connectivityTest.result.success ? '#f0fdf4' : '#fef2f2',
+              border: `1px solid ${connectivityTest.result.success ? '#bbf7d0' : '#fecaca'}`,
+              borderRadius: '6px',
+              fontSize: '11px'
+            }}>
+              <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>
+                {connectivityTest.result.success ? '✅' : '❌'} {connectivityTest.result.message}
+              </div>
+              {connectivityTest.result.details && (
+                <pre style={{ 
+                  margin: 0, 
+                  fontSize: '10px', 
+                  overflow: 'auto',
+                  maxHeight: '100px',
+                  color: '#666'
+                }}>
+                  {JSON.stringify(connectivityTest.result.details, null, 2)}
+                </pre>
+              )}
+            </div>
+          )}
         </div>
       )}
 

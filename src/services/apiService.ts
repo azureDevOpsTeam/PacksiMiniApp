@@ -1,9 +1,69 @@
 import type { CreateRequestPayload, ApiResponse, CreateRequestResponse, CitiesTreeResponse, ItemTypeResponse, CountriesResponse, UserInfoResponse, VerifyPhoneNumberPayload, VerifyPhoneNumberResponse, ValidateResponse, AddUserPreferredLocationRequest, AddUserPreferredLocationResponse, UpdateProfileRequest, UpdateProfileResponse, OutboundTripsResponse, SelectRequestPayload, SelectRequestResponse, GetMyRequestTripsResponse, LiveChatUsersResponse, ConversationsResponse, MessagesResponse, SendMessagePayload, SendMessageResponse, BlockUserPayload, BlockUserResponse, MarkReadResponse, SuggestionActionPayload, SuggestionActionResponse, InProgressOffersResponse, ConfirmedBySenderPayload, ConfirmedBySenderResponse, PickedUpPayload, PickedUpResponse, PassengerConfirmedDeliveryPayload, PassengerConfirmedDeliveryResponse, SaveRatingPayload, SaveRatingResponse, NotDeliveredPayload, NotDeliveredResponse, GetInviteCodeResponse, GetDashboardDataResponse } from '../types/api';
 
-const API_BASE_URL = 'https://api.packsi.net/api/miniapp';
-//const API_BASE_URL = 'http://localhost:5005/api/miniapp';
+// Use environment variable if available, fallback to production URL
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.packsi.net/api/miniapp';
+console.log('API Base URL:', API_BASE_URL);
 
 class ApiService {
+
+  // Test network connectivity
+  async testConnectivity(): Promise<{ success: boolean; message: string; details?: any }> {
+    try {
+      console.log('Testing network connectivity to:', API_BASE_URL);
+      
+      // First test basic connectivity
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+      
+      const response = await fetch(`${API_BASE_URL}/test`, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        signal: controller.signal
+      });
+      
+      clearTimeout(timeoutId);
+      
+      console.log('Connectivity test response:', {
+        status: response.status,
+        statusText: response.statusText,
+        headers: Object.fromEntries(response.headers.entries())
+      });
+      
+      return {
+        success: response.ok,
+        message: response.ok ? 'Connection successful' : `HTTP ${response.status}: ${response.statusText}`,
+        details: {
+          status: response.status,
+          statusText: response.statusText,
+          url: response.url
+        }
+      };
+    } catch (error: any) {
+      console.error('Connectivity test failed:', error);
+      
+      let message = 'Network connectivity test failed';
+      if (error.name === 'AbortError') {
+        message = 'Connection timeout - server may be unreachable';
+      } else if (error instanceof TypeError && error.message.includes('fetch')) {
+        message = 'Network error - check internet connection';
+      } else {
+        message = error.message || 'Unknown network error';
+      }
+      
+      return {
+        success: false,
+        message,
+        details: {
+          error: error.name,
+          message: error.message,
+          stack: error.stack
+        }
+      };
+    }
+  }
 
   // متد فشرده‌سازی تصاویر
   private async compressAndAppendImage(formData: FormData, file: File, fieldName: string): Promise<void> {
@@ -90,9 +150,9 @@ class ApiService {
     } else {
       // Use provided token for development
       //User1
-      //headers['X-Telegram-Init-Data'] = 'query_id=AAEfymc9AAAAAB_KZz3-1lnV&user=%7B%22id%22%3A1030212127%2C%22first_name%22%3A%22Shahram%22%2C%22last_name%22%3A%22%22%2C%22username%22%3A%22Shahram0weisy%22%2C%22language_code%22%3A%22en%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Ft.me%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2FEVbiVIJZP-ipzuxmiuKkh1k1-dJF0U16tjKJdfQM7M4.svg%22%7D&auth_date=1757781398&signature=HOhywJXP-xaV5T3lOI4yIQNiPBgE_jzP5fEgTyi_oH61WoJE_5Qrvq6LXmlJ5R_RBA16BQlJExt9N4r2-dOrCg&hash=75baa2138205e2ac7d484e968ae1fec7f3b51ffe9d407f7fb0f95ea2e25ad426';
+      headers['X-Telegram-Init-Data'] = 'query_id=AAEfymc9AAAAAB_KZz3-1lnV&user=%7B%22id%22%3A1030212127%2C%22first_name%22%3A%22Shahram%22%2C%22last_name%22%3A%22%22%2C%22username%22%3A%22Shahram0weisy%22%2C%22language_code%22%3A%22en%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Ft.me%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2FEVbiVIJZP-ipzuxmiuKkh1k1-dJF0U16tjKJdfQM7M4.svg%22%7D&auth_date=1757781398&signature=HOhywJXP-xaV5T3lOI4yIQNiPBgE_jzP5fEgTyi_oH61WoJE_5Qrvq6LXmlJ5R_RBA16BQlJExt9N4r2-dOrCg&hash=75baa2138205e2ac7d484e968ae1fec7f3b51ffe9d407f7fb0f95ea2e25ad426';
       //User2
-      headers['X-Telegram-Init-Data'] = 'user=%7B%22id%22%3A5933914644%2C%22first_name%22%3A%22Shahram%22%2C%22last_name%22%3A%22%22%2C%22language_code%22%3A%22en%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Ft.me%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2FQGwtYapyXkY4-jZJkczPeUb_XKfimJozOKy8lZzBhtQc4cO4xBQzwdPwcb_QSNih.svg%22%7D&chat_instance=-2675852455221065738&chat_type=sender&auth_date=1757963361&signature=DAkcG5KbmvbKKCL8KYfGxRKGeeL-wdCmBlO5MTGgBTaTJ3JsF_g803MJaQ5xrjlg6Bw_ejc3Tc5Ea_aVeI-5AA&hash=4c406a000ad684a3efb5a169efd08c7123138eccb506b638703833945c66841e';
+      //headers['X-Telegram-Init-Data'] = 'user=%7B%22id%22%3A5933914644%2C%22first_name%22%3A%22Shahram%22%2C%22last_name%22%3A%22%22%2C%22language_code%22%3A%22en%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Ft.me%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2FQGwtYapyXkY4-jZJkczPeUb_XKfimJozOKy8lZzBhtQc4cO4xBQzwdPwcb_QSNih.svg%22%7D&chat_instance=-2675852455221065738&chat_type=sender&auth_date=1757963361&signature=DAkcG5KbmvbKKCL8KYfGxRKGeeL-wdCmBlO5MTGgBTaTJ3JsF_g803MJaQ5xrjlg6Bw_ejc3Tc5Ea_aVeI-5AA&hash=4c406a000ad684a3efb5a169efd08c7123138eccb506b638703833945c66841e';
     }
 
     // Add additional headers for mobile compatibility
@@ -806,40 +866,112 @@ class ApiService {
 
   async passengerConfirmedDelivery(payload: PassengerConfirmedDeliveryPayload): Promise<PassengerConfirmedDeliveryResponse> {
     try {
+      console.log('Sending passenger delivery confirmation:', payload);
+      
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+
       const response = await fetch(`${API_BASE_URL}/Request/PassengerConfirmedDelivery`, {
         method: 'POST',
         headers: this.getHeaders(),
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
+        signal: controller.signal
       });
 
+      clearTimeout(timeoutId);
+
+      console.log('Passenger delivery response status:', response.status);
+
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        const errorText = await response.text();
+        console.error('Passenger delivery error response:', errorText);
+        
+        let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+        if (response.status === 400) {
+          errorMessage = 'کد تحویل نامعتبر است';
+        } else if (response.status === 401) {
+          errorMessage = 'احراز هویت ناموفق';
+        } else if (response.status === 403) {
+          errorMessage = 'دسترسی مجاز نیست';
+        } else if (response.status >= 500) {
+          errorMessage = 'خطا در سرور';
+        }
+        
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();
+      console.log('Passenger delivery response data:', data);
       return data;
     } catch (error) {
       console.error('Error confirming delivery by passenger:', error);
+      
+      // Handle network errors specifically
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw new Error('خطا در اتصال به اینترنت. لطفاً اتصال خود را بررسی کنید.');
+      }
+      
+      // Handle timeout errors
+      if (error.name === 'AbortError') {
+        throw new Error('درخواست منقضی شد. لطفاً دوباره تلاش کنید.');
+      }
+      
       throw error;
     }
   }
 
   async saveRating(payload: SaveRatingPayload): Promise<SaveRatingResponse> {
     try {
+      console.log('Sending rating save request:', payload);
+      
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+
       const response = await fetch(`${API_BASE_URL}/Request/SaveRating`, {
         method: 'POST',
         headers: this.getHeaders(),
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
+        signal: controller.signal
       });
 
+      clearTimeout(timeoutId);
+
+      console.log('Save rating response status:', response.status);
+
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        const errorText = await response.text();
+        console.error('Save rating error response:', errorText);
+        
+        let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+        if (response.status === 400) {
+          errorMessage = 'درخواست نامعتبر است';
+        } else if (response.status === 401) {
+          errorMessage = 'احراز هویت ناموفق';
+        } else if (response.status === 403) {
+          errorMessage = 'دسترسی مجاز نیست';
+        } else if (response.status >= 500) {
+          errorMessage = 'خطا در سرور';
+        }
+        
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();
+      console.log('Save rating response data:', data);
       return data;
     } catch (error) {
       console.error('Error confirming delivery by sender:', error);
+      
+      // Handle network errors specifically
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw new Error('خطا در اتصال به اینترنت. لطفاً اتصال خود را بررسی کنید.');
+      }
+      
+      // Handle timeout errors
+      if (error.name === 'AbortError') {
+        throw new Error('درخواست منقضی شد. لطفاً دوباره تلاش کنید.');
+      }
+      
       throw error;
     }
   }
