@@ -169,9 +169,9 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
     const selectedFiles = event.target.files;
     if (!selectedFiles) return;
 
-    // بررسی حجم هر فایل (حداکثر 2 مگابایت)
-    const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
-    const MAX_TOTAL_SIZE = 8 * 1024 * 1024; // 8MB
+    // بررسی حجم هر فایل (حداکثر 5 مگابایت)
+    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+    const MAX_TOTAL_SIZE = 20 * 1024 * 1024; // 20MB
 
     // محاسبه حجم کل فایل‌های موجود
     const currentTotalSize = files.reduce((sum, file) => sum + file.size, 0);
@@ -193,7 +193,7 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
       // بررسی حجم هر فایل
       if (file.size > MAX_FILE_SIZE) {
         if (!errorShown) {
-          setError(t('createRequest.validation.fileTooLarge') || 'حجم هر فایل نباید بیشتر از 2 مگابایت باشد');
+          setError(t('createRequest.validation.fileTooLarge') || 'حجم هر فایل نباید بیشتر از 5 مگابایت باشد');
           errorShown = true;
         }
         return;
@@ -202,7 +202,7 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
       // بررسی حجم کل
       if (currentTotalSize + file.size > MAX_TOTAL_SIZE) {
         if (!errorShown) {
-          setError(t('createRequest.validation.totalSizeTooLarge') || 'حجم کل فایل‌ها نباید بیشتر از 8 مگابایت باشد');
+          setError(t('createRequest.validation.totalSizeTooLarge') || 'حجم کل فایل‌ها نباید بیشتر از 20 مگابایت باشد');
           errorShown = true;
         }
         return;

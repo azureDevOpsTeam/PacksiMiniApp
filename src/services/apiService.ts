@@ -167,15 +167,15 @@ class ApiService {
       // Always use FormData to match backend [FromForm] expectation
       const formData = new FormData();
 
-      // بررسی حجم کل فایل‌ها (حداکثر 8 مگابایت)
+      // بررسی حجم کل فایل‌ها (حداکثر 20 مگابایت)
       if (files && files.length > 0) {
         const totalSize = files.reduce((sum, file) => sum + file.size, 0);
-        const MAX_TOTAL_SIZE = 8 * 1024 * 1024; // 8MB
+        const MAX_TOTAL_SIZE = 20 * 1024 * 1024; // 8MB
 
         if (totalSize > MAX_TOTAL_SIZE) {
           return {
             success: false,
-            message: "حجم کل فایل‌ها نباید بیشتر از 8 مگابایت باشد"
+            message: "حجم کل فایل‌ها نباید بیشتر از 20 مگابایت باشد"
           };
         }
       }

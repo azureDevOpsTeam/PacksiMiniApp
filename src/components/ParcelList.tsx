@@ -344,7 +344,7 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
     
     const newFileArray: File[] = [];
     const maxSizePerFile = 5 * 1024 * 1024; // 5MB
-    const maxTotalSize = 8 * 1024 * 1024; // 8MB
+    const maxTotalSize = 20 * 1024 * 1024; // 8MB
     
     // Calculate current total size of existing files
     const currentTotalSize = files.reduce((sum, file) => sum + file.size, 0);
@@ -404,8 +404,8 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
       setValidationErrors(prev => ({
         ...prev,
         totalSize: isRTL ? 
-          `حجم کل فایل‌ها نباید بیشتر از 8 مگابایت باشد. فضای باقی‌مانده: ${(remainingSize / 1024 / 1024).toFixed(2)} مگابایت` : 
-          `Total file size should not exceed 8MB. Remaining space: ${(remainingSize / 1024 / 1024).toFixed(2)} MB`
+          `حجم کل فایل‌ها نباید بیشتر از 20 مگابایت باشد. فضای باقی‌مانده: ${(remainingSize / 1024 / 1024).toFixed(2)} مگابایت` : 
+          `Total file size should not exceed 20MB. Remaining space: ${(remainingSize / 1024 / 1024).toFixed(2)} MB`
       }));
       // Reset input value to allow re-selecting files
       event.target.value = '';

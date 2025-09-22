@@ -160,10 +160,10 @@
     "sending": "در حال ارسال...",
     "generalFiles": "بارگذاری بلیط پرواز",
     "uploadGeneralFiles": "تصویر بلیط را انتخاب کنید",
-    "maxFileSize": "حداکثر حجم فایل ( 2 مگابایت)",
+    "maxFileSize": "حداکثر حجم فایل ( 5 مگابایت)",
     "validation": {
-      "fileTooLarge": "حجم هر فایل نباید بیشتر از 2 مگابایت باشد",
-      "totalSizeTooLarge": "حجم کل فایل‌ها نباید بیشتر از 8 مگابایت باشد"
+      "fileTooLarge": "حجم هر فایل نباید بیشتر از 5 مگابایت باشد",
+      "totalSizeTooLarge": "حجم کل فایل‌ها نباید بیشتر از 20 مگابایت باشد"
     }
   },
   "updateProfile": {
