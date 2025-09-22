@@ -1,69 +1,9 @@
 import type { CreateRequestPayload, ApiResponse, CreateRequestResponse, CitiesTreeResponse, ItemTypeResponse, CountriesResponse, UserInfoResponse, VerifyPhoneNumberPayload, VerifyPhoneNumberResponse, ValidateResponse, AddUserPreferredLocationRequest, AddUserPreferredLocationResponse, UpdateProfileRequest, UpdateProfileResponse, OutboundTripsResponse, SelectRequestPayload, SelectRequestResponse, GetMyRequestTripsResponse, LiveChatUsersResponse, ConversationsResponse, MessagesResponse, SendMessagePayload, SendMessageResponse, BlockUserPayload, BlockUserResponse, MarkReadResponse, SuggestionActionPayload, SuggestionActionResponse, InProgressOffersResponse, ConfirmedBySenderPayload, ConfirmedBySenderResponse, PickedUpPayload, PickedUpResponse, PassengerConfirmedDeliveryPayload, PassengerConfirmedDeliveryResponse, SaveRatingPayload, SaveRatingResponse, NotDeliveredPayload, NotDeliveredResponse, GetInviteCodeResponse, GetDashboardDataResponse } from '../types/api';
 
-// Use environment variable if available, fallback to production URL
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.packsi.net/api/miniapp';
-console.log('API Base URL:', API_BASE_URL);
+const API_BASE_URL = 'https://api.packsi.net/api/miniapp';
+//const API_BASE_URL = 'http://localhost:5005/api/miniapp';
 
 class ApiService {
-
-  // Test network connectivity
-  async testConnectivity(): Promise<{ success: boolean; message: string; details?: any }> {
-    try {
-      console.log('Testing network connectivity to:', API_BASE_URL);
-      
-      // First test basic connectivity
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-      
-      const response = await fetch(`${API_BASE_URL}/test`, {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-        signal: controller.signal
-      });
-      
-      clearTimeout(timeoutId);
-      
-      console.log('Connectivity test response:', {
-        status: response.status,
-        statusText: response.statusText,
-        headers: Object.fromEntries(response.headers.entries())
-      });
-      
-      return {
-        success: response.ok,
-        message: response.ok ? 'Connection successful' : `HTTP ${response.status}: ${response.statusText}`,
-        details: {
-          status: response.status,
-          statusText: response.statusText,
-          url: response.url
-        }
-      };
-    } catch (error: any) {
-      console.error('Connectivity test failed:', error);
-      
-      let message = 'Network connectivity test failed';
-      if (error.name === 'AbortError') {
-        message = 'Connection timeout - server may be unreachable';
-      } else if (error instanceof TypeError && error.message.includes('fetch')) {
-        message = 'Network error - check internet connection';
-      } else {
-        message = error.message || 'Unknown network error';
-      }
-      
-      return {
-        success: false,
-        message,
-        details: {
-          error: error.name,
-          message: error.message,
-          stack: error.stack
-        }
-      };
-    }
-  }
 
   // متد فشرده‌سازی تصاویر
   private async compressAndAppendImage(formData: FormData, file: File, fieldName: string): Promise<void> {
@@ -866,112 +806,40 @@ class ApiService {
 
   async passengerConfirmedDelivery(payload: PassengerConfirmedDeliveryPayload): Promise<PassengerConfirmedDeliveryResponse> {
     try {
-      console.log('Sending passenger delivery confirmation:', payload);
-      
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
-
       const response = await fetch(`${API_BASE_URL}/Request/PassengerConfirmedDelivery`, {
         method: 'POST',
         headers: this.getHeaders(),
-        body: JSON.stringify(payload),
-        signal: controller.signal
+        body: JSON.stringify(payload)
       });
 
-      clearTimeout(timeoutId);
-
-      console.log('Passenger delivery response status:', response.status);
-
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Passenger delivery error response:', errorText);
-        
-        let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
-        if (response.status === 400) {
-          errorMessage = 'کد تحویل نامعتبر است';
-        } else if (response.status === 401) {
-          errorMessage = 'احراز هویت ناموفق';
-        } else if (response.status === 403) {
-          errorMessage = 'دسترسی مجاز نیست';
-        } else if (response.status >= 500) {
-          errorMessage = 'خطا در سرور';
-        }
-        
-        throw new Error(errorMessage);
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
 
       const data = await response.json();
-      console.log('Passenger delivery response data:', data);
       return data;
     } catch (error) {
       console.error('Error confirming delivery by passenger:', error);
-      
-      // Handle network errors specifically
-      if (error instanceof TypeError && error.message.includes('fetch')) {
-        throw new Error('خطا در اتصال به اینترنت. لطفاً اتصال خود را بررسی کنید.');
-      }
-      
-      // Handle timeout errors
-      if (error.name === 'AbortError') {
-        throw new Error('درخواست منقضی شد. لطفاً دوباره تلاش کنید.');
-      }
-      
       throw error;
     }
   }
 
   async saveRating(payload: SaveRatingPayload): Promise<SaveRatingResponse> {
     try {
-      console.log('Sending rating save request:', payload);
-      
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
-
       const response = await fetch(`${API_BASE_URL}/Request/SaveRating`, {
         method: 'POST',
         headers: this.getHeaders(),
-        body: JSON.stringify(payload),
-        signal: controller.signal
+        body: JSON.stringify(payload)
       });
 
-      clearTimeout(timeoutId);
-
-      console.log('Save rating response status:', response.status);
-
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Save rating error response:', errorText);
-        
-        let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
-        if (response.status === 400) {
-          errorMessage = 'درخواست نامعتبر است';
-        } else if (response.status === 401) {
-          errorMessage = 'احراز هویت ناموفق';
-        } else if (response.status === 403) {
-          errorMessage = 'دسترسی مجاز نیست';
-        } else if (response.status >= 500) {
-          errorMessage = 'خطا در سرور';
-        }
-        
-        throw new Error(errorMessage);
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
 
       const data = await response.json();
-      console.log('Save rating response data:', data);
       return data;
     } catch (error) {
       console.error('Error confirming delivery by sender:', error);
-      
-      // Handle network errors specifically
-      if (error instanceof TypeError && error.message.includes('fetch')) {
-        throw new Error('خطا در اتصال به اینترنت. لطفاً اتصال خود را بررسی کنید.');
-      }
-      
-      // Handle timeout errors
-      if (error.name === 'AbortError') {
-        throw new Error('درخواست منقضی شد. لطفاً دوباره تلاش کنید.');
-      }
-      
       throw error;
     }
   }
