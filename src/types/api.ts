@@ -521,6 +521,7 @@ export interface OfferSuggestion {
   descriptions?: string;
   operationButton?: string;
   deliveryCode?: number;
+  conversationId?: number;
 }
 
 export interface OfferRequest {
@@ -531,6 +532,7 @@ export interface OfferRequest {
   destinationCityPersianName: string;
   status: number;
   suggestions: OfferSuggestion[];
+  conversationId?: number;
 }
 
 export interface InProgressOffersResult {

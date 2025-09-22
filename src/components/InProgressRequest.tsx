@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../hooks/useLanguage';
 import { useTheme } from '../hooks/useTheme';
 import { useRequestContext } from '../contexts/RequestContext';
@@ -53,6 +54,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
   const { isRTL } = useLanguage();
   const { theme } = useTheme();
   const { refreshRequestCount } = useRequestContext();
+  const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState<TabType>('suggestion');
   const [myReciveOffers, setMyReciveOffers] = useState<OfferRequest[]>([]);
@@ -88,6 +90,16 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
     
     // Check if text contains Persian/Arabic characters
     return persianArabicRegex.test(text) ? 'rtl' : 'ltr';
+  };
+
+  // Function to navigate to chat with conversationId
+  const navigateToChat = (conversationId?: number) => {
+    if (conversationId) {
+      navigate(`/chatlist?conversationId=${conversationId}`);
+    } else {
+      console.warn('ConversationId not available for this suggestion');
+      navigate('/chatlist');
+    }
   };
   const [selectedDeliverySuggestionId, setSelectedDeliverySuggestionId] = useState<number | null>(null);
   const [isConfirmingDelivery, setIsConfirmingDelivery] = useState(false);
@@ -834,7 +846,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          console.log('Chat with suggestion owner:', suggestion.id);
+                          navigateToChat(suggestion.conversationId);
                         }}
                         style={{
                           padding: '10px 16px',
@@ -920,7 +932,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          console.log('Chat with suggestion owner:', suggestion.id);
+                          navigateToChat(suggestion.conversationId);
                         }}
                         style={{
                           padding: '10px 16px',
@@ -1038,7 +1050,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          console.log('Chat with suggestion owner:', suggestion.id);
+                          navigateToChat(suggestion.conversationId);
                         }}
                         style={{
                           padding: '10px 16px',
@@ -1115,7 +1127,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          console.log('Chat with suggestion owner:', suggestion.id);
+                          navigateToChat(suggestion.conversationId);
                         }}
                         style={{
                           padding: '10px 16px',
@@ -1190,7 +1202,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          console.log('Chat with suggestion owner:', suggestion.id);
+                          navigateToChat(suggestion.conversationId);
                         }}
                         style={{
                           padding: '10px 16px',
@@ -1235,7 +1247,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
                       onClick={(e) => {
                         e.stopPropagation();
                         if (!(activeTab === 'inProgress' && suggestion.operationButton === 'lblWaitForAcceptSuggetion')) {
-                          console.log('Chat with suggestion owner:', suggestion.id);
+                          navigateToChat(suggestion.conversationId);
                         }
                       }}
                       disabled={activeTab === 'inProgress' && suggestion.operationButton === 'lblWaitForAcceptSuggetion'}
