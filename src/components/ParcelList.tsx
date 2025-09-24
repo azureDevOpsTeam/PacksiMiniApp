@@ -1326,7 +1326,7 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
                                 marginBottom: '2px'
                               }}>
                                 <span>{flight.fullName}</span>
-                                {flight.userRate && (
+                                {typeof flight.userRate === 'number' && (
                                   <StarRating rating={flight.userRate} size="small" />
                                 )}
                               </div>
