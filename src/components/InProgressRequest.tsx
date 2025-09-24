@@ -1457,45 +1457,51 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
         {/* Tab Navigation */}
         <div style={{
           display: 'flex',
-          backgroundColor: theme.colors.surface,
-          borderRadius: '12px',
-          padding: '4px',
-          border: `1px solid ${theme.colors.border}`
+          justifyContent: 'center',
+          padding: '0 20px'
         }}>
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              style={{
-                flex: 1,
-                padding: '12px 16px',
-                border: 'none',
-                borderRadius: '8px',
-                backgroundColor: activeTab === tab.id ? theme.colors.primary : 'transparent',
-                color: activeTab === tab.id ? '#ffffff' : theme.colors.text.secondary,
-                fontSize: '14px',
-                fontWeight: activeTab === tab.id ? '600' : '400',
-                fontFamily: 'IRANSansX, sans-serif',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease',
-                outline: 'none'
-              }}
-              onMouseEnter={(e) => {
-                if (activeTab !== tab.id) {
-                  e.currentTarget.style.backgroundColor = theme.colors.surface;
-                  e.currentTarget.style.color = theme.colors.text.primary;
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (activeTab !== tab.id) {
-                  e.currentTarget.style.backgroundColor = 'transparent';
-                  e.currentTarget.style.color = theme.colors.text.secondary;
-                }
-              }}
-            >
-              {isRTL ? tab.labelFa : tab.labelEn}
-            </button>
-          ))}
+          <div style={{
+            display: 'flex',
+            backgroundColor: '#212a33',
+            borderRadius: '12px',
+            padding: '4px',
+            gap: '2px',
+            border: '1px solid #3a4a5c'
+          }}>
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  backgroundColor: activeTab === tab.id ? '#50b4ff' : 'transparent',
+                  color: activeTab === tab.id ? '#ffffff' : '#848d96',
+                  fontSize: '12px',
+                  fontFamily: 'IRANSansX, sans-serif',
+                  fontWeight: activeTab === tab.id ? '600' : '400',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  whiteSpace: 'nowrap'
+                }}
+                onMouseEnter={(e) => {
+                  if (activeTab !== tab.id) {
+                    e.currentTarget.style.backgroundColor = 'rgba(80, 180, 255, 0.1)';
+                    e.currentTarget.style.color = '#50b4ff';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (activeTab !== tab.id) {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                    e.currentTarget.style.color = '#848d96';
+                  }
+                }}
+              >
+                {isRTL ? tab.labelFa : tab.labelEn}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
