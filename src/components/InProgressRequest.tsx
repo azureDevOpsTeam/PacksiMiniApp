@@ -482,7 +482,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
       <div
         key={offer.id}
         style={{
-          background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #ffffff 100%)',
+          background: 'linear-gradient(135deg, #ffffff 0%,rgb(166, 183, 190) 50%,rgb(112, 184, 184) 100%)',
           borderRadius: '16px',
           padding: '16px',
           border: '2px solid #e2e8f0',
@@ -517,14 +517,6 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
             color: '#1e293b'
           }}>
             {isRTL ? `${offer.originCityPersianName} → ${offer.destinationCityPersianName}` : `${offer.originCityName} → ${offer.destinationCityName}`}
-          </div>
-          <div style={{
-            fontSize: '12px',
-            color: '#64748b',
-            backgroundColor: '#f1f5f9',
-            padding: '4px 8px',
-            borderRadius: '8px'
-          }}>
           </div>
         </div>
 
