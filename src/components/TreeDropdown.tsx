@@ -117,6 +117,26 @@ const TreeDropdown: React.FC<TreeDropdownProps> = ({
     return acc;
   }, {} as Record<string, FlattenedItem[]>);
 
+  // Auto-expand countries that have matching cities when searching
+  useEffect(() => {
+    if (searchTerm) {
+      const countriesWithMatchingCities = new Set<string>();
+      
+      // Find all countries that have cities matching the search term
+      Object.entries(groupedItems).forEach(([countryKey, cities]) => {
+        if (cities.length > 0) {
+          countriesWithMatchingCities.add(countryKey);
+        }
+      });
+      
+      // Update expanded countries to include all countries with matching cities
+      setExpandedCountries(countriesWithMatchingCities);
+    } else {
+      // When search term is empty, close all countries
+      setExpandedCountries(new Set());
+    }
+  }, [searchTerm, JSON.stringify(groupedItems)]);
+
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
