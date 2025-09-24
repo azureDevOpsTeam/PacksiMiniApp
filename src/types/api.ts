@@ -703,3 +703,30 @@ export interface GetDashboardDataResponse {
     value: number;
   };
 }
+
+// User Management Types
+export interface InvitedUser {
+  userAccountId: number;
+  email: string | null;
+  phoneNumber: string;
+  confirmEmail: boolean;
+  confirmPhoneNumber: boolean;
+  twoFactorEnabled: boolean;
+  fullName: string;
+  address: string | null;
+  company: string | null;
+}
+
+export interface GetMyInvitedUsersResponse {
+  validationResult: any;
+  requestStatus: {
+    name: string;
+    value: number;
+  };
+  message: string;
+  objectResult: InvitedUser[];
+  notificationType: {
+    name: string;
+    value: number;
+  };
+}

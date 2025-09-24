@@ -1,4 +1,4 @@
-import type { CreateRequestPayload, ApiResponse, CreateRequestResponse, CitiesTreeResponse, ItemTypeResponse, CountriesResponse, UserInfoResponse, VerifyPhoneNumberPayload, VerifyPhoneNumberResponse, ValidateResponse, AddUserPreferredLocationRequest, AddUserPreferredLocationResponse, UpdateProfileRequest, UpdateProfileResponse, OutboundTripsResponse, SelectRequestPayload, SelectRequestResponse, GetMyRequestTripsResponse, LiveChatUsersResponse, ConversationsResponse, MessagesResponse, SendMessagePayload, SendMessageResponse, BlockUserPayload, BlockUserResponse, MarkReadResponse, SuggestionActionPayload, SuggestionActionResponse, InProgressOffersResponse, ConfirmedBySenderPayload, ConfirmedBySenderResponse, PickedUpPayload, PickedUpResponse, PassengerConfirmedDeliveryPayload, PassengerConfirmedDeliveryResponse, SaveRatingPayload, SaveRatingResponse, NotDeliveredPayload, NotDeliveredResponse, GetInviteCodeResponse, GetDashboardDataResponse } from '../types/api';
+import type { CreateRequestPayload, ApiResponse, CreateRequestResponse, CitiesTreeResponse, ItemTypeResponse, CountriesResponse, UserInfoResponse, VerifyPhoneNumberPayload, VerifyPhoneNumberResponse, ValidateResponse, AddUserPreferredLocationRequest, AddUserPreferredLocationResponse, UpdateProfileRequest, UpdateProfileResponse, OutboundTripsResponse, SelectRequestPayload, SelectRequestResponse, GetMyRequestTripsResponse, LiveChatUsersResponse, ConversationsResponse, MessagesResponse, SendMessagePayload, SendMessageResponse, BlockUserPayload, BlockUserResponse, MarkReadResponse, SuggestionActionPayload, SuggestionActionResponse, InProgressOffersResponse, ConfirmedBySenderPayload, ConfirmedBySenderResponse, PickedUpPayload, PickedUpResponse, PassengerConfirmedDeliveryPayload, PassengerConfirmedDeliveryResponse, SaveRatingPayload, SaveRatingResponse, NotDeliveredPayload, NotDeliveredResponse, GetInviteCodeResponse, GetDashboardDataResponse, GetMyInvitedUsersResponse } from '../types/api';
 
 const API_BASE_URL = 'https://api.packsi.net/api/miniapp';
 //const API_BASE_URL = 'http://localhost:5005/api/miniapp';
@@ -90,9 +90,9 @@ class ApiService {
     } else {
       // Use provided token for development
       //User1
-      headers['X-Telegram-Init-Data'] = 'query_id=AAEfymc9AAAAAB_KZz3-1lnV&user=%7B%22id%22%3A1030212127%2C%22first_name%22%3A%22Shahram%22%2C%22last_name%22%3A%22%22%2C%22username%22%3A%22Shahram0weisy%22%2C%22language_code%22%3A%22en%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Ft.me%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2FEVbiVIJZP-ipzuxmiuKkh1k1-dJF0U16tjKJdfQM7M4.svg%22%7D&auth_date=1757781398&signature=HOhywJXP-xaV5T3lOI4yIQNiPBgE_jzP5fEgTyi_oH61WoJE_5Qrvq6LXmlJ5R_RBA16BQlJExt9N4r2-dOrCg&hash=75baa2138205e2ac7d484e968ae1fec7f3b51ffe9d407f7fb0f95ea2e25ad426';
+      //headers['X-Telegram-Init-Data'] = 'query_id=AAEfymc9AAAAAB_KZz3-1lnV&user=%7B%22id%22%3A1030212127%2C%22first_name%22%3A%22Shahram%22%2C%22last_name%22%3A%22%22%2C%22username%22%3A%22Shahram0weisy%22%2C%22language_code%22%3A%22en%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Ft.me%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2FEVbiVIJZP-ipzuxmiuKkh1k1-dJF0U16tjKJdfQM7M4.svg%22%7D&auth_date=1757781398&signature=HOhywJXP-xaV5T3lOI4yIQNiPBgE_jzP5fEgTyi_oH61WoJE_5Qrvq6LXmlJ5R_RBA16BQlJExt9N4r2-dOrCg&hash=75baa2138205e2ac7d484e968ae1fec7f3b51ffe9d407f7fb0f95ea2e25ad426';
       //User2
-      //headers['X-Telegram-Init-Data'] = 'user=%7B%22id%22%3A5933914644%2C%22first_name%22%3A%22Shahram%22%2C%22last_name%22%3A%22%22%2C%22language_code%22%3A%22en%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Ft.me%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2FQGwtYapyXkY4-jZJkczPeUb_XKfimJozOKy8lZzBhtQc4cO4xBQzwdPwcb_QSNih.svg%22%7D&chat_instance=-2675852455221065738&chat_type=sender&auth_date=1757963361&signature=DAkcG5KbmvbKKCL8KYfGxRKGeeL-wdCmBlO5MTGgBTaTJ3JsF_g803MJaQ5xrjlg6Bw_ejc3Tc5Ea_aVeI-5AA&hash=4c406a000ad684a3efb5a169efd08c7123138eccb506b638703833945c66841e';
+      headers['X-Telegram-Init-Data'] = 'user=%7B%22id%22%3A5933914644%2C%22first_name%22%3A%22Shahram%22%2C%22last_name%22%3A%22%22%2C%22language_code%22%3A%22en%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Ft.me%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2FQGwtYapyXkY4-jZJkczPeUb_XKfimJozOKy8lZzBhtQc4cO4xBQzwdPwcb_QSNih.svg%22%7D&chat_instance=-2675852455221065738&chat_type=sender&auth_date=1757963361&signature=DAkcG5KbmvbKKCL8KYfGxRKGeeL-wdCmBlO5MTGgBTaTJ3JsF_g803MJaQ5xrjlg6Bw_ejc3Tc5Ea_aVeI-5AA&hash=4c406a000ad684a3efb5a169efd08c7123138eccb506b638703833945c66841e';
     }
 
     // Add additional headers for mobile compatibility
@@ -898,6 +898,25 @@ class ApiService {
       return data;
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
+      throw error;
+    }
+  }
+
+  async getMyInvitedUsers(): Promise<GetMyInvitedUsersResponse> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/Management/GetMyInvitedUsers`, {
+        method: 'GET',
+        headers: this.getHeaders()
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching invited users:', error);
       throw error;
     }
   }

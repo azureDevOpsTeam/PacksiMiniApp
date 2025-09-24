@@ -7,7 +7,11 @@ import DashboardCard from '../components/DashboardCard';
 import Logo from '../../components/Logo';
 import { apiService } from '../../services/apiService';
 
-const AdminDashboard: React.FC = () => {
+interface AdminDashboardProps {
+  onNavigate?: (page: 'dashboard' | 'usermanagement') => void;
+}
+
+const AdminDashboard: React.FC<AdminDashboardProps> = ({ onNavigate }) => {
   const { language } = useLanguage();
   const { webApp } = useTelegram();
   const isRTL = language === 'fa';
@@ -184,7 +188,7 @@ const AdminDashboard: React.FC = () => {
         gap: '12px',
         marginBottom: '24px'
       }}>
-        
+
         <DashboardCard
           title={isRTL ? 'تعداد کاربران' : 'Total Users'}
           value={isLoadingDashboard ? '...' : dashboardData.referralCount.toString()}
@@ -200,14 +204,6 @@ const AdminDashboard: React.FC = () => {
           subtitle={isRTL ? 'بسته در حال ارسال' : 'Packages in Transit'}
           gradient="linear-gradient(135deg, #fa709a 0%, #fee140 100%)"
         />
-        
-        <DashboardCard
-          title={isRTL ? 'موجودی ریال' : 'IRR Balance'}
-          value={isLoadingDashboard ? '...' : `₹ ${dashboardData.irrBalance.toLocaleString()}`}
-          icon="💰"
-          subtitle={isRTL ? 'ریال ایران' : 'Iranian Rial'}
-          gradient="linear-gradient(135deg, #f093fb 0%, #f5576c 100%)"
-        />
 
         <DashboardCard
           title={isRTL ? 'موجودی دلار' : 'USD Balance'}
@@ -217,11 +213,19 @@ const AdminDashboard: React.FC = () => {
           gradient="linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)"
         />
 
+        <DashboardCard
+          title={isRTL ? 'موجودی ریال' : 'IRR Balance'}
+          value={isLoadingDashboard ? '...' : `₹ ${dashboardData.irrBalance.toLocaleString()}`}
+          icon="💰"
+          subtitle={isRTL ? 'ریال ایران' : 'Iranian Rial'}
+          gradient="linear-gradient(135deg, #f093fb 0%, #f5576c 100%)"
+        />
+
       </div>
 
       {/* Admin Panel Links */}
       <div style={{ marginBottom: '24px' }}>
-        <AdminPanel />
+        <AdminPanel onNavigate={onNavigate} />
       </div>
 
       {/* Development Notice */}

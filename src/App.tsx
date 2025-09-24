@@ -42,6 +42,7 @@ const AppContent: React.FC = () => {
   const { requestCount } = useRequestContext();
   const [activeButton, setActiveButton] = React.useState<'user' | 'admin'>('user');
   const [currentPage, setCurrentPage] = React.useState<'home' | 'createRequest' | 'updateProfile' | 'addPreferredLocation' | 'parcelList' | 'myRequest' | 'inProgressRequest' | 'chatPersonList' | 'notFound'>('home');
+  const [adminCurrentPage, setAdminCurrentPage] = React.useState<'dashboard' | 'usermanagement'>('dashboard');
   const [showVerifyPhone, setShowVerifyPhone] = React.useState<boolean>(false);
   const [showUpdateProfile, setShowUpdateProfile] = React.useState<boolean>(false);
   const [isValidating, setIsValidating] = React.useState<boolean>(true);
@@ -435,7 +436,7 @@ const AppContent: React.FC = () => {
           textAlign: 'center',
           position: 'relative'
         }}>
-          <AdminRoutes currentPage="dashboard" />
+          <AdminRoutes currentPage={adminCurrentPage} onNavigate={setAdminCurrentPage} />
         </div>
       );
     }

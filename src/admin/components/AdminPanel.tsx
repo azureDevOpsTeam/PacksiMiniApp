@@ -1,7 +1,11 @@
 import React from 'react';
 import { useLanguage } from '../../hooks/useLanguage';
 
-const AdminPanel: React.FC = () => {
+interface AdminPanelProps {
+  onNavigate?: (page: 'dashboard' | 'usermanagement') => void;
+}
+
+const AdminPanel: React.FC<AdminPanelProps> = ({ onNavigate }) => {
   const { language } = useLanguage();
   const isRTL = language === 'fa';
 
@@ -44,7 +48,9 @@ const AdminPanel: React.FC = () => {
         }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
           {/* User Management Link */}
-          <button style={{
+          <button 
+            onClick={() => onNavigate?.('usermanagement')}
+            style={{
             display: 'flex',
             alignItems: 'center',
             padding: '12px',
