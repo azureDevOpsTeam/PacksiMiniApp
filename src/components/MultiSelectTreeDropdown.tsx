@@ -65,23 +65,6 @@ const MultiSelectTreeDropdown: React.FC<MultiSelectTreeDropdownProps> = ({
   const dropdownRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  // Auto-expand countries when searching for cities
-  useEffect(() => {
-    if (searchTerm.trim() === '') {
-      // If search is empty, collapse all countries
-      setExpandedCountries(new Set());
-    } else {
-      // Find countries that have matching cities and expand them
-      const countriesWithMatches = new Set<string>();
-      Object.entries(groupedItems).forEach(([countryLabel, { cities }]) => {
-        if (cities.length > 0) {
-          countriesWithMatches.add(countryLabel);
-        }
-      });
-      setExpandedCountries(countriesWithMatches);
-    }
-  }, [searchTerm, groupedItems]);
-
   // Flatten the tree structure for easier searching
   const flattenItems = (data: CityItem[]): FlattenedItem[] => {
     const flattened: FlattenedItem[] = [];
@@ -152,6 +135,23 @@ const MultiSelectTreeDropdown: React.FC<MultiSelectTreeDropdownProps> = ({
     }
     return acc;
   }, {} as Record<string, { country: FlattenedItem | null; cities: FlattenedItem[] }>);
+
+  // Auto-expand countries when searching for cities
+  useEffect(() => {
+    if (searchTerm.trim() === '') {
+      // If search is empty, collapse all countries
+      setExpandedCountries(new Set());
+    } else {
+      // Find countries that have matching cities and expand them
+      const countriesWithMatches = new Set<string>();
+      Object.entries(groupedItems).forEach(([countryLabel, { cities }]) => {
+        if (cities.length > 0) {
+          countriesWithMatches.add(countryLabel);
+        }
+      });
+      setExpandedCountries(countriesWithMatches);
+    }
+  }, [searchTerm, groupedItems]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
