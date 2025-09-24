@@ -109,6 +109,10 @@ const TabIcon = styled.div<{ $isActive: boolean }>`
   position: relative;
   z-index: 1;
   
+  @media (max-width: 380px) {
+    margin-bottom: 0;
+  }
+  
   svg {
     width: 20px;
     height: 20px;
@@ -132,6 +136,10 @@ const TabLabel = styled.span<{ $isActive: boolean }>`
   font-family: 'IRANSansX', sans-serif;
   text-align: center;
   line-height: 1.2;
+  
+  @media (max-width: 380px) {
+    display: none;
+  }
 `;
 
 const ActiveIndicator = styled.div<{ $isActive: boolean }>`
