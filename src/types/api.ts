@@ -16,7 +16,6 @@ export interface CreateRequestModel {
   originCityId: number;
   destinationCityId: number;
   departureDate: string; // ISO string format
-  arrivalDate: string; // ISO string format
   requestType: number;
   description: string;
   maxWeightKg: number;
@@ -237,8 +236,6 @@ export interface OutboundTrip {
   destinationCityFa: string;
   departureDate: string;
   departureDatePersian: string | null;
-  arrivalDate: string;
-  arrivalDatePersian: string | null;
   suggestedPrice: number | null;
   itemTypes: string[];
   itemTypesFa: string[];
@@ -310,7 +307,6 @@ export interface MyRequestTrip {
   destinationCity: string;
   destinationCityFa?: string;
   departureDate: string;
-  arrivalDate: string;
   tripType: string; // 'Passenger' or 'Sender'
   status: string;
   description?: string;

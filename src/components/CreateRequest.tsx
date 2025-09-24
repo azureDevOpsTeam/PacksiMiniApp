@@ -15,7 +15,6 @@ interface CreateRequestFormData {
   originCityId: number;
   destinationCityId: number;
   departureDate: string;
-  arrivalDate: string;
   requestType: number;
   description: string;
   maxWeightKg: number;
@@ -39,7 +38,6 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
     originCityId: 0,
     destinationCityId: 0,
     departureDate: '',
-    arrivalDate: '',
     requestType: 1,
     description: '',
     maxWeightKg: 0,
@@ -75,7 +73,6 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
     originCityId: { required: true, custom: (value: number) => value !== 0 },
     destinationCityId: { required: true, custom: (value: number) => value !== 0 },
     departureDate: { required: true },
-    arrivalDate: { required: true }
     // requestType: { required: true, custom: (value: number) => value !== -1 }
   };
 
@@ -265,7 +262,6 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
           ...formData,
           // Convert dates to ISO format if needed
           departureDate: new Date(formData.departureDate).toISOString(),
-          arrivalDate: new Date(formData.arrivalDate).toISOString(),
           files: [] // Empty array - files are sent separately via FormData
         }
       };
@@ -588,7 +584,7 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
           </div>
 
           {/* Arrival Date */}
-          <div style={{ marginBottom: '20px' }}>
+          {/* <div style={{ marginBottom: '20px' }}>
             <label style={{
               ...labelStyle,
               color: hasFieldError('arrivalDate') ? '#ff4757' : labelStyle.color
@@ -600,27 +596,6 @@ const CreateRequest: React.FC<CreateRequestProps> = () => {
               onBlur={() => markFieldTouched('arrivalDate')}
               style={getFieldStyle(inputStyle, 'arrivalDate')}
             />
-          </div>
-
-          {/* Request Type */}
-          {/* <div style={{ marginBottom: '20px' }}>
-            <label style={{
-              ...labelStyle,
-              color: hasFieldError('requestType') ? '#ff4757' : labelStyle.color
-            }}>{t('createRequest.requestType')}</label>
-            <select
-              value={formData.requestType}
-              onChange={(e) => handleInputChange('requestType', parseInt(e.target.value))}
-              onBlur={() => markFieldTouched('requestType')}
-              style={getFieldStyle(inputStyle, 'requestType')}
-            >
-              <option value={-1}>{t('createRequest.selectRequestType')}</option>
-              {requestTypes.map(type => (
-                <option key={type.id} value={type.id}>
-                  {type.name}
-                </option>
-              ))}
-            </select>
           </div> */}
 
           {/* فایل‌های عمومی */}

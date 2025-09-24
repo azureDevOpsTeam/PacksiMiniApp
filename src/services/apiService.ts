@@ -185,7 +185,6 @@ class ApiService {
       formData.append('OriginCityId', model.originCityId.toString());
       formData.append('DestinationCityId', model.destinationCityId.toString());
       formData.append('DepartureDate', model.departureDate);
-      formData.append('ArrivalDate', model.arrivalDate);
       formData.append('RequestType', model.requestType.toString());
       formData.append('Description', model.description || '');
       formData.append('MaxWeightKg', (model.maxWeightKg || 0).toString());
