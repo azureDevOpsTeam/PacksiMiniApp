@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../../hooks/useLanguage';
 import { useTelegram } from '../../hooks/useTelegram';
 import AdminLayout from './AdminLayout';
+import Logo from '../../components/Logo';
 import { apiService } from '../../services/apiService';
 import type { InvitedUser, GetMyInvitedUsersResponse } from '../../types/api';
 
@@ -137,6 +138,15 @@ const UserManagement: React.FC<UserManagementProps> = ({ onNavigate }) => {
 
   return (
     <AdminLayout>
+      {/* Logo Header */}
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        marginBottom: '20px'
+      }}>
+        <Logo style={{ width: '120px' }} />
+      </div>
+
       {/* Header */}
       <div style={{
         marginBottom: '20px',
