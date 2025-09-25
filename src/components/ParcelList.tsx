@@ -177,6 +177,21 @@ const accordionStyles = `
   .flight-route {
     animation: flightPath 1s ease-out;
   }
+
+  /* Responsive styles for small screens */
+  @media (max-width: 380px) {
+    .user-info-responsive {
+      flex-direction: column !important;
+      align-items: flex-start !important;
+      gap: 4px !important;
+    }
+    
+    .user-name-stars-responsive {
+      flex-direction: column !important;
+      align-items: flex-start !important;
+      gap: 4px !important;
+    }
+  }
 `;
 
 // Inject styles
@@ -1240,20 +1255,26 @@ const ParcelList: React.FC<ParcelListProps> = ({ setCurrentPage, hasCompletedPro
                           position: 'relative',
                           zIndex: 1
                         }}>
-                          <div style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '10px'
-                          }}>
+                          <div 
+                            className="user-info-responsive"
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '10px'
+                            }}
+                          >
                             <div>
-                              <div style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '8px',
-                                fontSize: '16px',
-                                fontWeight: 'bold',
-                                marginBottom: '2px'
-                              }}>
+                              <div 
+                                className="user-name-stars-responsive"
+                                style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '8px',
+                                  fontSize: '16px',
+                                  fontWeight: 'bold',
+                                  marginBottom: '2px'
+                                }}
+                              >
                                 <span>{flight.fullName}</span>
                                 {typeof flight.userRate === 'number' && (
                                   <StarRating rating={flight.userRate} size="small" />
