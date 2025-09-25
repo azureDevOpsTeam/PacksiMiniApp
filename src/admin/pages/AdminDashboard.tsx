@@ -8,7 +8,7 @@ import Logo from '../../components/Logo';
 import { apiService } from '../../services/apiService';
 
 interface AdminDashboardProps {
-  onNavigate?: (page: 'dashboard' | 'usermanagement') => void;
+  onNavigate?: (page: 'dashboard' | 'usermanagement' | 'advertisements') => void;
 }
 
 const AdminDashboard: React.FC<AdminDashboardProps> = ({ onNavigate }) => {
