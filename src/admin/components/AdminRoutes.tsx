@@ -1,10 +1,11 @@
 import React from 'react';
 import AdminDashboard from '../pages/AdminDashboard';
 import UserManagement from './UserManagement';
+import AdvertisementManagement from './AdvertisementManagement';
 
 interface AdminRoutesProps {
   currentPage?: string;
-  onNavigate?: (page: 'dashboard' | 'usermanagement') => void;
+  onNavigate?: (page: 'dashboard' | 'usermanagement' | 'advertisements') => void;
 }
 
 const AdminRoutes: React.FC<AdminRoutesProps> = ({ currentPage = 'dashboard', onNavigate }) => {
@@ -14,6 +15,8 @@ const AdminRoutes: React.FC<AdminRoutesProps> = ({ currentPage = 'dashboard', on
         return <AdminDashboard onNavigate={onNavigate} />;
       case 'usermanagement':
         return <UserManagement />;
+      case 'advertisements':
+        return <AdvertisementManagement />;
       // در آینده می‌توان صفحات بیشتری اضافه کرد:
       // case 'reports':
       //   return <AdminReports />;

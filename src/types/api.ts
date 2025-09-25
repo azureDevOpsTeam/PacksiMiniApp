@@ -730,3 +730,27 @@ export interface GetMyInvitedUsersResponse {
     value: number;
   };
 }
+
+// Advertisement Types
+export interface Advertisement {
+  id: number;
+  title: string;
+  statusEn: string;
+  statusFa: string;
+  postTypeEn: string;
+  postTypeFa: string;
+}
+
+export interface GetAdsResponse {
+  validationResult: any;
+  requestStatus: {
+    name: string;
+    value: number;
+  };
+  message: string;
+  objectResult: Advertisement[];
+  notificationType: {
+    name: string;
+    value: number;
+  };
+}
