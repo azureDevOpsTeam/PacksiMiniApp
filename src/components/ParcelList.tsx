@@ -194,9 +194,10 @@ interface FileWithPreview {
 }
 
 interface ParcelListProps {
+  setCurrentPage?: (page: 'home' | 'createRequest' | 'updateProfile' | 'addPreferredLocation' | 'parcelList' | 'myRequest' | 'inProgressRequest' | 'chatPersonList' | 'notFound') => void;
 }
 
-const ParcelList: React.FC<ParcelListProps> = () => {
+const ParcelList: React.FC<ParcelListProps> = ({ setCurrentPage }) => {
   const { t, isRTL } = useLanguage();
   const { theme } = useTheme();
   const { webApp } = useTelegramContext();
@@ -231,6 +232,9 @@ const ParcelList: React.FC<ParcelListProps> = () => {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [confirmAction, setConfirmAction] = useState<'accept' | 'reject' | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
+
+  // Profile completion modal state
+  const [showProfileCompletionModal, setShowProfileCompletionModal] = useState(false);
 
   const [searchQuery, setSearchQuery] = useState<string>('');
 
@@ -466,6 +470,12 @@ const ParcelList: React.FC<ParcelListProps> = () => {
     if (!selectedFlightForTrip) {
       newErrors.tripOption = isRTL ? 'لطفا سفر را انتخاب کنید' : 'Please select a trip';
       hasErrors = true;
+    }
+
+    // Check if tripType is 'all' - show profile completion modal
+    if (selectedFlightForTrip && selectedFlightForTrip.tripType === 'all') {
+      setShowProfileCompletionModal(true);
+      return;
     }
 
     if (!selectedTripOption) {
@@ -3050,6 +3060,198 @@ const ParcelList: React.FC<ParcelListProps> = () => {
           </div>,
           document.body
         )
+      )}
+
+      {/* Profile Completion Modal */}
+      {showProfileCompletionModal && createPortal(
+        <>
+          {/* Background Overlay */}
+          <div
+            onClick={() => setShowProfileCompletionModal(false)}
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: 'rgba(0, 0, 0, 0.5)',
+              zIndex: 99999,
+              backdropFilter: 'blur(4px)'
+            }}
+          />
+
+          <div style={{
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            background: 'linear-gradient(135deg, rgba(26, 32, 38, 0.95) 0%, rgba(36, 43, 53, 0.95) 100%)',
+            borderRadius: '20px',
+            boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1)',
+            minWidth: '320px',
+            maxWidth: '400px',
+            zIndex: 100000,
+            overflow: 'hidden',
+            backdropFilter: 'blur(20px)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            animation: 'fadeInScale 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+          }}>
+            {/* Modal Header */}
+            <div style={{
+              padding: '20px 20px 16px 20px',
+              borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+              textAlign: 'center',
+              position: 'relative'
+            }}>
+              {/* Close Button */}
+              <button
+                type="button"
+                onClick={() => setShowProfileCompletionModal(false)}
+                style={{
+                  position: 'absolute',
+                  top: '16px',
+                  right: isRTL ? 'auto' : '16px',
+                  left: isRTL ? '16px' : 'auto',
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  border: 'none',
+                  borderRadius: '50%',
+                  width: '32px',
+                  height: '32px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  color: '#ffffff',
+                  fontSize: '18px',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
+                  e.currentTarget.style.transform = 'scale(1.1)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+                  e.currentTarget.style.transform = 'scale(1)';
+                }}
+              >
+                ×
+              </button>
+
+              <h3 style={{
+                margin: 0,
+                fontSize: '18px',
+                fontWeight: '600',
+                color: '#ffffff',
+                textAlign: 'center'
+              }}>
+                {isRTL ? 'تکمیل پروفایل' : 'Complete Profile'}
+              </h3>
+            </div>
+
+            {/* Modal Content */}
+            <div style={{
+              padding: '24px 20px'
+            }}>
+              <div style={{
+                textAlign: 'center',
+                marginBottom: '24px'
+              }}>
+                <div style={{
+                  width: '60px',
+                  height: '60px',
+                  borderRadius: '50%',
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  margin: '0 auto 16px auto',
+                  fontSize: '24px'
+                }}>
+                  👤
+                </div>
+                <p style={{
+                  margin: 0,
+                  fontSize: '16px',
+                  lineHeight: '1.5',
+                  color: '#e2e8f0',
+                  textAlign: 'center'
+                }}>
+                  {isRTL 
+                    ? 'برای ارسال پیشنهاد و استفاده نامحدود، ابتدا باید اطلاعات پروفایل خود را تکمیل کنید.'
+                    : 'To submit proposals and enjoy unlimited usage, you must first complete your profile information.'
+                  }
+                </p>
+              </div>
+
+              {/* Action Buttons */}
+              <div style={{
+                display: 'flex',
+                gap: '12px',
+                flexDirection: isRTL ? 'row-reverse' : 'row'
+              }}>
+                <button
+                  type="button"
+                  onClick={() => setShowProfileCompletionModal(false)}
+                  style={{
+                    flex: 1,
+                    padding: '12px 16px',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    borderRadius: '12px',
+                    background: 'transparent',
+                    color: '#e2e8f0',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+                    e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'transparent';
+                    e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                  }}
+                >
+                  {isRTL ? 'بعداً' : 'Later'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowProfileCompletionModal(false);
+                    if (setCurrentPage) {
+                      setCurrentPage('updateProfile');
+                    }
+                  }}
+                  style={{
+                    flex: 1,
+                    padding: '12px 16px',
+                    border: 'none',
+                    borderRadius: '12px',
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    color: '#ffffff',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-1px)';
+                    e.currentTarget.style.boxShadow = '0 6px 16px rgba(102, 126, 234, 0.4)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(102, 126, 234, 0.3)';
+                  }}
+                >
+                  {isRTL ? 'تکمیل پروفایل' : 'Complete Profile'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </>,
+        document.body
       )}
     </div>
   );
