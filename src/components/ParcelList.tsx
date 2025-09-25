@@ -473,8 +473,7 @@ const ParcelList: React.FC<ParcelListProps> = ({ setCurrentPage, hasCompletedPro
       hasErrors = true;
     }
 
-    // Check if profile is incomplete - show profile completion modal
-    if (!hasCompletedProfile) {
+    if (selectedTripOption === 'all') {
       setShowProfileCompletionModal(true);
       return;
     }
@@ -652,6 +651,12 @@ const ParcelList: React.FC<ParcelListProps> = ({ setCurrentPage, hasCompletedPro
 
   // Suggestions modal handlers
   const handleShowSuggestions = (flight: OutboundTrip) => {
+    // Check if profile is incomplete - show profile completion modal
+    if (!hasCompletedProfile) {
+      setShowProfileCompletionModal(true);
+      return;
+    }
+    
     setSelectedFlightForSuggestions(flight);
     setShowSuggestionsModal(true);
   };
@@ -1763,8 +1768,8 @@ const ParcelList: React.FC<ParcelListProps> = ({ setCurrentPage, hasCompletedPro
                       </div>
                       )}
 
-                      {/* Accordion Content - Second Section - only for inbound and outbound tabs */}
-                      {(activeTab === 'incoming' || activeTab === 'outgoing') && (
+                      {/* Accordion Content - Second Section - for inbound, outbound tabs and type=all flights */}
+                      {((activeTab === 'incoming' || activeTab === 'outgoing') || flight.tripType === 'all') && (
                         <div className={`accordion-content ${expandedCards[flight.requestId] ? 'open' : 'closed'}`}>
                           {/* Compact Description */}
                           {flight.description && (
@@ -1808,6 +1813,11 @@ const ParcelList: React.FC<ParcelListProps> = ({ setCurrentPage, hasCompletedPro
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
+                                // Check if profile is incomplete - show profile completion modal
+                                if (!hasCompletedProfile) {
+                                  setShowProfileCompletionModal(true);
+                                  return;
+                                }
                                 // Open select trip modal with suggest_price option
                                 setSelectedFlightForTrip(flight);
                                 setSelectedTripOption('');
