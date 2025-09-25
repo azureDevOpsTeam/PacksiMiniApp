@@ -195,9 +195,10 @@ interface FileWithPreview {
 
 interface ParcelListProps {
   setCurrentPage?: (page: 'home' | 'createRequest' | 'updateProfile' | 'addPreferredLocation' | 'parcelList' | 'myRequest' | 'inProgressRequest' | 'chatPersonList' | 'notFound') => void;
+  hasCompletedProfile?: boolean;
 }
 
-const ParcelList: React.FC<ParcelListProps> = ({ setCurrentPage }) => {
+const ParcelList: React.FC<ParcelListProps> = ({ setCurrentPage, hasCompletedProfile = true }) => {
   const { t, isRTL } = useLanguage();
   const { theme } = useTheme();
   const { webApp } = useTelegramContext();
@@ -472,8 +473,8 @@ const ParcelList: React.FC<ParcelListProps> = ({ setCurrentPage }) => {
       hasErrors = true;
     }
 
-    // Check if tripType is 'all' - show profile completion modal
-    if (selectedFlightForTrip && selectedFlightForTrip.tripType === 'all') {
+    // Check if profile is incomplete - show profile completion modal
+    if (!hasCompletedProfile) {
       setShowProfileCompletionModal(true);
       return;
     }
