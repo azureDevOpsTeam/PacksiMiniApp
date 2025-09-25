@@ -45,6 +45,7 @@ const AppContent: React.FC = () => {
   const [adminCurrentPage, setAdminCurrentPage] = React.useState<'dashboard' | 'usermanagement' | 'advertisements'>('dashboard');
   const [showVerifyPhone, setShowVerifyPhone] = React.useState<boolean>(false);
   const [showUpdateProfile, setShowUpdateProfile] = React.useState<boolean>(false);
+  const [hasCompletedProfile, setHasCompletedProfile] = React.useState<boolean>(true);
   const [isValidating, setIsValidating] = React.useState<boolean>(true);
   const [authenticationFailed, setAuthenticationFailed] = React.useState<boolean>(false);
 
@@ -214,16 +215,19 @@ const AppContent: React.FC = () => {
 
         setShowVerifyPhone(shouldShowVerifyPhone);
         setShowUpdateProfile(shouldShowUpdateProfile);
+        setHasCompletedProfile(hasCompletedProfile);
       } else {
         // If API doesn't return expected data, show verify phone button as fallback
         setShowVerifyPhone(true);
         setShowUpdateProfile(false);
+        setHasCompletedProfile(true);
       }
     } catch (error) {
       console.error('Error validating user:', error);
       // On error, show verify phone button as fallback
       setShowVerifyPhone(true);
       setShowUpdateProfile(false);
+      setHasCompletedProfile(true);
     } finally {
       setIsValidating(false);
     }
