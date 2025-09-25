@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../../hooks/useLanguage';
+import { useTelegram } from '../../hooks/useTelegram';
 import AdminLayout from './AdminLayout';
 import { apiService } from '../../services/apiService';
 import type { InvitedUser, GetMyInvitedUsersResponse } from '../../types/api';
 
-const UserManagement: React.FC = () => {
+interface UserManagementProps {
+  onNavigate?: (page: 'dashboard' | 'usermanagement' | 'advertisements') => void;
+}
+
+const UserManagement: React.FC<UserManagementProps> = ({ onNavigate }) => {
   const { language } = useLanguage();
+  const { webApp } = useTelegram();
   const isRTL = language === 'fa';
 
   const [users, setUsers] = useState<InvitedUser[]>([]);
@@ -36,6 +42,27 @@ const UserManagement: React.FC = () => {
 
     fetchUsers();
   }, [isRTL]);
+
+  // Setup Telegram back button
+  useEffect(() => {
+    if (webApp && onNavigate) {
+      // Show back button
+      webApp.BackButton.show();
+      
+      // Set up back button click handler
+      const handleBackClick = () => {
+        onNavigate('dashboard');
+      };
+      
+      webApp.BackButton.onClick(handleBackClick);
+      
+      // Cleanup on unmount
+      return () => {
+        webApp.BackButton.hide();
+        webApp.BackButton.offClick(handleBackClick);
+      };
+    }
+  }, [webApp, onNavigate]);
 
   // Filter users based on search term
   const filteredUsers = users.filter(user =>

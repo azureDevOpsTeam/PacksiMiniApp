@@ -14,9 +14,9 @@ const AdminRoutes: React.FC<AdminRoutesProps> = ({ currentPage = 'dashboard', on
       case 'dashboard':
         return <AdminDashboard onNavigate={onNavigate} />;
       case 'usermanagement':
-        return <UserManagement />;
+        return <UserManagement onNavigate={onNavigate} />;
       case 'advertisements':
-        return <AdvertisementManagement />;
+        return <AdvertisementManagement onNavigate={onNavigate} />;
       // در آینده می‌توان صفحات بیشتری اضافه کرد:
       // case 'reports':
       //   return <AdminReports />;

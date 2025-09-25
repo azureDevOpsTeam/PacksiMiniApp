@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../../hooks/useLanguage';
+import { useTelegram } from '../../hooks/useTelegram';
 import AdminLayout from './AdminLayout';
 import { apiService } from '../../services/apiService';
 import type { Advertisement, GetAdsResponse } from '../../types/api';
 
-const AdvertisementManagement: React.FC = () => {
+interface AdvertisementManagementProps {
+  onNavigate?: (page: 'dashboard' | 'usermanagement' | 'advertisements') => void;
+}
+
+const AdvertisementManagement: React.FC<AdvertisementManagementProps> = ({ onNavigate }) => {
   const { language } = useLanguage();
+  const { webApp } = useTelegram();
   const isRTL = language === 'fa';
 
   const [ads, setAds] = useState<Advertisement[]>([]);
@@ -36,6 +42,27 @@ const AdvertisementManagement: React.FC = () => {
 
     fetchAds();
   }, [isRTL]);
+
+  // Setup Telegram back button
+  useEffect(() => {
+    if (webApp && onNavigate) {
+      // Show back button
+      webApp.BackButton.show();
+      
+      // Set up back button click handler
+      const handleBackClick = () => {
+        onNavigate('dashboard');
+      };
+      
+      webApp.BackButton.onClick(handleBackClick);
+      
+      // Cleanup on unmount
+      return () => {
+        webApp.BackButton.hide();
+        webApp.BackButton.offClick(handleBackClick);
+      };
+    }
+  }, [webApp, onNavigate]);
 
   // Filter ads based on search term
   const filteredAds = ads.filter(ad =>
