@@ -194,17 +194,16 @@ interface FileWithPreview {
 }
 
 interface ParcelListProps {
-  onNavigateToUpdateProfile?: () => void;
 }
 
-const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) => {
+const ParcelList: React.FC<ParcelListProps> = () => {
   const { t, isRTL } = useLanguage();
   const { theme } = useTheme();
   const { webApp } = useTelegramContext();
 
 
   const [isLoading, setIsLoading] = useState(false);
-  const [showForm, setShowForm] = useState(false); // Default to showing list
+
   const [flights, setFlights] = useState<OutboundTrip[]>([]);
   const [flightsLoading, setFlightsLoading] = useState(true);
   const [flightsError, setFlightsError] = useState<string | null>(null);
@@ -292,10 +291,10 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
     let matchesTab = true;
     switch (activeTab) {
       case 'incoming':
-        matchesTab = flight.tripType === 'inbound';
+        matchesTab = flight.tripType === 'inbound' || flight.tripType === 'all';
         break;
       case 'outgoing':
-        matchesTab = flight.tripType === 'outbound';
+        matchesTab = flight.tripType === 'outbound' || flight.tripType === 'all';
         break;
       default:
         matchesTab = true;
@@ -770,32 +769,22 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
     }
   };
 
-  // Check setPreferredLocation on component mount
+  // Load flights on component mount
   useEffect(() => {
-    const checkPreferredLocation = async () => {
+    const loadFlights = async () => {
       try {
         setIsLoading(true);
-        // Call validate API to check setPreferredLocation
-        const validateResult = await apiService.validate();
-
-        if (validateResult.objectResult.setPreferredLocation) {
-          // User has set preferred location, show list
-          setShowForm(false);
-          fetchFlights();
-        } else {
-          // User hasn't set preferred location, show form
-          setShowForm(true);
-        }
+        // Always show flight list, no profile completion check
+        fetchFlights();
       } catch (error) {
-        console.error('Error checking preferred location:', error);
-        // On error, show form to be safe
-        setShowForm(true);
+        console.error('Error loading flights:', error);
+        // Still show flight list even on error
       } finally {
         setIsLoading(false);
       }
     };
 
-    checkPreferredLocation();
+    loadFlights();
   }, []);
 
   // No need to fetch flights when activeTab changes since we get all data at once
@@ -869,83 +858,7 @@ const ParcelList: React.FC<ParcelListProps> = ({ onNavigateToUpdateProfile }) =>
     );
   }
 
-  // Show message if setPreferredLocation is false
-  if (showForm) {
-    return (
-      <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: '40px 20px',
-        backgroundColor: '#17212b',
-        minHeight: '100vh',
-        textAlign: 'center'
-      }}>
-        {/* Logo */}
-        <div style={{ marginBottom: '40px' }}>
-          <Logo />
-        </div>
-        
-        {/* Message */}
-        <div style={{
-          backgroundColor: '#242f3d',
-          padding: '30px 25px',
-          borderRadius: '16px',
-          marginBottom: '30px',
-          maxWidth: '400px',
-          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)'
-        }}>
-          <p style={{
-            color: '#ffffff',
-            fontSize: '16px',
-            lineHeight: '1.6',
-            margin: '0',
-            fontFamily: 'IRANSansX, sans-serif',
-            fontWeight: '400'
-          }}>
-            {t('flights.completeProfileMessage')}
-          </p>
-        </div>
-        
-        {/* Complete Profile Button */}
-        <button
-          onClick={() => {
-            // Navigate to UpdateProfile page
-            if (onNavigateToUpdateProfile) {
-              onNavigateToUpdateProfile();
-            }
-          }}
-          style={{
-            backgroundColor: '#2ea5f7',
-            color: '#ffffff',
-            border: 'none',
-            borderRadius: '12px',
-            padding: '16px 32px',
-            fontSize: '16px',
-            fontWeight: '600',
-            cursor: 'pointer',
-            fontFamily: 'IRANSansX, sans-serif',
-            boxShadow: '0 4px 15px rgba(46, 165, 247, 0.3)',
-            transition: 'all 0.3s ease',
-            minWidth: '200px'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = '#1e90d4';
-            e.currentTarget.style.transform = 'translateY(-2px)';
-            e.currentTarget.style.boxShadow = '0 6px 20px rgba(46, 165, 247, 0.4)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = '#2ea5f7';
-            e.currentTarget.style.transform = 'translateY(0)';
-            e.currentTarget.style.boxShadow = '0 4px 15px rgba(46, 165, 247, 0.3)';
-          }}
-        >
-          {t('flights.completeProfileButton')}
-        </button>
-      </div>
-    );
-  }
+
 
   if (showMyRequest) {
     return (

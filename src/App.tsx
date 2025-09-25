@@ -406,7 +406,7 @@ const AppContent: React.FC = () => {
 
     // Render ParcelList page
     if (currentPage === 'parcelList') {
-      return <ParcelList onNavigateToUpdateProfile={() => setCurrentPage('updateProfile')} />;
+      return <ParcelList />;
     }
 
     // Render MyRequest page
