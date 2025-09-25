@@ -410,17 +410,17 @@ const AppContent: React.FC = () => {
 
     // Render ParcelList page
     if (currentPage === 'parcelList') {
-      return <ParcelList setCurrentPage={setCurrentPage} hasCompletedProfile={hasCompletedProfile} />;
+      return <ParcelList setCurrentPage={setCurrentPage} hasCompletedProfile={hasCompletedProfile} shouldLoadData={currentPage === 'parcelList'} />;
     }
 
     // Render MyRequest page
     if (currentPage === 'myRequest') {
-      return <MyRequest />;
+      return <MyRequest shouldLoadData={activeTab === 'parcels'} />;
     }
 
     // Render InProgressRequest page
     if (currentPage === 'inProgressRequest') {
-      return <InProgressRequest />;
+      return <InProgressRequest shouldLoadData={activeTab === 'requests'} />;
     }
 
     // Render ChatPersonList page

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../hooks/useLanguage';
 // import { useTelegramContext } from '../hooks/useTelegramContext'; // Not needed
-import { useRequestContext } from '../contexts/RequestContext';
 import { apiService } from '../services/apiService';
 import type { MyRequestTrip } from '../types/api';
 import Logo from './Logo';
@@ -81,11 +80,12 @@ if (typeof document !== 'undefined') {
 
 type TabType = 'passenger' | 'sender';
 
-interface MyRequestProps {}
+interface MyRequestProps {
+  shouldLoadData?: boolean; // New prop to control when to load data
+}
 
-const MyRequest: React.FC<MyRequestProps> = () => {
+const MyRequest: React.FC<MyRequestProps> = ({ shouldLoadData = true }) => {
   const { isRTL } = useLanguage();
-  const { refreshRequestCount } = useRequestContext();
 
   // const { user } = useTelegramContext(); // Not needed as API uses token
   
@@ -95,8 +95,10 @@ const MyRequest: React.FC<MyRequestProps> = () => {
   const [requestsError, setRequestsError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Fetch requests
+  // Fetch requests only if shouldLoadData is true
   useEffect(() => {
+    if (!shouldLoadData) return;
+    
     const fetchRequests = async () => {
       try {
         setRequestsLoading(true);
@@ -113,8 +115,7 @@ const MyRequest: React.FC<MyRequestProps> = () => {
           console.log('No requests data or success is false');
           setRequests([]);
         }
-        // Refresh request count for badge
-        refreshRequestCount();
+        // Note: Request count will be updated when needed, no need for additional API call here
       } catch (error) {
         console.error('Error fetching requests:', error);
         setRequestsError(isRTL ? 'خطا در دریافت درخواست‌ها' : 'Error fetching requests');
@@ -124,7 +125,7 @@ const MyRequest: React.FC<MyRequestProps> = () => {
     };
 
     fetchRequests();
-  }, [isRTL]);
+  }, [shouldLoadData, isRTL]);
 
   // Filter requests based on active tab and search query
   const filteredRequests = requests.filter(request => {

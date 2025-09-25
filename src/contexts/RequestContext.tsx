@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import React, { createContext, useContext, useState, type ReactNode } from 'react';
 import { apiService } from '../services/apiService';
 
 interface RequestContextType {
@@ -41,10 +41,7 @@ export const RequestProvider: React.FC<RequestProviderProps> = ({ children }) =>
     }
   };
 
-  // Initial load
-  useEffect(() => {
-    refreshRequestCount();
-  }, []);
+  // Remove initial load - let components call refreshRequestCount when needed
 
   const value: RequestContextType = {
     requestCount,

@@ -211,9 +211,10 @@ interface FileWithPreview {
 interface ParcelListProps {
   setCurrentPage?: (page: 'home' | 'createRequest' | 'updateProfile' | 'addPreferredLocation' | 'parcelList' | 'myRequest' | 'inProgressRequest' | 'chatPersonList' | 'notFound') => void;
   hasCompletedProfile?: boolean;
+  shouldLoadData?: boolean; // New prop to control when to load data
 }
 
-const ParcelList: React.FC<ParcelListProps> = ({ setCurrentPage, hasCompletedProfile = true }) => {
+const ParcelList: React.FC<ParcelListProps> = ({ setCurrentPage, hasCompletedProfile = true, shouldLoadData = true }) => {
   const { t, isRTL } = useLanguage();
   const { theme } = useTheme();
   const { webApp } = useTelegramContext();
@@ -800,8 +801,10 @@ const ParcelList: React.FC<ParcelListProps> = ({ setCurrentPage, hasCompletedPro
     }
   };
 
-  // Load flights on component mount
+  // Load flights on component mount only if shouldLoadData is true
   useEffect(() => {
+    if (!shouldLoadData) return;
+    
     const loadFlights = async () => {
       try {
         setIsLoading(true);
@@ -816,7 +819,7 @@ const ParcelList: React.FC<ParcelListProps> = ({ setCurrentPage, hasCompletedPro
     };
 
     loadFlights();
-  }, []);
+  }, [shouldLoadData]);
 
   // No need to fetch flights when activeTab changes since we get all data at once
   // Filtering is now done client-side based on tripType

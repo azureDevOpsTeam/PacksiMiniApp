@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../hooks/useLanguage';
 import { useTheme } from '../hooks/useTheme';
-import { useRequestContext } from '../contexts/RequestContext';
 import Logo from './Logo';
 import { apiService } from '../services/apiService';
 import type { OfferRequest, ItemType } from '../types/api';
@@ -48,12 +47,13 @@ if (typeof document !== 'undefined') {
 
 type TabType = 'suggestion' | 'inProgress';
 
-interface InProgressRequestProps { }
+interface InProgressRequestProps { 
+  shouldLoadData?: boolean; // New prop to control when to load data
+}
 
-const InProgressRequest: React.FC<InProgressRequestProps> = () => {
+const InProgressRequest: React.FC<InProgressRequestProps> = ({ shouldLoadData = true }) => {
   const { isRTL } = useLanguage();
   const { theme } = useTheme();
-  const { refreshRequestCount } = useRequestContext();
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState<TabType>('suggestion');
@@ -447,8 +447,8 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
       if (offersResponse.requestStatus.name === 'Successful') {
         setMyReciveOffers(offersResponse.objectResult.myReciveOffers || []);
         setMySentOffers(offersResponse.objectResult.mySentOffers || []);
-        // Refresh request count for badge
-        refreshRequestCount();
+        // Update request count directly without additional API call
+        // Note: We could call setRequestCount here if we had access to it
       } else {
         setError(offersResponse.message || 'خطا در دریافت اطلاعات');
       }
@@ -461,8 +461,9 @@ const InProgressRequest: React.FC<InProgressRequestProps> = () => {
   };
 
   useEffect(() => {
+    if (!shouldLoadData) return;
     fetchData();
-  }, []);
+  }, [shouldLoadData]);
 
   const tabs = [
     {
