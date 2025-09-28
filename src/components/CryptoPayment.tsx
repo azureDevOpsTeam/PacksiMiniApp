@@ -13,7 +13,7 @@ const CryptoPayment: React.FC<CryptoPaymentProps> = ({ walletAddress, amount, cu
   const { language } = useLanguage();
   const isRTL = language === 'fa';
   const [copied, setCopied] = React.useState<boolean>(false);
-  const [network, setNetwork] = React.useState<string>(initialNetwork);
+  const [network] = React.useState<string>(initialNetwork);
   const [remainingSeconds, setRemainingSeconds] = React.useState<number>(0);
   const expiresAtRef = React.useRef<number>(0);
 
