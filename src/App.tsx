@@ -16,6 +16,7 @@ import AddPreferredLocation from './components/AddPreferredLocation';
 import ParcelList from './components/ParcelList';
 import MyRequest from './components/MyRequest';
 import InProgressRequest from './components/InProgressRequest';
+import CryptoPayment from './components/CryptoPayment';
 import Logo from './components/Logo';
 
 import SettingsModal from './components/SettingsModal';
@@ -41,7 +42,7 @@ const AppContent: React.FC = () => {
   const { chatCount } = useChatContext();
   const { requestCount } = useRequestContext();
   const [activeButton, setActiveButton] = React.useState<'user' | 'admin'>('user');
-  const [currentPage, setCurrentPage] = React.useState<'home' | 'createRequest' | 'updateProfile' | 'addPreferredLocation' | 'parcelList' | 'myRequest' | 'inProgressRequest' | 'chatPersonList' | 'notFound'>('home');
+  const [currentPage, setCurrentPage] = React.useState<'home' | 'createRequest' | 'updateProfile' | 'addPreferredLocation' | 'parcelList' | 'myRequest' | 'inProgressRequest' | 'chatPersonList' | 'cryptoPayment' | 'notFound'>('home');
   const [adminCurrentPage, setAdminCurrentPage] = React.useState<'dashboard' | 'usermanagement' | 'advertisements'>('dashboard');
   const [showVerifyPhone, setShowVerifyPhone] = React.useState<boolean>(false);
   const [showUpdateProfile, setShowUpdateProfile] = React.useState<boolean>(false);
@@ -134,6 +135,22 @@ const AppContent: React.FC = () => {
         break;
       default:
         setCurrentPage('home');
+    }
+  }, []);
+
+  // Support opening specific pages via URL params (e.g., ?page=cryptoPayment&wallet=...&amount=...&currency=USDT&network=BSC)
+  const [paymentParams, setPaymentParams] = React.useState<{ wallet?: string; amount?: string; currency?: string; network?: string }>({});
+  React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const page = params.get('page');
+    if (page === 'cryptoPayment') {
+      setCurrentPage('cryptoPayment');
+      setPaymentParams({
+        wallet: params.get('wallet') || undefined,
+        amount: params.get('amount') || undefined,
+        currency: params.get('currency') || undefined,
+        network: params.get('network') || undefined,
+      });
     }
   }, []);
 
@@ -426,6 +443,15 @@ const AppContent: React.FC = () => {
     // Render ChatPersonList page
     if (currentPage === 'chatPersonList') {
       return <ChatPersonList />;
+    }
+
+    // Render CryptoPayment page
+    if (currentPage === 'cryptoPayment') {
+      const wallet = paymentParams.wallet || 'TRX-TRC20-EXAMPLE-ADDRESS-1234567890';
+      const amount = paymentParams.amount || '10';
+      const currency = paymentParams.currency || 'USDT';
+      const network = paymentParams.network || 'TRC20';
+      return <CryptoPayment walletAddress={wallet} amount={amount} currency={currency} network={network} />;
     }
 
     // Render AdminPanel if admin is selected
