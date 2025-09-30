@@ -47,7 +47,7 @@ if (typeof document !== 'undefined') {
 
 type TabType = 'suggestion' | 'inProgress';
 
-interface InProgressRequestProps { 
+interface InProgressRequestProps {
   shouldLoadData?: boolean; // New prop to control when to load data
 }
 
@@ -84,10 +84,10 @@ const InProgressRequest: React.FC<InProgressRequestProps> = ({ shouldLoadData = 
   // Function to detect text direction based on content
   const detectTextDirection = (text: string): 'rtl' | 'ltr' => {
     if (!text) return 'ltr';
-    
+
     // Persian/Arabic Unicode ranges
     const persianArabicRegex = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
-    
+
     // Check if text contains Persian/Arabic characters
     return persianArabicRegex.test(text) ? 'rtl' : 'ltr';
   };
@@ -292,7 +292,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = ({ shouldLoadData = 
           setMyReciveOffers(offersResponse.objectResult.myReciveOffers || []);
           setMySentOffers(offersResponse.objectResult.mySentOffers || []);
         }
-        
+
         // Close modal only on success
         setShowDeliveryDialog(false);
         setSelectedDeliverySuggestionId(null);
@@ -341,7 +341,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = ({ shouldLoadData = 
 
     setIsConfirmingSenderDelivery(true);
     setServerError(''); // Clear previous errors
-    
+
     try {
       console.log('Sending SaveRating request:', {
         requestSuggestionId: selectedConfirmDeliverySuggestionId,
@@ -364,10 +364,10 @@ const InProgressRequest: React.FC<InProgressRequestProps> = ({ shouldLoadData = 
         setSelectedConfirmDeliverySuggestionId(null);
         setSelectedRating(0);
         setServerError('');
-        
+
         // Show success message briefly
         console.log('Rating saved successfully');
-        
+
         // Refresh data
         fetchData();
       } else {
@@ -378,7 +378,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = ({ shouldLoadData = 
       }
     } catch (error) {
       console.error('Error confirming delivery:', error);
-      
+
       // Show user-friendly error message
       if (error instanceof Error) {
         if (error.message.includes('fetch')) {
@@ -605,19 +605,19 @@ const InProgressRequest: React.FC<InProgressRequestProps> = ({ shouldLoadData = 
                         {suggestion.displayName}
                       </div>
                       <div style={{
-                      color: '#89084e',
-                      borderRadius: '12px',
-                      fontSize: '16px',
-                      fontWeight: 'bold',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '4px'
+                        color: '#89084e',
+                        borderRadius: '12px',
+                        fontSize: '16px',
+                        fontWeight: 'bold',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px'
                       }}>
                         ${suggestion.suggestionPrice}
                       </div>
                     </div>
                   </div>
-                  
+
                   {/* Enhanced price display */}
                   <div style={{
                     display: 'flex',
@@ -626,32 +626,32 @@ const InProgressRequest: React.FC<InProgressRequestProps> = ({ shouldLoadData = 
                     gap: '8px'
                   }}>
 
-                    
+
                     {/* Enhanced Item Type Badge */}
-                {(isRTL ? suggestion.itemTypeFa : suggestion.itemTypeEn) && (
-                  <div 
-                  onClick={() => openImageModal(suggestion.attachments)}
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '6px',
-                    background: 'linear-gradient(135deg, #dbeafe, #bfdbfe)',
-                    color: '#1e40af',
-                    fontSize: '11px',
-                    fontWeight: '600',
-                    padding: '6px 12px',
-                    borderRadius: '20px',
-                    marginBottom: '12px',
-                    border: '1px solid #93c5fd',
-                    boxShadow: '0 2px 4px rgba(30, 64, 175, 0.1)'
-                  }}>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    {(isRTL ? suggestion.itemTypeFa : suggestion.itemTypeEn) && (
+                      <div
+                        onClick={() => openImageModal(suggestion.attachments)}
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '6px',
+                          background: 'linear-gradient(135deg, #dbeafe, #bfdbfe)',
+                          color: '#1e40af',
+                          fontSize: '11px',
+                          fontWeight: '600',
+                          padding: '6px 12px',
+                          borderRadius: '20px',
+                          marginBottom: '12px',
+                          border: '1px solid #93c5fd',
+                          boxShadow: '0 2px 4px rgba(30, 64, 175, 0.1)'
+                        }}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                           <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
                         </svg>
-                    {getItemTypeName(suggestion.itemType, isRTL)}
-                  </div>
-                )}
+                        {getItemTypeName(suggestion.itemType, isRTL)}
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -659,7 +659,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = ({ shouldLoadData = 
                 {suggestion.descriptions && suggestion.descriptions.trim() !== '' && (() => {
                   const textDirection = detectTextDirection(suggestion.descriptions);
                   const isContentRTL = textDirection === 'rtl';
-                  
+
                   return (
                     <div style={{
                       fontSize: '12px',
@@ -691,8 +691,8 @@ const InProgressRequest: React.FC<InProgressRequestProps> = ({ shouldLoadData = 
                         borderRadius: '50%',
                         backgroundColor: '#3b82f6'
                       }} />
-                      <div style={{ 
-                        paddingLeft: isContentRTL ? '0' : '12px', 
+                      <div style={{
+                        paddingLeft: isContentRTL ? '0' : '12px',
                         paddingRight: isContentRTL ? '12px' : '0',
                         direction: textDirection,
                         textAlign: isContentRTL ? 'right' : 'left'
@@ -834,7 +834,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = ({ shouldLoadData = 
                         </svg>
                         {isRTL ? 'تحویل گرفته‌ام' : 'Picked Up'}
                       </button>
-                      
+
                       {/* Chat Button for btnPickedUp */}
                       <button
                         onClick={(e) => {
@@ -920,7 +920,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = ({ shouldLoadData = 
                         </svg>
                         {isRTL ? 'تحویل داده‌ام' : 'Delivered'}
                       </button>
-                      
+
                       {/* Chat Button for btnPassengerConfirmedDelivery */}
                       <button
                         onClick={(e) => {
@@ -990,7 +990,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = ({ shouldLoadData = 
                           boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
                         }}
                       >
-                        <svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 48 48" width="16px" height="16px"><linearGradient id="IMoH7gpu5un5Dx2vID39Ra" x1="9.858" x2="38.142" y1="9.858" y2="38.142" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#9dffce"/><stop offset="1" stop-color="#50d18d"/></linearGradient><path fill="url(#IMoH7gpu5un5Dx2vID39Ra)" d="M44,24c0,11.045-8.955,20-20,20S4,35.045,4,24S12.955,4,24,4S44,12.955,44,24z"/><linearGradient id="IMoH7gpu5un5Dx2vID39Rb" x1="13" x2="36" y1="24.793" y2="24.793" gradientUnits="userSpaceOnUse"><stop offset=".824" stop-color="#135d36"/><stop offset=".931" stop-color="#125933"/><stop offset="1" stop-color="#11522f"/></linearGradient><path fill="url(#IMoH7gpu5un5Dx2vID39Rb)" d="M21.293,32.707l-8-8c-0.391-0.391-0.391-1.024,0-1.414l1.414-1.414	c0.391-0.391,1.024-0.391,1.414,0L22,27.758l10.879-10.879c0.391-0.391,1.024-0.391,1.414,0l1.414,1.414	c0.391,0.391,0.391,1.024,0,1.414l-13,13C22.317,33.098,21.683,33.098,21.293,32.707z"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="16px" height="16px"><linearGradient id="IMoH7gpu5un5Dx2vID39Ra" x1="9.858" x2="38.142" y1="9.858" y2="38.142" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#9dffce" /><stop offset="1" stop-color="#50d18d" /></linearGradient><path fill="url(#IMoH7gpu5un5Dx2vID39Ra)" d="M44,24c0,11.045-8.955,20-20,20S4,35.045,4,24S12.955,4,24,4S44,12.955,44,24z" /><linearGradient id="IMoH7gpu5un5Dx2vID39Rb" x1="13" x2="36" y1="24.793" y2="24.793" gradientUnits="userSpaceOnUse"><stop offset=".824" stop-color="#135d36" /><stop offset=".931" stop-color="#125933" /><stop offset="1" stop-color="#11522f" /></linearGradient><path fill="url(#IMoH7gpu5un5Dx2vID39Rb)" d="M21.293,32.707l-8-8c-0.391-0.391-0.391-1.024,0-1.414l1.414-1.414	c0.391-0.391,1.024-0.391,1.414,0L22,27.758l10.879-10.879c0.391-0.391,1.024-0.391,1.414,0l1.414,1.414	c0.391,0.391,0.391,1.024,0,1.414l-13,13C22.317,33.098,21.683,33.098,21.293,32.707z" /></svg>
                         {isRTL ? 'تحویل شد' : 'ّDelivered'}
                       </button>
                     </>
@@ -1038,7 +1038,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = ({ shouldLoadData = 
                         </svg>
                         {isRTL ? 'تایید و ثبت امتیاز' : 'Confirm And Rating'}
                       </button>
-                      
+
                       {/* Chat Button for btnConfirmDelivery */}
                       <button
                         onClick={(e) => {
@@ -1115,7 +1115,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = ({ shouldLoadData = 
                         </svg>
                         {isRTL ? 'آماده تحویل' : 'Ready To Picked Up'}
                       </button>
-                      
+
                       {/* Chat Button for lblReadyToPickeUp */}
                       <button
                         onClick={(e) => {
@@ -1190,7 +1190,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = ({ shouldLoadData = 
                         </svg>
                         {isRTL ? 'آماده ارسال' : 'Ready To Delivery'}
                       </button>
-                      
+
                       {/* Chat Button for lblReadyToDelivery */}
                       <button
                         onClick={(e) => {
@@ -1234,8 +1234,173 @@ const InProgressRequest: React.FC<InProgressRequestProps> = ({ shouldLoadData = 
                     </>
                   )}
 
+                  {/* Ready To Payment Button - Show only for lblReadyToPayment in Suggestion tab */}
+                  {(activeTab === 'suggestion' && suggestion.operationButton === 'lblReadyToPayment') && (
+                    <>
+
+                      {/* Waiting for Payment Button (Disabled) */}
+                      <button
+                        disabled={true}
+                        style={{
+                          flex: 1,
+                          padding: '10px 16px',
+                          borderRadius: '12px',
+                          fontSize: '13px',
+                          fontWeight: '600',
+                          background: 'linear-gradient(135deg, #f8f9fa, #e9ecef)',
+                          color: '#6c757d',
+                          border: '2px solid #dee2e6',
+                          cursor: 'not-allowed',
+                          transition: 'all 0.3s ease',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '6px',
+                          position: 'relative',
+                          overflow: 'hidden',
+                          fontFamily: 'inherit',
+                          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
+                        }}
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M15.5,17L10.5,12L15.5,7V17Z" />
+                        </svg>
+                        {isRTL ? 'در انتظار پرداخت' : 'Waiting for Payment'}
+                      </button>
+                      {/* Chat Button for lblReadyToPayment */}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigateToChat(suggestion.conversationId);
+                        }}
+                        style={{
+                          padding: '10px 16px',
+                          borderRadius: '12px',
+                          fontSize: '13px',
+                          fontWeight: '600',
+                          background: 'linear-gradient(135deg, #6366f1, #4f46e5)',
+                          color: 'white',
+                          border: 'none',
+                          cursor: 'pointer',
+                          transition: 'all 0.3s ease',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '6px',
+                          boxShadow: '0 4px 12px rgba(99, 102, 241, 0.25)',
+                          position: 'relative',
+                          overflow: 'hidden',
+                          fontFamily: 'inherit',
+                          minWidth: '80px'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.transform = 'translateY(-2px)';
+                          e.currentTarget.style.boxShadow = '0 6px 20px rgba(99, 102, 241, 0.4)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.transform = 'translateY(0)';
+                          e.currentTarget.style.boxShadow = '0 4px 12px rgba(99, 102, 241, 0.25)';
+                        }}
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M20,2H4A2,2 0 0,0 2,4V22L6,18H20A2,2 0 0,0 22,16V4C22,2.89 21.1,2 20,2Z" />
+                        </svg>
+                        {isRTL ? 'چت' : 'Chat'}
+                      </button>
+
+                    </>
+                  )}
+
+                  {/* Payment Button - Show only for btnPayment in InProgress tab */}
+                  {(activeTab === 'inProgress' && suggestion.operationButton === 'btnPayment') && (
+                    <>
+                      {/* Chat Button for btnPayment */}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigateToChat(suggestion.conversationId);
+                        }}
+                        style={{
+                          padding: '10px 16px',
+                          borderRadius: '12px',
+                          fontSize: '13px',
+                          fontWeight: '600',
+                          background: 'linear-gradient(135deg, #6366f1, #4f46e5)',
+                          color: 'white',
+                          border: 'none',
+                          cursor: 'pointer',
+                          transition: 'all 0.3s ease',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '6px',
+                          boxShadow: '0 4px 12px rgba(99, 102, 241, 0.25)',
+                          position: 'relative',
+                          overflow: 'hidden',
+                          fontFamily: 'inherit',
+                          minWidth: '80px'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.transform = 'translateY(-2px)';
+                          e.currentTarget.style.boxShadow = '0 6px 20px rgba(99, 102, 241, 0.4)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.transform = 'translateY(0)';
+                          e.currentTarget.style.boxShadow = '0 4px 12px rgba(99, 102, 241, 0.25)';
+                        }}
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M20,2H4A2,2 0 0,0 2,4V22L6,18H20A2,2 0 0,0 22,16V4C22,2.89 21.1,2 20,2Z" />
+                        </svg>
+                        {isRTL ? 'چت' : 'Chat'}
+                      </button>
+
+                      {/* Payment Button */}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          // Add payment logic here
+                          console.log('Payment button clicked for suggestion:', suggestion.id);
+                        }}
+                        style={{
+                          flex: 1,
+                          padding: '10px 16px',
+                          borderRadius: '12px',
+                          fontSize: '13px',
+                          fontWeight: '600',
+                          background: 'linear-gradient(135deg, #10b981, #059669)',
+                          color: 'white',
+                          border: 'none',
+                          cursor: 'pointer',
+                          transition: 'all 0.3s ease',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '6px',
+                          position: 'relative',
+                          overflow: 'hidden',
+                          fontFamily: 'inherit',
+                          boxShadow: '0 4px 12px rgba(16, 185, 129, 0.25)'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.transform = 'translateY(-2px)';
+                          e.currentTarget.style.boxShadow = '0 6px 20px rgba(16, 185, 129, 0.4)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.transform = 'translateY(0)';
+                          e.currentTarget.style.boxShadow = '0 4px 12px rgba(16, 185, 129, 0.25)';
+                        }}
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M20,18H4V8H20M20,6H4C2.89,6 2,6.89 2,8V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V8C22,6.89 21.11,6 20,6M16,15H18V17H16V15M13,15H15V17H13V15Z" />
+                        </svg>
+                        {isRTL ? 'پرداخت' : 'Payment'}
+                      </button>
+                    </>
+                  )}
+
                   {/* Chat Button - Hide for specific states where we now have dedicated chat buttons */}
-                  {!(activeTab === 'suggestion' && (suggestion.operationButton === 'btnSuggtion' || suggestion.operationButton === 'btnPickedUp' || suggestion.operationButton === 'btnPassengerConfirmedDelivery' || suggestion.operationButton === 'lblWaitToConfirmDelivery')) && !(activeTab === 'inProgress' && (suggestion.operationButton === 'btnConfirmDelivery' || suggestion.operationButton === 'lblReadyToPickeUp' || suggestion.operationButton === 'lblReadyToDelivery')) && (
+                  {!(activeTab === 'suggestion' && (suggestion.operationButton === 'btnSuggtion' || suggestion.operationButton === 'btnPickedUp' || suggestion.operationButton === 'btnPassengerConfirmedDelivery' || suggestion.operationButton === 'lblWaitToConfirmDelivery' || suggestion.operationButton === 'lblReadyToPayment')) && !(activeTab === 'inProgress' && (suggestion.operationButton === 'btnConfirmDelivery' || suggestion.operationButton === 'lblReadyToPickeUp' || suggestion.operationButton === 'lblReadyToDelivery' || suggestion.operationButton === 'btnPayment')) && (
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -2053,14 +2218,14 @@ const InProgressRequest: React.FC<InProgressRequestProps> = ({ shouldLoadData = 
                 type="text"
                 value={deliveryCode}
                 onChange={(e) => {
-                   setDeliveryCode(e.target.value);
-                   if (deliveryCodeError) {
-                     setDeliveryCodeError('');
-                   }
-                   if (serverError) {
-                     setServerError('');
-                   }
-                 }}
+                  setDeliveryCode(e.target.value);
+                  if (deliveryCodeError) {
+                    setDeliveryCodeError('');
+                  }
+                  if (serverError) {
+                    setServerError('');
+                  }
+                }}
                 placeholder={isRTL ? 'کد تحویل را وارد کنید' : 'Enter delivery code'}
                 style={{
                   width: '100%',
@@ -2074,28 +2239,28 @@ const InProgressRequest: React.FC<InProgressRequestProps> = ({ shouldLoadData = 
                   textAlign: isRTL ? 'right' : 'left'
                 }}
                 onFocus={(e) => {
-                   if (!deliveryCodeError && !serverError) {
-                     e.target.style.borderColor = '#8b5cf6';
-                   }
-                 }}
-                 onBlur={(e) => {
-                   if (!deliveryCodeError && !serverError) {
-                     e.target.style.borderColor = '#d1d5db';
-                   }
-                 }}
+                  if (!deliveryCodeError && !serverError) {
+                    e.target.style.borderColor = '#8b5cf6';
+                  }
+                }}
+                onBlur={(e) => {
+                  if (!deliveryCodeError && !serverError) {
+                    e.target.style.borderColor = '#d1d5db';
+                  }
+                }}
               />
               {(deliveryCodeError || serverError) && (
-                 <p
-                   style={{
-                     margin: '8px 0 0',
-                     fontSize: '12px',
-                     color: '#ef4444',
-                     textAlign: isRTL ? 'right' : 'left'
-                   }}
-                 >
-                   {deliveryCodeError || serverError}
-                 </p>
-               )}
+                <p
+                  style={{
+                    margin: '8px 0 0',
+                    fontSize: '12px',
+                    color: '#ef4444',
+                    textAlign: isRTL ? 'right' : 'left'
+                  }}
+                >
+                  {deliveryCodeError || serverError}
+                </p>
+              )}
             </div>
 
             {/* Buttons */}
@@ -2319,7 +2484,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = ({ shouldLoadData = 
                     fontWeight: '500'
                   }}
                 >
-                  {isRTL 
+                  {isRTL
                     ? `امتیاز انتخاب شده: ${selectedRating} از 5`
                     : `Selected rating: ${selectedRating} out of 5`
                   }
