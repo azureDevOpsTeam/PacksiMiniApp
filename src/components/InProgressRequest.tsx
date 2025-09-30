@@ -4,6 +4,7 @@ import { useLanguage } from '../hooks/useLanguage';
 import { useTheme } from '../hooks/useTheme';
 import Logo from './Logo';
 import { apiService } from '../services/apiService';
+import { useRequestContext } from '../contexts/RequestContext';
 import type { OfferRequest, ItemType } from '../types/api';
 
 // CSS animations
@@ -55,6 +56,7 @@ const InProgressRequest: React.FC<InProgressRequestProps> = ({ shouldLoadData = 
   const { isRTL } = useLanguage();
   const { theme } = useTheme();
   const navigate = useNavigate();
+  const { refreshRequestCount } = useRequestContext();
 
   const [activeTab, setActiveTab] = useState<TabType>('suggestion');
   const [myReciveOffers, setMyReciveOffers] = useState<OfferRequest[]>([]);
@@ -184,6 +186,8 @@ const InProgressRequest: React.FC<InProgressRequestProps> = ({ shouldLoadData = 
         if (offersResponse.requestStatus.name === 'Successful') {
           setMyReciveOffers(offersResponse.objectResult.myReciveOffers || []);
           setMySentOffers(offersResponse.objectResult.mySentOffers || []);
+          // Update request count badge
+          refreshRequestCount();
         }
 
         // Show success message (you can implement a toast notification here)
@@ -235,6 +239,8 @@ const InProgressRequest: React.FC<InProgressRequestProps> = ({ shouldLoadData = 
         if (offersResponse.requestStatus.name === 'Successful') {
           setMyReciveOffers(offersResponse.objectResult.myReciveOffers || []);
           setMySentOffers(offersResponse.objectResult.mySentOffers || []);
+          // Update request count badge
+          refreshRequestCount();
         }
       } else {
         console.error('Error marking as picked up:', response.message);
@@ -291,6 +297,8 @@ const InProgressRequest: React.FC<InProgressRequestProps> = ({ shouldLoadData = 
         if (offersResponse.requestStatus.name === 'Successful') {
           setMyReciveOffers(offersResponse.objectResult.myReciveOffers || []);
           setMySentOffers(offersResponse.objectResult.mySentOffers || []);
+          // Update request count badge
+          refreshRequestCount();
         }
 
         // Close modal only on success
@@ -447,8 +455,8 @@ const InProgressRequest: React.FC<InProgressRequestProps> = ({ shouldLoadData = 
       if (offersResponse.requestStatus.name === 'Successful') {
         setMyReciveOffers(offersResponse.objectResult.myReciveOffers || []);
         setMySentOffers(offersResponse.objectResult.mySentOffers || []);
-        // Update request count directly without additional API call
-        // Note: We could call setRequestCount here if we had access to it
+        // Update request count badge
+        refreshRequestCount();
       } else {
         setError(offersResponse.message || 'خطا در دریافت اطلاعات');
       }
